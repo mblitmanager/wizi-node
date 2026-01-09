@@ -244,10 +244,15 @@ export class StagiaireService {
       return { completed: parseInt(completed), total: parseInt(total) };
     };
 
+    // Extract last name parts for initial formatting
+    const [fName, ...lParts] = (stagiaire.user?.name || "").split(" ");
+    const lEx = lParts.join(" ") || "";
+
     return {
       id: stagiaire.id,
-      firstname: stagiaire.prenom || "",
-      name: stagiaire.user?.name || "",
+      firstname: stagiaire.prenom || fName || "Anonyme",
+      lastname: lEx,
+      name: lEx,
       avatar: stagiaire.user?.image || null,
       rang: rank || 0,
       totalPoints: parseInt(stats?.totalPoints || "0"),
@@ -258,7 +263,7 @@ export class StagiaireService {
       formateurs: (stagiaire.formateurs || []).map((f) => ({
         id: f.id,
         prenom: f.prenom || "",
-        nom: f.nom || f.user?.name?.split(" ").pop() || "",
+        nom: f.nom || f.user?.name?.split(" ").slice(1).join(" ") || "",
         image: f.user?.image || null,
       })),
       quizStats: {

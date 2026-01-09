@@ -39,10 +39,13 @@ let RankingService = class RankingService {
             const totalPoints = group.reduce((sum, item) => sum + (item.points || 0), 0);
             const first = group[0];
             const stagiaire = first.stagiaire;
+            const [fName, ...lParts] = (stagiaire.user?.name || "").split(" ");
+            const lastName = lParts.join(" ") || "";
             return {
                 id: stagiaire.id,
-                firstname: stagiaire.prenom || "",
-                name: stagiaire.user?.name?.split(" ").slice(1).join(" ") || "",
+                firstname: stagiaire.prenom || fName || "Anonyme",
+                lastname: lastName,
+                name: lastName,
                 image: stagiaire.user?.image || null,
                 score: totalPoints,
                 totalPoints,
@@ -74,10 +77,13 @@ let RankingService = class RankingService {
         }
         const myRanking = globalRanking.find((item) => item.id === stagiaire.id);
         if (!myRanking) {
+            const [fName, ...lParts] = (stagiaire.user?.name || "").split(" ");
+            const lastName = lParts.join(" ") || "";
             return {
                 id: stagiaire.id,
-                firstname: stagiaire.prenom || "",
-                name: stagiaire.user?.name?.split(" ").slice(1).join(" ") || "",
+                firstname: stagiaire.prenom || fName || "Anonyme",
+                lastname: lastName,
+                name: lastName,
                 image: stagiaire.user?.image || null,
                 score: 0,
                 totalPoints: 0,

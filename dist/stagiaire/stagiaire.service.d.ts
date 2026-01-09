@@ -111,6 +111,7 @@ export declare class StagiaireService {
     getStagiaireById(id: number): Promise<{
         id: number;
         firstname: string;
+        lastname: string;
         name: string;
         avatar: string;
         rang: number;

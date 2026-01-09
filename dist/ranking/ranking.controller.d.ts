@@ -7,6 +7,7 @@ export declare class RankingController {
         level: string;
         id: any;
         firstname: any;
+        lastname: any;
         name: any;
         image: any;
         score: any;
@@ -20,6 +21,7 @@ export declare class RankingController {
         level: string;
         id: any;
         firstname: any;
+        lastname: any;
         name: any;
         image: any;
         score: any;

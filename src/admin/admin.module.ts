@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AdminService } from "./admin.service";
+import { AdminController } from "./admin.controller";
 import { FormateurController } from "./formateur.controller";
 import { CommercialController } from "./commercial.controller";
 import { AdminStagiaireController } from "./admin-stagiaire.controller";
@@ -27,6 +28,7 @@ import { Quiz } from "../entities/quiz.entity";
   ],
   providers: [AdminService],
   controllers: [
+    AdminController,
     FormateurController,
     CommercialController,
     AdminStagiaireController,

@@ -10,6 +10,7 @@ exports.AdminModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const admin_service_1 = require("./admin.service");
+const admin_controller_1 = require("./admin.controller");
 const formateur_controller_1 = require("./formateur.controller");
 const commercial_controller_1 = require("./commercial.controller");
 const admin_stagiaire_controller_1 = require("./admin-stagiaire.controller");
@@ -39,6 +40,7 @@ exports.AdminModule = AdminModule = __decorate([
         ],
         providers: [admin_service_1.AdminService],
         controllers: [
+            admin_controller_1.AdminController,
             formateur_controller_1.FormateurController,
             commercial_controller_1.CommercialController,
             admin_stagiaire_controller_1.AdminStagiaireController,

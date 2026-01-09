@@ -51341,3 +51341,2900 @@ Headers: {
   "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
 }
 
+[2026-01-09T13:59:15.193Z] GET /api/stagiaire/quizzes
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"166c-3uDGGmVESNFeR3BOKoOeIh23KtY\""
+}
+
+[2026-01-09T13:59:15.208Z] GET /api/quiz/categories
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"35-8W9hqkz7fZDRRqRU89tC9x0cVKQ\""
+}
+
+[2026-01-09T13:59:15.232Z] GET /api/quiz/history
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+}
+
+[2026-01-09T13:59:15.238Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"579-oyE9Gi0YwKd/3vvZDzuptxfXjaw\""
+}
+
+[2026-01-09T13:59:15.245Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T13:59:15.268Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"579-oyE9Gi0YwKd/3vvZDzuptxfXjaw\""
+}
+
+[2026-01-09T13:59:15.283Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T13:59:15.292Z] GET /api/quiz/history
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+}
+
+[2026-01-09T13:59:17.360Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T13:59:17.367Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"579-oyE9Gi0YwKd/3vvZDzuptxfXjaw\""
+}
+
+[2026-01-09T13:59:17.383Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"579-oyE9Gi0YwKd/3vvZDzuptxfXjaw\""
+}
+
+[2026-01-09T13:59:17.388Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:01:03.950Z] GET /api/formationParrainage
+Headers: {
+  "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzY3ODc3MTg4LCJleHAiOjE3Njc5NjM1ODgsIm5iZiI6MTc2Nzg3NzE4OCwianRpIjoiQjFXN084am14eEQwUXhEaiIsInN1YiI6IjciLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.m1HVmDSP3rM9TO4ApDt_AjXKudSyYlc-zbZGMdD9U2A",
+  "user-agent": "PostmanRuntime/7.51.0",
+  "accept": "*/*",
+  "postman-token": "44e7a3ff-6e0e-4585-ba22-2dd076f8a540",
+  "host": "127.0.0.1:3000",
+  "accept-encoding": "gzip, deflate, br",
+  "connection": "keep-alive",
+  "cookie": "XSRF-TOKEN=eyJpdiI6IlovblZvRWZVTmJLRkRzbi9BZm1EbUE9PSIsInZhbHVlIjoiSk1KY0YxZkw5Q21pNHlGWWhHa1FlbkR1eTVQQmFzS3BISnlFeTVCUVhyUFRncXdGOTNqendKZlJtWlVLZFBaejQybktPT1N1cktvSjZRM2F3Vm1rUU9SWmJXU0ZrZml5SUYrMnJmYk45emhWZy8yRk9PU1cvWlBHSWZralNBaDMiLCJtYWMiOiIyZDQ1NDYzNWMyNjNmMzBjOTMxMTQyNjkwNGYxZTdiNzU0MmI1OGE4YTQ4MjM2MTAxYmU3MzE4MDY3OWRhZDhkIiwidGFnIjoiIn0%3D; laravel_session=eyJpdiI6IjRwNTRRanU2WkVyS0NseHBxNDFCMGc9PSIsInZhbHVlIjoiQVVMQ25wRU90dFZ4WnI3SGhzMktRTy96QnkrSHR6TnNvTXR0dTU5cVVwU0M0NDBtd2M0UmxxZ0p2TGVNYmlUcHVHQ2g0MWtlekNtellHeUJBODBHdDhWTFUxcUFGdTVSZlR4QVB0WXVPdFIyWkRONVhPc20za1JuTDdxaDBVL2kiLCJtYWMiOiJmNDg4OTRlNzU1NjU2MTBiNjJhNjcxNTg5MzYwNzAyYmZiNDAxZjEwNGFiOTA0ODQxODQ1YzVjYzcxMGU4YWFjIiwidGFnIjoiIn0%3D"
+}
+
+[2026-01-09T14:04:28.935Z] GET /api/test-notif
+Headers: {
+  "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzY3ODc3MTg4LCJleHAiOjE3Njc5NjM1ODgsIm5iZiI6MTc2Nzg3NzE4OCwianRpIjoiQjFXN084am14eEQwUXhEaiIsInN1YiI6IjciLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.m1HVmDSP3rM9TO4ApDt_AjXKudSyYlc-zbZGMdD9U2A",
+  "user-agent": "PostmanRuntime/7.51.0",
+  "accept": "*/*",
+  "postman-token": "95a5c32e-42af-4e4f-9d63-ebbce84909a7",
+  "host": "127.0.0.1:3000",
+  "accept-encoding": "gzip, deflate, br",
+  "connection": "keep-alive",
+  "cookie": "XSRF-TOKEN=eyJpdiI6IlovblZvRWZVTmJLRkRzbi9BZm1EbUE9PSIsInZhbHVlIjoiSk1KY0YxZkw5Q21pNHlGWWhHa1FlbkR1eTVQQmFzS3BISnlFeTVCUVhyUFRncXdGOTNqendKZlJtWlVLZFBaejQybktPT1N1cktvSjZRM2F3Vm1rUU9SWmJXU0ZrZml5SUYrMnJmYk45emhWZy8yRk9PU1cvWlBHSWZralNBaDMiLCJtYWMiOiIyZDQ1NDYzNWMyNjNmMzBjOTMxMTQyNjkwNGYxZTdiNzU0MmI1OGE4YTQ4MjM2MTAxYmU3MzE4MDY3OWRhZDhkIiwidGFnIjoiIn0%3D; laravel_session=eyJpdiI6IjRwNTRRanU2WkVyS0NseHBxNDFCMGc9PSIsInZhbHVlIjoiQVVMQ25wRU90dFZ4WnI3SGhzMktRTy96QnkrSHR6TnNvTXR0dTU5cVVwU0M0NDBtd2M0UmxxZ0p2TGVNYmlUcHVHQ2g0MWtlekNtellHeUJBODBHdDhWTFUxcUFGdTVSZlR4QVB0WXVPdFIyWkRONVhPc20za1JuTDdxaDBVL2kiLCJtYWMiOiJmNDg4OTRlNzU1NjU2MTBiNjJhNjcxNTg5MzYwNzAyYmZiNDAxZjEwNGFiOTA0ODQxODQ1YzVjYzcxMGU4YWFjIiwidGFnIjoiIn0%3D"
+}
+
+[2026-01-09T14:13:51.352Z] GET /admin
+Headers: {
+  "host": "localhost:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "upgrade-insecure-requests": "1",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "sec-fetch-site": "none",
+  "sec-fetch-mode": "navigate",
+  "sec-fetch-user": "?1",
+  "sec-fetch-dest": "document",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:13:52.291Z] GET /favicon.ico
+Headers: {
+  "host": "localhost:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "sec-fetch-site": "same-origin",
+  "sec-fetch-mode": "no-cors",
+  "sec-fetch-dest": "image",
+  "referer": "http://localhost:3000/admin",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:14:03.796Z] GET /admin/dashboard
+Headers: {
+  "host": "localhost:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "upgrade-insecure-requests": "1",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "sec-fetch-site": "none",
+  "sec-fetch-mode": "navigate",
+  "sec-fetch-user": "?1",
+  "sec-fetch-dest": "document",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:16:22.408Z] GET /admin/dashboard
+Headers: {
+  "host": "localhost:3000",
+  "connection": "keep-alive",
+  "pragma": "no-cache",
+  "cache-control": "no-cache",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "upgrade-insecure-requests": "1",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "sec-fetch-site": "none",
+  "sec-fetch-mode": "navigate",
+  "sec-fetch-user": "?1",
+  "sec-fetch-dest": "document",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:16:22.554Z] GET /favicon.ico
+Headers: {
+  "host": "localhost:3000",
+  "connection": "keep-alive",
+  "pragma": "no-cache",
+  "cache-control": "no-cache",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "sec-fetch-site": "same-origin",
+  "sec-fetch-mode": "no-cors",
+  "sec-fetch-dest": "image",
+  "referer": "http://localhost:3000/admin/dashboard",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:16:33.685Z] GET /api/admin/stats/dashboard
+Headers: {
+  "host": "localhost:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "upgrade-insecure-requests": "1",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "sec-fetch-site": "same-origin",
+  "sec-fetch-mode": "navigate",
+  "sec-fetch-user": "?1",
+  "sec-fetch-dest": "document",
+  "referer": "http://localhost:3000/admin",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:16:40.227Z] GET /favicon.ico
+Headers: {
+  "host": "localhost:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "sec-fetch-site": "same-origin",
+  "sec-fetch-mode": "no-cors",
+  "sec-fetch-dest": "image",
+  "referer": "http://localhost:3000/api/admin/stats/dashboard",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:22:53.015Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:53.158Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:22:53.308Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:53.359Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:22:53.374Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:53.421Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:53.456Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:53.488Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:54.406Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:54.421Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:54.453Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:54.467Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:22:54.492Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:54.547Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:22:54.621Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:54.731Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:22:54.815Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:54.965Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:54.980Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:22:55.003Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:55.146Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:22:55.167Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:22:55.255Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:22:55.270Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:22:59.424Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:59.437Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:59.454Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:59.491Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:59.549Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:22:59.566Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:22:59.729Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:59.740Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:59.754Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:59.773Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:22:59.883Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:22:59.888Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:22:59.917Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:22:59.923Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:22:59.969Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:22:59.985Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:23:03.371Z] GET /api/quiz/classement/global
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"579-oyE9Gi0YwKd/3vvZDzuptxfXjaw\""
+}
+
+[2026-01-09T14:23:03.385Z] GET /api/parrainage-events
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"f1-0OuNrKtmSjbXPk8UTd2rZkoWMmY\""
+}
+
+[2026-01-09T14:23:03.401Z] GET /api/parrainage-events
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"f1-0OuNrKtmSjbXPk8UTd2rZkoWMmY\""
+}
+
+[2026-01-09T14:23:03.431Z] GET /api/quiz/classement/global
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:23:03.514Z] GET /api/stagiaire/3/formations
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3270-NFdX76azB28Hldd4BzkRHgZCwGU\""
+}
+
+[2026-01-09T14:23:03.561Z] GET /api/stagiaire/3/formations
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3270-NFdX76azB28Hldd4BzkRHgZCwGU\""
+}
+
+[2026-01-09T14:23:03.758Z] GET /api/quiz/classement/global
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:23:03.764Z] GET /api/quiz/categories
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"35-8W9hqkz7fZDRRqRU89tC9x0cVKQ\""
+}
+
+[2026-01-09T14:23:03.785Z] GET /api/quiz/classement/global
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:23:03.793Z] GET /api/quiz/categories
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"35-8W9hqkz7fZDRRqRU89tC9x0cVKQ\""
+}
+
+[2026-01-09T14:23:03.863Z] GET /api/parrainage-events
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"f1-0OuNrKtmSjbXPk8UTd2rZkoWMmY\""
+}
+
+[2026-01-09T14:23:03.868Z] GET /api/parrainage-events
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"f1-0OuNrKtmSjbXPk8UTd2rZkoWMmY\""
+}
+
+[2026-01-09T14:23:04.112Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:23:04.124Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:23:04.162Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"579-oyE9Gi0YwKd/3vvZDzuptxfXjaw\""
+}
+
+[2026-01-09T14:23:04.181Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:23:04.267Z] GET /api/stagiaire/quizzes
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"166c-3uDGGmVESNFeR3BOKoOeIh23KtY\""
+}
+
+[2026-01-09T14:23:04.272Z] GET /api/quiz/history
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+}
+
+[2026-01-09T14:23:04.303Z] GET /api/quiz/history
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+}
+
+[2026-01-09T14:23:04.310Z] GET /api/stagiaire/quizzes
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"166c-3uDGGmVESNFeR3BOKoOeIh23KtY\""
+}
+
+[2026-01-09T14:23:04.349Z] GET /api/quiz/history
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+}
+
+[2026-01-09T14:23:04.365Z] GET /api/quiz/history
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+}
+
+[2026-01-09T14:23:04.407Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:23:04.414Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:23:04.474Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:23:04.502Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:35.211Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:35.218Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:25:35.239Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:35.259Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:25:35.282Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:35.309Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:25:35.317Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:35.342Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:35.374Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:35.398Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:35.431Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:35.637Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3ca2-KPqBlJcm9SskmIsJFmUvBGXfHO4\""
+}
+
+[2026-01-09T14:25:35.700Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:25:35.714Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:25:35.734Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:25:35.751Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:25:38.147Z] GET /api/quiz/classement/global
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:25:38.153Z] GET /api/parrainage-events
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"f1-0OuNrKtmSjbXPk8UTd2rZkoWMmY\""
+}
+
+[2026-01-09T14:25:38.169Z] GET /api/stagiaire/3/formations
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3270-NFdX76azB28Hldd4BzkRHgZCwGU\""
+}
+
+[2026-01-09T14:25:38.176Z] GET /api/quiz/classement/global
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:25:38.184Z] GET /api/quiz/categories
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"35-8W9hqkz7fZDRRqRU89tC9x0cVKQ\""
+}
+
+[2026-01-09T14:25:38.187Z] GET /api/parrainage-events
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"f1-0OuNrKtmSjbXPk8UTd2rZkoWMmY\""
+}
+
+[2026-01-09T14:25:38.214Z] GET /api/quiz/classement/global
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:25:38.243Z] GET /api/quiz/classement/global
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:25:38.262Z] GET /api/stagiaire/3/formations
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3270-NFdX76azB28Hldd4BzkRHgZCwGU\""
+}
+
+[2026-01-09T14:25:38.286Z] GET /api/parrainage-events
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"f1-0OuNrKtmSjbXPk8UTd2rZkoWMmY\""
+}
+
+[2026-01-09T14:25:38.297Z] GET /api/quiz/categories
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"35-8W9hqkz7fZDRRqRU89tC9x0cVKQ\""
+}
+
+[2026-01-09T14:25:38.310Z] GET /api/parrainage-events
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"f1-0OuNrKtmSjbXPk8UTd2rZkoWMmY\""
+}
+
+[2026-01-09T14:25:38.466Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:38.476Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:25:38.484Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:38.505Z] GET /api/stagiaire/quizzes
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"166c-3uDGGmVESNFeR3BOKoOeIh23KtY\""
+}
+
+[2026-01-09T14:25:38.513Z] GET /api/quiz/history
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+}
+
+[2026-01-09T14:25:38.519Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:25:38.537Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:38.575Z] GET /api/stagiaire/quizzes
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"166c-3uDGGmVESNFeR3BOKoOeIh23KtY\""
+}
+
+[2026-01-09T14:25:38.584Z] GET /api/quiz/history
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+}
+
+[2026-01-09T14:25:38.593Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"3b7-FPALOcRtv3OLNXXs1L7BtR1m4qs\""
+}
+
+[2026-01-09T14:25:38.614Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:25:38.640Z] GET /api/quiz/classement/global?period=all
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"5cd-CA8kyUXakmqdTqGCjnTd6u/HaCY\""
+}
+
+[2026-01-09T14:25:38.649Z] GET /api/quiz/history
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+}
+
+[2026-01-09T14:25:38.674Z] GET /api/quiz/history
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json, text/plain, */*",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+}
+
+[2026-01-09T14:25:49.289Z] POST /api/logout
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "content-length": "0",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5mciIsInN1YiI6Nywicm9sZSI6InN0YWdpYWlyZSIsImlhdCI6MTc2Nzk2NjgyMiwiZXhwIjoxNzY3OTcwNDIyfQ.XBRItL73EXdtm-laP0OUniJd1uSz_bzLDlCS-yOpAC8",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "content-type": "application/json",
+  "sec-ch-ua-mobile": "?0",
+  "accept": "*/*",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:26:04.985Z] POST /api/login
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "content-length": "63",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "content-type": "application/json",
+  "sec-ch-ua-mobile": "?0",
+  "x-client-ip": "102.18.12.50",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:26:30.617Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "pragma": "no-cache",
+  "cache-control": "no-cache",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluaXN0cmF0ZXVyQHdpemktbGVhcm4uY29tIiwic3ViIjoxLCJyb2xlIjoiYWRtaW5pc3RyYXRldXIiLCJpYXQiOjE3Njc5Njg3NjUsImV4cCI6MTc2Nzk3MjM2NX0.6JZVnAe4KZrJrLE21CNogkh6uMXaDPduFxs0RxSk6KM",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:26:30.718Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "pragma": "no-cache",
+  "cache-control": "no-cache",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluaXN0cmF0ZXVyQHdpemktbGVhcm4uY29tIiwic3ViIjoxLCJyb2xlIjoiYWRtaW5pc3RyYXRldXIiLCJpYXQiOjE3Njc5Njg3NjUsImV4cCI6MTc2Nzk3MjM2NX0.6JZVnAe4KZrJrLE21CNogkh6uMXaDPduFxs0RxSk6KM",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:26:30.748Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "pragma": "no-cache",
+  "cache-control": "no-cache",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluaXN0cmF0ZXVyQHdpemktbGVhcm4uY29tIiwic3ViIjoxLCJyb2xlIjoiYWRtaW5pc3RyYXRldXIiLCJpYXQiOjE3Njc5Njg3NjUsImV4cCI6MTc2Nzk3MjM2NX0.6JZVnAe4KZrJrLE21CNogkh6uMXaDPduFxs0RxSk6KM",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:26:30.765Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "pragma": "no-cache",
+  "cache-control": "no-cache",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluaXN0cmF0ZXVyQHdpemktbGVhcm4uY29tIiwic3ViIjoxLCJyb2xlIjoiYWRtaW5pc3RyYXRldXIiLCJpYXQiOjE3Njc5Njg3NjUsImV4cCI6MTc2Nzk3MjM2NX0.6JZVnAe4KZrJrLE21CNogkh6uMXaDPduFxs0RxSk6KM",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:26:30.776Z] GET /api/notifications
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "pragma": "no-cache",
+  "cache-control": "no-cache",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluaXN0cmF0ZXVyQHdpemktbGVhcm4uY29tIiwic3ViIjoxLCJyb2xlIjoiYWRtaW5pc3RyYXRldXIiLCJpYXQiOjE3Njc5Njg3NjUsImV4cCI6MTc2Nzk3MjM2NX0.6JZVnAe4KZrJrLE21CNogkh6uMXaDPduFxs0RxSk6KM",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:26:30.785Z] GET /api/me
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "pragma": "no-cache",
+  "cache-control": "no-cache",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluaXN0cmF0ZXVyQHdpemktbGVhcm4uY29tIiwic3ViIjoxLCJyb2xlIjoiYWRtaW5pc3RyYXRldXIiLCJpYXQiOjE3Njc5Njg3NjUsImV4cCI6MTc2Nzk3MjM2NX0.6JZVnAe4KZrJrLE21CNogkh6uMXaDPduFxs0RxSk6KM",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd"
+}
+
+[2026-01-09T14:26:30.844Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluaXN0cmF0ZXVyQHdpemktbGVhcm4uY29tIiwic3ViIjoxLCJyb2xlIjoiYWRtaW5pc3RyYXRldXIiLCJpYXQiOjE3Njc5Njg3NjUsImV4cCI6MTc2Nzk3MjM2NX0.6JZVnAe4KZrJrLE21CNogkh6uMXaDPduFxs0RxSk6KM",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"2-F7oHkUmduQhDO4DzfF+8ibhwCEs\""
+}
+
+[2026-01-09T14:26:30.892Z] GET /api/notifications/unread-count
+Headers: {
+  "host": "127.0.0.1:3000",
+  "connection": "keep-alive",
+  "sec-ch-ua-platform": "\"Windows\"",
+  "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluaXN0cmF0ZXVyQHdpemktbGVhcm4uY29tIiwic3ViIjoxLCJyb2xlIjoiYWRtaW5pc3RyYXRldXIiLCJpYXQiOjE3Njc5Njg3NjUsImV4cCI6MTc2Nzk3MjM2NX0.6JZVnAe4KZrJrLE21CNogkh6uMXaDPduFxs0RxSk6KM",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+  "accept": "application/json",
+  "sec-ch-ua": "\"Brave\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"",
+  "sec-ch-ua-mobile": "?0",
+  "sec-gpc": "1",
+  "accept-language": "fr-FR,fr;q=0.8",
+  "origin": "http://localhost:5173",
+  "sec-fetch-site": "cross-site",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-dest": "empty",
+  "referer": "http://localhost:5173/",
+  "accept-encoding": "gzip, deflate, br, zstd",
+  "if-none-match": "W/\"1-2kuSN7rMzfGcB2DKt67EqDWQELA\""
+}
+

@@ -35,13 +35,18 @@ export class RankingService {
       const first = group[0];
       const stagiaire = first.stagiaire;
 
+      // Extract last name parts for initial formatting
+      const [fName, ...lParts] = (stagiaire.user?.name || "").split(" ");
+      const lastName = lParts.join(" ") || "";
+
       return {
         id: stagiaire.id,
-        firstname: stagiaire.prenom || "",
-        name: stagiaire.user?.name?.split(" ").slice(1).join(" ") || "",
+        firstname: stagiaire.prenom || fName || "Anonyme",
+        lastname: lastName,
+        name: lastName, // Used by frontend for initials
         image: stagiaire.user?.image || null,
         score: totalPoints,
-        totalPoints, // keep for compatibility
+        totalPoints,
         quizCount: group.length,
         averageScore: totalPoints / group.length,
         formateurs: (stagiaire.formateurs || []).map((f: any) => ({
@@ -76,11 +81,14 @@ export class RankingService {
     const myRanking = globalRanking.find((item) => item.id === stagiaire.id);
 
     if (!myRanking) {
+      const [fName, ...lParts] = (stagiaire.user?.name || "").split(" ");
+      const lastName = lParts.join(" ") || "";
       // If no points yet, return a default zero-state
       return {
         id: stagiaire.id,
-        firstname: stagiaire.prenom || "",
-        name: stagiaire.user?.name?.split(" ").slice(1).join(" ") || "",
+        firstname: stagiaire.prenom || fName || "Anonyme",
+        lastname: lastName,
+        name: lastName,
         image: stagiaire.user?.image || null,
         score: 0,
         totalPoints: 0,
