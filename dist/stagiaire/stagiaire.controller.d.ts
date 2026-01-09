@@ -1,7 +1,9 @@
 import { StagiaireService } from "./stagiaire.service";
+import { InscriptionService } from "../inscription/inscription.service";
 export declare class StagiaireController {
     private stagiaireService;
-    constructor(stagiaireService: StagiaireService);
+    private inscriptionService;
+    constructor(stagiaireService: StagiaireService, inscriptionService: InscriptionService);
     getProfile(req: any): Promise<import("../entities/stagiaire.entity").Stagiaire>;
     testAuth(): Promise<{
         message: string;
@@ -23,7 +25,6 @@ export declare class StagiaireController {
                 id: any;
                 prenom: any;
                 nom: any;
-                name: any;
                 email: any;
                 telephone: any;
                 role: any;
@@ -35,7 +36,6 @@ export declare class StagiaireController {
                 id: any;
                 prenom: any;
                 nom: any;
-                name: any;
                 email: any;
                 telephone: any;
                 role: any;
@@ -47,7 +47,6 @@ export declare class StagiaireController {
                 id: any;
                 prenom: any;
                 nom: any;
-                name: any;
                 email: any;
                 telephone: any;
                 role: any;
@@ -64,7 +63,6 @@ export declare class StagiaireController {
             id: any;
             prenom: any;
             nom: any;
-            name: any;
             email: any;
             telephone: any;
             role: any;
@@ -76,7 +74,6 @@ export declare class StagiaireController {
             id: any;
             prenom: any;
             nom: any;
-            name: any;
             email: any;
             telephone: any;
             role: any;
@@ -88,7 +85,6 @@ export declare class StagiaireController {
             id: any;
             prenom: any;
             nom: any;
-            name: any;
             email: any;
             telephone: any;
             role: any;
@@ -101,7 +97,6 @@ export declare class StagiaireController {
         id: any;
         prenom: any;
         nom: any;
-        name: any;
         email: any;
         telephone: any;
         role: any;
@@ -113,7 +108,6 @@ export declare class StagiaireController {
         id: any;
         prenom: any;
         nom: any;
-        name: any;
         email: any;
         telephone: any;
         role: any;
@@ -125,7 +119,6 @@ export declare class StagiaireController {
         id: any;
         prenom: any;
         nom: any;
-        name: any;
         email: any;
         telephone: any;
         role: any;
@@ -137,7 +130,6 @@ export declare class StagiaireController {
         id: any;
         prenom: any;
         nom: any;
-        name: any;
         email: any;
         telephone: any;
         role: any;
@@ -146,5 +138,10 @@ export declare class StagiaireController {
         type: string;
     }[]>;
     getMyQuizzes(req: any): Promise<import("../entities/classement.entity").Classement[]>;
-    getStagiaireFormations(id: number): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation[]>;
+    getStagiaireFormations(id: number): Promise<any[]>;
+    inscrireAFormation(req: any, catalogueFormationId: number): Promise<{
+        success: boolean;
+        message: string;
+        demande: import("../entities/demande-inscription.entity").DemandeInscription;
+    }>;
 }

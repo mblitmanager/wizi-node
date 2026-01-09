@@ -25,7 +25,7 @@ export declare class FormateurController {
             nom: string;
             email: string;
             last_activity_at: Date;
-            formations: string[];
+            formations: any[];
         }[];
         total: number;
     }>;

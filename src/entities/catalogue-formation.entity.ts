@@ -3,13 +3,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToMany,
-  JoinTable,
   ManyToOne,
   JoinColumn,
+  JoinTable,
 } from "typeorm";
-import { Stagiaire } from "./stagiaire.entity";
-import { Formation } from "./formation.entity";
-import { Formateur } from "./formateur.entity";
 
 @Entity("catalogue_formations")
 export class CatalogueFormation {
@@ -43,9 +40,9 @@ export class CatalogueFormation {
   @Column({ nullable: true })
   formation_id: number;
 
-  @ManyToOne(() => Formation)
+  @ManyToOne("Formation")
   @JoinColumn({ name: "formation_id" })
-  formation: Formation;
+  formation: any;
 
   @Column({ nullable: true })
   cursus_pdf: string;
@@ -89,9 +86,19 @@ export class CatalogueFormation {
   @Column({ type: "timestamp", nullable: true })
   updated_at: Date;
 
-  @ManyToMany(() => Stagiaire, (stagiaire) => stagiaire.catalogue_formations)
-  stagiaires: Stagiaire[];
+  @ManyToMany("Stagiaire", (stagiaire: any) => stagiaire.catalogue_formations)
+  @JoinTable({
+    name: "stagiaire_catalogue_formations",
+    joinColumn: { name: "catalogue_formation_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+  })
+  stagiaires: any[];
 
-  @ManyToMany(() => Formateur, (formateur) => formateur.formations)
-  formateurs: Formateur[];
+  @ManyToMany("Formateur", (formateur: any) => formateur.formations)
+  @JoinTable({
+    name: "formateur_catalogue_formation",
+    joinColumn: { name: "catalogue_formation_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "formateur_id", referencedColumnName: "id" },
+  })
+  formateurs: any[];
 }

@@ -10,8 +10,6 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "./user.entity";
-import { Stagiaire } from "./stagiaire.entity";
-import { CatalogueFormation } from "./catalogue-formation.entity";
 
 @Entity("formateurs")
 export class Formateur {
@@ -31,15 +29,15 @@ export class Formateur {
   @Column({ nullable: true })
   telephone: string;
 
-  @ManyToMany(() => Stagiaire, (stagiaire) => stagiaire.formateurs)
+  @ManyToMany("Stagiaire", (stagiaire: any) => stagiaire.formateurs)
   @JoinTable({
     name: "formateur_stagiaire",
     joinColumn: { name: "formateur_id", referencedColumnName: "id" },
     inverseJoinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
   })
-  stagiaires: Stagiaire[];
+  stagiaires: any[];
 
-  @ManyToMany(() => CatalogueFormation)
+  @ManyToMany("CatalogueFormation", (catalogue: any) => catalogue.formateurs)
   @JoinTable({
     name: "formateur_catalogue_formation",
     joinColumn: { name: "formateur_id", referencedColumnName: "id" },
@@ -48,7 +46,7 @@ export class Formateur {
       referencedColumnName: "id",
     },
   })
-  formations: CatalogueFormation[];
+  formations: any[];
 
   @CreateDateColumn()
   created_at: Date;

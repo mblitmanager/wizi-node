@@ -27,7 +27,6 @@ export declare class StagiaireService {
                 id: any;
                 prenom: any;
                 nom: any;
-                name: any;
                 email: any;
                 telephone: any;
                 role: any;
@@ -39,7 +38,6 @@ export declare class StagiaireService {
                 id: any;
                 prenom: any;
                 nom: any;
-                name: any;
                 email: any;
                 telephone: any;
                 role: any;
@@ -51,7 +49,6 @@ export declare class StagiaireService {
                 id: any;
                 prenom: any;
                 nom: any;
-                name: any;
                 email: any;
                 telephone: any;
                 role: any;
@@ -68,7 +65,6 @@ export declare class StagiaireService {
             id: any;
             prenom: any;
             nom: any;
-            name: any;
             email: any;
             telephone: any;
             role: any;
@@ -80,7 +76,6 @@ export declare class StagiaireService {
             id: any;
             prenom: any;
             nom: any;
-            name: any;
             email: any;
             telephone: any;
             role: any;
@@ -92,7 +87,6 @@ export declare class StagiaireService {
             id: any;
             prenom: any;
             nom: any;
-            name: any;
             email: any;
             telephone: any;
             role: any;
@@ -105,7 +99,6 @@ export declare class StagiaireService {
         id: any;
         prenom: any;
         nom: any;
-        name: any;
         email: any;
         telephone: any;
         role: any;
@@ -114,5 +107,5 @@ export declare class StagiaireService {
         type: string;
     }[]>;
     getStagiaireQuizzes(userId: number): Promise<Classement[]>;
-    getFormationsByStagiaire(stagiaireId: number): Promise<CatalogueFormation[]>;
+    getFormationsByStagiaire(stagiaireId: number): Promise<any[]>;
 }

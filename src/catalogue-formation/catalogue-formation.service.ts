@@ -26,13 +26,21 @@ export class CatalogueFormationService {
   }
 
   async findOne(id: number): Promise<CatalogueFormation> {
-    const formation = await this.catalogueRepository.findOne({
-      where: { id },
-      relations: ["formation", "formateurs", "stagiaires"], // Added relations based on Laravel show
-    });
-    if (!formation) {
-      throw new NotFoundException("Catalogue formation not found");
+    try {
+      const formation = await this.catalogueRepository.findOne({
+        where: { id },
+        relations: ["formation", "formateurs", "stagiaires"],
+      });
+      if (!formation) {
+        throw new NotFoundException("Catalogue formation not found");
+      }
+      return formation;
+    } catch (error) {
+      console.error(
+        "Detailed Error in CatalogueFormationService.findOne:",
+        error
+      );
+      throw error;
     }
-    return formation;
   }
 }

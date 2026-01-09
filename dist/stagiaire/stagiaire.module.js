@@ -15,6 +15,7 @@ const stagiaire_controller_1 = require("./stagiaire.controller");
 const classement_entity_1 = require("../entities/classement.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const formation_entity_1 = require("../entities/formation.entity");
+const inscription_module_1 = require("../inscription/inscription.module");
 let StagiaireModule = class StagiaireModule {
 };
 exports.StagiaireModule = StagiaireModule;
@@ -27,6 +28,7 @@ exports.StagiaireModule = StagiaireModule = __decorate([
                 catalogue_formation_entity_1.CatalogueFormation,
                 formation_entity_1.Formation,
             ]),
+            inscription_module_1.InscriptionModule,
         ],
         providers: [stagiaire_service_1.StagiaireService],
         controllers: [stagiaire_controller_1.StagiaireController],

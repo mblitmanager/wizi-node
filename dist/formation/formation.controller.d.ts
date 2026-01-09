@@ -7,23 +7,7 @@ export declare class FormationController {
     getAllFormationsAlias(): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation[]>;
     getWithFormations(req: any): Promise<{
         data: {
-            formation: {
-                image_url: string;
-                id: number;
-                titre: string;
-                slug: string;
-                description: string;
-                categorie: string;
-                icon: string;
-                image: string;
-                statut: number;
-                duree: string;
-                created_at: Date;
-                updated_at: Date;
-                medias: import("../entities/media.entity").Media[];
-                quizzes: import("../entities/quiz.entity").Quiz[];
-                progressions: import("../entities/progression.entity").Progression[];
-            };
+            formation: any;
             id: number;
             titre: string;
             description: string;
@@ -48,8 +32,8 @@ export declare class FormationController {
             nombre_participants: number;
             created_at: Date;
             updated_at: Date;
-            stagiaires: import("../entities/stagiaire.entity").Stagiaire[];
-            formateurs: import("../entities/formateur.entity").Formateur[];
+            stagiaires: any[];
+            formateurs: any[];
         }[];
         total: number;
         per_page: number;

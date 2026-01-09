@@ -6,6 +6,7 @@ import { StagiaireController } from "./stagiaire.controller";
 import { Classement } from "../entities/classement.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { Formation } from "../entities/formation.entity";
+import { InscriptionModule } from "../inscription/inscription.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { Formation } from "../entities/formation.entity";
       CatalogueFormation,
       Formation,
     ]),
+    InscriptionModule,
   ],
   providers: [StagiaireService],
   controllers: [StagiaireController],

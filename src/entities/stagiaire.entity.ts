@@ -4,16 +4,16 @@ import {
   Column,
   OneToOne,
   JoinColumn,
-  ManyToOne,
   ManyToMany,
   JoinTable,
   OneToMany,
 } from "typeorm";
 import { User } from "./user.entity";
-import { CatalogueFormation } from "./catalogue-formation.entity";
 import { Media } from "./media.entity";
 import { Progression } from "./progression.entity";
-import { Formateur } from "./formateur.entity";
+// Removed to fix circular imports
+// import { CatalogueFormation } from "./catalogue-formation.entity";
+// import { Formateur } from "./formateur.entity";
 import { Commercial } from "./commercial.entity";
 import { PoleRelationClient } from "./pole-relation-client.entity";
 import { Classement } from "./classement.entity";
@@ -73,7 +73,7 @@ export class Stagiaire {
   @JoinColumn({ name: "user_id" })
   user: User;
 
-  @ManyToMany(() => CatalogueFormation, (catalogue) => catalogue.stagiaires)
+  @ManyToMany("CatalogueFormation", (catalogue: any) => catalogue.stagiaires)
   @JoinTable({
     name: "stagiaire_catalogue_formations",
     joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
@@ -82,7 +82,7 @@ export class Stagiaire {
       referencedColumnName: "id",
     },
   })
-  catalogue_formations: CatalogueFormation[];
+  catalogue_formations: any[];
 
   @ManyToMany(() => Media, (media) => media.stagiaires)
   @JoinTable({
@@ -95,13 +95,13 @@ export class Stagiaire {
   @OneToMany(() => Progression, (progression) => progression.stagiaire)
   progressions: Progression[];
 
-  @ManyToMany(() => Formateur, (formateur) => formateur.stagiaires)
+  @ManyToMany("Formateur", (formateur: any) => formateur.stagiaires)
   @JoinTable({
     name: "formateur_stagiaire",
     joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
     inverseJoinColumn: { name: "formateur_id", referencedColumnName: "id" },
   })
-  formateurs: Formateur[];
+  formateurs: any[];
 
   @ManyToMany(() => Commercial, (commercial) => commercial.stagiaires)
   @JoinTable({

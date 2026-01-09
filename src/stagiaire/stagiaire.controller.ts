@@ -1,18 +1,24 @@
 import {
   Controller,
   Get,
+  Post,
   UseGuards,
   Request,
   HttpException,
   HttpStatus,
   Param,
+  Body,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { StagiaireService } from "./stagiaire.service";
+import { InscriptionService } from "../inscription/inscription.service";
 
 @Controller("stagiaire")
 export class StagiaireController {
-  constructor(private stagiaireService: StagiaireService) {}
+  constructor(
+    private stagiaireService: StagiaireService,
+    private inscriptionService: InscriptionService
+  ) {}
 
   @UseGuards(AuthGuard("jwt"))
   @Get("profile")
@@ -132,6 +138,25 @@ export class StagiaireController {
   async getStagiaireFormations(@Param("id") id: number) {
     try {
       return await this.stagiaireService.getFormationsByStagiaire(id);
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("inscription-catalogue-formation")
+  async inscrireAFormation(
+    @Request() req,
+    @Body("catalogue_formation_id") catalogueFormationId: number
+  ) {
+    try {
+      return await this.inscriptionService.inscrire(
+        req.user.id,
+        catalogueFormationId
+      );
     } catch (error) {
       throw new HttpException(
         error.message || "Internal error",

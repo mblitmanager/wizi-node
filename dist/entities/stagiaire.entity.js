@@ -12,10 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stagiaire = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
-const catalogue_formation_entity_1 = require("./catalogue-formation.entity");
 const media_entity_1 = require("./media.entity");
 const progression_entity_1 = require("./progression.entity");
-const formateur_entity_1 = require("./formateur.entity");
 const commercial_entity_1 = require("./commercial.entity");
 const pole_relation_client_entity_1 = require("./pole-relation-client.entity");
 const classement_entity_1 = require("./classement.entity");
@@ -93,7 +91,7 @@ __decorate([
     __metadata("design:type", user_entity_1.User)
 ], Stagiaire.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => catalogue_formation_entity_1.CatalogueFormation, (catalogue) => catalogue.stagiaires),
+    (0, typeorm_1.ManyToMany)("CatalogueFormation", (catalogue) => catalogue.stagiaires),
     (0, typeorm_1.JoinTable)({
         name: "stagiaire_catalogue_formations",
         joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
@@ -118,7 +116,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Stagiaire.prototype, "progressions", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => formateur_entity_1.Formateur, (formateur) => formateur.stagiaires),
+    (0, typeorm_1.ManyToMany)("Formateur", (formateur) => formateur.stagiaires),
     (0, typeorm_1.JoinTable)({
         name: "formateur_stagiaire",
         joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },

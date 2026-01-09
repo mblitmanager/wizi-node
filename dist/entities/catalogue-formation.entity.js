@@ -11,9 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CatalogueFormation = void 0;
 const typeorm_1 = require("typeorm");
-const stagiaire_entity_1 = require("./stagiaire.entity");
-const formation_entity_1 = require("./formation.entity");
-const formateur_entity_1 = require("./formateur.entity");
 let CatalogueFormation = class CatalogueFormation {
 };
 exports.CatalogueFormation = CatalogueFormation;
@@ -58,9 +55,9 @@ __decorate([
     __metadata("design:type", Number)
 ], CatalogueFormation.prototype, "formation_id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => formation_entity_1.Formation),
+    (0, typeorm_1.ManyToOne)("Formation"),
     (0, typeorm_1.JoinColumn)({ name: "formation_id" }),
-    __metadata("design:type", formation_entity_1.Formation)
+    __metadata("design:type", Object)
 ], CatalogueFormation.prototype, "formation", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
@@ -119,11 +116,21 @@ __decorate([
     __metadata("design:type", Date)
 ], CatalogueFormation.prototype, "updated_at", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => stagiaire_entity_1.Stagiaire, (stagiaire) => stagiaire.catalogue_formations),
+    (0, typeorm_1.ManyToMany)("Stagiaire", (stagiaire) => stagiaire.catalogue_formations),
+    (0, typeorm_1.JoinTable)({
+        name: "stagiaire_catalogue_formations",
+        joinColumn: { name: "catalogue_formation_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+    }),
     __metadata("design:type", Array)
 ], CatalogueFormation.prototype, "stagiaires", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => formateur_entity_1.Formateur, (formateur) => formateur.formations),
+    (0, typeorm_1.ManyToMany)("Formateur", (formateur) => formateur.formations),
+    (0, typeorm_1.JoinTable)({
+        name: "formateur_catalogue_formation",
+        joinColumn: { name: "catalogue_formation_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "formateur_id", referencedColumnName: "id" },
+    }),
     __metadata("design:type", Array)
 ], CatalogueFormation.prototype, "formateurs", void 0);
 exports.CatalogueFormation = CatalogueFormation = __decorate([

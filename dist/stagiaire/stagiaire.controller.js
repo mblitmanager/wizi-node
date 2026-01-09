@@ -16,9 +16,11 @@ exports.StagiaireController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const stagiaire_service_1 = require("./stagiaire.service");
+const inscription_service_1 = require("../inscription/inscription.service");
 let StagiaireController = class StagiaireController {
-    constructor(stagiaireService) {
+    constructor(stagiaireService, inscriptionService) {
         this.stagiaireService = stagiaireService;
+        this.inscriptionService = inscriptionService;
     }
     async getProfile(req) {
         return this.stagiaireService.getProfile(req.user.id);
@@ -86,6 +88,14 @@ let StagiaireController = class StagiaireController {
     async getStagiaireFormations(id) {
         try {
             return await this.stagiaireService.getFormationsByStagiaire(id);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async inscrireAFormation(req, catalogueFormationId) {
+        try {
+            return await this.inscriptionService.inscrire(req.user.id, catalogueFormationId);
         }
         catch (error) {
             throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -171,8 +181,18 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], StagiaireController.prototype, "getStagiaireFormations", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Post)("inscription-catalogue-formation"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)("catalogue_formation_id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "inscrireAFormation", null);
 exports.StagiaireController = StagiaireController = __decorate([
     (0, common_1.Controller)("stagiaire"),
-    __metadata("design:paramtypes", [stagiaire_service_1.StagiaireService])
+    __metadata("design:paramtypes", [stagiaire_service_1.StagiaireService,
+        inscription_service_1.InscriptionService])
 ], StagiaireController);
 //# sourceMappingURL=stagiaire.controller.js.map

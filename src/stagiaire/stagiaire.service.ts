@@ -66,10 +66,6 @@ export class StagiaireService {
       id: contact?.id,
       prenom: contact?.prenom,
       nom: contact?.nom || contact?.user?.name?.split(" ").pop() || "",
-      name:
-        contact?.user?.name ||
-        `${contact?.prenom} ${contact?.nom}`.trim() ||
-        "",
       email: contact?.user?.email || contact?.email || null,
       telephone: contact?.telephone || null,
       role: contact?.role || type,
