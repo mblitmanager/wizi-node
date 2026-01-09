@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards, Request } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RankingService } from "./ranking.service";
 
-@Controller("quiz/classement")
+@Controller(["classement", "quiz/classement"])
 export class RankingController {
   constructor(private readonly rankingService: RankingService) {}
 
