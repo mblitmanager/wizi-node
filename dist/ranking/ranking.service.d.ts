@@ -8,26 +8,28 @@ export declare class RankingService {
     getGlobalRanking(): Promise<{
         rang: number;
         level: string;
-        stagiaire: {
-            id: any;
-            prenom: any;
-            image: any;
-        };
+        id: any;
+        firstname: any;
+        name: any;
+        image: any;
+        score: any;
         totalPoints: any;
         quizCount: any;
         averageScore: number;
+        formateurs: any;
     }[]>;
     getMyRanking(userId: number): Promise<{
         rang: number;
         level: string;
-        stagiaire: {
-            id: any;
-            prenom: any;
-            image: any;
-        };
+        id: any;
+        firstname: any;
+        name: any;
+        image: any;
+        score: any;
         totalPoints: any;
         quizCount: any;
         averageScore: number;
+        formateurs: any;
     }>;
     calculateLevel(points: number): string;
     private groupBy;

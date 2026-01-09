@@ -147,6 +147,97 @@ let StagiaireService = class StagiaireService {
         }
         return stagiaire.catalogue_formations || [];
     }
+    async getStagiaireById(id) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { id },
+            relations: [
+                "user",
+                "formateurs",
+                "formateurs.user",
+                "commercials",
+                "commercials.user",
+                "poleRelationClients",
+                "poleRelationClients.user",
+                "catalogue_formations",
+                "catalogue_formations.formation",
+            ],
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException("Stagiaire not found");
+        }
+        const stats = await this.classementRepository
+            .createQueryBuilder("classement")
+            .select("COUNT(DISTINCT classement.quiz_id)", "totalCompleted")
+            .addSelect("SUM(classement.points)", "totalPoints")
+            .where("classement.stagiaire_id = :id", { id: stagiaire.id })
+            .getRawOne();
+        const allStats = await this.classementRepository
+            .createQueryBuilder("classement")
+            .select("stagiaire_id")
+            .addSelect("SUM(points)", "total")
+            .groupBy("stagiaire_id")
+            .orderBy("total", "DESC")
+            .getRawMany();
+        const rank = allStats.findIndex((s) => parseInt(s.stagiaire_id) === id) + 1;
+        const lastRanking = await this.classementRepository.findOne({
+            where: { stagiaire_id: stagiaire.id },
+            order: { updated_at: "DESC" },
+        });
+        const levelStats = await this.classementRepository
+            .createQueryBuilder("classement")
+            .innerJoin("classement.quiz", "quiz")
+            .select("quiz.niveau", "level")
+            .addSelect("COUNT(DISTINCT classement.quiz_id)", "completed")
+            .where("classement.stagiaire_id = :id", { id: stagiaire.id })
+            .groupBy("quiz.niveau")
+            .getRawMany();
+        const totalByLevel = await this.classementRepository.manager
+            .getRepository("Quiz")
+            .createQueryBuilder("quiz")
+            .select("quiz.niveau", "level")
+            .addSelect("COUNT(*)", "total")
+            .where("quiz.status = :status", { status: "actif" })
+            .groupBy("quiz.niveau")
+            .getRawMany();
+        const getStatForLevel = (levelName) => {
+            const completed = levelStats.find((s) => s.level?.toLowerCase() === levelName.toLowerCase())?.completed || 0;
+            const total = totalByLevel.find((t) => t.level?.toLowerCase() === levelName.toLowerCase())?.total || 0;
+            return { completed: parseInt(completed), total: parseInt(total) };
+        };
+        return {
+            id: stagiaire.id,
+            firstname: stagiaire.prenom || "",
+            name: stagiaire.user?.name || "",
+            avatar: stagiaire.user?.image || null,
+            rang: rank || 0,
+            totalPoints: parseInt(stats?.totalPoints || "0"),
+            formations: (stagiaire.catalogue_formations || []).map((cf) => ({
+                id: cf.id,
+                titre: cf.formation?.titre || "N/A",
+            })),
+            formateurs: (stagiaire.formateurs || []).map((f) => ({
+                id: f.id,
+                prenom: f.prenom || "",
+                nom: f.nom || f.user?.name?.split(" ").pop() || "",
+                image: f.user?.image || null,
+            })),
+            quizStats: {
+                totalCompleted: parseInt(stats?.totalCompleted || "0"),
+                totalQuiz: parseInt(totalByLevel.reduce((acc, curr) => acc + parseInt(curr.total), 0)),
+                pourcentageReussite: stats?.totalCompleted > 0
+                    ? Math.round((parseInt(stats.totalCompleted) /
+                        totalByLevel.reduce((acc, curr) => acc + parseInt(curr.total), 0)) *
+                        100)
+                    : 0,
+                byLevel: {
+                    debutant: getStatForLevel("Débutant"),
+                    intermediaire: getStatForLevel("Intermédiaire"),
+                    expert: getStatForLevel("Expert"),
+                },
+                lastActivity: lastRanking?.updated_at || null,
+            },
+        };
+    }
 };
 exports.StagiaireService = StagiaireService;
 exports.StagiaireService = StagiaireService = __decorate([

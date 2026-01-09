@@ -20,6 +20,22 @@ export class Quiz {
   description: string;
 
   @Column({ nullable: true })
+  niveau: string;
+
+  @Column({ nullable: true })
+  duree: string;
+
+  @Column({ nullable: true })
+  nb_points_total: string;
+
+  @Column({
+    type: "enum",
+    enum: ["actif", "inactif"],
+    default: "actif",
+  })
+  status: string;
+
+  @Column({ nullable: true })
   formation_id: number;
 
   @ManyToOne(() => Formation)

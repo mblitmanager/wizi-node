@@ -57,6 +57,66 @@ let QuizService = class QuizService {
             order: { updated_at: "DESC" },
         });
     }
+    async getStats(userId) {
+        const stats = await this.classementRepository
+            .createQueryBuilder("classement")
+            .select("COUNT(*)", "total_quizzes")
+            .addSelect("SUM(classement.points)", "total_points")
+            .addSelect("AVG(classement.points)", "average_score")
+            .where("classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId })
+            .getRawOne();
+        return {
+            total_quizzes: parseInt(stats?.total_quizzes || "0") || 0,
+            total_points: parseInt(stats?.total_points || "0") || 0,
+            average_score: parseFloat(stats?.average_score || "0") || 0,
+        };
+    }
+    async getStatsCategories(userId) {
+        return this.classementRepository
+            .createQueryBuilder("classement")
+            .leftJoinAndSelect("classement.quiz", "quiz")
+            .leftJoinAndSelect("quiz.formation", "formation")
+            .select("formation.categorie", "category")
+            .addSelect("COUNT(classement.id)", "count")
+            .addSelect("AVG(classement.points)", "average_points")
+            .where("classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId })
+            .groupBy("formation.categorie")
+            .getRawMany();
+    }
+    async getStatsProgress(userId) {
+        return this.classementRepository.find({
+            where: {
+                stagiaire_id: userId,
+            },
+            relations: ["quiz"],
+            order: { created_at: "DESC" },
+            take: 10,
+        });
+    }
+    async getStatsTrends(userId) {
+        return this.classementRepository
+            .createQueryBuilder("classement")
+            .select("DATE(classement.created_at)", "date")
+            .addSelect("COUNT(classement.id)", "count")
+            .addSelect("AVG(classement.points)", "average_points")
+            .where("classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId })
+            .groupBy("DATE(classement.created_at)")
+            .orderBy("DATE(classement.created_at)", "DESC")
+            .limit(30)
+            .getRawMany();
+    }
+    async getStatsPerformance(userId) {
+        return this.classementRepository
+            .createQueryBuilder("classement")
+            .leftJoinAndSelect("classement.quiz", "quiz")
+            .select("quiz.titre", "quiz_title")
+            .addSelect("classement.points", "score")
+            .addSelect("classement.created_at", "date")
+            .where("classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId })
+            .orderBy("classement.created_at", "DESC")
+            .take(20)
+            .getRawMany();
+    }
 };
 exports.QuizService = QuizService;
 exports.QuizService = QuizService = __decorate([

@@ -5,6 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
@@ -47,7 +50,13 @@ const achievement_module_1 = require("./achievement/achievement.module");
 const parrainage_module_1 = require("./parrainage/parrainage.module");
 const catalogue_formation_module_1 = require("./catalogue-formation/catalogue-formation.module");
 const admin_module_1 = require("./admin/admin.module");
+const media_module_1 = require("./media/media.module");
+const media_controller_1 = require("./media/media.controller");
+const media_service_1 = require("./media/media.service");
 let AppModule = class AppModule {
+    constructor() {
+        console.log("AppModule loaded - MediaModule should be active");
+    }
     configure(consumer) {
         consumer.apply(logger_middleware_1.LoggerMiddleware).forRoutes("*");
     }
@@ -126,15 +135,18 @@ exports.AppModule = AppModule = __decorate([
             parrainage_module_1.ParrainageModule,
             admin_module_1.AdminModule,
             catalogue_formation_module_1.CatalogueFormationModule,
+            media_module_1.MediaModule,
         ],
-        controllers: [app_controller_1.AppController],
+        controllers: [app_controller_1.AppController, media_controller_1.MediaController],
         providers: [
             app_service_1.AppService,
+            media_service_1.MediaService,
             {
                 provide: core_1.APP_GUARD,
                 useClass: roles_guard_1.RolesGuard,
             },
         ],
-    })
+    }),
+    __metadata("design:paramtypes", [])
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

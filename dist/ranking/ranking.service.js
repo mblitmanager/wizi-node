@@ -25,22 +25,35 @@ let RankingService = class RankingService {
     }
     async getGlobalRanking() {
         const allClassements = await this.classementRepository.find({
-            relations: ["stagiaire", "stagiaire.user", "quiz"],
+            relations: [
+                "stagiaire",
+                "stagiaire.user",
+                "quiz",
+                "stagiaire.formateurs",
+                "stagiaire.formateurs.user",
+            ],
         });
         const groupedByStagiaire = this.groupBy(allClassements, "stagiaire_id");
         const ranking = Object.keys(groupedByStagiaire).map((stagiaireId) => {
             const group = groupedByStagiaire[stagiaireId];
             const totalPoints = group.reduce((sum, item) => sum + (item.points || 0), 0);
             const first = group[0];
+            const stagiaire = first.stagiaire;
             return {
-                stagiaire: {
-                    id: first.stagiaire.id.toString(),
-                    prenom: first.stagiaire.prenom,
-                    image: first.stagiaire.user?.image || null,
-                },
+                id: stagiaire.id,
+                firstname: stagiaire.prenom || "",
+                name: stagiaire.user?.name?.split(" ").slice(1).join(" ") || "",
+                image: stagiaire.user?.image || null,
+                score: totalPoints,
                 totalPoints,
                 quizCount: group.length,
                 averageScore: totalPoints / group.length,
+                formateurs: (stagiaire.formateurs || []).map((f) => ({
+                    id: f.id,
+                    prenom: f.prenom || "",
+                    nom: f.nom || f.user?.name?.split(" ").slice(1).join(" ") || "",
+                    image: f.user?.image || null,
+                })),
             };
         });
         ranking.sort((a, b) => b.totalPoints - a.totalPoints);
@@ -54,23 +67,25 @@ let RankingService = class RankingService {
         const globalRanking = await this.getGlobalRanking();
         const stagiaire = await this.stagiaireRepository.findOne({
             where: { user_id: userId },
+            relations: ["user"],
         });
         if (!stagiaire) {
             throw new Error("Stagiaire not found");
         }
-        const myRanking = globalRanking.find((item) => item.stagiaire.id === stagiaire.id.toString());
+        const myRanking = globalRanking.find((item) => item.id === stagiaire.id);
         if (!myRanking) {
             return {
-                stagiaire: {
-                    id: stagiaire.id.toString(),
-                    prenom: stagiaire.prenom,
-                    image: null,
-                },
+                id: stagiaire.id,
+                firstname: stagiaire.prenom || "",
+                name: stagiaire.user?.name?.split(" ").slice(1).join(" ") || "",
+                image: stagiaire.user?.image || null,
+                score: 0,
                 totalPoints: 0,
                 quizCount: 0,
                 averageScore: 0,
                 rang: globalRanking.length + 1,
                 level: "0",
+                formateurs: [],
             };
         }
         return myRanking;

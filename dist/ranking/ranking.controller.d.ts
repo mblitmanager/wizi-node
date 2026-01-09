@@ -5,26 +5,28 @@ export declare class RankingController {
     getGlobalRanking(): Promise<{
         rang: number;
         level: string;
-        stagiaire: {
-            id: any;
-            prenom: any;
-            image: any;
-        };
+        id: any;
+        firstname: any;
+        name: any;
+        image: any;
+        score: any;
         totalPoints: any;
         quizCount: any;
         averageScore: number;
+        formateurs: any;
     }[]>;
     getMyRanking(req: any): Promise<{
         rang: number;
         level: string;
-        stagiaire: {
-            id: any;
-            prenom: any;
-            image: any;
-        };
+        id: any;
+        firstname: any;
+        name: any;
+        image: any;
+        score: any;
         totalPoints: any;
         quizCount: any;
         averageScore: number;
+        formateurs: any;
     }>;
     getMyPoints(req: any): Promise<{
         points: any;

@@ -108,4 +108,42 @@ export declare class StagiaireService {
     }[]>;
     getStagiaireQuizzes(userId: number): Promise<Classement[]>;
     getFormationsByStagiaire(stagiaireId: number): Promise<any[]>;
+    getStagiaireById(id: number): Promise<{
+        id: number;
+        firstname: string;
+        name: string;
+        avatar: string;
+        rang: number;
+        totalPoints: number;
+        formations: {
+            id: any;
+            titre: any;
+        }[];
+        formateurs: {
+            id: any;
+            prenom: any;
+            nom: any;
+            image: any;
+        }[];
+        quizStats: {
+            totalCompleted: number;
+            totalQuiz: number;
+            pourcentageReussite: number;
+            byLevel: {
+                debutant: {
+                    completed: number;
+                    total: number;
+                };
+                intermediaire: {
+                    completed: number;
+                    total: number;
+                };
+                expert: {
+                    completed: number;
+                    total: number;
+                };
+            };
+            lastActivity: Date;
+        };
+    }>;
 }

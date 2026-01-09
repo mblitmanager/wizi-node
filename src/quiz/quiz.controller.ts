@@ -12,6 +12,36 @@ export class QuizController {
   }
 
   @UseGuards(AuthGuard("jwt"))
+  @Get("stats")
+  async getStats(@Request() req: any) {
+    return this.quizService.getStats(req.user.id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("stats/categories")
+  async getStatsCategories(@Request() req: any) {
+    return this.quizService.getStatsCategories(req.user.id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("stats/progress")
+  async getStatsProgress(@Request() req: any) {
+    return this.quizService.getStatsProgress(req.user.id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("stats/trends")
+  async getStatsTrends(@Request() req: any) {
+    return this.quizService.getStatsTrends(req.user.id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("stats/performance")
+  async getStatsPerformance(@Request() req: any) {
+    return this.quizService.getStatsPerformance(req.user.id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
   @Get("history")
   async getHistory(@Request() req: any) {
     // Note: We need stagiaire_id, not just user_id.

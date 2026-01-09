@@ -49,7 +49,8 @@ export class StagiaireController {
   @Get("contacts")
   async getContacts(@Request() req) {
     try {
-      return await this.stagiaireService.getContacts(req.user.id);
+      const data = await this.stagiaireService.getContacts(req.user.id);
+      return data;
     } catch (error) {
       console.error("Error in getContacts:", error);
       throw new HttpException(
@@ -63,10 +64,11 @@ export class StagiaireController {
   @Get("contacts/commerciaux")
   async getCommerciaux(@Request() req) {
     try {
-      return await this.stagiaireService.getContactsByType(
+      const contacts = await this.stagiaireService.getContactsByType(
         req.user.id,
         "commercial"
       );
+      return contacts;
     } catch (error) {
       console.error("Error in getCommerciaux:", error);
       throw new HttpException(
@@ -80,10 +82,11 @@ export class StagiaireController {
   @Get("contacts/formateurs")
   async getFormateurs(@Request() req) {
     try {
-      return await this.stagiaireService.getContactsByType(
+      const contacts = await this.stagiaireService.getContactsByType(
         req.user.id,
         "formateur"
       );
+      return contacts;
     } catch (error) {
       console.error("Error in getFormateurs:", error);
       throw new HttpException(
@@ -97,10 +100,11 @@ export class StagiaireController {
   @Get("contacts/pole-relation")
   async getPoleRelation(@Request() req) {
     try {
-      return await this.stagiaireService.getContactsByType(
+      const contacts = await this.stagiaireService.getContactsByType(
         req.user.id,
         "pole-relation"
       );
+      return contacts;
     } catch (error) {
       console.error("Error in getPoleRelation:", error);
       throw new HttpException(
@@ -114,10 +118,11 @@ export class StagiaireController {
   @Get("contacts/pole-save")
   async getPoleSave(@Request() req) {
     try {
-      return await this.stagiaireService.getContactsByType(
+      const contacts = await this.stagiaireService.getContactsByType(
         req.user.id,
         "pole-save"
       );
+      return contacts;
     } catch (error) {
       console.error("Error in getPoleSave:", error);
       throw new HttpException(

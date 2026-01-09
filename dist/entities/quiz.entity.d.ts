@@ -3,6 +3,10 @@ export declare class Quiz {
     id: number;
     titre: string;
     description: string;
+    niveau: string;
+    duree: string;
+    nb_points_total: string;
+    status: string;
     formation_id: number;
     formation: Formation;
     created_at: Date;

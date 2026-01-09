@@ -14,4 +14,13 @@ export declare class QuizService {
     getQuestionsByQuiz(quizId: number): Promise<Question[]>;
     getCategories(): Promise<any[]>;
     getHistoryByStagiaire(stagiaireId: number): Promise<Classement[]>;
+    getStats(userId: number): Promise<{
+        total_quizzes: number;
+        total_points: number;
+        average_score: number;
+    }>;
+    getStatsCategories(userId: number): Promise<any[]>;
+    getStatsProgress(userId: number): Promise<Classement[]>;
+    getStatsTrends(userId: number): Promise<any[]>;
+    getStatsPerformance(userId: number): Promise<any[]>;
 }

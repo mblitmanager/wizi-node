@@ -29,6 +29,26 @@ __decorate([
 ], Quiz.prototype, "description", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Quiz.prototype, "niveau", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Quiz.prototype, "duree", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Quiz.prototype, "nb_points_total", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: "enum",
+        enum: ["actif", "inactif"],
+        default: "actif",
+    }),
+    __metadata("design:type", String)
+], Quiz.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], Quiz.prototype, "formation_id", void 0);
 __decorate([

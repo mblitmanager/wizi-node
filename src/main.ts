@@ -22,3 +22,4 @@ async function bootstrap() {
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
+// Force restart - Verify Media Module

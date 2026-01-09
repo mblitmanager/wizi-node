@@ -38,6 +38,9 @@ import { AchievementModule } from "./achievement/achievement.module";
 import { ParrainageModule } from "./parrainage/parrainage.module";
 import { CatalogueFormationModule } from "./catalogue-formation/catalogue-formation.module";
 import { AdminModule } from "./admin/admin.module";
+import { MediaModule } from "./media/media.module";
+import { MediaController } from "./media/media.controller";
+import { MediaService } from "./media/media.service";
 
 @Module({
   imports: [
@@ -111,10 +114,12 @@ import { AdminModule } from "./admin/admin.module";
     ParrainageModule,
     AdminModule,
     CatalogueFormationModule,
+    MediaModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, MediaController],
   providers: [
     AppService,
+    MediaService,
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
@@ -122,6 +127,9 @@ import { AdminModule } from "./admin/admin.module";
   ],
 })
 export class AppModule implements NestModule {
+  constructor() {
+    console.log("AppModule loaded - MediaModule should be active");
+  }
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes("*");
   }

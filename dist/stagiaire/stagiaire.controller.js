@@ -39,7 +39,8 @@ let StagiaireController = class StagiaireController {
     }
     async getContacts(req) {
         try {
-            return await this.stagiaireService.getContacts(req.user.id);
+            const data = await this.stagiaireService.getContacts(req.user.id);
+            return data;
         }
         catch (error) {
             console.error("Error in getContacts:", error);
@@ -48,7 +49,8 @@ let StagiaireController = class StagiaireController {
     }
     async getCommerciaux(req) {
         try {
-            return await this.stagiaireService.getContactsByType(req.user.id, "commercial");
+            const contacts = await this.stagiaireService.getContactsByType(req.user.id, "commercial");
+            return contacts;
         }
         catch (error) {
             console.error("Error in getCommerciaux:", error);
@@ -57,7 +59,8 @@ let StagiaireController = class StagiaireController {
     }
     async getFormateurs(req) {
         try {
-            return await this.stagiaireService.getContactsByType(req.user.id, "formateur");
+            const contacts = await this.stagiaireService.getContactsByType(req.user.id, "formateur");
+            return contacts;
         }
         catch (error) {
             console.error("Error in getFormateurs:", error);
@@ -66,7 +69,8 @@ let StagiaireController = class StagiaireController {
     }
     async getPoleRelation(req) {
         try {
-            return await this.stagiaireService.getContactsByType(req.user.id, "pole-relation");
+            const contacts = await this.stagiaireService.getContactsByType(req.user.id, "pole-relation");
+            return contacts;
         }
         catch (error) {
             console.error("Error in getPoleRelation:", error);
@@ -75,7 +79,8 @@ let StagiaireController = class StagiaireController {
     }
     async getPoleSave(req) {
         try {
-            return await this.stagiaireService.getContactsByType(req.user.id, "pole-save");
+            const contacts = await this.stagiaireService.getContactsByType(req.user.id, "pole-save");
+            return contacts;
         }
         catch (error) {
             console.error("Error in getPoleSave:", error);

@@ -12,6 +12,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const stagiaire_service_1 = require("./stagiaire.service");
 const stagiaire_controller_1 = require("./stagiaire.controller");
+const stagiaires_controller_1 = require("./stagiaires.controller");
 const classement_entity_1 = require("../entities/classement.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const formation_entity_1 = require("../entities/formation.entity");
@@ -31,7 +32,7 @@ exports.StagiaireModule = StagiaireModule = __decorate([
             inscription_module_1.InscriptionModule,
         ],
         providers: [stagiaire_service_1.StagiaireService],
-        controllers: [stagiaire_controller_1.StagiaireController],
+        controllers: [stagiaire_controller_1.StagiaireController, stagiaires_controller_1.StagiairesController],
         exports: [stagiaire_service_1.StagiaireService],
     })
 ], StagiaireModule);
