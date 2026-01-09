@@ -21,14 +21,21 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async login(credentials) {
+        console.log("Login attempt:", credentials.email);
         const user = await this.authService.validateUser(credentials.email, credentials.password);
         if (!user) {
+            console.log("Login failed for:", credentials.email);
             return { error: "Invalid credentials" };
         }
+        console.log("Login success for:", credentials.email);
         return this.authService.login(user);
     }
     async register(userData) {
         return this.authService.register(userData);
+    }
+    async updateFcmToken(req, token) {
+        await this.authService.updateFcmToken(req.user.id, token);
+        return { message: "Token enregistré" };
     }
     getProfile(req) {
         return req.user;
@@ -55,6 +62,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Post)("fcm-token"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)("token")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "updateFcmToken", null);
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     (0, common_1.Get)("profile"),

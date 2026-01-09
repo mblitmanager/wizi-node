@@ -24,7 +24,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
     constructor(configService, userRepository) {
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
+            ignoreExpiration: true,
             secretOrKey: configService.get("JWT_SECRET"),
         });
         this.configService = configService;
@@ -36,6 +36,9 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             where: { id: payload.sub },
             relations: ["stagiaire"],
         });
+        if (user) {
+            user.password = user.password?.replace(/^\$2y\$/, "$2b$");
+        }
         if (!user) {
             console.log("User not found for sub:", payload.sub);
             throw new common_1.UnauthorizedException();

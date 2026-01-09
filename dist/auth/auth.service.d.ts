@@ -7,8 +7,10 @@ export declare class AuthService {
     constructor(userRepository: Repository<User>, jwtService: JwtService);
     validateUser(email: string, pass: string): Promise<any>;
     login(user: any): Promise<{
-        access_token: string;
+        token: string;
+        refresh_token: string;
         user: any;
     }>;
     register(userData: any): Promise<any>;
+    updateFcmToken(userId: number, token: string): Promise<void>;
 }

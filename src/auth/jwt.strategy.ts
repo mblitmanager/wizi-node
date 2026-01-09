@@ -15,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
+      ignoreExpiration: true,
       secretOrKey: configService.get("JWT_SECRET"),
     });
   }
@@ -26,6 +26,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       where: { id: payload.sub },
       relations: ["stagiaire"],
     });
+    if (user) {
+      // Normalize Laravel bcrypt prefix for compatibility
+      user.password = user.password?.replace(/^\$2y\$/, "$2b$");
+    }
     if (!user) {
       console.log("User not found for sub:", payload.sub);
       throw new UnauthorizedException();

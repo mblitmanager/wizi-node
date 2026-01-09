@@ -8,10 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggerMiddleware = void 0;
 const common_1 = require("@nestjs/common");
+const fs = require("fs");
+const path = require("path");
 let LoggerMiddleware = class LoggerMiddleware {
     use(req, res, next) {
+        const logPath = path.join(process.cwd(), "debug_requests.log");
+        const logEntry = `[${new Date().toISOString()}] ${req.method} ${req.url}\nHeaders: ${JSON.stringify(req.headers, null, 2)}\n\n`;
+        fs.appendFileSync(logPath, logEntry);
         console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-        console.log("Headers:", JSON.stringify(req.headers, null, 2));
         next();
     }
 };

@@ -30,16 +30,20 @@ let AuthService = class AuthService {
             select: ["id", "email", "password", "role"],
             relations: ["stagiaire"],
         });
-        if (user && (await bcrypt.compare(pass, user.password))) {
-            const { password, ...result } = user;
-            return result;
+        if (user) {
+            const normalizedPassword = user.password.replace(/^\$2y\$/, "$2b$");
+            if (await bcrypt.compare(pass, normalizedPassword)) {
+                const { password, ...result } = user;
+                return result;
+            }
         }
         return null;
     }
     async login(user) {
         const payload = { email: user.email, sub: user.id, role: user.role };
         return {
-            access_token: this.jwtService.sign(payload),
+            token: this.jwtService.sign(payload),
+            refresh_token: "dummy-refresh-token",
             user: user,
         };
     }
@@ -58,6 +62,9 @@ let AuthService = class AuthService {
         await this.userRepository.save(user);
         const { password, ...result } = user;
         return result;
+    }
+    async updateFcmToken(userId, token) {
+        await this.userRepository.update(userId, { fcm_token: token });
     }
 };
 exports.AuthService = AuthService;

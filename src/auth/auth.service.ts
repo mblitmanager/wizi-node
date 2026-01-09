@@ -24,9 +24,13 @@ export class AuthService {
       relations: ["stagiaire"],
     });
 
-    if (user && (await bcrypt.compare(pass, user.password))) {
-      const { password, ...result } = user;
-      return result;
+    if (user) {
+      // Laravel uses $2y$ prefix for bcrypt, Node bcrypt expects $2b$
+      const normalizedPassword = user.password.replace(/^\$2y\$/, "$2b$");
+      if (await bcrypt.compare(pass, normalizedPassword)) {
+        const { password, ...result } = user;
+        return result;
+      }
     }
     return null;
   }
@@ -34,7 +38,8 @@ export class AuthService {
   async login(user: any) {
     const payload = { email: user.email, sub: user.id, role: user.role };
     return {
-      access_token: this.jwtService.sign(payload),
+      token: this.jwtService.sign(payload),
+      refresh_token: "dummy-refresh-token", // For now, can be improved later
       user: user,
     };
   }
@@ -56,5 +61,9 @@ export class AuthService {
     await this.userRepository.save(user);
     const { password, ...result } = user as any;
     return result;
+  }
+
+  async updateFcmToken(userId: number, token: string) {
+    await this.userRepository.update(userId, { fcm_token: token });
   }
 }
