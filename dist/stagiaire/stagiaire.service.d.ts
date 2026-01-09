@@ -114,4 +114,5 @@ export declare class StagiaireService {
         type: string;
     }[]>;
     getStagiaireQuizzes(userId: number): Promise<Classement[]>;
+    getFormationsByStagiaire(stagiaireId: number): Promise<CatalogueFormation[]>;
 }

@@ -49,6 +49,7 @@ export declare class FormationController {
             created_at: Date;
             updated_at: Date;
             stagiaires: import("../entities/stagiaire.entity").Stagiaire[];
+            formateurs: import("../entities/formateur.entity").Formateur[];
         }[];
         total: number;
         per_page: number;

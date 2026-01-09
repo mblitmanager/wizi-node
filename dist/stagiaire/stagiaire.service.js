@@ -140,6 +140,16 @@ let StagiaireService = class StagiaireService {
             relations: ["quiz"],
         });
     }
+    async getFormationsByStagiaire(stagiaireId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { id: stagiaireId },
+            relations: ["catalogue_formations", "catalogue_formations.formation"],
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException("Stagiaire not found");
+        }
+        return stagiaire.catalogue_formations || [];
+    }
 };
 exports.StagiaireService = StagiaireService;
 exports.StagiaireService = StagiaireService = __decorate([

@@ -146,4 +146,5 @@ export declare class StagiaireController {
         type: string;
     }[]>;
     getMyQuizzes(req: any): Promise<import("../entities/classement.entity").Classement[]>;
+    getStagiaireFormations(id: number): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation[]>;
 }

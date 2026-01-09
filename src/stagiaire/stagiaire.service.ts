@@ -156,4 +156,17 @@ export class StagiaireService {
       relations: ["quiz"],
     });
   }
+
+  async getFormationsByStagiaire(stagiaireId: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { id: stagiaireId },
+      relations: ["catalogue_formations", "catalogue_formations.formation"],
+    });
+
+    if (!stagiaire) {
+      throw new NotFoundException("Stagiaire not found");
+    }
+
+    return stagiaire.catalogue_formations || [];
+  }
 }

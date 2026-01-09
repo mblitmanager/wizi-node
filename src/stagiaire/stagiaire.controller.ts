@@ -5,6 +5,7 @@ import {
   Request,
   HttpException,
   HttpStatus,
+  Param,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { StagiaireService } from "./stagiaire.service";
@@ -124,5 +125,18 @@ export class StagiaireController {
   @Get("quizzes")
   async getMyQuizzes(@Request() req) {
     return this.stagiaireService.getStagiaireQuizzes(req.user.id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get(":id/formations")
+  async getStagiaireFormations(@Param("id") id: number) {
+    try {
+      return await this.stagiaireService.getFormationsByStagiaire(id);
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 }

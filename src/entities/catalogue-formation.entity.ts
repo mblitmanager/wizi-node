@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { Stagiaire } from "./stagiaire.entity";
 import { Formation } from "./formation.entity";
+import { Formateur } from "./formateur.entity";
 
 @Entity("catalogue_formations")
 export class CatalogueFormation {
@@ -90,4 +91,7 @@ export class CatalogueFormation {
 
   @ManyToMany(() => Stagiaire, (stagiaire) => stagiaire.catalogue_formations)
   stagiaires: Stagiaire[];
+
+  @ManyToMany(() => Formateur, (formateur) => formateur.formations)
+  formateurs: Formateur[];
 }

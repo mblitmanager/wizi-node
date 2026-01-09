@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
@@ -23,5 +23,16 @@ export class CatalogueFormationService {
         created_at: "DESC",
       },
     });
+  }
+
+  async findOne(id: number): Promise<CatalogueFormation> {
+    const formation = await this.catalogueRepository.findOne({
+      where: { id },
+      relations: ["formation", "formateurs", "stagiaires"], // Added relations based on Laravel show
+    });
+    if (!formation) {
+      throw new NotFoundException("Catalogue formation not found");
+    }
+    return formation;
   }
 }

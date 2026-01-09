@@ -13,6 +13,7 @@ exports.CatalogueFormation = void 0;
 const typeorm_1 = require("typeorm");
 const stagiaire_entity_1 = require("./stagiaire.entity");
 const formation_entity_1 = require("./formation.entity");
+const formateur_entity_1 = require("./formateur.entity");
 let CatalogueFormation = class CatalogueFormation {
 };
 exports.CatalogueFormation = CatalogueFormation;
@@ -121,6 +122,10 @@ __decorate([
     (0, typeorm_1.ManyToMany)(() => stagiaire_entity_1.Stagiaire, (stagiaire) => stagiaire.catalogue_formations),
     __metadata("design:type", Array)
 ], CatalogueFormation.prototype, "stagiaires", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => formateur_entity_1.Formateur, (formateur) => formateur.formations),
+    __metadata("design:type", Array)
+], CatalogueFormation.prototype, "formateurs", void 0);
 exports.CatalogueFormation = CatalogueFormation = __decorate([
     (0, typeorm_1.Entity)("catalogue_formations")
 ], CatalogueFormation);

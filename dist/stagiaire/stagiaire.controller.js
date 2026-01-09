@@ -83,6 +83,14 @@ let StagiaireController = class StagiaireController {
     async getMyQuizzes(req) {
         return this.stagiaireService.getStagiaireQuizzes(req.user.id);
     }
+    async getStagiaireFormations(id) {
+        try {
+            return await this.stagiaireService.getFormationsByStagiaire(id);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 };
 exports.StagiaireController = StagiaireController;
 __decorate([
@@ -155,6 +163,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StagiaireController.prototype, "getMyQuizzes", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)(":id/formations"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "getStagiaireFormations", null);
 exports.StagiaireController = StagiaireController = __decorate([
     (0, common_1.Controller)("stagiaire"),
     __metadata("design:paramtypes", [stagiaire_service_1.StagiaireService])

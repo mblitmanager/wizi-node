@@ -1,5 +1,6 @@
 import { Stagiaire } from "./stagiaire.entity";
 import { Formation } from "./formation.entity";
+import { Formateur } from "./formateur.entity";
 export declare class CatalogueFormation {
     id: number;
     titre: string;
@@ -27,4 +28,5 @@ export declare class CatalogueFormation {
     created_at: Date;
     updated_at: Date;
     stagiaires: Stagiaire[];
+    formateurs: Formateur[];
 }

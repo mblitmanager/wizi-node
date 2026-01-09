@@ -35,6 +35,16 @@ let CatalogueFormationService = class CatalogueFormationService {
             },
         });
     }
+    async findOne(id) {
+        const formation = await this.catalogueRepository.findOne({
+            where: { id },
+            relations: ["formation", "formateurs", "stagiaires"],
+        });
+        if (!formation) {
+            throw new common_1.NotFoundException("Catalogue formation not found");
+        }
+        return formation;
+    }
 };
 exports.CatalogueFormationService = CatalogueFormationService;
 exports.CatalogueFormationService = CatalogueFormationService = __decorate([
