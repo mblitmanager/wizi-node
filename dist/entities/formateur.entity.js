@@ -39,10 +39,6 @@ __decorate([
     __metadata("design:type", String)
 ], Formateur.prototype, "telephone", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: true }),
-    __metadata("design:type", Boolean)
-], Formateur.prototype, "is_active", void 0);
-__decorate([
     (0, typeorm_1.ManyToMany)(() => stagiaire_entity_1.Stagiaire, (stagiaire) => stagiaire.formateurs),
     (0, typeorm_1.JoinTable)({
         name: "formateur_stagiaire",

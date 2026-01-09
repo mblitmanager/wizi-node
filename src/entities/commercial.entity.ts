@@ -9,7 +9,7 @@ import {
 import { User } from "./user.entity";
 import { Stagiaire } from "./stagiaire.entity";
 
-@Entity("commerciaux")
+@Entity("commercials")
 export class Commercial {
   @PrimaryGeneratedColumn()
   id: number;

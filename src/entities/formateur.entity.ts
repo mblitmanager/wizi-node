@@ -31,9 +31,6 @@ export class Formateur {
   @Column({ nullable: true })
   telephone: string;
 
-  @Column({ default: true })
-  is_active: boolean;
-
   @ManyToMany(() => Stagiaire, (stagiaire) => stagiaire.formateurs)
   @JoinTable({
     name: "formateur_stagiaire",

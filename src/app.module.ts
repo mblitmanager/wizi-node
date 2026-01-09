@@ -36,6 +36,7 @@ import { NotificationModule } from "./notification/notification.module";
 import { InscriptionModule } from "./inscription/inscription.module";
 import { AchievementModule } from "./achievement/achievement.module";
 import { ParrainageModule } from "./parrainage/parrainage.module";
+import { CatalogueFormationModule } from "./catalogue-formation/catalogue-formation.module";
 import { AdminModule } from "./admin/admin.module";
 
 @Module({
@@ -109,6 +110,7 @@ import { AdminModule } from "./admin/admin.module";
     AchievementModule,
     ParrainageModule,
     AdminModule,
+    CatalogueFormationModule,
   ],
   controllers: [AppController],
   providers: [

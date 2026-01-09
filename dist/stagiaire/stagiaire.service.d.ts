@@ -27,22 +27,37 @@ export declare class StagiaireService {
                 id: any;
                 prenom: any;
                 nom: any;
+                name: any;
                 email: any;
                 telephone: any;
+                role: any;
+                civilite: any;
+                image: any;
+                type: string;
             }[];
             commerciaux: {
                 id: any;
                 prenom: any;
                 nom: any;
+                name: any;
                 email: any;
                 telephone: any;
+                role: any;
+                civilite: any;
+                image: any;
+                type: string;
             }[];
             pole_relation: {
                 id: any;
                 prenom: any;
                 nom: any;
+                name: any;
                 email: any;
                 telephone: any;
+                role: any;
+                civilite: any;
+                image: any;
+                type: string;
             }[];
         };
         catalogue_formations: CatalogueFormation[];
@@ -53,30 +68,50 @@ export declare class StagiaireService {
             id: any;
             prenom: any;
             nom: any;
+            name: any;
             email: any;
             telephone: any;
+            role: any;
+            civilite: any;
+            image: any;
+            type: string;
         }[];
         commerciaux: {
             id: any;
             prenom: any;
             nom: any;
+            name: any;
             email: any;
             telephone: any;
+            role: any;
+            civilite: any;
+            image: any;
+            type: string;
         }[];
         pole_relation: {
             id: any;
             prenom: any;
             nom: any;
+            name: any;
             email: any;
             telephone: any;
+            role: any;
+            civilite: any;
+            image: any;
+            type: string;
         }[];
     }>;
     getContactsByType(userId: number, type: string): Promise<{
         id: any;
         prenom: any;
         nom: any;
+        name: any;
         email: any;
         telephone: any;
+        role: any;
+        civilite: any;
+        image: any;
+        type: string;
     }[]>;
     getStagiaireQuizzes(userId: number): Promise<Classement[]>;
 }

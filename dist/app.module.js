@@ -45,6 +45,7 @@ const notification_module_1 = require("./notification/notification.module");
 const inscription_module_1 = require("./inscription/inscription.module");
 const achievement_module_1 = require("./achievement/achievement.module");
 const parrainage_module_1 = require("./parrainage/parrainage.module");
+const catalogue_formation_module_1 = require("./catalogue-formation/catalogue-formation.module");
 const admin_module_1 = require("./admin/admin.module");
 let AppModule = class AppModule {
     configure(consumer) {
@@ -124,6 +125,7 @@ exports.AppModule = AppModule = __decorate([
             achievement_module_1.AchievementModule,
             parrainage_module_1.ParrainageModule,
             admin_module_1.AdminModule,
+            catalogue_formation_module_1.CatalogueFormationModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

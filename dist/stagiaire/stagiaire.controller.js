@@ -27,22 +27,58 @@ let StagiaireController = class StagiaireController {
         return { message: "Public endpoint works" };
     }
     async getHomeData(req) {
-        return this.stagiaireService.getHomeData(req.user.id);
+        try {
+            return await this.stagiaireService.getHomeData(req.user.id);
+        }
+        catch (error) {
+            console.error("Error in getHomeData:", error);
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async getContacts(req) {
-        return this.stagiaireService.getContacts(req.user.id);
+        try {
+            return await this.stagiaireService.getContacts(req.user.id);
+        }
+        catch (error) {
+            console.error("Error in getContacts:", error);
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async getCommerciaux(req) {
-        return this.stagiaireService.getContactsByType(req.user.id, "commercial");
+        try {
+            return await this.stagiaireService.getContactsByType(req.user.id, "commercial");
+        }
+        catch (error) {
+            console.error("Error in getCommerciaux:", error);
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async getFormateurs(req) {
-        return this.stagiaireService.getContactsByType(req.user.id, "formateur");
+        try {
+            return await this.stagiaireService.getContactsByType(req.user.id, "formateur");
+        }
+        catch (error) {
+            console.error("Error in getFormateurs:", error);
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async getPoleRelation(req) {
-        return this.stagiaireService.getContactsByType(req.user.id, "pole-relation");
+        try {
+            return await this.stagiaireService.getContactsByType(req.user.id, "pole-relation");
+        }
+        catch (error) {
+            console.error("Error in getPoleRelation:", error);
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async getPoleSave(req) {
-        return this.stagiaireService.getContactsByType(req.user.id, "pole-save");
+        try {
+            return await this.stagiaireService.getContactsByType(req.user.id, "pole-save");
+        }
+        catch (error) {
+            console.error("Error in getPoleSave:", error);
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async getMyQuizzes(req) {
         return this.stagiaireService.getStagiaireQuizzes(req.user.id);

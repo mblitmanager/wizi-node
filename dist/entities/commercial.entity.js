@@ -58,6 +58,6 @@ __decorate([
     __metadata("design:type", Date)
 ], Commercial.prototype, "updated_at", void 0);
 exports.Commercial = Commercial = __decorate([
-    (0, typeorm_1.Entity)("commerciaux")
+    (0, typeorm_1.Entity)("commercials")
 ], Commercial);
 //# sourceMappingURL=commercial.entity.js.map

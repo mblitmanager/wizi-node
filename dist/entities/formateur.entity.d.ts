@@ -7,7 +7,6 @@ export declare class Formateur {
     user: User;
     prenom: string;
     telephone: string;
-    is_active: boolean;
     stagiaires: Stagiaire[];
     formations: CatalogueFormation[];
     created_at: Date;

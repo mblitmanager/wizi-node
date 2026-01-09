@@ -62,16 +62,23 @@ let StagiaireService = class StagiaireService {
             order: { updated_at: "DESC" },
             take: 3,
         });
-        const mapContact = (contact) => ({
-            id: contact.id,
-            prenom: contact.prenom,
-            nom: contact.user?.name || contact.nom || "",
-            email: contact.user?.email || contact.email || null,
-            telephone: contact.telephone || null,
+        const mapContact = (contact, type) => ({
+            id: contact?.id,
+            prenom: contact?.prenom,
+            nom: contact?.nom || contact?.user?.name?.split(" ").pop() || "",
+            name: contact?.user?.name ||
+                `${contact?.prenom} ${contact?.nom}`.trim() ||
+                "",
+            email: contact?.user?.email || contact?.email || null,
+            telephone: contact?.telephone || null,
+            role: contact?.role || type,
+            civilite: contact?.civilite || null,
+            image: contact?.user?.image || null,
+            type: type,
         });
-        const formateurs = stagiaire.formateurs.map(mapContact);
-        const commerciaux = stagiaire.commercials.map(mapContact);
-        const poleRelation = stagiaire.poleRelationClients.map(mapContact);
+        const formateurs = (stagiaire.formateurs || []).map((c) => mapContact(c, "formateur"));
+        const commerciaux = (stagiaire.commercials || []).map((c) => mapContact(c, "commercial"));
+        const poleRelation = (stagiaire.poleRelationClients || []).map((c) => mapContact(c, "pole_relation_client"));
         const catalogueFormations = await this.catalogueRepository.find({
             where: { statut: 1 },
             relations: ["formation"],
@@ -80,7 +87,7 @@ let StagiaireService = class StagiaireService {
         const categoriesRaw = await this.formationRepository
             .createQueryBuilder("formation")
             .select("DISTINCT formation.categorie", "categorie")
-            .where("formation.statut = :statut", { statut: "1" })
+            .where("formation.statut = :statut", { statut: 1 })
             .getRawMany();
         const categories = categoriesRaw.map((c) => c.categorie);
         return {
@@ -90,9 +97,9 @@ let StagiaireService = class StagiaireService {
                 image: stagiaire.user?.image || null,
             },
             quiz_stats: {
-                total_quizzes: parseInt(quizStats.total_quizzes) || 0,
-                total_points: parseInt(quizStats.total_points) || 0,
-                average_score: parseFloat(quizStats.avg_score) || 0,
+                total_quizzes: parseInt(quizStats?.total_quizzes || "0") || 0,
+                total_points: parseInt(quizStats?.total_points || "0") || 0,
+                average_score: parseFloat(quizStats?.avg_score || "0") || 0,
             },
             recent_history: recentHistory,
             contacts: {
