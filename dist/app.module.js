@@ -12,6 +12,8 @@ const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const core_1 = require("@nestjs/core");
+const roles_guard_1 = require("./common/guards/roles.guard");
 const user_entity_1 = require("./entities/user.entity");
 const stagiaire_entity_1 = require("./entities/stagiaire.entity");
 const formation_entity_1 = require("./entities/formation.entity");
@@ -23,6 +25,24 @@ const auth_module_1 = require("./auth/auth.module");
 const stagiaire_module_1 = require("./stagiaire/stagiaire.module");
 const formation_module_1 = require("./formation/formation.module");
 const quiz_module_1 = require("./quiz/quiz.module");
+const media_entity_1 = require("./entities/media.entity");
+const progression_entity_1 = require("./entities/progression.entity");
+const quiz_participation_entity_1 = require("./entities/quiz-participation.entity");
+const quiz_participation_answer_entity_1 = require("./entities/quiz-participation-answer.entity");
+const classement_entity_1 = require("./entities/classement.entity");
+const formateur_entity_1 = require("./entities/formateur.entity");
+const commercial_entity_1 = require("./entities/commercial.entity");
+const pole_relation_client_entity_1 = require("./entities/pole-relation-client.entity");
+const notification_entity_1 = require("./entities/notification.entity");
+const demande_inscription_entity_1 = require("./entities/demande-inscription.entity");
+const achievement_entity_1 = require("./entities/achievement.entity");
+const parrainage_entity_1 = require("./entities/parrainage.entity");
+const parrainage_token_entity_1 = require("./entities/parrainage-token.entity");
+const ranking_module_1 = require("./ranking/ranking.module");
+const notification_module_1 = require("./notification/notification.module");
+const inscription_module_1 = require("./inscription/inscription.module");
+const achievement_module_1 = require("./achievement/achievement.module");
+const parrainage_module_1 = require("./parrainage/parrainage.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -46,6 +66,21 @@ exports.AppModule = AppModule = __decorate([
                         quiz_entity_1.Quiz,
                         question_entity_1.Question,
                         reponse_entity_1.Reponse,
+                        media_entity_1.Media,
+                        progression_entity_1.Progression,
+                        quiz_participation_entity_1.QuizParticipation,
+                        quiz_participation_answer_entity_1.QuizParticipationAnswer,
+                        classement_entity_1.Classement,
+                        formateur_entity_1.Formateur,
+                        commercial_entity_1.Commercial,
+                        pole_relation_client_entity_1.PoleRelationClient,
+                        formateur_entity_1.Formateur,
+                        commercial_entity_1.Commercial,
+                        notification_entity_1.Notification,
+                        demande_inscription_entity_1.DemandeInscription,
+                        achievement_entity_1.Achievement,
+                        parrainage_entity_1.Parrainage,
+                        parrainage_token_entity_1.ParrainageToken,
                     ],
                     synchronize: false,
                     logging: true,
@@ -59,14 +94,40 @@ exports.AppModule = AppModule = __decorate([
                 quiz_entity_1.Quiz,
                 question_entity_1.Question,
                 reponse_entity_1.Reponse,
+                media_entity_1.Media,
+                progression_entity_1.Progression,
+                quiz_participation_entity_1.QuizParticipation,
+                quiz_participation_answer_entity_1.QuizParticipationAnswer,
+                classement_entity_1.Classement,
+                formateur_entity_1.Formateur,
+                commercial_entity_1.Commercial,
+                pole_relation_client_entity_1.PoleRelationClient,
+                formateur_entity_1.Formateur,
+                commercial_entity_1.Commercial,
+                notification_entity_1.Notification,
+                demande_inscription_entity_1.DemandeInscription,
+                achievement_entity_1.Achievement,
+                parrainage_entity_1.Parrainage,
+                parrainage_token_entity_1.ParrainageToken,
             ]),
             auth_module_1.AuthModule,
             stagiaire_module_1.StagiaireModule,
             formation_module_1.FormationModule,
             quiz_module_1.QuizModule,
+            ranking_module_1.RankingModule,
+            notification_module_1.NotificationModule,
+            inscription_module_1.InscriptionModule,
+            achievement_module_1.AchievementModule,
+            parrainage_module_1.ParrainageModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [
+            app_service_1.AppService,
+            {
+                provide: core_1.APP_GUARD,
+                useClass: roles_guard_1.RolesGuard,
+            },
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

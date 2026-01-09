@@ -4,7 +4,41 @@ export declare class StagiaireController {
     constructor(stagiaireService: StagiaireService);
     getProfile(req: any): Promise<import("../entities/stagiaire.entity").Stagiaire>;
     getHomeData(req: any): Promise<{
-        stagiaire: import("../entities/stagiaire.entity").Stagiaire;
-        welcome_message: string;
+        user: {
+            id: number;
+            prenom: string;
+            image: string;
+        };
+        quiz_stats: {
+            total_quizzes: number;
+            total_points: number;
+            average_score: number;
+        };
+        recent_history: import("../entities/classement.entity").Classement[];
+        contacts: {
+            formateurs: {
+                id: any;
+                prenom: any;
+                nom: any;
+                email: any;
+                telephone: any;
+            }[];
+            commerciaux: {
+                id: any;
+                prenom: any;
+                nom: any;
+                email: any;
+                telephone: any;
+            }[];
+            pole_relation: {
+                id: any;
+                prenom: any;
+                nom: any;
+                email: any;
+                telephone: any;
+            }[];
+        };
+        catalogue_formations: import("../entities/catalogue-formation.entity").CatalogueFormation[];
+        categories: any[];
     }>;
 }

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CatalogueFormation = void 0;
 const typeorm_1 = require("typeorm");
 const stagiaire_entity_1 = require("./stagiaire.entity");
+const formation_entity_1 = require("./formation.entity");
 let CatalogueFormation = class CatalogueFormation {
 };
 exports.CatalogueFormation = CatalogueFormation;
@@ -22,15 +23,92 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], CatalogueFormation.prototype, "nom", void 0);
+], CatalogueFormation.prototype, "titre", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: "text", nullable: true }),
     __metadata("design:type", String)
 ], CatalogueFormation.prototype, "description", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: 1 }),
+    __metadata("design:type", Number)
+], CatalogueFormation.prototype, "statut", void 0);
+__decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], CatalogueFormation.prototype, "image", void 0);
+], CatalogueFormation.prototype, "certification", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "prerequis", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "duree", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "image_url", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "decimal", precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], CatalogueFormation.prototype, "tarif", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], CatalogueFormation.prototype, "formation_id", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => formation_entity_1.Formation),
+    (0, typeorm_1.JoinColumn)({ name: "formation_id" }),
+    __metadata("design:type", formation_entity_1.Formation)
+], CatalogueFormation.prototype, "formation", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "cursus_pdf", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "objectifs", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "programme", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "modalites", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "modalites_accompagnement", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "moyens_pedagogiques", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "modalites_suivi", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "evaluation", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "lieu", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "niveau", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], CatalogueFormation.prototype, "public_cible", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], CatalogueFormation.prototype, "nombre_participants", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
     __metadata("design:type", Date)

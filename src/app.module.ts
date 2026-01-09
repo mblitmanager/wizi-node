@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { APP_GUARD } from "@nestjs/core";
+import { RolesGuard } from "./common/guards/roles.guard";
 import { User } from "./entities/user.entity";
 import { Stagiaire } from "./entities/stagiaire.entity";
 import { Formation } from "./entities/formation.entity";
@@ -14,6 +16,24 @@ import { AuthModule } from "./auth/auth.module";
 import { StagiaireModule } from "./stagiaire/stagiaire.module";
 import { FormationModule } from "./formation/formation.module";
 import { QuizModule } from "./quiz/quiz.module";
+import { Media } from "./entities/media.entity";
+import { Progression } from "./entities/progression.entity";
+import { QuizParticipation } from "./entities/quiz-participation.entity";
+import { QuizParticipationAnswer } from "./entities/quiz-participation-answer.entity";
+import { Classement } from "./entities/classement.entity";
+import { Formateur } from "./entities/formateur.entity";
+import { Commercial } from "./entities/commercial.entity";
+import { PoleRelationClient } from "./entities/pole-relation-client.entity";
+import { Notification } from "./entities/notification.entity";
+import { DemandeInscription } from "./entities/demande-inscription.entity";
+import { Achievement } from "./entities/achievement.entity";
+import { Parrainage } from "./entities/parrainage.entity";
+import { ParrainageToken } from "./entities/parrainage-token.entity";
+import { RankingModule } from "./ranking/ranking.module";
+import { NotificationModule } from "./notification/notification.module";
+import { InscriptionModule } from "./inscription/inscription.module";
+import { AchievementModule } from "./achievement/achievement.module";
+import { ParrainageModule } from "./parrainage/parrainage.module";
 
 @Module({
   imports: [
@@ -34,6 +54,21 @@ import { QuizModule } from "./quiz/quiz.module";
           Quiz,
           Question,
           Reponse,
+          Media,
+          Progression,
+          QuizParticipation,
+          QuizParticipationAnswer,
+          Classement,
+          Formateur,
+          Commercial,
+          PoleRelationClient,
+          Formateur,
+          Commercial,
+          Notification,
+          DemandeInscription,
+          Achievement,
+          Parrainage,
+          ParrainageToken,
         ],
         synchronize: false, // Don't sync as database exists
         logging: true,
@@ -47,13 +82,39 @@ import { QuizModule } from "./quiz/quiz.module";
       Quiz,
       Question,
       Reponse,
+      Media,
+      Progression,
+      QuizParticipation,
+      QuizParticipationAnswer,
+      Classement,
+      Formateur,
+      Commercial,
+      PoleRelationClient,
+      Formateur,
+      Commercial,
+      Notification,
+      DemandeInscription,
+      Achievement,
+      Parrainage,
+      ParrainageToken,
     ]),
     AuthModule,
     StagiaireModule,
     FormationModule,
     QuizModule,
+    RankingModule,
+    NotificationModule,
+    InscriptionModule,
+    AchievementModule,
+    ParrainageModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

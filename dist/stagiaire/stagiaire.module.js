@@ -12,12 +12,22 @@ const typeorm_1 = require("@nestjs/typeorm");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const stagiaire_service_1 = require("./stagiaire.service");
 const stagiaire_controller_1 = require("./stagiaire.controller");
+const classement_entity_1 = require("../entities/classement.entity");
+const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const formation_entity_1 = require("../entities/formation.entity");
 let StagiaireModule = class StagiaireModule {
 };
 exports.StagiaireModule = StagiaireModule;
 exports.StagiaireModule = StagiaireModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([stagiaire_entity_1.Stagiaire])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                stagiaire_entity_1.Stagiaire,
+                classement_entity_1.Classement,
+                catalogue_formation_entity_1.CatalogueFormation,
+                formation_entity_1.Formation,
+            ]),
+        ],
         providers: [stagiaire_service_1.StagiaireService],
         controllers: [stagiaire_controller_1.StagiaireController],
         exports: [stagiaire_service_1.StagiaireService],

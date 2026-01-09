@@ -7,9 +7,17 @@ import {
   ManyToOne,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from "typeorm";
 import { User } from "./user.entity";
 import { CatalogueFormation } from "./catalogue-formation.entity";
+import { Media } from "./media.entity";
+import { Progression } from "./progression.entity";
+import { Formateur } from "./formateur.entity";
+import { Commercial } from "./commercial.entity";
+import { PoleRelationClient } from "./pole-relation-client.entity";
+import { Classement } from "./classement.entity";
+import { Achievement } from "./achievement.entity";
 
 @Entity("stagiaires")
 export class Stagiaire {
@@ -75,6 +83,55 @@ export class Stagiaire {
     },
   })
   catalogue_formations: CatalogueFormation[];
+
+  @ManyToMany(() => Media, (media) => media.stagiaires)
+  @JoinTable({
+    name: "media_stagiaire",
+    joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "media_id", referencedColumnName: "id" },
+  })
+  medias: Media[];
+
+  @OneToMany(() => Progression, (progression) => progression.stagiaire)
+  progressions: Progression[];
+
+  @ManyToMany(() => Formateur, (formateur) => formateur.stagiaires)
+  @JoinTable({
+    name: "formateur_stagiaire",
+    joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "formateur_id", referencedColumnName: "id" },
+  })
+  formateurs: Formateur[];
+
+  @ManyToMany(() => Commercial, (commercial) => commercial.stagiaires)
+  @JoinTable({
+    name: "commercial_stagiaire",
+    joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "commercial_id", referencedColumnName: "id" },
+  })
+  commercials: Commercial[];
+
+  @ManyToMany(() => PoleRelationClient, (pole) => pole.stagiaires)
+  @JoinTable({
+    name: "pole_relation_client_stagiaire",
+    joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+    inverseJoinColumn: {
+      name: "pole_relation_client_id",
+      referencedColumnName: "id",
+    },
+  })
+  poleRelationClients: PoleRelationClient[];
+
+  @OneToMany(() => Classement, (classement) => classement.stagiaire)
+  classements: Classement[];
+
+  @ManyToMany(() => Achievement, (achievement) => achievement.stagiaires)
+  @JoinTable({
+    name: "stagiaire_achievements",
+    joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "achievement_id", referencedColumnName: "id" },
+  })
+  achievements: Achievement[];
 
   @Column({ type: "timestamp", nullable: true })
   created_at: Date;

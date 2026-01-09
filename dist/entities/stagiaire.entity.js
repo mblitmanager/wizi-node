@@ -13,6 +13,13 @@ exports.Stagiaire = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 const catalogue_formation_entity_1 = require("./catalogue-formation.entity");
+const media_entity_1 = require("./media.entity");
+const progression_entity_1 = require("./progression.entity");
+const formateur_entity_1 = require("./formateur.entity");
+const commercial_entity_1 = require("./commercial.entity");
+const pole_relation_client_entity_1 = require("./pole-relation-client.entity");
+const classement_entity_1 = require("./classement.entity");
+const achievement_entity_1 = require("./achievement.entity");
 let Stagiaire = class Stagiaire {
 };
 exports.Stagiaire = Stagiaire;
@@ -97,6 +104,62 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Stagiaire.prototype, "catalogue_formations", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => media_entity_1.Media, (media) => media.stagiaires),
+    (0, typeorm_1.JoinTable)({
+        name: "media_stagiaire",
+        joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "media_id", referencedColumnName: "id" },
+    }),
+    __metadata("design:type", Array)
+], Stagiaire.prototype, "medias", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => progression_entity_1.Progression, (progression) => progression.stagiaire),
+    __metadata("design:type", Array)
+], Stagiaire.prototype, "progressions", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => formateur_entity_1.Formateur, (formateur) => formateur.stagiaires),
+    (0, typeorm_1.JoinTable)({
+        name: "formateur_stagiaire",
+        joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "formateur_id", referencedColumnName: "id" },
+    }),
+    __metadata("design:type", Array)
+], Stagiaire.prototype, "formateurs", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => commercial_entity_1.Commercial, (commercial) => commercial.stagiaires),
+    (0, typeorm_1.JoinTable)({
+        name: "commercial_stagiaire",
+        joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "commercial_id", referencedColumnName: "id" },
+    }),
+    __metadata("design:type", Array)
+], Stagiaire.prototype, "commercials", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => pole_relation_client_entity_1.PoleRelationClient, (pole) => pole.stagiaires),
+    (0, typeorm_1.JoinTable)({
+        name: "pole_relation_client_stagiaire",
+        joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+        inverseJoinColumn: {
+            name: "pole_relation_client_id",
+            referencedColumnName: "id",
+        },
+    }),
+    __metadata("design:type", Array)
+], Stagiaire.prototype, "poleRelationClients", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => classement_entity_1.Classement, (classement) => classement.stagiaire),
+    __metadata("design:type", Array)
+], Stagiaire.prototype, "classements", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => achievement_entity_1.Achievement, (achievement) => achievement.stagiaires),
+    (0, typeorm_1.JoinTable)({
+        name: "stagiaire_achievements",
+        joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "achievement_id", referencedColumnName: "id" },
+    }),
+    __metadata("design:type", Array)
+], Stagiaire.prototype, "achievements", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
     __metadata("design:type", Date)

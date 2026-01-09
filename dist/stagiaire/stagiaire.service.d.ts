@@ -1,11 +1,51 @@
 import { Repository } from "typeorm";
 import { Stagiaire } from "../entities/stagiaire.entity";
+import { Classement } from "../entities/classement.entity";
+import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { Formation } from "../entities/formation.entity";
 export declare class StagiaireService {
     private stagiaireRepository;
-    constructor(stagiaireRepository: Repository<Stagiaire>);
+    private classementRepository;
+    private catalogueRepository;
+    private formationRepository;
+    constructor(stagiaireRepository: Repository<Stagiaire>, classementRepository: Repository<Classement>, catalogueRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>);
     getProfile(userId: number): Promise<Stagiaire>;
     getHomeData(userId: number): Promise<{
-        stagiaire: Stagiaire;
-        welcome_message: string;
+        user: {
+            id: number;
+            prenom: string;
+            image: string;
+        };
+        quiz_stats: {
+            total_quizzes: number;
+            total_points: number;
+            average_score: number;
+        };
+        recent_history: Classement[];
+        contacts: {
+            formateurs: {
+                id: any;
+                prenom: any;
+                nom: any;
+                email: any;
+                telephone: any;
+            }[];
+            commerciaux: {
+                id: any;
+                prenom: any;
+                nom: any;
+                email: any;
+                telephone: any;
+            }[];
+            pole_relation: {
+                id: any;
+                prenom: any;
+                nom: any;
+                email: any;
+                telephone: any;
+            }[];
+        };
+        catalogue_formations: CatalogueFormation[];
+        categories: any[];
     }>;
 }

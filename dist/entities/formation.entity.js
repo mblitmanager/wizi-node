@@ -11,6 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Formation = void 0;
 const typeorm_1 = require("typeorm");
+const media_entity_1 = require("./media.entity");
+const quiz_entity_1 = require("./quiz.entity");
+const progression_entity_1 = require("./progression.entity");
 let Formation = class Formation {
 };
 exports.Formation = Formation;
@@ -38,6 +41,18 @@ __decorate([
     (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
     __metadata("design:type", Date)
 ], Formation.prototype, "updated_at", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => media_entity_1.Media, (media) => media.formation),
+    __metadata("design:type", Array)
+], Formation.prototype, "medias", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => quiz_entity_1.Quiz, (quiz) => quiz.formation),
+    __metadata("design:type", Array)
+], Formation.prototype, "quizzes", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => progression_entity_1.Progression, (progression) => progression.formation),
+    __metadata("design:type", Array)
+], Formation.prototype, "progressions", void 0);
 exports.Formation = Formation = __decorate([
     (0, typeorm_1.Entity)("formations")
 ], Formation);
