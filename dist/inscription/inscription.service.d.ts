@@ -12,6 +12,6 @@ export declare class InscriptionService {
     inscrire(userId: number, catalogueFormationId: number): Promise<{
         success: boolean;
         message: string;
-        demande: DemandeInscription;
+        demande: DemandeInscription[];
     }>;
 }

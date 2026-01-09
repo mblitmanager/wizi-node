@@ -15,32 +15,20 @@ export class DemandeInscription {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column()
   parrain_id: number;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "parrain_id" })
-  parrain: User;
 
   @Column()
   filleul_id: number;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "filleul_id" })
-  filleul: User;
-
-  @Column()
+  @Column({ nullable: true })
   formation_id: number;
-
-  @ManyToOne(() => CatalogueFormation)
-  @JoinColumn({ name: "formation_id" })
-  formation: CatalogueFormation;
 
   @Column({ default: "en_attente" })
   statut: string;
 
-  @Column({ type: "json", nullable: true })
-  donnees_formulaire: any;
+  @Column({ type: "text", nullable: true })
+  donnees_formulaire: string;
 
   @Column({ nullable: true })
   lien_parrainage: string;
@@ -53,6 +41,18 @@ export class DemandeInscription {
 
   @Column({ type: "timestamp", nullable: true })
   date_inscription: Date;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "parrain_id" })
+  parrain: User;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "filleul_id" })
+  filleul: User;
+
+  @ManyToOne(() => CatalogueFormation)
+  @JoinColumn({ name: "formation_id" })
+  formation: CatalogueFormation;
 
   @CreateDateColumn()
   created_at: Date;

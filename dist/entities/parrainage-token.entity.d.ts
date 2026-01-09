@@ -3,9 +3,9 @@ export declare class ParrainageToken {
     id: number;
     token: string;
     user_id: number;
-    user: User;
-    parrain_data: any;
+    parrain_data: string;
     expires_at: Date;
+    user: User;
     created_at: Date;
     updated_at: Date;
 }

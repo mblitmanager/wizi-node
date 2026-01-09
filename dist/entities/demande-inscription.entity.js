@@ -21,39 +21,24 @@ __decorate([
     __metadata("design:type", Number)
 ], DemandeInscription.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], DemandeInscription.prototype, "parrain_id", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
-    (0, typeorm_1.JoinColumn)({ name: "parrain_id" }),
-    __metadata("design:type", user_entity_1.User)
-], DemandeInscription.prototype, "parrain", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], DemandeInscription.prototype, "filleul_id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
-    (0, typeorm_1.JoinColumn)({ name: "filleul_id" }),
-    __metadata("design:type", user_entity_1.User)
-], DemandeInscription.prototype, "filleul", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], DemandeInscription.prototype, "formation_id", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => catalogue_formation_entity_1.CatalogueFormation),
-    (0, typeorm_1.JoinColumn)({ name: "formation_id" }),
-    __metadata("design:type", catalogue_formation_entity_1.CatalogueFormation)
-], DemandeInscription.prototype, "formation", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: "en_attente" }),
     __metadata("design:type", String)
 ], DemandeInscription.prototype, "statut", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "json", nullable: true }),
-    __metadata("design:type", Object)
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", String)
 ], DemandeInscription.prototype, "donnees_formulaire", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
@@ -71,6 +56,21 @@ __decorate([
     (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
     __metadata("design:type", Date)
 ], DemandeInscription.prototype, "date_inscription", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
+    (0, typeorm_1.JoinColumn)({ name: "parrain_id" }),
+    __metadata("design:type", user_entity_1.User)
+], DemandeInscription.prototype, "parrain", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
+    (0, typeorm_1.JoinColumn)({ name: "filleul_id" }),
+    __metadata("design:type", user_entity_1.User)
+], DemandeInscription.prototype, "filleul", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => catalogue_formation_entity_1.CatalogueFormation),
+    (0, typeorm_1.JoinColumn)({ name: "formation_id" }),
+    __metadata("design:type", catalogue_formation_entity_1.CatalogueFormation)
+], DemandeInscription.prototype, "formation", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

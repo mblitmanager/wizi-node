@@ -3,12 +3,12 @@ import { Stagiaire } from "../entities/stagiaire.entity";
 export declare class AdminStagiaireController {
     private stagiaireRepository;
     constructor(stagiaireRepository: Repository<Stagiaire>);
-    findAll(page?: number, limit?: number): Promise<{
+    findAll(page?: number, limit?: number, search?: string): Promise<{
         data: Stagiaire[];
-        meta: {
+        pagination: {
             total: number;
             page: number;
-            last_page: number;
+            total_pages: number;
         };
     }>;
     findOne(id: number): Promise<Stagiaire>;

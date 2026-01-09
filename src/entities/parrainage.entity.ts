@@ -17,16 +17,8 @@ export class Parrainage {
   @Column()
   filleul_id: number;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "filleul_id" })
-  filleul: User;
-
   @Column()
   parrain_id: number;
-
-  @ManyToOne(() => User)
-  @JoinColumn({ name: "parrain_id" })
-  parrain: User;
 
   @Column({ type: "timestamp", nullable: true })
   date_parrainage: Date;
@@ -36,6 +28,14 @@ export class Parrainage {
 
   @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
   gains: number;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "filleul_id" })
+  filleul: User;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "parrain_id" })
+  parrain: User;
 
   @CreateDateColumn()
   created_at: Date;

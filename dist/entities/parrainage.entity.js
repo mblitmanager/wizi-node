@@ -24,19 +24,9 @@ __decorate([
     __metadata("design:type", Number)
 ], Parrainage.prototype, "filleul_id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
-    (0, typeorm_1.JoinColumn)({ name: "filleul_id" }),
-    __metadata("design:type", user_entity_1.User)
-], Parrainage.prototype, "filleul", void 0);
-__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Parrainage.prototype, "parrain_id", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
-    (0, typeorm_1.JoinColumn)({ name: "parrain_id" }),
-    __metadata("design:type", user_entity_1.User)
-], Parrainage.prototype, "parrain", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
     __metadata("design:type", Date)
@@ -49,6 +39,16 @@ __decorate([
     (0, typeorm_1.Column)({ type: "decimal", precision: 10, scale: 2, default: 0 }),
     __metadata("design:type", Number)
 ], Parrainage.prototype, "gains", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
+    (0, typeorm_1.JoinColumn)({ name: "filleul_id" }),
+    __metadata("design:type", user_entity_1.User)
+], Parrainage.prototype, "filleul", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
+    (0, typeorm_1.JoinColumn)({ name: "parrain_id" }),
+    __metadata("design:type", user_entity_1.User)
+], Parrainage.prototype, "parrain", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

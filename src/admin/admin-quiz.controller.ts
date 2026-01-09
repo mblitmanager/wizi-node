@@ -4,6 +4,7 @@ import {
   Post,
   Put,
   Delete,
+  Patch,
   Body,
   Param,
   UseGuards,
@@ -16,7 +17,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Quiz } from "../entities/quiz.entity";
 
-@Controller("admin/quizzes")
+@Controller("admin/quiz")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminQuizController {
@@ -26,20 +27,33 @@ export class AdminQuizController {
   ) {}
 
   @Get()
-  async findAll(@Query("page") page = 1, @Query("limit") limit = 10) {
-    const [data, total] = await this.quizRepository.findAndCount({
-      relations: ["questions", "formations"],
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { id: "DESC" },
-    });
+  async findAll(
+    @Query("page") page = 1,
+    @Query("limit") limit = 10,
+    @Query("search") search = ""
+  ) {
+    const query = this.quizRepository.createQueryBuilder("q")
+      .leftJoinAndSelect("q.questions", "questions")
+      .leftJoinAndSelect("q.formations", "formations");
+
+    if (search) {
+      query.where("q.title LIKE :search OR q.description LIKE :search", {
+        search: `%${search}%`,
+      });
+    }
+
+    const [data, total] = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy("q.id", "DESC")
+      .getManyAndCount();
 
     return {
       data,
-      meta: {
+      pagination: {
         total,
         page,
-        last_page: Math.ceil(total / limit),
+        total_pages: Math.ceil(total / limit),
       },
     };
   }
@@ -67,5 +81,37 @@ export class AdminQuizController {
   @Delete(":id")
   async remove(@Param("id") id: number) {
     return this.quizRepository.delete(id);
+  }
+
+  @Post(":id/duplicate")
+  async duplicate(@Param("id") id: number) {
+    const original = await this.quizRepository.findOne({
+      where: { id },
+      relations: ["questions", "questions.reponses"],
+    });
+
+    if (!original) {
+      throw new Error("Quiz not found");
+    }
+
+    const newQuiz = this.quizRepository.create({
+      ...original,
+      title: `${original.title} (Copie)`,
+      id: undefined,
+    });
+
+    return this.quizRepository.save(newQuiz);
+  }
+
+  @Patch(":id/enable")
+  async enable(@Param("id") id: number) {
+    await this.quizRepository.update(id, { statut: 1 });
+    return this.findOne(id);
+  }
+
+  @Patch(":id/disable")
+  async disable(@Param("id") id: number) {
+    await this.quizRepository.update(id, { statut: 0 });
+    return this.findOne(id);
   }
 }

@@ -18,76 +18,92 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const parrainage_entity_1 = require("../entities/parrainage.entity");
 const parrainage_token_entity_1 = require("../entities/parrainage-token.entity");
+const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
 const user_entity_1 = require("../entities/user.entity");
 const crypto = require("crypto");
 let ParrainageService = class ParrainageService {
-    constructor(parrainageRepository, tokenRepository, userRepository) {
+    constructor(parrainageRepository, parrainageTokenRepository, parrainageEventRepository, userRepository, dataSource) {
         this.parrainageRepository = parrainageRepository;
-        this.tokenRepository = tokenRepository;
+        this.parrainageTokenRepository = parrainageTokenRepository;
+        this.parrainageEventRepository = parrainageEventRepository;
         this.userRepository = userRepository;
+        this.dataSource = dataSource;
     }
     async generateLink(userId) {
-        const token = crypto.randomBytes(20).toString("hex");
         const user = await this.userRepository.findOne({
             where: { id: userId },
             relations: ["stagiaire"],
         });
+        if (!user)
+            throw new common_1.NotFoundException("Utilisateur non trouvé");
+        const token = crypto.randomBytes(20).toString("hex");
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 30);
-        const parrainageToken = this.tokenRepository.create({
+        const parrainageToken = this.parrainageTokenRepository.create({
             token,
             user_id: userId,
-            parrain_data: {
-                user: {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email,
-                },
-                stagiaire: user.stagiaire,
-            },
+            parrain_data: JSON.stringify({
+                user: { id: user.id, name: user.name, image: user.image },
+                stagiaire: user.stagiaire ? { prenom: user.stagiaire.prenom } : null,
+            }),
             expires_at: expiresAt,
         });
-        await this.tokenRepository.save(parrainageToken);
-        return {
-            success: true,
-            token,
-        };
+        await this.parrainageTokenRepository.save(parrainageToken);
+        return { success: true, token };
     }
     async getParrainData(token) {
-        const parrainageToken = await this.tokenRepository.findOne({
-            where: { token },
+        const parrainageToken = await this.parrainageTokenRepository.findOne({
+            where: {
+                token,
+                expires_at: (0, typeorm_2.MoreThan)(new Date()),
+            },
         });
-        if (!parrainageToken || parrainageToken.expires_at < new Date()) {
-            return {
-                success: false,
-                message: "Lien de parrainage invalide ou expiré",
-            };
+        if (!parrainageToken) {
+            throw new common_1.NotFoundException("Lien de parrainage invalide ou expiré");
         }
         return {
             success: true,
-            parrain: parrainageToken.parrain_data,
+            parrain: JSON.parse(parrainageToken.parrain_data),
         };
     }
     async getStatsParrain(userId) {
-        const count = await this.parrainageRepository.count({
+        const parrainages = await this.parrainageRepository.find({
             where: { parrain_id: userId },
         });
-        const sumPoints = await this.parrainageRepository
-            .createQueryBuilder("p")
-            .select("SUM(p.points)", "total")
-            .where("p.parrain_id = :userId", { userId })
-            .getRawOne();
-        const sumGains = await this.parrainageRepository
-            .createQueryBuilder("p")
-            .select("SUM(p.gains)", "total")
-            .where("p.parrain_id = :userId", { userId })
-            .getRawOne();
+        const nombreFilleuls = parrainages.length;
+        const totalPoints = parrainages.reduce((sum, p) => sum + (p.points || 0), 0);
+        const gains = parrainages.reduce((sum, p) => sum + (Number(p.gains) || 0), 0);
         return {
             success: true,
             parrain_id: userId,
-            nombre_filleuls: parseInt(count.toString()),
-            total_points: parseInt(sumPoints?.total || 0),
-            gains: parseFloat(sumGains?.total || 0),
+            nombre_filleuls: nombreFilleuls,
+            total_points: totalPoints,
+            gains: gains,
+        };
+    }
+    async getEvents() {
+        const events = await this.parrainageEventRepository.find({
+            order: { date_debut: "ASC" },
+        });
+        return {
+            success: true,
+            data: events,
+        };
+    }
+    async getFilleuls(parrainId) {
+        const parrainages = await this.parrainageRepository.find({
+            where: { parrain_id: parrainId },
+            relations: ["filleul", "filleul.stagiaire"],
+        });
+        return {
+            success: true,
+            data: parrainages.map((p) => ({
+                id: p.filleul_id,
+                name: p.filleul?.name,
+                date: p.date_parrainage,
+                points: p.points,
+                status: p.filleul?.stagiaire?.statut || "en_attente",
+            })),
         };
     }
 };
@@ -96,9 +112,12 @@ exports.ParrainageService = ParrainageService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(parrainage_entity_1.Parrainage)),
     __param(1, (0, typeorm_1.InjectRepository)(parrainage_token_entity_1.ParrainageToken)),
-    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(2, (0, typeorm_1.InjectRepository)(parrainage_event_entity_1.ParrainageEvent)),
+    __param(3, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.DataSource])
 ], ParrainageService);
 //# sourceMappingURL=parrainage.service.js.map

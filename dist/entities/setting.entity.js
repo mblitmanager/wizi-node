@@ -9,46 +9,32 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParrainageToken = void 0;
+exports.Setting = void 0;
 const typeorm_1 = require("typeorm");
-const user_entity_1 = require("./user.entity");
-let ParrainageToken = class ParrainageToken {
+let Setting = class Setting {
 };
-exports.ParrainageToken = ParrainageToken;
+exports.Setting = Setting;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], ParrainageToken.prototype, "id", void 0);
+], Setting.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
-], ParrainageToken.prototype, "token", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], ParrainageToken.prototype, "user_id", void 0);
+], Setting.prototype, "key", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: "text", nullable: true }),
     __metadata("design:type", String)
-], ParrainageToken.prototype, "parrain_data", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
-    __metadata("design:type", Date)
-], ParrainageToken.prototype, "expires_at", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
-    (0, typeorm_1.JoinColumn)({ name: "user_id" }),
-    __metadata("design:type", user_entity_1.User)
-], ParrainageToken.prototype, "user", void 0);
+], Setting.prototype, "value", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], ParrainageToken.prototype, "created_at", void 0);
+], Setting.prototype, "created_at", void 0);
 __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
-], ParrainageToken.prototype, "updated_at", void 0);
-exports.ParrainageToken = ParrainageToken = __decorate([
-    (0, typeorm_1.Entity)("parrainage_tokens")
-], ParrainageToken);
-//# sourceMappingURL=parrainage-token.entity.js.map
+], Setting.prototype, "updated_at", void 0);
+exports.Setting = Setting = __decorate([
+    (0, typeorm_1.Entity)("settings")
+], Setting);
+//# sourceMappingURL=setting.entity.js.map

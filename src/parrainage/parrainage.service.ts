@@ -1,9 +1,16 @@
-import { Injectable } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, MoreThan, DataSource } from "typeorm";
 import { Parrainage } from "../entities/parrainage.entity";
 import { ParrainageToken } from "../entities/parrainage-token.entity";
+import { ParrainageEvent } from "../entities/parrainage-event.entity";
 import { User } from "../entities/user.entity";
+import { Stagiaire } from "../entities/stagiaire.entity";
+import { DemandeInscription } from "../entities/demande-inscription.entity";
 import * as crypto from "crypto";
 
 @Injectable()
@@ -12,84 +19,109 @@ export class ParrainageService {
     @InjectRepository(Parrainage)
     private parrainageRepository: Repository<Parrainage>,
     @InjectRepository(ParrainageToken)
-    private tokenRepository: Repository<ParrainageToken>,
+    private parrainageTokenRepository: Repository<ParrainageToken>,
+    @InjectRepository(ParrainageEvent)
+    private parrainageEventRepository: Repository<ParrainageEvent>,
     @InjectRepository(User)
-    private userRepository: Repository<User>
+    private userRepository: Repository<User>,
+    private dataSource: DataSource
   ) {}
 
   async generateLink(userId: number) {
-    const token = crypto.randomBytes(20).toString("hex");
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ["stagiaire"],
     });
 
+    if (!user) throw new NotFoundException("Utilisateur non trouvé");
+
+    const token = crypto.randomBytes(20).toString("hex");
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
 
-    const parrainageToken = this.tokenRepository.create({
+    const parrainageToken = this.parrainageTokenRepository.create({
       token,
       user_id: userId,
-      parrain_data: {
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        },
-        stagiaire: user.stagiaire,
-      },
+      parrain_data: JSON.stringify({
+        user: { id: user.id, name: user.name, image: user.image },
+        stagiaire: user.stagiaire ? { prenom: user.stagiaire.prenom } : null,
+      }),
       expires_at: expiresAt,
     });
 
-    await this.tokenRepository.save(parrainageToken);
+    await this.parrainageTokenRepository.save(parrainageToken);
 
-    return {
-      success: true,
-      token,
-    };
+    return { success: true, token };
   }
 
   async getParrainData(token: string) {
-    const parrainageToken = await this.tokenRepository.findOne({
-      where: { token },
+    const parrainageToken = await this.parrainageTokenRepository.findOne({
+      where: {
+        token,
+        expires_at: MoreThan(new Date()),
+      },
     });
 
-    if (!parrainageToken || parrainageToken.expires_at < new Date()) {
-      return {
-        success: false,
-        message: "Lien de parrainage invalide ou expiré",
-      };
+    if (!parrainageToken) {
+      throw new NotFoundException("Lien de parrainage invalide ou expiré");
     }
 
     return {
       success: true,
-      parrain: parrainageToken.parrain_data,
+      parrain: JSON.parse(parrainageToken.parrain_data),
     };
   }
 
   async getStatsParrain(userId: number) {
-    const count = await this.parrainageRepository.count({
+    const parrainages = await this.parrainageRepository.find({
       where: { parrain_id: userId },
     });
 
-    const sumPoints = await this.parrainageRepository
-      .createQueryBuilder("p")
-      .select("SUM(p.points)", "total")
-      .where("p.parrain_id = :userId", { userId })
-      .getRawOne();
-
-    const sumGains = await this.parrainageRepository
-      .createQueryBuilder("p")
-      .select("SUM(p.gains)", "total")
-      .where("p.parrain_id = :userId", { userId })
-      .getRawOne();
+    const nombreFilleuls = parrainages.length;
+    const totalPoints = parrainages.reduce(
+      (sum, p) => sum + (p.points || 0),
+      0
+    );
+    const gains = parrainages.reduce(
+      (sum, p) => sum + (Number(p.gains) || 0),
+      0
+    );
 
     return {
       success: true,
       parrain_id: userId,
-      nombre_filleuls: parseInt(count.toString()),
-      total_points: parseInt(sumPoints?.total || 0),
-      gains: parseFloat(sumGains?.total || 0),
+      nombre_filleuls: nombreFilleuls,
+      total_points: totalPoints,
+      gains: gains,
+    };
+  }
+
+  async getEvents() {
+    const events = await this.parrainageEventRepository.find({
+      order: { date_debut: "ASC" },
+    });
+
+    return {
+      success: true,
+      data: events,
+    };
+  }
+
+  async getFilleuls(parrainId: number) {
+    const parrainages = await this.parrainageRepository.find({
+      where: { parrain_id: parrainId },
+      relations: ["filleul", "filleul.stagiaire"],
+    });
+
+    return {
+      success: true,
+      data: parrainages.map((p) => ({
+        id: p.filleul_id,
+        name: p.filleul?.name,
+        date: p.date_parrainage,
+        points: p.points,
+        status: p.filleul?.stagiaire?.statut || "en_attente",
+      })),
     };
   }
 }

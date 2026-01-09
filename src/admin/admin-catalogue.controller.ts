@@ -34,13 +34,13 @@ export class AdminCatalogueController {
     const query = this.catalogueRepository.createQueryBuilder("cf");
 
     if (search) {
-      query.where("cf.nom LIKE :search OR cf.description LIKE :search", {
+      query.where("cf.titre LIKE :search OR cf.description LIKE :search", {
         search: `%${search}%`,
       });
     }
 
     const [data, total] = await query
-      .leftJoinAndSelect("cf.formations", "formations")
+      .leftJoinAndSelect("cf.formation", "formation")
       .leftJoinAndSelect("cf.stagiaires", "stagiaires")
       .skip((page - 1) * limit)
       .take(limit)
@@ -61,7 +61,7 @@ export class AdminCatalogueController {
   async findOne(@Param("id") id: number) {
     return this.catalogueRepository.findOne({
       where: { id },
-      relations: ["formations", "stagiaires"],
+      relations: ["formation", "stagiaires"],
     });
   }
 
@@ -76,7 +76,7 @@ export class AdminCatalogueController {
     await this.catalogueRepository.update(id, body);
     return this.catalogueRepository.findOne({
       where: { id },
-      relations: ["formations", "stagiaires"],
+      relations: ["formation", "stagiaires"],
     });
   }
 
@@ -90,7 +90,7 @@ export class AdminCatalogueController {
   async duplicate(@Param("id") id: number) {
     const original = await this.catalogueRepository.findOne({
       where: { id },
-      relations: ["formations", "stagiaires"],
+      relations: ["formation", "stagiaires"],
     });
 
     if (!original) {
@@ -99,7 +99,7 @@ export class AdminCatalogueController {
 
     const newCatalogue = this.catalogueRepository.create({
       ...original,
-      nom: `${original.nom} (Copie)`,
+      titre: `${original.titre} (Copie)`,
     });
 
     return this.catalogueRepository.save(newCatalogue);
@@ -117,7 +117,7 @@ export class AdminCatalogueController {
 
     // Return base64 encoded PDF or generate one
     return {
-      filename: `${catalogue.nom}.pdf`,
+      filename: `${catalogue.titre}.pdf`,
       content: Buffer.from("PDF content here").toString("base64"),
     };
   }

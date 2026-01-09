@@ -3,12 +3,12 @@ import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 export declare class AdminFormationController {
     private formationRepository;
     constructor(formationRepository: Repository<CatalogueFormation>);
-    findAll(page?: number, limit?: number): Promise<{
+    findAll(page?: number, limit?: number, search?: string): Promise<{
         data: CatalogueFormation[];
-        meta: {
+        pagination: {
             total: number;
             page: number;
-            last_page: number;
+            total_pages: number;
         };
     }>;
     findOne(id: number): Promise<CatalogueFormation>;

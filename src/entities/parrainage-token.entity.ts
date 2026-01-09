@@ -20,15 +20,15 @@ export class ParrainageToken {
   @Column()
   user_id: number;
 
+  @Column({ type: "text", nullable: true })
+  parrain_data: string;
+
+  @Column({ type: "timestamp", nullable: true })
+  expires_at: Date;
+
   @ManyToOne(() => User)
   @JoinColumn({ name: "user_id" })
   user: User;
-
-  @Column({ type: "json" })
-  parrain_data: any;
-
-  @Column({ type: "timestamp" })
-  expires_at: Date;
 
   @CreateDateColumn()
   created_at: Date;

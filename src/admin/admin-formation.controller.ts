@@ -26,20 +26,33 @@ export class AdminFormationController {
   ) {}
 
   @Get()
-  async findAll(@Query("page") page = 1, @Query("limit") limit = 10) {
-    const [data, total] = await this.formationRepository.findAndCount({
-      relations: ["medias", "quizzes"],
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { id: "DESC" },
-    });
+  async findAll(
+    @Query("page") page = 1,
+    @Query("limit") limit = 10,
+    @Query("search") search = ""
+  ) {
+    const query = this.formationRepository.createQueryBuilder("cf")
+      .leftJoinAndSelect("cf.medias", "medias")
+      .leftJoinAndSelect("cf.quizzes", "quizzes");
+
+    if (search) {
+      query.where("cf.titre LIKE :search OR cf.description LIKE :search", {
+        search: `%${search}%`,
+      });
+    }
+
+    const [data, total] = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy("cf.id", "DESC")
+      .getManyAndCount();
 
     return {
       data,
-      meta: {
+      pagination: {
         total,
         page,
-        last_page: Math.ceil(total / limit),
+        total_pages: Math.ceil(total / limit),
       },
     };
   }

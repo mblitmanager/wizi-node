@@ -17,12 +17,17 @@ const admin_stagiaire_controller_1 = require("./admin-stagiaire.controller");
 const admin_formateur_controller_1 = require("./admin-formateur.controller");
 const admin_quiz_controller_1 = require("./admin-quiz.controller");
 const admin_formation_controller_1 = require("./admin-formation.controller");
+const admin_catalogue_controller_1 = require("./admin-catalogue.controller");
+const admin_achievement_controller_1 = require("./admin-achievement.controller");
+const admin_settings_controller_1 = require("./admin-settings.controller");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const user_entity_1 = require("../entities/user.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
 const formateur_entity_1 = require("../entities/formateur.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const quiz_entity_1 = require("../entities/quiz.entity");
+const achievement_entity_1 = require("../entities/achievement.entity");
+const setting_entity_1 = require("../entities/setting.entity");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -36,6 +41,8 @@ exports.AdminModule = AdminModule = __decorate([
                 formateur_entity_1.Formateur,
                 catalogue_formation_entity_1.CatalogueFormation,
                 quiz_entity_1.Quiz,
+                achievement_entity_1.Achievement,
+                setting_entity_1.Setting,
             ]),
         ],
         providers: [admin_service_1.AdminService],
@@ -47,6 +54,9 @@ exports.AdminModule = AdminModule = __decorate([
             admin_formateur_controller_1.AdminFormateurController,
             admin_quiz_controller_1.AdminQuizController,
             admin_formation_controller_1.AdminFormationController,
+            admin_catalogue_controller_1.AdminCatalogueController,
+            admin_achievement_controller_1.AdminAchievementController,
+            admin_settings_controller_1.AdminSettingsController,
         ],
         exports: [admin_service_1.AdminService],
     })

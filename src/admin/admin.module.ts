@@ -8,12 +8,17 @@ import { AdminStagiaireController } from "./admin-stagiaire.controller";
 import { AdminFormateurController } from "./admin-formateur.controller";
 import { AdminQuizController } from "./admin-quiz.controller";
 import { AdminFormationController } from "./admin-formation.controller";
+import { AdminCatalogueController } from "./admin-catalogue.controller";
+import { AdminAchievementController } from "./admin-achievement.controller";
+import { AdminSettingsController } from "./admin-settings.controller";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { User } from "../entities/user.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { Formateur } from "../entities/formateur.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { Quiz } from "../entities/quiz.entity";
+import { Achievement } from "../entities/achievement.entity";
+import { Setting } from "../entities/setting.entity";
 
 @Module({
   imports: [
@@ -24,6 +29,8 @@ import { Quiz } from "../entities/quiz.entity";
       Formateur,
       CatalogueFormation,
       Quiz,
+      Achievement,
+      Setting,
     ]),
   ],
   providers: [AdminService],
@@ -35,6 +42,9 @@ import { Quiz } from "../entities/quiz.entity";
     AdminFormateurController,
     AdminQuizController,
     AdminFormationController,
+    AdminCatalogueController,
+    AdminAchievementController,
+    AdminSettingsController,
   ],
   exports: [AdminService],
 })
