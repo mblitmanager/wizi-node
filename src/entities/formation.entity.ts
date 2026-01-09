@@ -8,14 +8,29 @@ export class Formation {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  nom: string;
+  @Column({ nullable: true })
+  titre: string;
 
   @Column({ nullable: true })
-  code: string;
+  slug: string;
 
   @Column({ type: "text", nullable: true })
   description: string;
+
+  @Column({ nullable: true })
+  categorie: string;
+
+  @Column({ nullable: true })
+  icon: string;
+
+  @Column({ nullable: true })
+  image: string;
+
+  @Column({ default: 1 })
+  statut: number;
+
+  @Column({ nullable: true })
+  duree: string;
 
   @Column({ type: "timestamp", nullable: true })
   created_at: Date;

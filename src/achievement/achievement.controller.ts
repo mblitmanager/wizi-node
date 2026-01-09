@@ -15,30 +15,37 @@ export class AchievementController {
   constructor(private readonly achievementService: AchievementService) {}
 
   @Get()
-  async getAchievements(@Request() req) {
-    return this.achievementService.getAchievements(req.user.stagiaire?.id);
+  async getAchievements(@Request() req: any) {
+    const achievements = await this.achievementService.getAchievements(
+      req.user.stagiaire?.id
+    );
+    return { achievements };
   }
 
   @Get("all")
   async getAllAchievements() {
-    return this.achievementService.getAllAchievements();
+    const achievements = await this.achievementService.getAllAchievements();
+    return { achievements };
   }
 
   @Post("check")
   async checkAchievements(
-    @Request() req,
+    @Request() req: any,
     @Body("code") code?: string,
     @Body("quiz_id") quizId?: number
   ) {
+    let newAchievements = [];
     if (code) {
-      return this.achievementService.unlockAchievementByCode(
+      newAchievements = await this.achievementService.unlockAchievementByCode(
         req.user.stagiaire?.id,
         code
       );
+    } else {
+      newAchievements = await this.achievementService.checkAchievements(
+        req.user.stagiaire?.id,
+        quizId
+      );
     }
-    return this.achievementService.checkAchievements(
-      req.user.stagiaire?.id,
-      quizId
-    );
+    return { new_achievements: newAchievements };
   }
 }

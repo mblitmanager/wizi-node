@@ -27,11 +27,51 @@ let FormationService = class FormationService {
         return this.formationRepository.find();
     }
     async getAllCatalogueFormations() {
-        return this.catalogueRepository.find();
-    }
-    async getCatalogueWithFormations() {
         return this.catalogueRepository.find({
-            relations: ["stagiaires"],
+            where: { statut: 1 },
+            relations: ["formation"],
+        });
+    }
+    async getCataloguesWithFormations(query) {
+        const perPage = query.per_page || 9;
+        const category = query.category;
+        const search = query.search;
+        const queryBuilder = this.catalogueRepository
+            .createQueryBuilder("catalogue")
+            .leftJoinAndSelect("catalogue.formation", "formation")
+            .leftJoin("catalogue.stagiaires", "stagiaires")
+            .loadRelationCountAndMap("catalogue.stagiaires_count", "catalogue.stagiaires")
+            .where("catalogue.statut = :statut", { statut: 1 });
+        if (category && category !== "Tous") {
+            queryBuilder.andWhere("formation.categorie = :category", { category });
+        }
+        if (search) {
+            queryBuilder.andWhere("(catalogue.titre LIKE :search OR catalogue.description LIKE :search)", { search: `%${search}%` });
+        }
+        const [items, total] = await queryBuilder
+            .take(perPage)
+            .skip(0)
+            .getManyAndCount();
+        return {
+            data: items.map((item) => ({
+                ...item,
+                formation: item.formation
+                    ? {
+                        ...item.formation,
+                        image_url: item.formation.image,
+                    }
+                    : null,
+            })),
+            total,
+            per_page: perPage,
+        };
+    }
+    async getFormationsAndCatalogues(stagiaireId) {
+        return this.catalogueRepository.find({
+            where: {
+                stagiaires: { id: stagiaireId },
+            },
+            relations: ["formation"],
         });
     }
 };

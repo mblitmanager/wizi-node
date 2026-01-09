@@ -3,9 +3,14 @@ import { Quiz } from "./quiz.entity";
 import { Progression } from "./progression.entity";
 export declare class Formation {
     id: number;
-    nom: string;
-    code: string;
+    titre: string;
+    slug: string;
     description: string;
+    categorie: string;
+    icon: string;
+    image: string;
+    statut: number;
+    duree: string;
     created_at: Date;
     updated_at: Date;
     medias: Media[];

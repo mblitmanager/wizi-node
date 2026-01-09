@@ -21,16 +21,22 @@ let AchievementController = class AchievementController {
         this.achievementService = achievementService;
     }
     async getAchievements(req) {
-        return this.achievementService.getAchievements(req.user.stagiaire?.id);
+        const achievements = await this.achievementService.getAchievements(req.user.stagiaire?.id);
+        return { achievements };
     }
     async getAllAchievements() {
-        return this.achievementService.getAllAchievements();
+        const achievements = await this.achievementService.getAllAchievements();
+        return { achievements };
     }
     async checkAchievements(req, code, quizId) {
+        let newAchievements = [];
         if (code) {
-            return this.achievementService.unlockAchievementByCode(req.user.stagiaire?.id, code);
+            newAchievements = await this.achievementService.unlockAchievementByCode(req.user.stagiaire?.id, code);
         }
-        return this.achievementService.checkAchievements(req.user.stagiaire?.id, quizId);
+        else {
+            newAchievements = await this.achievementService.checkAchievements(req.user.stagiaire?.id, quizId);
+        }
+        return { new_achievements: newAchievements };
     }
 };
 exports.AchievementController = AchievementController;
