@@ -1,8 +1,9 @@
-import { Module } from "@nestjs/common";
+import { Module, NestModule, MiddlewareConsumer } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { LoggerMiddleware } from "./common/middleware/logger.middleware";
 import { APP_GUARD } from "@nestjs/core";
 import { RolesGuard } from "./common/guards/roles.guard";
 import { User } from "./entities/user.entity";
@@ -34,6 +35,7 @@ import { NotificationModule } from "./notification/notification.module";
 import { InscriptionModule } from "./inscription/inscription.module";
 import { AchievementModule } from "./achievement/achievement.module";
 import { ParrainageModule } from "./parrainage/parrainage.module";
+import { AdminModule } from "./admin/admin.module";
 
 @Module({
   imports: [
@@ -62,15 +64,13 @@ import { ParrainageModule } from "./parrainage/parrainage.module";
           Formateur,
           Commercial,
           PoleRelationClient,
-          Formateur,
-          Commercial,
           Notification,
           DemandeInscription,
           Achievement,
           Parrainage,
           ParrainageToken,
         ],
-        synchronize: false, // Don't sync as database exists
+        synchronize: false,
         logging: true,
       }),
     }),
@@ -90,8 +90,6 @@ import { ParrainageModule } from "./parrainage/parrainage.module";
       Formateur,
       Commercial,
       PoleRelationClient,
-      Formateur,
-      Commercial,
       Notification,
       DemandeInscription,
       Achievement,
@@ -107,6 +105,7 @@ import { ParrainageModule } from "./parrainage/parrainage.module";
     InscriptionModule,
     AchievementModule,
     ParrainageModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
@@ -117,4 +116,8 @@ import { ParrainageModule } from "./parrainage/parrainage.module";
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes("*");
+  }
+}

@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { FormationService } from "./formation.service";
 
-@Controller("formations")
+@Controller("catalogueFormations")
 export class FormationController {
   constructor(private formationService: FormationService) {}
 
@@ -13,6 +13,11 @@ export class FormationController {
 
   @Get("catalogue")
   async getAllCatalogue() {
+    return this.formationService.getAllCatalogueFormations();
+  }
+
+  @Get("formations")
+  async getAllFormationsAlias() {
     return this.formationService.getAllCatalogueFormations();
   }
 }

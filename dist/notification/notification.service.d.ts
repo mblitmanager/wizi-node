@@ -6,5 +6,6 @@ export declare class NotificationService {
     createNotification(userId: number, type: string, message: string, data?: any): Promise<Notification>;
     getNotifications(userId: number): Promise<Notification[]>;
     markAsRead(notificationId: number): Promise<import("typeorm").UpdateResult>;
+    getUnreadCount(userId: number): Promise<number>;
     markAllAsRead(userId: number): Promise<import("typeorm").UpdateResult>;
 }

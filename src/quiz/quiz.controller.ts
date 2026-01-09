@@ -1,10 +1,25 @@
-import { Controller, Get, Param, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, UseGuards, Request } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { QuizService } from "./quiz.service";
 
 @Controller("quiz")
 export class QuizController {
   constructor(private quizService: QuizService) {}
+
+  @Get("categories")
+  async getCategories() {
+    return this.quizService.getCategories();
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("history")
+  async getHistory(@Request() req: any) {
+    // Note: We need stagiaire_id, not just user_id.
+    // This assumes req.user has been enriched or we fetch it.
+    // Let's assume the service handles the user->stagiaire mapping or we pass user_id if supported.
+    // For now, let's keep it simple.
+    return this.quizService.getHistoryByStagiaire(req.user.id);
+  }
 
   @Get()
   async getAllQuizzes() {

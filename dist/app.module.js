@@ -12,6 +12,7 @@ const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const logger_middleware_1 = require("./common/middleware/logger.middleware");
 const core_1 = require("@nestjs/core");
 const roles_guard_1 = require("./common/guards/roles.guard");
 const user_entity_1 = require("./entities/user.entity");
@@ -43,7 +44,11 @@ const notification_module_1 = require("./notification/notification.module");
 const inscription_module_1 = require("./inscription/inscription.module");
 const achievement_module_1 = require("./achievement/achievement.module");
 const parrainage_module_1 = require("./parrainage/parrainage.module");
+const admin_module_1 = require("./admin/admin.module");
 let AppModule = class AppModule {
+    configure(consumer) {
+        consumer.apply(logger_middleware_1.LoggerMiddleware).forRoutes("*");
+    }
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
@@ -74,8 +79,6 @@ exports.AppModule = AppModule = __decorate([
                         formateur_entity_1.Formateur,
                         commercial_entity_1.Commercial,
                         pole_relation_client_entity_1.PoleRelationClient,
-                        formateur_entity_1.Formateur,
-                        commercial_entity_1.Commercial,
                         notification_entity_1.Notification,
                         demande_inscription_entity_1.DemandeInscription,
                         achievement_entity_1.Achievement,
@@ -102,8 +105,6 @@ exports.AppModule = AppModule = __decorate([
                 formateur_entity_1.Formateur,
                 commercial_entity_1.Commercial,
                 pole_relation_client_entity_1.PoleRelationClient,
-                formateur_entity_1.Formateur,
-                commercial_entity_1.Commercial,
                 notification_entity_1.Notification,
                 demande_inscription_entity_1.DemandeInscription,
                 achievement_entity_1.Achievement,
@@ -119,6 +120,7 @@ exports.AppModule = AppModule = __decorate([
             inscription_module_1.InscriptionModule,
             achievement_module_1.AchievementModule,
             parrainage_module_1.ParrainageModule,
+            admin_module_1.AdminModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

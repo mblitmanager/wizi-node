@@ -40,6 +40,11 @@ let NotificationService = class NotificationService {
     async markAsRead(notificationId) {
         return this.notificationRepository.update(notificationId, { read: true });
     }
+    async getUnreadCount(userId) {
+        return this.notificationRepository.count({
+            where: { user_id: userId, read: false },
+        });
+    }
     async markAllAsRead(userId) {
         return this.notificationRepository.update({ user_id: userId }, { read: true });
     }

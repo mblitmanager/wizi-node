@@ -37,6 +37,12 @@ export class NotificationService {
     return this.notificationRepository.update(notificationId, { read: true });
   }
 
+  async getUnreadCount(userId: number) {
+    return this.notificationRepository.count({
+      where: { user_id: userId, read: false },
+    });
+  }
+
   async markAllAsRead(userId: number) {
     return this.notificationRepository.update(
       { user_id: userId },

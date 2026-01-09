@@ -110,4 +110,36 @@ export class StagiaireService {
       categories,
     };
   }
+
+  async getContacts(userId: number) {
+    const data = await this.getHomeData(userId);
+    return data.contacts;
+  }
+
+  async getContactsByType(userId: number, type: string) {
+    const data = await this.getHomeData(userId);
+    switch (type) {
+      case "commercial":
+        return data.contacts.commerciaux;
+      case "formateur":
+        return data.contacts.formateurs;
+      case "pole-relation":
+      case "pole-save":
+        return data.contacts.pole_relation;
+      default:
+        return [];
+    }
+  }
+
+  async getStagiaireQuizzes(userId: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { user_id: userId },
+    });
+    if (!stagiaire) return [];
+
+    return this.classementRepository.find({
+      where: { stagiaire_id: stagiaire.id },
+      relations: ["quiz"],
+    });
+  }
 }

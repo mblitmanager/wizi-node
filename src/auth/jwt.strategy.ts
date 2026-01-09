@@ -21,11 +21,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+    console.log("JWT Payload:", payload);
     const user = await this.userRepository.findOne({
       where: { id: payload.sub },
       relations: ["stagiaire"],
     });
     if (!user) {
+      console.log("User not found for sub:", payload.sub);
       throw new UnauthorizedException();
     }
     return user;

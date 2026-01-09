@@ -3,6 +3,9 @@ export declare class StagiaireController {
     private stagiaireService;
     constructor(stagiaireService: StagiaireService);
     getProfile(req: any): Promise<import("../entities/stagiaire.entity").Stagiaire>;
+    testAuth(): Promise<{
+        message: string;
+    }>;
     getHomeData(req: any): Promise<{
         user: {
             id: number;
@@ -41,4 +44,56 @@ export declare class StagiaireController {
         catalogue_formations: import("../entities/catalogue-formation.entity").CatalogueFormation[];
         categories: any[];
     }>;
+    getContacts(req: any): Promise<{
+        formateurs: {
+            id: any;
+            prenom: any;
+            nom: any;
+            email: any;
+            telephone: any;
+        }[];
+        commerciaux: {
+            id: any;
+            prenom: any;
+            nom: any;
+            email: any;
+            telephone: any;
+        }[];
+        pole_relation: {
+            id: any;
+            prenom: any;
+            nom: any;
+            email: any;
+            telephone: any;
+        }[];
+    }>;
+    getCommerciaux(req: any): Promise<{
+        id: any;
+        prenom: any;
+        nom: any;
+        email: any;
+        telephone: any;
+    }[]>;
+    getFormateurs(req: any): Promise<{
+        id: any;
+        prenom: any;
+        nom: any;
+        email: any;
+        telephone: any;
+    }[]>;
+    getPoleRelation(req: any): Promise<{
+        id: any;
+        prenom: any;
+        nom: any;
+        email: any;
+        telephone: any;
+    }[]>;
+    getPoleSave(req: any): Promise<{
+        id: any;
+        prenom: any;
+        nom: any;
+        email: any;
+        telephone: any;
+    }[]>;
+    getMyQuizzes(req: any): Promise<import("../entities/classement.entity").Classement[]>;
 }

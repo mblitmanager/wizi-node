@@ -10,4 +10,6 @@ export declare class AuthController {
     }>;
     register(userData: any): Promise<any>;
     getProfile(req: any): any;
+    getMe(req: any): any;
+    getUser(req: any): any;
 }

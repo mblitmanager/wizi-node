@@ -31,11 +31,13 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         this.userRepository = userRepository;
     }
     async validate(payload) {
+        console.log("JWT Payload:", payload);
         const user = await this.userRepository.findOne({
             where: { id: payload.sub },
             relations: ["stagiaire"],
         });
         if (!user) {
+            console.log("User not found for sub:", payload.sub);
             throw new common_1.UnauthorizedException();
         }
         return user;

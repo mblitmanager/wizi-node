@@ -48,4 +48,35 @@ export declare class StagiaireService {
         catalogue_formations: CatalogueFormation[];
         categories: any[];
     }>;
+    getContacts(userId: number): Promise<{
+        formateurs: {
+            id: any;
+            prenom: any;
+            nom: any;
+            email: any;
+            telephone: any;
+        }[];
+        commerciaux: {
+            id: any;
+            prenom: any;
+            nom: any;
+            email: any;
+            telephone: any;
+        }[];
+        pole_relation: {
+            id: any;
+            prenom: any;
+            nom: any;
+            email: any;
+            telephone: any;
+        }[];
+    }>;
+    getContactsByType(userId: number, type: string): Promise<{
+        id: any;
+        prenom: any;
+        nom: any;
+        email: any;
+        telephone: any;
+    }[]>;
+    getStagiaireQuizzes(userId: number): Promise<Classement[]>;
 }

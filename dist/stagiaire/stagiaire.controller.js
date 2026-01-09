@@ -23,8 +23,29 @@ let StagiaireController = class StagiaireController {
     async getProfile(req) {
         return this.stagiaireService.getProfile(req.user.id);
     }
+    async testAuth() {
+        return { message: "Public endpoint works" };
+    }
     async getHomeData(req) {
         return this.stagiaireService.getHomeData(req.user.id);
+    }
+    async getContacts(req) {
+        return this.stagiaireService.getContacts(req.user.id);
+    }
+    async getCommerciaux(req) {
+        return this.stagiaireService.getContactsByType(req.user.id, "commercial");
+    }
+    async getFormateurs(req) {
+        return this.stagiaireService.getContactsByType(req.user.id, "formateur");
+    }
+    async getPoleRelation(req) {
+        return this.stagiaireService.getContactsByType(req.user.id, "pole-relation");
+    }
+    async getPoleSave(req) {
+        return this.stagiaireService.getContactsByType(req.user.id, "pole-save");
+    }
+    async getMyQuizzes(req) {
+        return this.stagiaireService.getStagiaireQuizzes(req.user.id);
     }
 };
 exports.StagiaireController = StagiaireController;
@@ -37,6 +58,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], StagiaireController.prototype, "getProfile", null);
 __decorate([
+    (0, common_1.Get)("test-auth"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "testAuth", null);
+__decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     (0, common_1.Get)("dashboard/home"),
     __param(0, (0, common_1.Request)()),
@@ -44,6 +71,54 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StagiaireController.prototype, "getHomeData", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("contacts"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "getContacts", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("contacts/commerciaux"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "getCommerciaux", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("contacts/formateurs"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "getFormateurs", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("contacts/pole-relation"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "getPoleRelation", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("contacts/pole-save"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "getPoleSave", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("quizzes"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "getMyQuizzes", null);
 exports.StagiaireController = StagiaireController = __decorate([
     (0, common_1.Controller)("stagiaire"),
     __metadata("design:paramtypes", [stagiaire_service_1.StagiaireService])

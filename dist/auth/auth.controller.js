@@ -33,6 +33,12 @@ let AuthController = class AuthController {
     getProfile(req) {
         return req.user;
     }
+    getMe(req) {
+        return req.user;
+    }
+    getUser(req) {
+        return req.user;
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -57,8 +63,24 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("me"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "getMe", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("user"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "getUser", null);
 exports.AuthController = AuthController = __decorate([
-    (0, common_1.Controller)("auth"),
+    (0, common_1.Controller)(),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

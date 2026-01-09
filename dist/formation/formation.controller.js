@@ -22,6 +22,9 @@ let FormationController = class FormationController {
     async getAllCatalogue() {
         return this.formationService.getAllCatalogueFormations();
     }
+    async getAllFormationsAlias() {
+        return this.formationService.getAllCatalogueFormations();
+    }
 };
 exports.FormationController = FormationController;
 __decorate([
@@ -36,8 +39,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FormationController.prototype, "getAllCatalogue", null);
+__decorate([
+    (0, common_1.Get)("formations"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FormationController.prototype, "getAllFormationsAlias", null);
 exports.FormationController = FormationController = __decorate([
-    (0, common_1.Controller)("formations"),
+    (0, common_1.Controller)("catalogueFormations"),
     __metadata("design:paramtypes", [formation_service_1.FormationService])
 ], FormationController);
 //# sourceMappingURL=formation.controller.js.map

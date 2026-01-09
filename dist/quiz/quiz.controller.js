@@ -14,10 +14,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuizController = void 0;
 const common_1 = require("@nestjs/common");
+const passport_1 = require("@nestjs/passport");
 const quiz_service_1 = require("./quiz.service");
 let QuizController = class QuizController {
     constructor(quizService) {
         this.quizService = quizService;
+    }
+    async getCategories() {
+        return this.quizService.getCategories();
+    }
+    async getHistory(req) {
+        return this.quizService.getHistoryByStagiaire(req.user.id);
     }
     async getAllQuizzes() {
         return this.quizService.getAllQuizzes();
@@ -30,6 +37,20 @@ let QuizController = class QuizController {
     }
 };
 exports.QuizController = QuizController;
+__decorate([
+    (0, common_1.Get)("categories"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QuizController.prototype, "getCategories", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("history"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QuizController.prototype, "getHistory", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

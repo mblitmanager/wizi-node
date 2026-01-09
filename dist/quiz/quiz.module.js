@@ -12,6 +12,8 @@ const typeorm_1 = require("@nestjs/typeorm");
 const quiz_entity_1 = require("../entities/quiz.entity");
 const question_entity_1 = require("../entities/question.entity");
 const reponse_entity_1 = require("../entities/reponse.entity");
+const formation_entity_1 = require("../entities/formation.entity");
+const classement_entity_1 = require("../entities/classement.entity");
 const quiz_service_1 = require("./quiz.service");
 const quiz_controller_1 = require("./quiz.controller");
 let QuizModule = class QuizModule {
@@ -19,7 +21,9 @@ let QuizModule = class QuizModule {
 exports.QuizModule = QuizModule;
 exports.QuizModule = QuizModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([quiz_entity_1.Quiz, question_entity_1.Question, reponse_entity_1.Reponse])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([quiz_entity_1.Quiz, question_entity_1.Question, reponse_entity_1.Reponse, formation_entity_1.Formation, classement_entity_1.Classement]),
+        ],
         controllers: [quiz_controller_1.QuizController],
         providers: [quiz_service_1.QuizService],
         exports: [quiz_service_1.QuizService],

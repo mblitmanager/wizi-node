@@ -26,6 +26,10 @@ let RankingController = class RankingController {
     async getMyRanking(req) {
         return this.rankingService.getMyRanking(req.user.id);
     }
+    async getMyPoints(req) {
+        const ranking = await this.rankingService.getMyRanking(req.user.id);
+        return { points: ranking?.totalPoints || 0 };
+    }
 };
 exports.RankingController = RankingController;
 __decorate([
@@ -42,8 +46,16 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], RankingController.prototype, "getMyRanking", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("points"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], RankingController.prototype, "getMyPoints", null);
 exports.RankingController = RankingController = __decorate([
-    (0, common_1.Controller)("ranking"),
+    (0, common_1.Controller)("classement"),
     __metadata("design:paramtypes", [ranking_service_1.RankingService])
 ], RankingController);
 //# sourceMappingURL=ranking.controller.js.map

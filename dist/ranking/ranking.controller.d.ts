@@ -26,4 +26,7 @@ export declare class RankingController {
         quizCount: any;
         averageScore: number;
     }>;
+    getMyPoints(req: any): Promise<{
+        points: any;
+    }>;
 }
