@@ -39,6 +39,7 @@ const demande_inscription_entity_1 = require("./entities/demande-inscription.ent
 const achievement_entity_1 = require("./entities/achievement.entity");
 const parrainage_entity_1 = require("./entities/parrainage.entity");
 const parrainage_token_entity_1 = require("./entities/parrainage-token.entity");
+const parrainage_event_entity_1 = require("./entities/parrainage-event.entity");
 const ranking_module_1 = require("./ranking/ranking.module");
 const notification_module_1 = require("./notification/notification.module");
 const inscription_module_1 = require("./inscription/inscription.module");
@@ -84,6 +85,7 @@ exports.AppModule = AppModule = __decorate([
                         achievement_entity_1.Achievement,
                         parrainage_entity_1.Parrainage,
                         parrainage_token_entity_1.ParrainageToken,
+                        parrainage_event_entity_1.ParrainageEvent,
                     ],
                     synchronize: false,
                     logging: true,
@@ -110,6 +112,7 @@ exports.AppModule = AppModule = __decorate([
                 achievement_entity_1.Achievement,
                 parrainage_entity_1.Parrainage,
                 parrainage_token_entity_1.ParrainageToken,
+                parrainage_event_entity_1.ParrainageEvent,
             ]),
             auth_module_1.AuthModule,
             stagiaire_module_1.StagiaireModule,

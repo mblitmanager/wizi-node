@@ -55,7 +55,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RankingController.prototype, "getMyPoints", null);
 exports.RankingController = RankingController = __decorate([
-    (0, common_1.Controller)("classement"),
+    (0, common_1.Controller)("quiz/classement"),
     __metadata("design:paramtypes", [ranking_service_1.RankingService])
 ], RankingController);
 //# sourceMappingURL=ranking.controller.js.map

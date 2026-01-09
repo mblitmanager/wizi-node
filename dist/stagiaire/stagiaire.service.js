@@ -47,7 +47,7 @@ let StagiaireService = class StagiaireService {
             ],
         });
         if (!stagiaire) {
-            throw new Error("Stagiaire not found");
+            throw new common_1.NotFoundException(`Stagiaire with user_id ${userId} not found`);
         }
         const quizStats = await this.classementRepository
             .createQueryBuilder("classement")

@@ -30,6 +30,7 @@ import { DemandeInscription } from "./entities/demande-inscription.entity";
 import { Achievement } from "./entities/achievement.entity";
 import { Parrainage } from "./entities/parrainage.entity";
 import { ParrainageToken } from "./entities/parrainage-token.entity";
+import { ParrainageEvent } from "./entities/parrainage-event.entity";
 import { RankingModule } from "./ranking/ranking.module";
 import { NotificationModule } from "./notification/notification.module";
 import { InscriptionModule } from "./inscription/inscription.module";
@@ -69,6 +70,7 @@ import { AdminModule } from "./admin/admin.module";
           Achievement,
           Parrainage,
           ParrainageToken,
+          ParrainageEvent,
         ],
         synchronize: false,
         logging: true,
@@ -95,6 +97,7 @@ import { AdminModule } from "./admin/admin.module";
       Achievement,
       Parrainage,
       ParrainageToken,
+      ParrainageEvent,
     ]),
     AuthModule,
     StagiaireModule,

@@ -14,48 +14,42 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ParrainageController = void 0;
 const common_1 = require("@nestjs/common");
-const passport_1 = require("@nestjs/passport");
-const parrainage_service_1 = require("./parrainage.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
 let ParrainageController = class ParrainageController {
-    constructor(parrainageService) {
-        this.parrainageService = parrainageService;
+    constructor(parrainageEventRepository) {
+        this.parrainageEventRepository = parrainageEventRepository;
     }
-    async generateLink(req) {
-        return this.parrainageService.generateLink(req.user.id);
-    }
-    async getParrainData(token) {
-        return this.parrainageService.getParrainData(token);
-    }
-    async getStatsParrain(req) {
-        return this.parrainageService.getStatsParrain(req.user.id);
+    async getEvents() {
+        try {
+            const events = await this.parrainageEventRepository.find({
+                order: { date_debut: "ASC" },
+            });
+            return {
+                success: true,
+                data: events,
+            };
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: "Erreur lors de la récupération des événements",
+                error: error.message,
+            };
+        }
     }
 };
 exports.ParrainageController = ParrainageController;
 __decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    (0, common_1.Post)("generate-link"),
-    __param(0, (0, common_1.Request)()),
+    (0, common_1.Get)(),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], ParrainageController.prototype, "generateLink", null);
-__decorate([
-    (0, common_1.Get)("get-data/:token"),
-    __param(0, (0, common_1.Param)("token")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], ParrainageController.prototype, "getParrainData", null);
-__decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    (0, common_1.Get)("stats"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ParrainageController.prototype, "getStatsParrain", null);
+], ParrainageController.prototype, "getEvents", null);
 exports.ParrainageController = ParrainageController = __decorate([
-    (0, common_1.Controller)("parrainage"),
-    __metadata("design:paramtypes", [parrainage_service_1.ParrainageService])
+    (0, common_1.Controller)("parrainage-events"),
+    __param(0, (0, typeorm_1.InjectRepository)(parrainage_event_entity_1.ParrainageEvent)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], ParrainageController);
 //# sourceMappingURL=parrainage.controller.js.map

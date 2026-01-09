@@ -1,25 +1,17 @@
-import { ParrainageService } from "./parrainage.service";
+import { Repository } from "typeorm";
+import { ParrainageEvent } from "../entities/parrainage-event.entity";
 export declare class ParrainageController {
-    private readonly parrainageService;
-    constructor(parrainageService: ParrainageService);
-    generateLink(req: any): Promise<{
+    private parrainageEventRepository;
+    constructor(parrainageEventRepository: Repository<ParrainageEvent>);
+    getEvents(): Promise<{
         success: boolean;
-        token: string;
-    }>;
-    getParrainData(token: string): Promise<{
-        success: boolean;
-        message: string;
-        parrain?: undefined;
+        data: ParrainageEvent[];
+        message?: undefined;
+        error?: undefined;
     } | {
         success: boolean;
-        parrain: any;
-        message?: undefined;
-    }>;
-    getStatsParrain(req: any): Promise<{
-        success: boolean;
-        parrain_id: number;
-        nombre_filleuls: number;
-        total_points: number;
-        gains: number;
+        message: string;
+        error: any;
+        data?: undefined;
     }>;
 }

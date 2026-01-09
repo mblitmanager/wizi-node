@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Stagiaire } from "../entities/stagiaire.entity";
@@ -41,7 +41,7 @@ export class StagiaireService {
     });
 
     if (!stagiaire) {
-      throw new Error("Stagiaire not found");
+      throw new NotFoundException(`Stagiaire with user_id ${userId} not found`);
     }
 
     // 1. Get basic quiz stats
