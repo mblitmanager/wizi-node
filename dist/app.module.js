@@ -43,6 +43,7 @@ const achievement_entity_1 = require("./entities/achievement.entity");
 const parrainage_entity_1 = require("./entities/parrainage.entity");
 const parrainage_token_entity_1 = require("./entities/parrainage-token.entity");
 const parrainage_event_entity_1 = require("./entities/parrainage-event.entity");
+const stagiaire_catalogue_formation_entity_1 = require("./entities/stagiaire-catalogue-formation.entity");
 const ranking_module_1 = require("./ranking/ranking.module");
 const notification_module_1 = require("./notification/notification.module");
 const inscription_module_1 = require("./inscription/inscription.module");
@@ -98,6 +99,7 @@ exports.AppModule = AppModule = __decorate([
                         parrainage_entity_1.Parrainage,
                         parrainage_token_entity_1.ParrainageToken,
                         parrainage_event_entity_1.ParrainageEvent,
+                        stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
                     ],
                     synchronize: false,
                     logging: true,
@@ -125,6 +127,7 @@ exports.AppModule = AppModule = __decorate([
                 parrainage_entity_1.Parrainage,
                 parrainage_token_entity_1.ParrainageToken,
                 parrainage_event_entity_1.ParrainageEvent,
+                stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
             ]),
             auth_module_1.AuthModule,
             stagiaire_module_1.StagiaireModule,

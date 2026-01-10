@@ -31,6 +31,7 @@ import { Achievement } from "./entities/achievement.entity";
 import { Parrainage } from "./entities/parrainage.entity";
 import { ParrainageToken } from "./entities/parrainage-token.entity";
 import { ParrainageEvent } from "./entities/parrainage-event.entity";
+import { StagiaireCatalogueFormation } from "./entities/stagiaire-catalogue-formation.entity";
 import { RankingModule } from "./ranking/ranking.module";
 import { NotificationModule } from "./notification/notification.module";
 import { InscriptionModule } from "./inscription/inscription.module";
@@ -77,6 +78,7 @@ import { MailModule } from "./mail/mail.module";
           Parrainage,
           ParrainageToken,
           ParrainageEvent,
+          StagiaireCatalogueFormation,
         ],
         synchronize: false,
         logging: true,
@@ -104,6 +106,7 @@ import { MailModule } from "./mail/mail.module";
       Parrainage,
       ParrainageToken,
       ParrainageEvent,
+      StagiaireCatalogueFormation,
     ]),
     AuthModule,
     StagiaireModule,
