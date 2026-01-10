@@ -6,8 +6,8 @@ export declare class AdminPoleRelationClientController {
     private apiResponse;
     constructor(prcRepository: Repository<PoleRelationClient>, apiResponse: ApiResponseService);
     index(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<PoleRelationClient>>;
-    store(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<PoleRelationClient[]>>;
-    show(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<PoleRelationClient>>;
-    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<PoleRelationClient>>;
-    destroy(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    store(data: any): Promise<any>;
+    show(id: number): Promise<any>;
+    update(id: number, data: any): Promise<any>;
+    destroy(id: number): Promise<any>;
 }

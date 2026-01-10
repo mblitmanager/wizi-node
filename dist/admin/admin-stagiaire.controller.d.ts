@@ -6,8 +6,8 @@ export declare class AdminStagiaireController {
     private apiResponse;
     constructor(stagiaireRepository: Repository<Stagiaire>, apiResponse: ApiResponseService);
     findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Stagiaire>>;
-    findOne(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Stagiaire>>;
-    create(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Stagiaire[]>>;
-    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Stagiaire>>;
-    remove(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    findOne(id: number): Promise<any>;
+    create(data: any): Promise<any>;
+    update(id: number, data: any): Promise<any>;
+    remove(id: number): Promise<any>;
 }

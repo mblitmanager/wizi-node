@@ -5,6 +5,6 @@ export declare class AdminSettingsController {
     private settingRepository;
     private apiResponse;
     constructor(settingRepository: Repository<Setting>, apiResponse: ApiResponseService);
-    getSettings(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
-    updateSettings(body: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    getSettings(): Promise<any>;
+    updateSettings(body: any): Promise<any>;
 }

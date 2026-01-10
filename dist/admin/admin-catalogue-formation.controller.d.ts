@@ -9,14 +9,14 @@ export declare class AdminCatalogueFormationController {
     create(): Promise<{
         message: string;
     }>;
-    store(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<CatalogueFormation[]>>;
-    show(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<CatalogueFormation>>;
+    store(data: any): Promise<any>;
+    show(id: number): Promise<any>;
     edit(id: number): Promise<{
         form: CatalogueFormation;
     }>;
-    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<CatalogueFormation>>;
-    destroy(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
-    duplicate(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<CatalogueFormation>>;
+    update(id: number, data: any): Promise<any>;
+    destroy(id: number): Promise<any>;
+    duplicate(id: number): Promise<any>;
     downloadPdf(id: number): Promise<{
         message: string;
         catalogueId: number;

@@ -6,9 +6,9 @@ export declare class AdminFormationController {
     private apiResponse;
     constructor(formationRepository: Repository<Formation>, apiResponse: ApiResponseService);
     findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Formation>>;
-    findOne(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Formation>>;
-    create(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Formation[]>>;
-    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Formation>>;
-    remove(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
-    duplicate(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Formation>>;
+    findOne(id: number): Promise<any>;
+    create(data: any): Promise<any>;
+    update(id: number, data: any): Promise<any>;
+    remove(id: number): Promise<any>;
+    duplicate(id: number): Promise<any>;
 }

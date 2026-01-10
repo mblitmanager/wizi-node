@@ -17,40 +17,31 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const roles_guard_1 = require("../common/guards/roles.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminParametreController = class AdminParametreController {
-    constructor() { }
-    async index(page = 1, limit = 10, search = "") {
-        return {
-            data: [],
-            pagination: { total: 0, page, total_pages: 0 },
-        };
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
     }
-    async create() {
-        return { message: "Create parametre form" };
+    async index(page = 1, limit = 10, search = "") {
+        return this.apiResponse.paginated([], 0, page, limit);
     }
     async store(data) {
-        return { message: "Parametre created", data };
+        return this.apiResponse.success(data);
     }
     async show(id) {
-        return { id, message: "Parametre details" };
-    }
-    async edit(id) {
-        return { id, message: "Edit parametre form" };
+        return this.apiResponse.success({ id });
     }
     async update(id, data) {
-        return { id, message: "Parametre updated", data };
+        return this.apiResponse.success(data);
     }
     async destroy(id) {
-        return { id, message: "Parametre deleted" };
-    }
-    async resetDataForm() {
-        return { message: "Reset data confirmation form" };
+        return this.apiResponse.success();
     }
     async resetData() {
-        return { message: "Data reset completed" };
+        return this.apiResponse.success();
     }
     async updateImage(id, data) {
-        return { id, message: "Image updated", data };
+        return this.apiResponse.success(data);
     }
 };
 exports.AdminParametreController = AdminParametreController;
@@ -63,12 +54,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AdminParametreController.prototype, "index", null);
-__decorate([
-    (0, common_1.Get)("create"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AdminParametreController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -84,13 +69,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminParametreController.prototype, "show", null);
 __decorate([
-    (0, common_1.Get)(":parametre/edit"),
-    __param(0, (0, common_1.Param)("parametre")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], AdminParametreController.prototype, "edit", null);
-__decorate([
     (0, common_1.Put)(":parametre"),
     __param(0, (0, common_1.Param)("parametre")),
     __param(1, (0, common_1.Body)()),
@@ -105,12 +83,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminParametreController.prototype, "destroy", null);
-__decorate([
-    (0, common_1.Get)("reset-data"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AdminParametreController.prototype, "resetDataForm", null);
 __decorate([
     (0, common_1.Post)("reset-data"),
     __metadata("design:type", Function),
@@ -129,12 +101,14 @@ exports.AdminParametreController = AdminParametreController = __decorate([
     (0, common_1.Controller)("administrateur/parametre"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminParametreController);
 let AdminClassementController = class AdminClassementController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async index() {
-        return { data: [], message: "Classements list" };
+        return this.apiResponse.success([]);
     }
 };
 exports.AdminClassementController = AdminClassementController;
@@ -148,7 +122,7 @@ exports.AdminClassementController = AdminClassementController = __decorate([
     (0, common_1.Controller)("administrateur/classements"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminClassementController);
 let AdminParrainageController = class AdminParrainageController {
     constructor() { }

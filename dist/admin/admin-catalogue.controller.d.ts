@@ -5,23 +5,11 @@ export declare class AdminCatalogueController {
     private catalogueRepository;
     private apiResponse;
     constructor(catalogueRepository: Repository<CatalogueFormation>, apiResponse: ApiResponseService);
-    findAll(page?: number, limit?: number, search?: string): Promise<{
-        data: CatalogueFormation[];
-        pagination: {
-            total: number;
-            page: number;
-            total_pages: number;
-        };
-    }>;
-    findOne(id: number): Promise<CatalogueFormation>;
-    create(body: any): Promise<CatalogueFormation[]>;
-    update(id: number, body: any): Promise<CatalogueFormation>;
-    delete(id: number): Promise<{
-        success: boolean;
-    }>;
-    duplicate(id: number): Promise<CatalogueFormation>;
-    downloadPdf(id: number): Promise<{
-        filename: string;
-        content: string;
-    }>;
+    findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<CatalogueFormation>>;
+    findOne(id: number): Promise<any>;
+    create(body: any): Promise<any>;
+    update(id: number, body: any): Promise<any>;
+    delete(id: number): Promise<any>;
+    duplicate(id: number): Promise<any>;
+    downloadPdf(id: number): Promise<any>;
 }

@@ -40,35 +40,49 @@ let AdminCatalogueController = class AdminCatalogueController {
             .take(limit)
             .orderBy("cf.id", "DESC")
             .getManyAndCount();
-        return {
-            data,
-            pagination: {
-                total,
-                page,
-                total_pages: Math.ceil(total / limit),
-            },
-        };
+        return this.apiResponse.paginated(data, total, page, limit);
     }
     async findOne(id) {
-        return this.catalogueRepository.findOne({
+        const catalogue = await this.catalogueRepository.findOne({
             where: { id },
             relations: ["formation", "stagiaires"],
         });
+        if (!catalogue) {
+            throw new common_1.NotFoundException("Catalogue not found");
+        }
+        return this.apiResponse.success(catalogue);
     }
     async create(body) {
+        if (!body.titre) {
+            throw new common_1.BadRequestException("titre is required");
+        }
         const catalogue = this.catalogueRepository.create(body);
-        return this.catalogueRepository.save(catalogue);
+        const saved = await this.catalogueRepository.save(catalogue);
+        return this.apiResponse.success(saved);
     }
     async update(id, body) {
+        const catalogue = await this.catalogueRepository.findOne({
+            where: { id },
+        });
+        if (!catalogue) {
+            throw new common_1.NotFoundException("Catalogue not found");
+        }
         await this.catalogueRepository.update(id, body);
-        return this.catalogueRepository.findOne({
+        const updated = await this.catalogueRepository.findOne({
             where: { id },
             relations: ["formation", "stagiaires"],
         });
+        return this.apiResponse.success(updated);
     }
     async delete(id) {
+        const catalogue = await this.catalogueRepository.findOne({
+            where: { id },
+        });
+        if (!catalogue) {
+            throw new common_1.NotFoundException("Catalogue not found");
+        }
         await this.catalogueRepository.delete(id);
-        return { success: true };
+        return this.apiResponse.success();
     }
     async duplicate(id) {
         const original = await this.catalogueRepository.findOne({
@@ -76,25 +90,26 @@ let AdminCatalogueController = class AdminCatalogueController {
             relations: ["formation", "stagiaires"],
         });
         if (!original) {
-            throw new Error("Catalogue not found");
+            throw new common_1.NotFoundException("Catalogue not found");
         }
         const newCatalogue = this.catalogueRepository.create({
             ...original,
             titre: `${original.titre} (Copie)`,
         });
-        return this.catalogueRepository.save(newCatalogue);
+        const saved = await this.catalogueRepository.save(newCatalogue);
+        return this.apiResponse.success(saved);
     }
     async downloadPdf(id) {
         const catalogue = await this.catalogueRepository.findOne({
             where: { id },
         });
         if (!catalogue) {
-            throw new Error("Catalogue not found");
+            throw new common_1.NotFoundException("Catalogue not found");
         }
-        return {
+        return this.apiResponse.success({
             filename: `${catalogue.titre}.pdf`,
             content: Buffer.from("PDF content here").toString("base64"),
-        };
+        });
     }
 };
 exports.AdminCatalogueController = AdminCatalogueController;

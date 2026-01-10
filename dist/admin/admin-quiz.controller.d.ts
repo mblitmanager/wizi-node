@@ -6,11 +6,11 @@ export declare class AdminQuizController {
     private apiResponse;
     constructor(quizRepository: Repository<Quiz>, apiResponse: ApiResponseService);
     findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Quiz>>;
-    findOne(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz>>;
-    create(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz[]>>;
-    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz>>;
-    remove(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
-    duplicate(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz>>;
-    enable(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz>>;
-    disable(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz>>;
+    findOne(id: number): Promise<any>;
+    create(data: any): Promise<any>;
+    update(id: number, data: any): Promise<any>;
+    remove(id: number): Promise<any>;
+    duplicate(id: number): Promise<any>;
+    enable(id: number): Promise<any>;
+    disable(id: number): Promise<any>;
 }

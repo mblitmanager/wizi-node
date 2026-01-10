@@ -6,5 +6,5 @@ export declare class AdminAchievementController {
     private apiResponse;
     constructor(achievementRepository: Repository<Achievement>, apiResponse: ApiResponseService);
     findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Achievement>>;
-    delete(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    delete(id: number): Promise<any>;
 }

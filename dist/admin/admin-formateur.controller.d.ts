@@ -6,8 +6,8 @@ export declare class AdminFormateurController {
     private apiResponse;
     constructor(formateurRepository: Repository<Formateur>, apiResponse: ApiResponseService);
     findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Formateur>>;
-    findOne(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Formateur>>;
-    create(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Formateur[]>>;
-    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Formateur>>;
-    remove(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    findOne(id: number): Promise<any>;
+    create(data: any): Promise<any>;
+    update(id: number, data: any): Promise<any>;
+    remove(id: number): Promise<any>;
 }

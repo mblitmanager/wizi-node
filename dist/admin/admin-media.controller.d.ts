@@ -6,8 +6,8 @@ export declare class AdminMediaController {
     private apiResponse;
     constructor(mediaRepository: Repository<Media>, apiResponse: ApiResponseService);
     findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Media>>;
-    findOne(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Media>>;
-    create(data: any, file?: Express.Multer.File): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Media[]>>;
-    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Media>>;
-    remove(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    findOne(id: number): Promise<any>;
+    create(data: any, file?: Express.Multer.File): Promise<any>;
+    update(id: number, data: any): Promise<any>;
+    remove(id: number): Promise<any>;
 }

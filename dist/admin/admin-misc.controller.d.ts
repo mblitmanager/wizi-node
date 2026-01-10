@@ -1,55 +1,19 @@
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class AdminParametreController {
-    constructor();
-    index(page?: number, limit?: number, search?: string): Promise<{
-        data: any[];
-        pagination: {
-            total: number;
-            page: number;
-            total_pages: number;
-        };
-    }>;
-    create(): Promise<{
-        message: string;
-    }>;
-    store(data: any): Promise<{
-        message: string;
-        data: any;
-    }>;
-    show(id: number): Promise<{
-        id: number;
-        message: string;
-    }>;
-    edit(id: number): Promise<{
-        id: number;
-        message: string;
-    }>;
-    update(id: number, data: any): Promise<{
-        id: number;
-        message: string;
-        data: any;
-    }>;
-    destroy(id: number): Promise<{
-        id: number;
-        message: string;
-    }>;
-    resetDataForm(): Promise<{
-        message: string;
-    }>;
-    resetData(): Promise<{
-        message: string;
-    }>;
-    updateImage(id: number, data: any): Promise<{
-        id: number;
-        message: string;
-        data: any;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    index(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<any>>;
+    store(data: any): Promise<any>;
+    show(id: number): Promise<any>;
+    update(id: number, data: any): Promise<any>;
+    destroy(id: number): Promise<any>;
+    resetData(): Promise<any>;
+    updateImage(id: number, data: any): Promise<any>;
 }
 export declare class AdminClassementController {
-    constructor();
-    index(): Promise<{
-        data: any[];
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    index(): Promise<any>;
 }
 export declare class AdminParrainageController {
     constructor();
