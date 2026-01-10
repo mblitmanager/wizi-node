@@ -74,17 +74,17 @@ let AdminQuizController = class AdminQuizController {
         }
         const newQuiz = this.quizRepository.create({
             ...original,
-            title: `${original.title} (Copie)`,
+            titre: `${original.titre} (Copie)`,
             id: undefined,
         });
         return this.quizRepository.save(newQuiz);
     }
     async enable(id) {
-        await this.quizRepository.update(id, { statut: 1 });
+        await this.quizRepository.update(id, { status: "actif" });
         return this.findOne(id);
     }
     async disable(id) {
-        await this.quizRepository.update(id, { statut: 0 });
+        await this.quizRepository.update(id, { status: "inactif" });
         return this.findOne(id);
     }
 };

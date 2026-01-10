@@ -20,13 +20,29 @@ __decorate([
     __metadata("design:type", Number)
 ], Reponse.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "text" }),
+    (0, typeorm_1.Column)({ name: "text", type: "text", nullable: true }),
     __metadata("design:type", String)
-], Reponse.prototype, "reponse_text", void 0);
+], Reponse.prototype, "text", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: false }),
+    (0, typeorm_1.Column)({ name: "is_correct", default: false, nullable: true }),
     __metadata("design:type", Boolean)
-], Reponse.prototype, "is_correct", void 0);
+], Reponse.prototype, "isCorrect", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Reponse.prototype, "position", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Reponse.prototype, "match_pair", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Reponse.prototype, "bank_group", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: "flashcard_back", type: "text", nullable: true }),
+    __metadata("design:type", String)
+], Reponse.prototype, "flashcardBack", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)

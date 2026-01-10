@@ -16,6 +16,7 @@ export declare class RankingService {
         score: any;
         totalPoints: any;
         quizCount: any;
+        completedQuizzes: any;
         averageScore: number;
         formateurs: any;
     }[]>;
@@ -30,6 +31,7 @@ export declare class RankingService {
         score: any;
         totalPoints: any;
         quizCount: any;
+        completedQuizzes: any;
         averageScore: number;
         formateurs: any;
     }>;

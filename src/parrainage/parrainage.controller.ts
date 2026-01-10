@@ -1,32 +1,67 @@
-import { Controller, Get } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { ParrainageEvent } from "../entities/parrainage-event.entity";
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  UseGuards,
+  Request,
+  Body,
+} from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { ParrainageService } from "./parrainage.service";
 
-@Controller("parrainage-events")
+@Controller()
 export class ParrainageController {
-  constructor(
-    @InjectRepository(ParrainageEvent)
-    private parrainageEventRepository: Repository<ParrainageEvent>
-  ) {}
+  constructor(private parrainageService: ParrainageService) {}
 
-  @Get()
+  @Get("parrainage-events")
   async getEvents() {
-    try {
-      const events = await this.parrainageEventRepository.find({
-        order: { date_debut: "ASC" },
-      });
+    return this.parrainageService.getEvents();
+  }
 
-      return {
-        success: true,
-        data: events,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: "Erreur lors de la récupération des événements",
-        error: error.message,
-      };
-    }
+  @Get("parrainage/get-data/:token")
+  async getParrainData(@Param("token") token: string) {
+    return this.parrainageService.getParrainData(token);
+  }
+
+  @Post("parrainage/register-filleul")
+  async registerFilleul(@Body() data: any) {
+    return this.parrainageService.registerFilleul(data);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("parrainage/generate-link")
+  async generateLink(@Request() req) {
+    return this.parrainageService.generateLink(req.user.id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("stagiaire/parrainage/stats")
+  async getStatsParrain(@Request() req) {
+    return this.parrainageService.getStatsParrain(req.user.id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("parrainage/stats/:parrainId")
+  async getStatsParrainById(@Param("parrainId") parrainId: number) {
+    return this.parrainageService.getStatsParrain(parrainId);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("stagiaire/parrainage/filleuls")
+  async getFilleuls(@Request() req) {
+    return this.parrainageService.getFilleuls(req.user.id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("stagiaire/parrainage/rewards")
+  async getRewards(@Request() req) {
+    return this.parrainageService.getRewards(req.user.id);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("stagiaire/parrainage/history")
+  async getHistory(@Request() req) {
+    return this.parrainageService.getHistory(req.user.id);
   }
 }

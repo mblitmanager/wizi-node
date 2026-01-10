@@ -5,6 +5,8 @@ import { Stagiaire } from "../entities/stagiaire.entity";
 import { Classement } from "../entities/classement.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { Formation } from "../entities/formation.entity";
+import { Quiz } from "../entities/quiz.entity";
+import { QuizParticipation } from "../entities/quiz-participation.entity";
 
 @Injectable()
 export class StagiaireService {
@@ -16,7 +18,11 @@ export class StagiaireService {
     @InjectRepository(CatalogueFormation)
     private catalogueRepository: Repository<CatalogueFormation>,
     @InjectRepository(Formation)
-    private formationRepository: Repository<Formation>
+    private formationRepository: Repository<Formation>,
+    @InjectRepository(Quiz)
+    private quizRepository: Repository<Quiz>,
+    @InjectRepository(QuizParticipation)
+    private participationRepository: Repository<QuizParticipation>
   ) {}
 
   async getProfile(userId: number) {
@@ -143,15 +149,61 @@ export class StagiaireService {
   }
 
   async getStagiaireQuizzes(userId: number) {
-    const stagiaire = await this.stagiaireRepository.findOne({
+    const quizzes = await this.quizRepository.find({
+      where: { status: "actif" },
+      relations: ["formation", "questions", "questions.reponses"],
+    });
+
+    const participations = await this.participationRepository.find({
       where: { user_id: userId },
     });
-    if (!stagiaire) return [];
 
-    return this.classementRepository.find({
-      where: { stagiaire_id: stagiaire.id },
-      relations: ["quiz"],
+    const mappedQuizzes = quizzes.map((quiz) => {
+      const participation = participations.find((p) => p.quiz_id === quiz.id);
+
+      return {
+        id: quiz.id.toString(),
+        titre: quiz.titre,
+        description: quiz.description,
+        duree: quiz.duree,
+        niveau: quiz.niveau,
+        status: quiz.status,
+        nb_points_total: quiz.nb_points_total,
+        formationId: quiz.formation_id?.toString(),
+        categorie: quiz.formation?.categorie,
+        formation: quiz.formation
+          ? {
+              id: quiz.formation.id,
+              titre: quiz.formation.titre,
+              categorie: quiz.formation.categorie,
+            }
+          : null,
+        questions: (quiz.questions || []).map((q) => ({
+          id: q.id.toString(),
+          text: q.text,
+          type: q.type,
+          points: q.points,
+          answers: (q.reponses || []).map((r) => ({
+            id: r.id.toString(),
+            text: r.text,
+            isCorrect: r.isCorrect,
+          })),
+        })),
+        userParticipation: participation
+          ? {
+              id: participation.id,
+              status: participation.status,
+              score: participation.score,
+              correct_answers: participation.correct_answers,
+              time_spent: participation.time_spent,
+              started_at: participation.started_at,
+              completed_at: participation.completed_at,
+            }
+          : null,
+      };
     });
+
+    return { data: mappedQuizzes };
   }
 
   async getFormationsByStagiaire(stagiaireId: number) {

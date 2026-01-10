@@ -7,6 +7,7 @@ import {
   JoinColumn,
 } from "typeorm";
 import { Formation } from "./formation.entity";
+import { Question } from "./question.entity";
 
 @Entity("quizzes")
 export class Quiz {
@@ -38,9 +39,12 @@ export class Quiz {
   @Column({ nullable: true })
   formation_id: number;
 
-  @ManyToOne(() => Formation)
+  @ManyToOne(() => Formation, (formation) => formation.quizzes)
   @JoinColumn({ name: "formation_id" })
   formation: Formation;
+
+  @OneToMany(() => Question, (question) => question.quiz)
+  questions: Question[];
 
   @Column({ type: "timestamp", nullable: true })
   created_at: Date;

@@ -48,6 +48,7 @@ export class RankingService {
         score: totalPoints,
         totalPoints,
         quizCount: group.length,
+        completedQuizzes: group.length,
         averageScore: totalPoints / group.length,
         formateurs: (stagiaire.formateurs || []).map((f: any) => ({
           id: f.id,
@@ -93,6 +94,7 @@ export class RankingService {
         score: 0,
         totalPoints: 0,
         quizCount: 0,
+        completedQuizzes: 0,
         averageScore: 0,
         rang: globalRanking.length + 1,
         level: "0",

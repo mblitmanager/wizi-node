@@ -49,18 +49,19 @@ export class InscriptionService {
 
     // Create DemandeInscription entry
     const demande = this.demandeRepository.create({
-      formation_id: catalogueFormationId,
+      parrain_id: userId,
       filleul_id: userId,
+      formation_id: catalogueFormationId,
       statut: "en_attente",
       date_demande: new Date(),
       date_inscription: new Date(),
       motif: "Demande d'inscription à une formation",
-      donnees_formulaire: {
+      donnees_formulaire: JSON.stringify({
         type: "inscription_directe",
         formation_id: catalogueFormationId,
         date: new Date().toISOString(),
         user_id: userId,
-      },
+      }),
     });
 
     const savedDemande = await this.demandeRepository.save(demande);

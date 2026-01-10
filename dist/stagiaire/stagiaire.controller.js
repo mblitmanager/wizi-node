@@ -17,10 +17,15 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const stagiaire_service_1 = require("./stagiaire.service");
 const inscription_service_1 = require("../inscription/inscription.service");
+const ranking_service_1 = require("../ranking/ranking.service");
 let StagiaireController = class StagiaireController {
-    constructor(stagiaireService, inscriptionService) {
+    constructor(stagiaireService, inscriptionService, rankingService) {
         this.stagiaireService = stagiaireService;
         this.inscriptionService = inscriptionService;
+        this.rankingService = rankingService;
+    }
+    async getProgress(req) {
+        return this.rankingService.getMyRanking(req.user.id);
     }
     async getProfile(req) {
         return this.stagiaireService.getProfile(req.user.id);
@@ -108,6 +113,14 @@ let StagiaireController = class StagiaireController {
     }
 };
 exports.StagiaireController = StagiaireController;
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("progress"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "getProgress", null);
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     (0, common_1.Get)("profile"),
@@ -198,6 +211,7 @@ __decorate([
 exports.StagiaireController = StagiaireController = __decorate([
     (0, common_1.Controller)("stagiaire"),
     __metadata("design:paramtypes", [stagiaire_service_1.StagiaireService,
-        inscription_service_1.InscriptionService])
+        inscription_service_1.InscriptionService,
+        ranking_service_1.RankingService])
 ], StagiaireController);
 //# sourceMappingURL=stagiaire.controller.js.map

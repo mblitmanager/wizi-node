@@ -15,7 +15,7 @@ export declare class AdminQuizController {
     create(data: any): Promise<Quiz[]>;
     update(id: number, data: any): Promise<Quiz>;
     remove(id: number): Promise<import("typeorm").DeleteResult>;
-    duplicate(id: number): Promise<Quiz[]>;
+    duplicate(id: number): Promise<Quiz>;
     enable(id: number): Promise<Quiz>;
     disable(id: number): Promise<Quiz>;
 }

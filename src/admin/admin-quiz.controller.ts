@@ -96,7 +96,7 @@ export class AdminQuizController {
 
     const newQuiz = this.quizRepository.create({
       ...original,
-      title: `${original.title} (Copie)`,
+      titre: `${original.titre} (Copie)`,
       id: undefined,
     });
 
@@ -105,13 +105,13 @@ export class AdminQuizController {
 
   @Patch(":id/enable")
   async enable(@Param("id") id: number) {
-    await this.quizRepository.update(id, { statut: 1 });
+    await this.quizRepository.update(id, { status: "actif" });
     return this.findOne(id);
   }
 
   @Patch(":id/disable")
   async disable(@Param("id") id: number) {
-    await this.quizRepository.update(id, { statut: 0 });
+    await this.quizRepository.update(id, { status: "inactif" });
     return this.findOne(id);
   }
 }

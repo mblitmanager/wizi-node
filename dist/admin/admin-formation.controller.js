@@ -19,13 +19,14 @@ const roles_guard_1 = require("../common/guards/roles.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
-const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const formation_entity_1 = require("../entities/formation.entity");
 let AdminFormationController = class AdminFormationController {
     constructor(formationRepository) {
         this.formationRepository = formationRepository;
     }
     async findAll(page = 1, limit = 10, search = "") {
-        const query = this.formationRepository.createQueryBuilder("cf")
+        const query = this.formationRepository
+            .createQueryBuilder("cf")
             .leftJoinAndSelect("cf.medias", "medias")
             .leftJoinAndSelect("cf.quizzes", "quizzes");
         if (search) {
@@ -63,6 +64,21 @@ let AdminFormationController = class AdminFormationController {
     }
     async remove(id) {
         return this.formationRepository.delete(id);
+    }
+    async duplicate(id) {
+        const original = await this.formationRepository.findOne({
+            where: { id },
+            relations: ["medias", "quizzes"],
+        });
+        if (!original) {
+            throw new Error("Formation not found");
+        }
+        const newFormation = this.formationRepository.create({
+            ...original,
+            titre: `${original.titre} (Copie)`,
+            id: undefined,
+        });
+        return this.formationRepository.save(newFormation);
     }
 };
 exports.AdminFormationController = AdminFormationController;
@@ -104,11 +120,18 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminFormationController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)(":id/duplicate"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AdminFormationController.prototype, "duplicate", null);
 exports.AdminFormationController = AdminFormationController = __decorate([
     (0, common_1.Controller)("admin/formations"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __param(0, (0, typeorm_1.InjectRepository)(catalogue_formation_entity_1.CatalogueFormation)),
+    __param(0, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
     __metadata("design:paramtypes", [typeorm_2.Repository])
 ], AdminFormationController);
 //# sourceMappingURL=admin-formation.controller.js.map

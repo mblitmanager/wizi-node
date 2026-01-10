@@ -12,13 +12,21 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { StagiaireService } from "./stagiaire.service";
 import { InscriptionService } from "../inscription/inscription.service";
+import { RankingService } from "../ranking/ranking.service";
 
 @Controller("stagiaire")
 export class StagiaireController {
   constructor(
     private stagiaireService: StagiaireService,
-    private inscriptionService: InscriptionService
+    private inscriptionService: InscriptionService,
+    private rankingService: RankingService
   ) {}
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("progress")
+  async getProgress(@Request() req) {
+    return this.rankingService.getMyRanking(req.user.id);
+  }
 
   @UseGuards(AuthGuard("jwt"))
   @Get("profile")

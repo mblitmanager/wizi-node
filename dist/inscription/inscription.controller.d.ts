@@ -5,6 +5,6 @@ export declare class InscriptionController {
     inscrire(req: any, catalogueFormationId: number): Promise<{
         success: boolean;
         message: string;
-        demande: import("../entities/demande-inscription.entity").DemandeInscription[];
+        demande: import("../entities/demande-inscription.entity").DemandeInscription;
     }>;
 }

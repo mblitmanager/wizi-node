@@ -20,12 +20,16 @@ const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const classement_entity_1 = require("../entities/classement.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const formation_entity_1 = require("../entities/formation.entity");
+const quiz_entity_1 = require("../entities/quiz.entity");
+const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
 let StagiaireService = class StagiaireService {
-    constructor(stagiaireRepository, classementRepository, catalogueRepository, formationRepository) {
+    constructor(stagiaireRepository, classementRepository, catalogueRepository, formationRepository, quizRepository, participationRepository) {
         this.stagiaireRepository = stagiaireRepository;
         this.classementRepository = classementRepository;
         this.catalogueRepository = catalogueRepository;
         this.formationRepository = formationRepository;
+        this.quizRepository = quizRepository;
+        this.participationRepository = participationRepository;
     }
     async getProfile(userId) {
         return this.stagiaireRepository.findOne({
@@ -127,15 +131,57 @@ let StagiaireService = class StagiaireService {
         }
     }
     async getStagiaireQuizzes(userId) {
-        const stagiaire = await this.stagiaireRepository.findOne({
+        const quizzes = await this.quizRepository.find({
+            where: { status: "actif" },
+            relations: ["formation", "questions", "questions.reponses"],
+        });
+        const participations = await this.participationRepository.find({
             where: { user_id: userId },
         });
-        if (!stagiaire)
-            return [];
-        return this.classementRepository.find({
-            where: { stagiaire_id: stagiaire.id },
-            relations: ["quiz"],
+        const mappedQuizzes = quizzes.map((quiz) => {
+            const participation = participations.find((p) => p.quiz_id === quiz.id);
+            return {
+                id: quiz.id.toString(),
+                titre: quiz.titre,
+                description: quiz.description,
+                duree: quiz.duree,
+                niveau: quiz.niveau,
+                status: quiz.status,
+                nb_points_total: quiz.nb_points_total,
+                formationId: quiz.formation_id?.toString(),
+                categorie: quiz.formation?.categorie,
+                formation: quiz.formation
+                    ? {
+                        id: quiz.formation.id,
+                        titre: quiz.formation.titre,
+                        categorie: quiz.formation.categorie,
+                    }
+                    : null,
+                questions: (quiz.questions || []).map((q) => ({
+                    id: q.id.toString(),
+                    text: q.text,
+                    type: q.type,
+                    points: q.points,
+                    answers: (q.reponses || []).map((r) => ({
+                        id: r.id.toString(),
+                        text: r.text,
+                        isCorrect: r.isCorrect,
+                    })),
+                })),
+                userParticipation: participation
+                    ? {
+                        id: participation.id,
+                        status: participation.status,
+                        score: participation.score,
+                        correct_answers: participation.correct_answers,
+                        time_spent: participation.time_spent,
+                        started_at: participation.started_at,
+                        completed_at: participation.completed_at,
+                    }
+                    : null,
+            };
         });
+        return { data: mappedQuizzes };
     }
     async getFormationsByStagiaire(stagiaireId) {
         const stagiaire = await this.stagiaireRepository.findOne({
@@ -249,7 +295,11 @@ exports.StagiaireService = StagiaireService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(classement_entity_1.Classement)),
     __param(2, (0, typeorm_1.InjectRepository)(catalogue_formation_entity_1.CatalogueFormation)),
     __param(3, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
+    __param(4, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),
+    __param(5, (0, typeorm_1.InjectRepository)(quiz_participation_entity_1.QuizParticipation)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])

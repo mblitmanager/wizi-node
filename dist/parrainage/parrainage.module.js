@@ -15,6 +15,9 @@ const parrainage_entity_1 = require("../entities/parrainage.entity");
 const parrainage_token_entity_1 = require("../entities/parrainage-token.entity");
 const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
 const user_entity_1 = require("../entities/user.entity");
+const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
+const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 let ParrainageModule = class ParrainageModule {
 };
 exports.ParrainageModule = ParrainageModule;
@@ -26,6 +29,9 @@ exports.ParrainageModule = ParrainageModule = __decorate([
                 parrainage_token_entity_1.ParrainageToken,
                 parrainage_event_entity_1.ParrainageEvent,
                 user_entity_1.User,
+                stagiaire_entity_1.Stagiaire,
+                demande_inscription_entity_1.DemandeInscription,
+                catalogue_formation_entity_1.CatalogueFormation,
             ]),
         ],
         providers: [parrainage_service_1.ParrainageService],

@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const admin_service_1 = require("./admin.service");
 const admin_controller_1 = require("./admin.controller");
+const admin_dashboard_controller_1 = require("./admin-dashboard.controller");
 const formateur_controller_1 = require("./formateur.controller");
 const commercial_controller_1 = require("./commercial.controller");
 const admin_stagiaire_controller_1 = require("./admin-stagiaire.controller");
@@ -20,6 +21,8 @@ const admin_formation_controller_1 = require("./admin-formation.controller");
 const admin_catalogue_controller_1 = require("./admin-catalogue.controller");
 const admin_achievement_controller_1 = require("./admin-achievement.controller");
 const admin_settings_controller_1 = require("./admin-settings.controller");
+const admin_media_controller_1 = require("./admin-media.controller");
+const admin_question_controller_1 = require("./admin-question.controller");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const user_entity_1 = require("../entities/user.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
@@ -28,6 +31,9 @@ const catalogue_formation_entity_1 = require("../entities/catalogue-formation.en
 const quiz_entity_1 = require("../entities/quiz.entity");
 const achievement_entity_1 = require("../entities/achievement.entity");
 const setting_entity_1 = require("../entities/setting.entity");
+const media_entity_1 = require("../entities/media.entity");
+const question_entity_1 = require("../entities/question.entity");
+const formation_entity_1 = require("../entities/formation.entity");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -43,11 +49,15 @@ exports.AdminModule = AdminModule = __decorate([
                 quiz_entity_1.Quiz,
                 achievement_entity_1.Achievement,
                 setting_entity_1.Setting,
+                media_entity_1.Media,
+                question_entity_1.Question,
+                formation_entity_1.Formation,
             ]),
         ],
         providers: [admin_service_1.AdminService],
         controllers: [
             admin_controller_1.AdminController,
+            admin_dashboard_controller_1.AdminDashboardController,
             formateur_controller_1.FormateurController,
             commercial_controller_1.CommercialController,
             admin_stagiaire_controller_1.AdminStagiaireController,
@@ -57,6 +67,8 @@ exports.AdminModule = AdminModule = __decorate([
             admin_catalogue_controller_1.AdminCatalogueController,
             admin_achievement_controller_1.AdminAchievementController,
             admin_settings_controller_1.AdminSettingsController,
+            admin_media_controller_1.AdminMediaController,
+            admin_question_controller_1.AdminQuestionController,
         ],
         exports: [admin_service_1.AdminService],
     })

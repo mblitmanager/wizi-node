@@ -6,8 +6,11 @@ import { StagiaireController } from "./stagiaire.controller";
 import { StagiairesController } from "./stagiaires.controller";
 import { Classement } from "../entities/classement.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { Quiz } from "../entities/quiz.entity";
+import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { Formation } from "../entities/formation.entity";
 import { InscriptionModule } from "../inscription/inscription.module";
+import { RankingModule } from "../ranking/ranking.module";
 
 @Module({
   imports: [
@@ -16,8 +19,11 @@ import { InscriptionModule } from "../inscription/inscription.module";
       Classement,
       CatalogueFormation,
       Formation,
+      Quiz,
+      QuizParticipation,
     ]),
     InscriptionModule,
+    RankingModule,
   ],
   providers: [StagiaireService],
   controllers: [StagiaireController, StagiairesController],

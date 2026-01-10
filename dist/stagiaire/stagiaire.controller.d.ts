@@ -1,9 +1,26 @@
 import { StagiaireService } from "./stagiaire.service";
 import { InscriptionService } from "../inscription/inscription.service";
+import { RankingService } from "../ranking/ranking.service";
 export declare class StagiaireController {
     private stagiaireService;
     private inscriptionService;
-    constructor(stagiaireService: StagiaireService, inscriptionService: InscriptionService);
+    private rankingService;
+    constructor(stagiaireService: StagiaireService, inscriptionService: InscriptionService, rankingService: RankingService);
+    getProgress(req: any): Promise<{
+        rang: number;
+        level: string;
+        id: any;
+        firstname: any;
+        lastname: any;
+        name: any;
+        image: any;
+        score: any;
+        totalPoints: any;
+        quizCount: any;
+        completedQuizzes: any;
+        averageScore: number;
+        formateurs: any;
+    }>;
     getProfile(req: any): Promise<import("../entities/stagiaire.entity").Stagiaire>;
     testAuth(): Promise<{
         message: string;
@@ -137,11 +154,48 @@ export declare class StagiaireController {
         image: any;
         type: string;
     }[]>;
-    getMyQuizzes(req: any): Promise<import("../entities/classement.entity").Classement[]>;
+    getMyQuizzes(req: any): Promise<{
+        data: {
+            id: string;
+            titre: string;
+            description: string;
+            duree: string;
+            niveau: string;
+            status: string;
+            nb_points_total: string;
+            formationId: string;
+            categorie: string;
+            formation: {
+                id: number;
+                titre: string;
+                categorie: string;
+            };
+            questions: {
+                id: string;
+                text: string;
+                type: string;
+                points: string;
+                answers: {
+                    id: string;
+                    text: string;
+                    isCorrect: boolean;
+                }[];
+            }[];
+            userParticipation: {
+                id: number;
+                status: string;
+                score: number;
+                correct_answers: number;
+                time_spent: number;
+                started_at: Date;
+                completed_at: Date;
+            };
+        }[];
+    }>;
     getStagiaireFormations(id: number): Promise<any[]>;
     inscrireAFormation(req: any, catalogueFormationId: number): Promise<{
         success: boolean;
         message: string;
-        demande: import("../entities/demande-inscription.entity").DemandeInscription[];
+        demande: import("../entities/demande-inscription.entity").DemandeInscription;
     }>;
 }

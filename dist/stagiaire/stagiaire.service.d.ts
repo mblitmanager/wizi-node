@@ -3,12 +3,16 @@ import { Stagiaire } from "../entities/stagiaire.entity";
 import { Classement } from "../entities/classement.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { Formation } from "../entities/formation.entity";
+import { Quiz } from "../entities/quiz.entity";
+import { QuizParticipation } from "../entities/quiz-participation.entity";
 export declare class StagiaireService {
     private stagiaireRepository;
     private classementRepository;
     private catalogueRepository;
     private formationRepository;
-    constructor(stagiaireRepository: Repository<Stagiaire>, classementRepository: Repository<Classement>, catalogueRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>);
+    private quizRepository;
+    private participationRepository;
+    constructor(stagiaireRepository: Repository<Stagiaire>, classementRepository: Repository<Classement>, catalogueRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, quizRepository: Repository<Quiz>, participationRepository: Repository<QuizParticipation>);
     getProfile(userId: number): Promise<Stagiaire>;
     getHomeData(userId: number): Promise<{
         user: {
@@ -106,7 +110,44 @@ export declare class StagiaireService {
         image: any;
         type: string;
     }[]>;
-    getStagiaireQuizzes(userId: number): Promise<Classement[]>;
+    getStagiaireQuizzes(userId: number): Promise<{
+        data: {
+            id: string;
+            titre: string;
+            description: string;
+            duree: string;
+            niveau: string;
+            status: string;
+            nb_points_total: string;
+            formationId: string;
+            categorie: string;
+            formation: {
+                id: number;
+                titre: string;
+                categorie: string;
+            };
+            questions: {
+                id: string;
+                text: string;
+                type: string;
+                points: string;
+                answers: {
+                    id: string;
+                    text: string;
+                    isCorrect: boolean;
+                }[];
+            }[];
+            userParticipation: {
+                id: number;
+                status: string;
+                score: number;
+                correct_answers: number;
+                time_spent: number;
+                started_at: Date;
+                completed_at: Date;
+            };
+        }[];
+    }>;
     getFormationsByStagiaire(stagiaireId: number): Promise<any[]>;
     getStagiaireById(id: number): Promise<{
         id: number;

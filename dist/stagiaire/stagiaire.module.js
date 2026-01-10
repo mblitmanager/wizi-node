@@ -15,8 +15,11 @@ const stagiaire_controller_1 = require("./stagiaire.controller");
 const stagiaires_controller_1 = require("./stagiaires.controller");
 const classement_entity_1 = require("../entities/classement.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const quiz_entity_1 = require("../entities/quiz.entity");
+const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
 const formation_entity_1 = require("../entities/formation.entity");
 const inscription_module_1 = require("../inscription/inscription.module");
+const ranking_module_1 = require("../ranking/ranking.module");
 let StagiaireModule = class StagiaireModule {
 };
 exports.StagiaireModule = StagiaireModule;
@@ -28,8 +31,11 @@ exports.StagiaireModule = StagiaireModule = __decorate([
                 classement_entity_1.Classement,
                 catalogue_formation_entity_1.CatalogueFormation,
                 formation_entity_1.Formation,
+                quiz_entity_1.Quiz,
+                quiz_participation_entity_1.QuizParticipation,
             ]),
             inscription_module_1.InscriptionModule,
+            ranking_module_1.RankingModule,
         ],
         providers: [stagiaire_service_1.StagiaireService],
         controllers: [stagiaire_controller_1.StagiaireController, stagiaires_controller_1.StagiairesController],

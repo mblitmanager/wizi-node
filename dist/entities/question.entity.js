@@ -21,15 +21,47 @@ __decorate([
     __metadata("design:type", Number)
 ], Question.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "text" }),
+    (0, typeorm_1.Column)({ name: "text", type: "text" }),
     __metadata("design:type", String)
-], Question.prototype, "question_text", void 0);
+], Question.prototype, "text", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        type: "enum",
+        enum: [
+            "question audio",
+            "remplir le champ vide",
+            "carte flash",
+            "correspondance",
+            "choix multiples",
+            "rearrangement",
+            "vrai/faux",
+            "banque de mots",
+        ],
+    }),
+    __metadata("design:type", String)
+], Question.prototype, "type", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Question.prototype, "explication", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Question.prototype, "points", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Question.prototype, "astuce", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Question.prototype, "media_url", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], Question.prototype, "quiz_id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => quiz_entity_1.Quiz),
+    (0, typeorm_1.ManyToOne)(() => quiz_entity_1.Quiz, (quiz) => quiz.questions),
     (0, typeorm_1.JoinColumn)({ name: "quiz_id" }),
     __metadata("design:type", quiz_entity_1.Quiz)
 ], Question.prototype, "quiz", void 0);
