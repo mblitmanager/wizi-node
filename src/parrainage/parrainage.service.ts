@@ -151,6 +151,7 @@ export class ParrainageService {
           "sponsorship",
           {
             firstName: savedStagiaire.prenom || savedUser.name,
+            lastName: savedUser.name,
             parrainName: parrain?.name || "Votre parrain",
             formationTitle: catalogueFormation?.titre || "votre formation",
             formationDuration: catalogueFormation?.duree || "N/A",
