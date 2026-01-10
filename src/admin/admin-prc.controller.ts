@@ -49,32 +49,30 @@ export class AdminPoleRelationClientController {
       .orderBy("prc.id", "DESC")
       .getManyAndCount();
 
-    return {
-      data,
-      pagination: { total, page, total_pages: Math.ceil(total / limit) },
-    };
-  }
-
-  @Get("create")
-  async create() {
-    return { message: "Create PRC form" };
+    return this.apiResponse.paginated(data, total, page, limit);
   }
 
   @Post()
   async store(@Body() data: any) {
+    if (!data.name) {
+      throw new BadRequestException("name est obligatoire");
+    }
+
     const prc = this.prcRepository.create(data);
-    return this.prcRepository.save(prc);
+    const saved = await this.prcRepository.save(prc);
+
+    return this.apiResponse.success(saved);
   }
 
   @Get(":pole_relation_client")
   async show(@Param("pole_relation_client") id: number) {
-    return this.prcRepository.findOne({ where: { id } });
-  }
-
-  @Get(":pole_relation_client/edit")
-  async edit(@Param("pole_relation_client") id: number) {
     const prc = await this.prcRepository.findOne({ where: { id } });
-    return { form: prc };
+
+    if (!prc) {
+      throw new NotFoundException("PRC non trouvé");
+    }
+
+    return this.apiResponse.success(prc);
   }
 
   @Put(":pole_relation_client")
@@ -82,12 +80,28 @@ export class AdminPoleRelationClientController {
     @Param("pole_relation_client") id: number,
     @Body() data: any
   ) {
+    const prc = await this.prcRepository.findOne({ where: { id } });
+
+    if (!prc) {
+      throw new NotFoundException("PRC non trouvé");
+    }
+
     await this.prcRepository.update(id, data);
-    return this.prcRepository.findOne({ where: { id } });
+    const updated = await this.prcRepository.findOne({ where: { id } });
+
+    return this.apiResponse.success(updated);
   }
 
   @Delete(":pole_relation_client")
   async destroy(@Param("pole_relation_client") id: number) {
-    return this.prcRepository.delete(id);
+    const prc = await this.prcRepository.findOne({ where: { id } });
+
+    if (!prc) {
+      throw new NotFoundException("PRC non trouvé");
+    }
+
+    await this.prcRepository.delete(id);
+
+    return this.apiResponse.success();
   }
 }

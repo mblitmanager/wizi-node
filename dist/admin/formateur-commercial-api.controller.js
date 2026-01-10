@@ -15,55 +15,58 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommercialApiController = exports.FormateurApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
+const api_response_service_1 = require("../common/services/api-response.service");
 let FormateurApiController = class FormateurApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async dashboardStats(req) {
-        return { data: {}, message: "Dashboard stats" };
+        return this.apiResponse.success({});
     }
     async formations(req) {
-        return { data: [], message: "My formations" };
+        return this.apiResponse.success([]);
     }
     async stagiaires(req) {
-        return { data: [], message: "My stagiaires" };
+        return this.apiResponse.success([]);
     }
     async onlineStagiaires() {
-        return { data: [], message: "Online stagiaires" };
+        return this.apiResponse.success([]);
     }
     async inactiveStagiaires() {
-        return { data: [], message: "Inactive stagiaires" };
+        return this.apiResponse.success([]);
     }
     async neverConnected() {
-        return { data: [], message: "Never connected" };
+        return this.apiResponse.success([]);
     }
     async performance() {
-        return { data: [], message: "Performance stats" };
+        return this.apiResponse.success([]);
     }
     async disconnect(data) {
-        return { message: "Stagiaires disconnected" };
+        return this.apiResponse.success();
     }
     async stagiaireStats(id) {
-        return { data: {}, message: "Stagiaire stats" };
+        return this.apiResponse.success({});
     }
     async videoStats(id) {
-        return { data: {}, message: "Video stats" };
+        return this.apiResponse.success({});
     }
     async videos() {
-        return { data: [], message: "All videos" };
+        return this.apiResponse.success([]);
     }
     async formationRanking(formationId) {
-        return { data: [], message: "Formation ranking" };
+        return this.apiResponse.success([]);
     }
     async mesStagiairesRanking() {
-        return { data: [], message: "My stagiaires ranking" };
+        return this.apiResponse.success([]);
     }
     async sendEmail(data) {
-        return { message: "Email sent" };
+        return this.apiResponse.success();
     }
     async sendNotification(data) {
-        return { message: "Notification sent" };
+        return this.apiResponse.success();
     }
     async stats() {
-        return { data: {}, message: "Statistics" };
+        return this.apiResponse.success({});
     }
 };
 exports.FormateurApiController = FormateurApiController;
@@ -175,12 +178,14 @@ __decorate([
 exports.FormateurApiController = FormateurApiController = __decorate([
     (0, common_1.Controller)("api/formateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], FormateurApiController);
 let CommercialApiController = class CommercialApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async dashboard(req) {
-        return { data: {}, message: "Commercial dashboard" };
+        return this.apiResponse.success({});
     }
 };
 exports.CommercialApiController = CommercialApiController;
@@ -194,6 +199,6 @@ __decorate([
 exports.CommercialApiController = CommercialApiController = __decorate([
     (0, common_1.Controller)("api/commercial/stats"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], CommercialApiController);
 //# sourceMappingURL=formateur-commercial-api.controller.js.map

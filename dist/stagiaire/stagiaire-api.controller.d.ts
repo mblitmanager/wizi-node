@@ -1,155 +1,56 @@
 import { InscriptionService } from "../inscription/inscription.service";
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class StagiaireApiController {
     private inscriptionService;
-    constructor(inscriptionService: InscriptionService);
-    profile(req: any): Promise<{
-        user: any;
-        message: string;
-    }>;
-    updateProfile(req: any, data: any): Promise<{
-        user: any;
-        message: string;
-    }>;
-    patchProfile(req: any, data: any): Promise<{
-        user: any;
-        message: string;
-    }>;
-    uploadProfilePhoto(req: any, data: any): Promise<{
-        message: string;
-    }>;
-    show(req: any): Promise<{
-        user: any;
-    }>;
-    dashboardHome(req: any): Promise<{
-        message: string;
-        user: any;
-    }>;
-    formations(req: any): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    formationClassement(): Promise<{
-        data: any[];
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(inscriptionService: InscriptionService, apiResponse: ApiResponseService);
+    profile(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    updateProfile(req: any, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    patchProfile(req: any, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    uploadProfilePhoto(req: any, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    show(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    dashboardHome(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    formations(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    formationClassement(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
     inscriptionCatalogueFormation(req: any, data: any): Promise<{
         success: boolean;
         message: string;
         demande: import("../entities/demande-inscription.entity").DemandeInscription;
     }>;
-    onboardingSeen(req: any): Promise<{
-        message: string;
-    }>;
-    achievements(req: any): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    allAchievements(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    checkAchievements(): Promise<{
-        message: string;
-    }>;
-    contacts(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    contactsCommerciaux(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    contactsFormateurs(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    contactsPoleRelation(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    contactsPoleSave(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    progress(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    quizzes(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    rankingGlobal(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    rankingFormation(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    rewards(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    partner(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    parainageStats(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    parainageHistory(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    parainageFilleuls(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    parainageRewards(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    parainageAccept(data: any): Promise<{
-        message: string;
-    }>;
-    userFormations(id: number): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    userCatalogueFormations(id: number): Promise<{
-        data: any[];
-        message: string;
-    }>;
+    onboardingSeen(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    achievements(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    allAchievements(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    checkAchievements(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    contacts(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    contactsCommerciaux(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    contactsFormateurs(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    contactsPoleRelation(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    contactsPoleSave(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    progress(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    quizzes(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    rankingGlobal(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    rankingFormation(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    rewards(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    partner(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    parainageStats(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    parainageHistory(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    parainageFilleuls(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    parainageRewards(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    parainageAccept(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    userFormations(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    userCatalogueFormations(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
 }
 export declare class ApiGeneralController {
-    constructor();
-    getUser(req: any): Promise<{
-        user: any;
-    }>;
-    getMe(req: any): Promise<{
-        user: any;
-    }>;
-    getUserSettings(req: any): Promise<{
-        settings: {};
-        user: any;
-    }>;
-    updateUserSettings(req: any, data: any): Promise<{
-        settings: any;
-        message: string;
-    }>;
-    reportUserAppUsage(req: any, data: any): Promise<{
-        message: string;
-    }>;
-    updateUserPhoto(req: any, data: any): Promise<{
-        message: string;
-    }>;
-    getUserPoints(req: any): Promise<{
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    getUser(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    getMe(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    getUserSettings(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    updateUserSettings(req: any, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    reportUserAppUsage(req: any, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    updateUserPhoto(req: any, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    getUserPoints(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         points: number;
-        user: any;
-    }>;
-    updateFcmToken(req: any, token: string): Promise<{
-        message: string;
-    }>;
+    }>>;
+    updateFcmToken(req: any, token: string): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
 }

@@ -15,70 +15,73 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MediaApiController = exports.MediasApiController = exports.FormationParrainageApiController = exports.CatalogueFormationsApiController = exports.FormationsApiController = exports.FormationApiController = exports.QuizApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
+const api_response_service_1 = require("../common/services/api-response.service");
 let QuizApiController = class QuizApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async byFormations() {
-        return { data: {}, message: "Quizzes grouped by formations" };
+        return this.apiResponse.success({});
     }
     async categories() {
-        return { data: [], message: "Quiz categories" };
+        return this.apiResponse.success([]);
     }
     async byCategory() {
-        return { data: [], message: "Quizzes by category" };
+        return this.apiResponse.success([]);
     }
     async globalClassement() {
-        return { data: [], message: "Global quiz ranking" };
+        return this.apiResponse.success([]);
     }
     async history() {
-        return { data: [], message: "Quiz history" };
+        return this.apiResponse.success([]);
     }
     async stats() {
-        return { data: {}, message: "Quiz statistics" };
+        return this.apiResponse.success({});
     }
     async statsCategories() {
-        return { data: {}, message: "Category statistics" };
+        return this.apiResponse.success({});
     }
     async statsPerformance() {
-        return { data: {}, message: "Performance statistics" };
+        return this.apiResponse.success({});
     }
     async statsProgress() {
-        return { data: {}, message: "Progress statistics" };
+        return this.apiResponse.success({});
     }
     async statsTrends() {
-        return { data: {}, message: "Trends statistics" };
+        return this.apiResponse.success({});
     }
     async getById(id) {
-        return { data: {}, message: "Quiz details" };
+        return this.apiResponse.success({});
     }
     async submitResult(id, data) {
-        return { message: "Result submitted" };
+        return this.apiResponse.success();
     }
     async getQuestions(quizId) {
-        return { data: [], message: "Quiz questions" };
+        return this.apiResponse.success([]);
     }
     async submit(quizId, data) {
-        return { message: "Quiz submitted" };
+        return this.apiResponse.success();
     }
     async getParticipation(quizId) {
-        return { data: {}, message: "Current participation" };
+        return this.apiResponse.success({});
     }
     async startParticipation(quizId) {
-        return { message: "Participation started" };
+        return this.apiResponse.success();
     }
     async saveProgress(quizId, data) {
-        return { message: "Progress saved" };
+        return this.apiResponse.success();
     }
     async resumeParticipation(quizId) {
-        return { data: {}, message: "Resume participation" };
+        return this.apiResponse.success({});
     }
     async complete(quizId) {
-        return { message: "Quiz completed" };
+        return this.apiResponse.success();
     }
     async getStatistics(quizId) {
-        return { data: {}, message: "Quiz statistics" };
+        return this.apiResponse.success({});
     }
     async getUserParticipations(quizId) {
-        return { data: [], message: "User participations" };
+        return this.apiResponse.success([]);
     }
 };
 exports.QuizApiController = QuizApiController;
@@ -225,15 +228,17 @@ __decorate([
 exports.QuizApiController = QuizApiController = __decorate([
     (0, common_1.Controller)("api/quiz"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], QuizApiController);
 let FormationApiController = class FormationApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async categories() {
-        return { data: [], message: "Formation categories" };
+        return this.apiResponse.success([]);
     }
     async listFormation() {
-        return { data: [], message: "All formations" };
+        return this.apiResponse.success([]);
     }
 };
 exports.FormationApiController = FormationApiController;
@@ -252,18 +257,20 @@ __decorate([
 exports.FormationApiController = FormationApiController = __decorate([
     (0, common_1.Controller)("api/formation"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], FormationApiController);
 let FormationsApiController = class FormationsApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async byCategory() {
-        return { data: [], message: "Formations by category" };
+        return this.apiResponse.success([]);
     }
     async classementSummary() {
-        return { data: {}, message: "Classement summary" };
+        return this.apiResponse.success({});
     }
     async classement() {
-        return { data: {}, message: "Formation classement" };
+        return this.apiResponse.success({});
     }
 };
 exports.FormationsApiController = FormationsApiController;
@@ -288,24 +295,26 @@ __decorate([
 exports.FormationsApiController = FormationsApiController = __decorate([
     (0, common_1.Controller)("api/formations"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], FormationsApiController);
 let CatalogueFormationsApiController = class CatalogueFormationsApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async formations() {
-        return { data: [], message: "All catalogue formations" };
+        return this.apiResponse.success([]);
     }
     async getFormation() {
-        return { data: {}, message: "Catalogue formation details" };
+        return this.apiResponse.success({});
     }
     async getPdf() {
-        return { message: "PDF download" };
+        return this.apiResponse.success();
     }
     async stagiaireFormations() {
-        return { data: [], message: "Stagiaire catalogue formations" };
+        return this.apiResponse.success([]);
     }
     async withFormations() {
-        return { data: [], message: "Catalogues with formations" };
+        return this.apiResponse.success([]);
     }
 };
 exports.CatalogueFormationsApiController = CatalogueFormationsApiController;
@@ -342,12 +351,14 @@ __decorate([
 exports.CatalogueFormationsApiController = CatalogueFormationsApiController = __decorate([
     (0, common_1.Controller)("api/catalogueFormations"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], CatalogueFormationsApiController);
 let FormationParrainageApiController = class FormationParrainageApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async formations() {
-        return { data: [], message: "Formation parrainage" };
+        return this.apiResponse.success([]);
     }
 };
 exports.FormationParrainageApiController = FormationParrainageApiController;
@@ -360,36 +371,38 @@ __decorate([
 exports.FormationParrainageApiController = FormationParrainageApiController = __decorate([
     (0, common_1.Controller)("api/formationParrainage"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], FormationParrainageApiController);
 let MediasApiController = class MediasApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async astuces() {
-        return { data: [], message: "Astuces" };
+        return this.apiResponse.success([]);
     }
     async tutoriels() {
-        return { data: [], message: "Tutoriels" };
+        return this.apiResponse.success([]);
     }
     async formationsWithStatus() {
-        return { data: [], message: "Formations with watched status" };
+        return this.apiResponse.success([]);
     }
     async interactiveFormations() {
-        return { data: [], message: "Interactive formations" };
+        return this.apiResponse.success([]);
     }
     async astucesByFormation() {
-        return { data: [], message: "Astuces by formation" };
+        return this.apiResponse.success([]);
     }
     async tutorielsByFormation() {
-        return { data: [], message: "Tutoriels by formation" };
+        return this.apiResponse.success([]);
     }
     async serverVideos() {
-        return { data: [], message: "Server videos" };
+        return this.apiResponse.success([]);
     }
     async uploadVideo(data) {
-        return { message: "Video uploaded" };
+        return this.apiResponse.success();
     }
     async markAsWatched() {
-        return { message: "Marked as watched" };
+        return this.apiResponse.success();
     }
 };
 exports.MediasApiController = MediasApiController;
@@ -451,15 +464,17 @@ __decorate([
 exports.MediasApiController = MediasApiController = __decorate([
     (0, common_1.Controller)("api/medias"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], MediasApiController);
 let MediaApiController = class MediaApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async stream() {
-        return { message: "Stream video" };
+        return this.apiResponse.success();
     }
     async subtitle() {
-        return { message: "Stream subtitle" };
+        return this.apiResponse.success();
     }
 };
 exports.MediaApiController = MediaApiController;
@@ -478,6 +493,6 @@ __decorate([
 exports.MediaApiController = MediaApiController = __decorate([
     (0, common_1.Controller)("api/media"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], MediaApiController);
 //# sourceMappingURL=quiz-api.controller.js.map

@@ -1,183 +1,72 @@
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class QuizApiController {
-    constructor();
-    byFormations(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    categories(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    byCategory(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    globalClassement(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    history(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    stats(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    statsCategories(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    statsPerformance(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    statsProgress(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    statsTrends(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    getById(id: number): Promise<{
-        data: {};
-        message: string;
-    }>;
-    submitResult(id: number, data: any): Promise<{
-        message: string;
-    }>;
-    getQuestions(quizId: number): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    submit(quizId: number, data: any): Promise<{
-        message: string;
-    }>;
-    getParticipation(quizId: number): Promise<{
-        data: {};
-        message: string;
-    }>;
-    startParticipation(quizId: number): Promise<{
-        message: string;
-    }>;
-    saveProgress(quizId: number, data: any): Promise<{
-        message: string;
-    }>;
-    resumeParticipation(quizId: number): Promise<{
-        data: {};
-        message: string;
-    }>;
-    complete(quizId: number): Promise<{
-        message: string;
-    }>;
-    getStatistics(quizId: number): Promise<{
-        data: {};
-        message: string;
-    }>;
-    getUserParticipations(quizId: number): Promise<{
-        data: any[];
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    byFormations(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    categories(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    byCategory(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    globalClassement(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    history(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    stats(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    statsCategories(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    statsPerformance(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    statsProgress(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    statsTrends(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    getById(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    submitResult(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    getQuestions(quizId: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    submit(quizId: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    getParticipation(quizId: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    startParticipation(quizId: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    saveProgress(quizId: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    resumeParticipation(quizId: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    complete(quizId: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    getStatistics(quizId: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    getUserParticipations(quizId: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
 }
 export declare class FormationApiController {
-    constructor();
-    categories(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    listFormation(): Promise<{
-        data: any[];
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    categories(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    listFormation(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
 }
 export declare class FormationsApiController {
-    constructor();
-    byCategory(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    classementSummary(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    classement(): Promise<{
-        data: {};
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    byCategory(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    classementSummary(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    classement(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
 }
 export declare class CatalogueFormationsApiController {
-    constructor();
-    formations(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    getFormation(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    getPdf(): Promise<{
-        message: string;
-    }>;
-    stagiaireFormations(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    withFormations(): Promise<{
-        data: any[];
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    formations(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    getFormation(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    getPdf(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    stagiaireFormations(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    withFormations(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
 }
 export declare class FormationParrainageApiController {
-    constructor();
-    formations(): Promise<{
-        data: any[];
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    formations(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
 }
 export declare class MediasApiController {
-    constructor();
-    astuces(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    tutoriels(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    formationsWithStatus(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    interactiveFormations(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    astucesByFormation(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    tutorielsByFormation(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    serverVideos(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    uploadVideo(data: any): Promise<{
-        message: string;
-    }>;
-    markAsWatched(): Promise<{
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    astuces(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    tutoriels(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    formationsWithStatus(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    interactiveFormations(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    astucesByFormation(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    tutorielsByFormation(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    serverVideos(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    uploadVideo(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    markAsWatched(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
 }
 export declare class MediaApiController {
-    constructor();
-    stream(): Promise<{
-        message: string;
-    }>;
-    subtitle(): Promise<{
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    stream(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    subtitle(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
 }

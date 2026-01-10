@@ -38,31 +38,39 @@ let AdminPoleRelationClientController = class AdminPoleRelationClientController 
             .take(limit)
             .orderBy("prc.id", "DESC")
             .getManyAndCount();
-        return {
-            data,
-            pagination: { total, page, total_pages: Math.ceil(total / limit) },
-        };
-    }
-    async create() {
-        return { message: "Create PRC form" };
+        return this.apiResponse.paginated(data, total, page, limit);
     }
     async store(data) {
+        if (!data.name) {
+            throw new common_1.BadRequestException("name est obligatoire");
+        }
         const prc = this.prcRepository.create(data);
-        return this.prcRepository.save(prc);
+        const saved = await this.prcRepository.save(prc);
+        return this.apiResponse.success(saved);
     }
     async show(id) {
-        return this.prcRepository.findOne({ where: { id } });
-    }
-    async edit(id) {
         const prc = await this.prcRepository.findOne({ where: { id } });
-        return { form: prc };
+        if (!prc) {
+            throw new common_1.NotFoundException("PRC non trouvé");
+        }
+        return this.apiResponse.success(prc);
     }
     async update(id, data) {
+        const prc = await this.prcRepository.findOne({ where: { id } });
+        if (!prc) {
+            throw new common_1.NotFoundException("PRC non trouvé");
+        }
         await this.prcRepository.update(id, data);
-        return this.prcRepository.findOne({ where: { id } });
+        const updated = await this.prcRepository.findOne({ where: { id } });
+        return this.apiResponse.success(updated);
     }
     async destroy(id) {
-        return this.prcRepository.delete(id);
+        const prc = await this.prcRepository.findOne({ where: { id } });
+        if (!prc) {
+            throw new common_1.NotFoundException("PRC non trouvé");
+        }
+        await this.prcRepository.delete(id);
+        return this.apiResponse.success();
     }
 };
 exports.AdminPoleRelationClientController = AdminPoleRelationClientController;
@@ -75,12 +83,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AdminPoleRelationClientController.prototype, "index", null);
-__decorate([
-    (0, common_1.Get)("create"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AdminPoleRelationClientController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -95,13 +97,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminPoleRelationClientController.prototype, "show", null);
-__decorate([
-    (0, common_1.Get)(":pole_relation_client/edit"),
-    __param(0, (0, common_1.Param)("pole_relation_client")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], AdminPoleRelationClientController.prototype, "edit", null);
 __decorate([
     (0, common_1.Put)(":pole_relation_client"),
     __param(0, (0, common_1.Param)("pole_relation_client")),

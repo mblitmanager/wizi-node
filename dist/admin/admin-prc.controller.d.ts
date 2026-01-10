@@ -5,22 +5,9 @@ export declare class AdminPoleRelationClientController {
     private prcRepository;
     private apiResponse;
     constructor(prcRepository: Repository<PoleRelationClient>, apiResponse: ApiResponseService);
-    index(page?: number, limit?: number, search?: string): Promise<{
-        data: PoleRelationClient[];
-        pagination: {
-            total: number;
-            page: number;
-            total_pages: number;
-        };
-    }>;
-    create(): Promise<{
-        message: string;
-    }>;
-    store(data: any): Promise<PoleRelationClient[]>;
-    show(id: number): Promise<PoleRelationClient>;
-    edit(id: number): Promise<{
-        form: PoleRelationClient;
-    }>;
-    update(id: number, data: any): Promise<PoleRelationClient>;
-    destroy(id: number): Promise<import("typeorm").DeleteResult>;
+    index(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<PoleRelationClient>>;
+    store(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<PoleRelationClient[]>>;
+    show(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<PoleRelationClient>>;
+    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<PoleRelationClient>>;
+    destroy(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
 }

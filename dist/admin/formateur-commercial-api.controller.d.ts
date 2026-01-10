@@ -1,71 +1,26 @@
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class FormateurApiController {
-    constructor();
-    dashboardStats(req: any): Promise<{
-        data: {};
-        message: string;
-    }>;
-    formations(req: any): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    stagiaires(req: any): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    onlineStagiaires(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    inactiveStagiaires(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    neverConnected(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    performance(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    disconnect(data: any): Promise<{
-        message: string;
-    }>;
-    stagiaireStats(id: number): Promise<{
-        data: {};
-        message: string;
-    }>;
-    videoStats(id: number): Promise<{
-        data: {};
-        message: string;
-    }>;
-    videos(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    formationRanking(formationId: number): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    mesStagiairesRanking(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    sendEmail(data: any): Promise<{
-        message: string;
-    }>;
-    sendNotification(data: any): Promise<{
-        message: string;
-    }>;
-    stats(): Promise<{
-        data: {};
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    dashboardStats(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    formations(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    stagiaires(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    onlineStagiaires(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    inactiveStagiaires(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    neverConnected(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    performance(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    disconnect(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    stagiaireStats(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    videoStats(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    videos(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    formationRanking(formationId: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    mesStagiairesRanking(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    sendEmail(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    sendNotification(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    stats(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
 }
 export declare class CommercialApiController {
-    constructor();
-    dashboard(req: any): Promise<{
-        data: {};
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    dashboard(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
 }

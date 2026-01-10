@@ -8,100 +8,101 @@ import {
   Request,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("api/formateur")
 @UseGuards(AuthGuard("jwt"))
 export class FormateurApiController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get("dashboard/stats")
   async dashboardStats(@Request() req: any) {
-    return { data: {}, message: "Dashboard stats" };
+    return this.apiResponse.success({});
   }
 
   @Get("formations")
   async formations(@Request() req: any) {
-    return { data: [], message: "My formations" };
+    return this.apiResponse.success([]);
   }
 
   @Get("stagiaires")
   async stagiaires(@Request() req: any) {
-    return { data: [], message: "My stagiaires" };
+    return this.apiResponse.success([]);
   }
 
   @Get("stagiaires/online")
   async onlineStagiaires() {
-    return { data: [], message: "Online stagiaires" };
+    return this.apiResponse.success([]);
   }
 
   @Get("stagiaires/inactive")
   async inactiveStagiaires() {
-    return { data: [], message: "Inactive stagiaires" };
+    return this.apiResponse.success([]);
   }
 
   @Get("stagiaires/never-connected")
   async neverConnected() {
-    return { data: [], message: "Never connected" };
+    return this.apiResponse.success([]);
   }
 
   @Get("stagiaires/performance")
   async performance() {
-    return { data: [], message: "Performance stats" };
+    return this.apiResponse.success([]);
   }
 
   @Post("stagiaires/disconnect")
   async disconnect(@Body() data: any) {
-    return { message: "Stagiaires disconnected" };
+    return this.apiResponse.success();
   }
 
   @Get("stagiaire/:id/stats")
   async stagiaireStats(@Param("id") id: number) {
-    return { data: {}, message: "Stagiaire stats" };
+    return this.apiResponse.success({});
   }
 
   @Get("video/:id/stats")
   async videoStats(@Param("id") id: number) {
-    return { data: {}, message: "Video stats" };
+    return this.apiResponse.success({});
   }
 
   @Get("videos")
   async videos() {
-    return { data: [], message: "All videos" };
+    return this.apiResponse.success([]);
   }
 
   @Get("classement/formation/:formationId")
   async formationRanking(@Param("formationId") formationId: number) {
-    return { data: [], message: "Formation ranking" };
+    return this.apiResponse.success([]);
   }
 
   @Get("classement/mes-stagiaires")
   async mesStagiairesRanking() {
-    return { data: [], message: "My stagiaires ranking" };
+    return this.apiResponse.success([]);
   }
 
   @Post("send-email")
   async sendEmail(@Body() data: any) {
-    return { message: "Email sent" };
+    return this.apiResponse.success();
   }
 
   @Post("send-notification")
   async sendNotification(@Body() data: any) {
-    return { message: "Notification sent" };
+    return this.apiResponse.success();
   }
 
   @Get("stats/dashboard")
   async stats() {
-    return { data: {}, message: "Statistics" };
+    return this.apiResponse.success({});
   }
 }
 
 @Controller("api/commercial/stats")
 @UseGuards(AuthGuard("jwt"))
 export class CommercialApiController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get("dashboard")
   async dashboard(@Request() req: any) {
-    return { data: {}, message: "Commercial dashboard" };
+    return this.apiResponse.success({});
   }
 }

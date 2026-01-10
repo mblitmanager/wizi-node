@@ -16,102 +16,104 @@ exports.ApiGeneralController = exports.StagiaireApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const inscription_service_1 = require("../inscription/inscription.service");
+const api_response_service_1 = require("../common/services/api-response.service");
 let StagiaireApiController = class StagiaireApiController {
-    constructor(inscriptionService) {
+    constructor(inscriptionService, apiResponse) {
         this.inscriptionService = inscriptionService;
+        this.apiResponse = apiResponse;
     }
     async profile(req) {
-        return { user: req.user, message: "User profile" };
+        return this.apiResponse.success(req.user);
     }
     async updateProfile(req, data) {
-        return { user: req.user, message: "Profile updated" };
+        return this.apiResponse.success(req.user);
     }
     async patchProfile(req, data) {
-        return { user: req.user, message: "Profile updated" };
+        return this.apiResponse.success(req.user);
     }
     async uploadProfilePhoto(req, data) {
-        return { message: "Photo uploaded" };
+        return this.apiResponse.success();
     }
     async show(req) {
-        return { user: req.user };
+        return this.apiResponse.success(req.user);
     }
     async dashboardHome(req) {
-        return { message: "Dashboard home", user: req.user };
+        return this.apiResponse.success(req.user);
     }
     async formations(req) {
-        return { data: [], message: "My formations" };
+        return this.apiResponse.success([]);
     }
     async formationClassement() {
-        return { data: [], message: "Formation ranking" };
+        return this.apiResponse.success([]);
     }
     async inscriptionCatalogueFormation(req, data) {
         return this.inscriptionService.inscrire(req.user.id, data.catalogue_formation_id);
     }
     async onboardingSeen(req) {
-        return { message: "Onboarding marked as seen" };
+        return this.apiResponse.success();
     }
     async achievements(req) {
-        return { data: [], message: "My achievements" };
+        return this.apiResponse.success([]);
     }
     async allAchievements() {
-        return { data: [], message: "All achievements" };
+        return this.apiResponse.success([]);
     }
     async checkAchievements() {
-        return { message: "Achievements checked" };
+        return this.apiResponse.success();
     }
     async contacts() {
-        return { data: [], message: "My contacts" };
+        return this.apiResponse.success([]);
     }
     async contactsCommerciaux() {
-        return { data: [], message: "Commercial contacts" };
+        return this.apiResponse.success([]);
     }
     async contactsFormateurs() {
-        return { data: [], message: "Formateur contacts" };
+        return this.apiResponse.success([]);
     }
     async contactsPoleRelation() {
-        return { data: [], message: "Pole relation contacts" };
+        return this.apiResponse.success([]);
     }
     async contactsPoleSave() {
-        return { data: [], message: "Pole save contacts" };
+        return this.apiResponse.success([]);
     }
     async progress() {
-        return { data: {}, message: "My progress" };
+        return this.apiResponse.success({});
     }
     async quizzes() {
-        return { data: [], message: "My quizzes" };
+        return this.apiResponse.success([]);
     }
     async rankingGlobal() {
-        return { data: [], message: "Global ranking" };
+        return this.apiResponse.success([]);
     }
     async rankingFormation() {
-        return { data: [], message: "Formation ranking" };
+        return this.apiResponse.success([]);
     }
     async rewards() {
-        return { data: [], message: "My rewards" };
+        return this.apiResponse.success([]);
     }
     async partner() {
-        return { data: {}, message: "My partner" };
+        return this.apiResponse.success({});
     }
     async parainageStats() {
-        return { data: {}, message: "Parrainage stats" };
+        return this.apiResponse.success({});
     }
     async parainageHistory() {
-        return { data: [], message: "Parrainage history" };
+        return this.apiResponse.success([]);
     }
     async parainageFilleuls() {
-        return { data: [], message: "My filleuls" };
+        return this.apiResponse.success([]);
     }
     async parainageRewards() {
-        return { data: [], message: "Parrainage rewards" };
+        return this.apiResponse.success([]);
     }
     async parainageAccept(data) {
-        return { message: "Parrainage accepted" };
+        return this.apiResponse.success();
     }
     async userFormations(id) {
-        return { data: [], message: "User formations" };
+        return this.apiResponse.success([]);
     }
     async userCatalogueFormations(id) {
-        return { data: [], message: "User catalogue formations" };
+        return this.apiResponse.success([]);
     }
 };
 exports.StagiaireApiController = StagiaireApiController;
@@ -321,33 +323,36 @@ __decorate([
 exports.StagiaireApiController = StagiaireApiController = __decorate([
     (0, common_1.Controller)("api/stagiaire"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [inscription_service_1.InscriptionService])
+    __metadata("design:paramtypes", [inscription_service_1.InscriptionService,
+        api_response_service_1.ApiResponseService])
 ], StagiaireApiController);
 let ApiGeneralController = class ApiGeneralController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async getUser(req) {
-        return { user: req.user };
+        return this.apiResponse.success(req.user);
     }
     async getMe(req) {
-        return { user: req.user };
+        return this.apiResponse.success(req.user);
     }
     async getUserSettings(req) {
-        return { settings: {}, user: req.user };
+        return this.apiResponse.success({});
     }
     async updateUserSettings(req, data) {
-        return { settings: data, message: "Settings updated" };
+        return this.apiResponse.success(data);
     }
     async reportUserAppUsage(req, data) {
-        return { message: "Usage reported" };
+        return this.apiResponse.success();
     }
     async updateUserPhoto(req, data) {
-        return { message: "Photo updated" };
+        return this.apiResponse.success();
     }
     async getUserPoints(req) {
-        return { points: 0, user: req.user };
+        return this.apiResponse.success({ points: 0 });
     }
     async updateFcmToken(req, token) {
-        return { message: "FCM token updated" };
+        return this.apiResponse.success();
     }
 };
 exports.ApiGeneralController = ApiGeneralController;
@@ -414,6 +419,6 @@ __decorate([
 exports.ApiGeneralController = ApiGeneralController = __decorate([
     (0, common_1.Controller)("api"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], ApiGeneralController);
 //# sourceMappingURL=stagiaire-api.controller.js.map

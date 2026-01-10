@@ -11,50 +11,54 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { InscriptionService } from "../inscription/inscription.service";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("api/stagiaire")
 @UseGuards(AuthGuard("jwt"))
 export class StagiaireApiController {
-  constructor(private inscriptionService: InscriptionService) {}
+  constructor(
+    private inscriptionService: InscriptionService,
+    private apiResponse: ApiResponseService
+  ) {}
 
   @Get("profile")
   async profile(@Request() req: any) {
-    return { user: req.user, message: "User profile" };
+    return this.apiResponse.success(req.user);
   }
 
   @Put("profile")
   async updateProfile(@Request() req: any, @Body() data: any) {
-    return { user: req.user, message: "Profile updated" };
+    return this.apiResponse.success(req.user);
   }
 
   @Patch("profile")
   async patchProfile(@Request() req: any, @Body() data: any) {
-    return { user: req.user, message: "Profile updated" };
+    return this.apiResponse.success(req.user);
   }
 
   @Post("profile/photo")
   async uploadProfilePhoto(@Request() req: any, @Body() data: any) {
-    return { message: "Photo uploaded" };
+    return this.apiResponse.success();
   }
 
   @Get("show")
   async show(@Request() req: any) {
-    return { user: req.user };
+    return this.apiResponse.success(req.user);
   }
 
   @Get("dashboard/home")
   async dashboardHome(@Request() req: any) {
-    return { message: "Dashboard home", user: req.user };
+    return this.apiResponse.success(req.user);
   }
 
   @Get("formations")
   async formations(@Request() req: any) {
-    return { data: [], message: "My formations" };
+    return this.apiResponse.success([]);
   }
 
   @Get("formations/:formationId/classement")
   async formationClassement() {
-    return { data: [], message: "Formation ranking" };
+    return this.apiResponse.success([]);
   }
 
   @Post("inscription-catalogue-formation")
@@ -67,157 +71,157 @@ export class StagiaireApiController {
 
   @Post("onboarding-seen")
   async onboardingSeen(@Request() req: any) {
-    return { message: "Onboarding marked as seen" };
+    return this.apiResponse.success();
   }
 
   @Get("achievements")
   async achievements(@Request() req: any) {
-    return { data: [], message: "My achievements" };
+    return this.apiResponse.success([]);
   }
 
   @Get("achievements/all")
   async allAchievements() {
-    return { data: [], message: "All achievements" };
+    return this.apiResponse.success([]);
   }
 
   @Post("achievements/check")
   async checkAchievements() {
-    return { message: "Achievements checked" };
+    return this.apiResponse.success();
   }
 
   @Get("contacts")
   async contacts() {
-    return { data: [], message: "My contacts" };
+    return this.apiResponse.success([]);
   }
 
   @Get("contacts/commerciaux")
   async contactsCommerciaux() {
-    return { data: [], message: "Commercial contacts" };
+    return this.apiResponse.success([]);
   }
 
   @Get("contacts/formateurs")
   async contactsFormateurs() {
-    return { data: [], message: "Formateur contacts" };
+    return this.apiResponse.success([]);
   }
 
   @Get("contacts/pole-relation")
   async contactsPoleRelation() {
-    return { data: [], message: "Pole relation contacts" };
+    return this.apiResponse.success([]);
   }
 
   @Get("contacts/pole-save")
   async contactsPoleSave() {
-    return { data: [], message: "Pole save contacts" };
+    return this.apiResponse.success([]);
   }
 
   @Get("progress")
   async progress() {
-    return { data: {}, message: "My progress" };
+    return this.apiResponse.success({});
   }
 
   @Get("quizzes")
   async quizzes() {
-    return { data: [], message: "My quizzes" };
+    return this.apiResponse.success([]);
   }
 
   @Get("ranking/global")
   async rankingGlobal() {
-    return { data: [], message: "Global ranking" };
+    return this.apiResponse.success([]);
   }
 
   @Get("ranking/formation/:formationId")
   async rankingFormation() {
-    return { data: [], message: "Formation ranking" };
+    return this.apiResponse.success([]);
   }
 
   @Get("rewards")
   async rewards() {
-    return { data: [], message: "My rewards" };
+    return this.apiResponse.success([]);
   }
 
   @Get("partner")
   async partner() {
-    return { data: {}, message: "My partner" };
+    return this.apiResponse.success({});
   }
 
   @Get("parrainage/stats")
   async parainageStats() {
-    return { data: {}, message: "Parrainage stats" };
+    return this.apiResponse.success({});
   }
 
   @Get("parrainage/history")
   async parainageHistory() {
-    return { data: [], message: "Parrainage history" };
+    return this.apiResponse.success([]);
   }
 
   @Get("parrainage/filleuls")
   async parainageFilleuls() {
-    return { data: [], message: "My filleuls" };
+    return this.apiResponse.success([]);
   }
 
   @Get("parrainage/rewards")
   async parainageRewards() {
-    return { data: [], message: "Parrainage rewards" };
+    return this.apiResponse.success([]);
   }
 
   @Post("parrainage/accept")
   async parainageAccept(@Body() data: any) {
-    return { message: "Parrainage accepted" };
+    return this.apiResponse.success();
   }
 
   @Get(":id/formations")
   async userFormations(@Param("id") id: number) {
-    return { data: [], message: "User formations" };
+    return this.apiResponse.success([]);
   }
 
   @Get(":id/catalogueFormations")
   async userCatalogueFormations(@Param("id") id: number) {
-    return { data: [], message: "User catalogue formations" };
+    return this.apiResponse.success([]);
   }
 }
 
 @Controller("api")
 @UseGuards(AuthGuard("jwt"))
 export class ApiGeneralController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get("user")
   async getUser(@Request() req: any) {
-    return { user: req.user };
+    return this.apiResponse.success(req.user);
   }
 
   @Get("me")
   async getMe(@Request() req: any) {
-    return { user: req.user };
+    return this.apiResponse.success(req.user);
   }
 
   @Get("user/settings")
   async getUserSettings(@Request() req: any) {
-    return { settings: {}, user: req.user };
+    return this.apiResponse.success({});
   }
 
   @Put("user/settings")
   async updateUserSettings(@Request() req: any, @Body() data: any) {
-    return { settings: data, message: "Settings updated" };
+    return this.apiResponse.success(data);
   }
 
   @Post("user-app-usage")
   async reportUserAppUsage(@Request() req: any, @Body() data: any) {
-    return { message: "Usage reported" };
+    return this.apiResponse.success();
   }
 
   @Post("user/photo")
   async updateUserPhoto(@Request() req: any, @Body() data: any) {
-    return { message: "Photo updated" };
+    return this.apiResponse.success();
   }
 
   @Get("users/me/points")
   async getUserPoints(@Request() req: any) {
-    return { points: 0, user: req.user };
+    return this.apiResponse.success({ points: 0 });
   }
 
   @Post("fcm-token")
   async updateFcmToken(@Request() req: any, @Body("token") token: string) {
-    return { message: "FCM token updated" };
+    return this.apiResponse.success();
   }
 }
