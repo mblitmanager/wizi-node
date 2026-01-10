@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { Notification } from "../entities/notification.entity";
 import { User } from "../entities/user.entity";
 import { FcmService } from "./fcm.service";
+import { ParrainageEvent } from "../entities/parrainage-event.entity";
 
 @Injectable()
 export class NotificationService {
@@ -12,6 +13,8 @@ export class NotificationService {
     private notificationRepository: Repository<Notification>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(ParrainageEvent)
+    private parrainageEventRepository: Repository<ParrainageEvent>,
     private fcmService: FcmService
   ) {}
 
@@ -73,5 +76,11 @@ export class NotificationService {
       { user_id: userId },
       { read: true }
     );
+  }
+
+  async getParrainageEvents() {
+    return this.parrainageEventRepository.find({
+      order: { date_debut: "DESC" },
+    });
   }
 }

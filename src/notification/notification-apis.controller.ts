@@ -224,10 +224,14 @@ export class SendDailyNotificationController {
 
 @Controller("api/parrainage-events")
 export class ParrainageEventsApiController {
-  constructor(private apiResponse: ApiResponseService) {}
+  constructor(
+    private notificationService: NotificationService,
+    private apiResponse: ApiResponseService
+  ) {}
 
   @Get()
   async index() {
-    return this.apiResponse.success([]);
+    const events = await this.notificationService.getParrainageEvents();
+    return this.apiResponse.success(events);
   }
 }

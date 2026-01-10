@@ -8,6 +8,7 @@ import { NotificationController } from "./notification.controller";
 import { Notification } from "../entities/notification.entity";
 import { FcmService } from "./fcm.service";
 import { ConfigModule } from "@nestjs/config";
+import { ParrainageEvent } from "../entities/parrainage-event.entity";
 import {
   NotificationsApiController,
   NotificationHistoryApiController,
@@ -26,7 +27,7 @@ import {
   imports: [
     ConfigModule,
     CommonModule,
-    TypeOrmModule.forFeature([Notification, User]),
+    TypeOrmModule.forFeature([Notification, User, ParrainageEvent]),
   ],
   providers: [NotificationService, FcmService],
   controllers: [

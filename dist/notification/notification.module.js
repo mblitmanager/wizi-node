@@ -16,6 +16,7 @@ const notification_controller_1 = require("./notification.controller");
 const notification_entity_1 = require("../entities/notification.entity");
 const fcm_service_1 = require("./fcm.service");
 const config_1 = require("@nestjs/config");
+const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
 const notification_apis_controller_1 = require("./notification-apis.controller");
 let NotificationModule = class NotificationModule {
 };
@@ -25,7 +26,7 @@ exports.NotificationModule = NotificationModule = __decorate([
         imports: [
             config_1.ConfigModule,
             common_module_1.CommonModule,
-            typeorm_1.TypeOrmModule.forFeature([notification_entity_1.Notification, user_entity_1.User]),
+            typeorm_1.TypeOrmModule.forFeature([notification_entity_1.Notification, user_entity_1.User, parrainage_event_entity_1.ParrainageEvent]),
         ],
         providers: [notification_service_1.NotificationService, fcm_service_1.FcmService],
         controllers: [

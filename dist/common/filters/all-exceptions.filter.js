@@ -18,19 +18,19 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
         const response = ctx.getResponse();
         const request = ctx.getRequest();
         let status = common_1.HttpStatus.INTERNAL_SERVER_ERROR;
-        let message = 'Internal server error';
+        let message = "Internal server error";
         let error = null;
         if (exception instanceof common_1.HttpException) {
             status = exception.getStatus();
             const exceptionResponse = exception.getResponse();
-            if (typeof exceptionResponse === 'string') {
+            if (typeof exceptionResponse === "string") {
                 message = exceptionResponse;
             }
-            else if (typeof exceptionResponse === 'object') {
+            else if (typeof exceptionResponse === "object") {
                 message =
                     exceptionResponse.message ||
                         exceptionResponse.error ||
-                        'An error occurred';
+                        "An error occurred";
                 error = exceptionResponse.error;
             }
         }
@@ -49,7 +49,12 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
             timestamp: new Date().toISOString(),
             path: request.url,
         };
-        this.logger.error(`[${request.method}] ${request.url} - ${status} - ${message}`);
+        const isNoisy404 = status === common_1.HttpStatus.NOT_FOUND &&
+            (request.url.includes("favicon.ico") ||
+                request.url.includes("robots.txt"));
+        if (!isNoisy404) {
+            this.logger.error(`[${request.method}] ${request.url} - ${status} - ${message}`);
+        }
         response.status(status).json(errorResponse);
     }
 };

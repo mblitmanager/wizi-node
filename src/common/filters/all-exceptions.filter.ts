@@ -5,12 +5,12 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
 /**
  * Global Exception Filter
  * Standardise toutes les réponses d'erreur au format Laravel compatible
- * 
+ *
  * Convertit:
  * - HttpException → { success: false, error: "message", status: 400 }
  * - BadRequestException → { success: false, error: "message", status: 400 }
@@ -27,7 +27,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const request = ctx.getRequest();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal server error';
+    let message = "Internal server error";
     let error = null;
 
     // Gérer les HttpExceptions de NestJS
@@ -36,13 +36,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const exceptionResponse = exception.getResponse();
 
       // Extraire le message
-      if (typeof exceptionResponse === 'string') {
+      if (typeof exceptionResponse === "string") {
         message = exceptionResponse;
-      } else if (typeof exceptionResponse === 'object') {
+      } else if (typeof exceptionResponse === "object") {
         message =
           (exceptionResponse as any).message ||
           (exceptionResponse as any).error ||
-          'An error occurred';
+          "An error occurred";
         error = (exceptionResponse as any).error;
       }
     } else if (exception instanceof Error) {
@@ -64,10 +64,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
       path: request.url,
     };
 
-    // Log l'erreur
-    this.logger.error(
-      `[${request.method}] ${request.url} - ${status} - ${message}`
-    );
+    // Log l'erreur (on évite de log les 404 bruyants comme favicon.ico)
+    const isNoisy404 =
+      status === HttpStatus.NOT_FOUND &&
+      (request.url.includes("favicon.ico") ||
+        request.url.includes("robots.txt"));
+
+    if (!isNoisy404) {
+      this.logger.error(
+        `[${request.method}] ${request.url} - ${status} - ${message}`
+      );
+    }
 
     // Retourner la réponse
     response.status(status).json(errorResponse);

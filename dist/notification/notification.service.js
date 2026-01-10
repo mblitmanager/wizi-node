@@ -19,10 +19,12 @@ const typeorm_2 = require("typeorm");
 const notification_entity_1 = require("../entities/notification.entity");
 const user_entity_1 = require("../entities/user.entity");
 const fcm_service_1 = require("./fcm.service");
+const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
 let NotificationService = class NotificationService {
-    constructor(notificationRepository, userRepository, fcmService) {
+    constructor(notificationRepository, userRepository, parrainageEventRepository, fcmService) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+        this.parrainageEventRepository = parrainageEventRepository;
         this.fcmService = fcmService;
     }
     async createNotification(userId, type, message, data = {}, title) {
@@ -63,13 +65,20 @@ let NotificationService = class NotificationService {
     async markAllAsRead(userId) {
         return this.notificationRepository.update({ user_id: userId }, { read: true });
     }
+    async getParrainageEvents() {
+        return this.parrainageEventRepository.find({
+            order: { date_debut: "DESC" },
+        });
+    }
 };
 exports.NotificationService = NotificationService;
 exports.NotificationService = NotificationService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(notification_entity_1.Notification)),
     __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(2, (0, typeorm_1.InjectRepository)(parrainage_event_entity_1.ParrainageEvent)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         fcm_service_1.FcmService])
 ], NotificationService);

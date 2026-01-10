@@ -393,11 +393,13 @@ exports.SendDailyNotificationController = SendDailyNotificationController = __de
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], SendDailyNotificationController);
 let ParrainageEventsApiController = class ParrainageEventsApiController {
-    constructor(apiResponse) {
+    constructor(notificationService, apiResponse) {
+        this.notificationService = notificationService;
         this.apiResponse = apiResponse;
     }
     async index() {
-        return this.apiResponse.success([]);
+        const events = await this.notificationService.getParrainageEvents();
+        return this.apiResponse.success(events);
     }
 };
 exports.ParrainageEventsApiController = ParrainageEventsApiController;
@@ -409,6 +411,7 @@ __decorate([
 ], ParrainageEventsApiController.prototype, "index", null);
 exports.ParrainageEventsApiController = ParrainageEventsApiController = __decorate([
     (0, common_1.Controller)("api/parrainage-events"),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
+    __metadata("design:paramtypes", [notification_service_1.NotificationService,
+        api_response_service_1.ApiResponseService])
 ], ParrainageEventsApiController);
 //# sourceMappingURL=notification-apis.controller.js.map

@@ -73,7 +73,8 @@ export declare class SendDailyNotificationController {
     send(): Promise<any>;
 }
 export declare class ParrainageEventsApiController {
+    private notificationService;
     private apiResponse;
-    constructor(apiResponse: ApiResponseService);
+    constructor(notificationService: NotificationService, apiResponse: ApiResponseService);
     index(): Promise<any>;
 }
