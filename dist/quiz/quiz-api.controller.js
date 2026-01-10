@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MediaApiController = exports.MediasApiController = exports.FormationParrainageApiController = exports.CatalogueFormationsApiController = exports.FormationsApiController = exports.FormationApiController = exports.QuizApiController = void 0;
+exports.QuizApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const api_response_service_1 = require("../common/services/api-response.service");
@@ -39,16 +39,27 @@ let QuizApiController = class QuizApiController {
         return this.apiResponse.success({});
     }
     async statsCategories() {
-        return this.apiResponse.success({});
+        return this.apiResponse.success([]);
     }
     async statsPerformance() {
-        return this.apiResponse.success({});
+        return this.apiResponse.success({
+            strengths: [],
+            weaknesses: [],
+            improvement_areas: [],
+        });
     }
     async statsProgress() {
-        return this.apiResponse.success({});
+        return this.apiResponse.success({
+            daily_progress: [],
+            weekly_progress: [],
+            monthly_progress: [],
+        });
     }
     async statsTrends() {
-        return this.apiResponse.success({});
+        return this.apiResponse.success({
+            category_trends: [],
+            overall_trend: [],
+        });
     }
     async getById(id) {
         return this.apiResponse.success({});
@@ -230,269 +241,4 @@ exports.QuizApiController = QuizApiController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], QuizApiController);
-let FormationApiController = class FormationApiController {
-    constructor(apiResponse) {
-        this.apiResponse = apiResponse;
-    }
-    async categories() {
-        return this.apiResponse.success([]);
-    }
-    async listFormation() {
-        return this.apiResponse.success([]);
-    }
-};
-exports.FormationApiController = FormationApiController;
-__decorate([
-    (0, common_1.Get)("categories"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FormationApiController.prototype, "categories", null);
-__decorate([
-    (0, common_1.Get)("listFormation"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FormationApiController.prototype, "listFormation", null);
-exports.FormationApiController = FormationApiController = __decorate([
-    (0, common_1.Controller)("api/formation"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
-], FormationApiController);
-let FormationsApiController = class FormationsApiController {
-    constructor(apiResponse) {
-        this.apiResponse = apiResponse;
-    }
-    async byCategory() {
-        return this.apiResponse.success([]);
-    }
-    async classementSummary() {
-        return this.apiResponse.success({});
-    }
-    async classement() {
-        return this.apiResponse.success({});
-    }
-};
-exports.FormationsApiController = FormationsApiController;
-__decorate([
-    (0, common_1.Get)("categories/:categoryId"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FormationsApiController.prototype, "byCategory", null);
-__decorate([
-    (0, common_1.Get)("classement/summary"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FormationsApiController.prototype, "classementSummary", null);
-__decorate([
-    (0, common_1.Get)(":formationId/classement"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FormationsApiController.prototype, "classement", null);
-exports.FormationsApiController = FormationsApiController = __decorate([
-    (0, common_1.Controller)("api/formations"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
-], FormationsApiController);
-let CatalogueFormationsApiController = class CatalogueFormationsApiController {
-    constructor(apiResponse) {
-        this.apiResponse = apiResponse;
-    }
-    async formations() {
-        return this.apiResponse.success([]);
-    }
-    async getFormation() {
-        return this.apiResponse.success({});
-    }
-    async getPdf() {
-        return this.apiResponse.success();
-    }
-    async stagiaireFormations() {
-        return this.apiResponse.success([]);
-    }
-    async withFormations() {
-        return this.apiResponse.success([]);
-    }
-};
-exports.CatalogueFormationsApiController = CatalogueFormationsApiController;
-__decorate([
-    (0, common_1.Get)("formations"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CatalogueFormationsApiController.prototype, "formations", null);
-__decorate([
-    (0, common_1.Get)("formations/:id"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CatalogueFormationsApiController.prototype, "getFormation", null);
-__decorate([
-    (0, common_1.Get)("formations/:id/pdf"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CatalogueFormationsApiController.prototype, "getPdf", null);
-__decorate([
-    (0, common_1.Get)("stagiaire"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CatalogueFormationsApiController.prototype, "stagiaireFormations", null);
-__decorate([
-    (0, common_1.Get)("with-formations"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CatalogueFormationsApiController.prototype, "withFormations", null);
-exports.CatalogueFormationsApiController = CatalogueFormationsApiController = __decorate([
-    (0, common_1.Controller)("api/catalogueFormations"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
-], CatalogueFormationsApiController);
-let FormationParrainageApiController = class FormationParrainageApiController {
-    constructor(apiResponse) {
-        this.apiResponse = apiResponse;
-    }
-    async formations() {
-        return this.apiResponse.success([]);
-    }
-};
-exports.FormationParrainageApiController = FormationParrainageApiController;
-__decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FormationParrainageApiController.prototype, "formations", null);
-exports.FormationParrainageApiController = FormationParrainageApiController = __decorate([
-    (0, common_1.Controller)("api/formationParrainage"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
-], FormationParrainageApiController);
-let MediasApiController = class MediasApiController {
-    constructor(apiResponse) {
-        this.apiResponse = apiResponse;
-    }
-    async astuces() {
-        return this.apiResponse.success([]);
-    }
-    async tutoriels() {
-        return this.apiResponse.success([]);
-    }
-    async formationsWithStatus() {
-        return this.apiResponse.success([]);
-    }
-    async interactiveFormations() {
-        return this.apiResponse.success([]);
-    }
-    async astucesByFormation() {
-        return this.apiResponse.success([]);
-    }
-    async tutorielsByFormation() {
-        return this.apiResponse.success([]);
-    }
-    async serverVideos() {
-        return this.apiResponse.success([]);
-    }
-    async uploadVideo(data) {
-        return this.apiResponse.success();
-    }
-    async markAsWatched() {
-        return this.apiResponse.success();
-    }
-};
-exports.MediasApiController = MediasApiController;
-__decorate([
-    (0, common_1.Get)("astuces"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MediasApiController.prototype, "astuces", null);
-__decorate([
-    (0, common_1.Get)("tutoriels"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MediasApiController.prototype, "tutoriels", null);
-__decorate([
-    (0, common_1.Get)("formations-with-status"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MediasApiController.prototype, "formationsWithStatus", null);
-__decorate([
-    (0, common_1.Get)("formations/interactives"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MediasApiController.prototype, "interactiveFormations", null);
-__decorate([
-    (0, common_1.Get)("formations/:formationId/astuces"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MediasApiController.prototype, "astucesByFormation", null);
-__decorate([
-    (0, common_1.Get)("formations/:formationId/tutoriels"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MediasApiController.prototype, "tutorielsByFormation", null);
-__decorate([
-    (0, common_1.Get)("server"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MediasApiController.prototype, "serverVideos", null);
-__decorate([
-    (0, common_1.Post)("upload-video"),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], MediasApiController.prototype, "uploadVideo", null);
-__decorate([
-    (0, common_1.Post)(":mediaId/watched"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MediasApiController.prototype, "markAsWatched", null);
-exports.MediasApiController = MediasApiController = __decorate([
-    (0, common_1.Controller)("api/medias"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
-], MediasApiController);
-let MediaApiController = class MediaApiController {
-    constructor(apiResponse) {
-        this.apiResponse = apiResponse;
-    }
-    async stream() {
-        return this.apiResponse.success();
-    }
-    async subtitle() {
-        return this.apiResponse.success();
-    }
-};
-exports.MediaApiController = MediaApiController;
-__decorate([
-    (0, common_1.Get)("stream/:path"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MediaApiController.prototype, "stream", null);
-__decorate([
-    (0, common_1.Get)("subtitle/:path"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MediaApiController.prototype, "subtitle", null);
-exports.MediaApiController = MediaApiController = __decorate([
-    (0, common_1.Controller)("api/media"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
-], MediaApiController);
 //# sourceMappingURL=quiz-api.controller.js.map

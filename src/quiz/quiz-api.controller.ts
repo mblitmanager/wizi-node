@@ -38,6 +38,8 @@ export class QuizApiController {
 
   @Get("history")
   async history() {
+    // Laravel returns an array of progression objects
+    // Example: [{ id: "1", quiz: { id: 1, titre: "...", ... }, score: 80, ... }]
     return this.apiResponse.success([]);
   }
 
@@ -48,22 +50,37 @@ export class QuizApiController {
 
   @Get("stats/categories")
   async statsCategories() {
-    return this.apiResponse.success({});
+    // Laravel returns an array: [{ category: "...", totalQuizzes: 10, completedQuizzes: 5, completionRate: 50 }, ...]
+    return this.apiResponse.success([]);
   }
 
   @Get("stats/performance")
   async statsPerformance() {
-    return this.apiResponse.success({});
+    // Laravel returns: { strengths: [...], weaknesses: [...], improvement_areas: [...] }
+    return this.apiResponse.success({
+      strengths: [], // { category_id: "...", category_name: "...", score: 85 }
+      weaknesses: [],
+      improvement_areas: [],
+    });
   }
 
   @Get("stats/progress")
   async statsProgress() {
-    return this.apiResponse.success({});
+    // Laravel returns: { daily_progress: [...], weekly_progress: [...], monthly_progress: [...] }
+    return this.apiResponse.success({
+      daily_progress: [], // { date: "...", completed_quizzes: 2, average_score: 75 }
+      weekly_progress: [],
+      monthly_progress: [],
+    });
   }
 
   @Get("stats/trends")
   async statsTrends() {
-    return this.apiResponse.success({});
+    // Laravel returns: { category_trends: [...], overall_trend: [...] }
+    return this.apiResponse.success({
+      category_trends: [], // { category_id: "...", category_name: "...", trend_data: [{ date: "...", score: 80 }] }
+      overall_trend: [], // { date: "...", average_score: 78 }
+    });
   }
 
   @Get(":id")
@@ -119,151 +136,5 @@ export class QuizApiController {
   @Get(":quizId/user-participations")
   async getUserParticipations(@Param("quizId") quizId: number) {
     return this.apiResponse.success([]);
-  }
-}
-
-@Controller("api/formation")
-@UseGuards(AuthGuard("jwt"))
-export class FormationApiController {
-  constructor(private apiResponse: ApiResponseService) {}
-
-  @Get("categories")
-  async categories() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("listFormation")
-  async listFormation() {
-    return this.apiResponse.success([]);
-  }
-}
-
-@Controller("api/formations")
-@UseGuards(AuthGuard("jwt"))
-export class FormationsApiController {
-  constructor(private apiResponse: ApiResponseService) {}
-
-  @Get("categories/:categoryId")
-  async byCategory() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("classement/summary")
-  async classementSummary() {
-    return this.apiResponse.success({});
-  }
-
-  @Get(":formationId/classement")
-  async classement() {
-    return this.apiResponse.success({});
-  }
-}
-
-@Controller("api/catalogueFormations")
-@UseGuards(AuthGuard("jwt"))
-export class CatalogueFormationsApiController {
-  constructor(private apiResponse: ApiResponseService) {}
-
-  @Get("formations")
-  async formations() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("formations/:id")
-  async getFormation() {
-    return this.apiResponse.success({});
-  }
-
-  @Get("formations/:id/pdf")
-  async getPdf() {
-    return this.apiResponse.success();
-  }
-
-  @Get("stagiaire")
-  async stagiaireFormations() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("with-formations")
-  async withFormations() {
-    return this.apiResponse.success([]);
-  }
-}
-
-@Controller("api/formationParrainage")
-@UseGuards(AuthGuard("jwt"))
-export class FormationParrainageApiController {
-  constructor(private apiResponse: ApiResponseService) {}
-
-  @Get()
-  async formations() {
-    return this.apiResponse.success([]);
-  }
-}
-
-@Controller("api/medias")
-@UseGuards(AuthGuard("jwt"))
-export class MediasApiController {
-  constructor(private apiResponse: ApiResponseService) {}
-
-  @Get("astuces")
-  async astuces() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("tutoriels")
-  async tutoriels() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("formations-with-status")
-  async formationsWithStatus() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("formations/interactives")
-  async interactiveFormations() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("formations/:formationId/astuces")
-  async astucesByFormation() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("formations/:formationId/tutoriels")
-  async tutorielsByFormation() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("server")
-  async serverVideos() {
-    return this.apiResponse.success([]);
-  }
-
-  @Post("upload-video")
-  async uploadVideo(@Body() data: any) {
-    return this.apiResponse.success();
-  }
-
-  @Post(":mediaId/watched")
-  async markAsWatched() {
-    return this.apiResponse.success();
-  }
-}
-
-@Controller("api/media")
-@UseGuards(AuthGuard("jwt"))
-export class MediaApiController {
-  constructor(private apiResponse: ApiResponseService) {}
-
-  @Get("stream/:path")
-  async stream() {
-    return this.apiResponse.success();
-  }
-
-  @Get("subtitle/:path")
-  async subtitle() {
-    return this.apiResponse.success();
   }
 }

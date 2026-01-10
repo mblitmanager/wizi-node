@@ -26,7 +26,7 @@ export declare class StagiaireApiController {
     contactsFormateurs(): Promise<any>;
     contactsPoleRelation(): Promise<any>;
     contactsPoleSave(): Promise<any>;
-    progress(): Promise<any>;
+    progress(req: any): Promise<any>;
     quizzes(): Promise<any>;
     rankingGlobal(): Promise<any>;
     rankingFormation(): Promise<any>;

@@ -42,3 +42,8 @@ export declare class CatalogueFormationController {
     getOne(id: number): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation>;
     getAllForParrainage(): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation[]>;
 }
+export declare class FormationParrainageController {
+    private readonly catalogueService;
+    constructor(catalogueService: CatalogueFormationService);
+    formations(): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation[]>;
+}

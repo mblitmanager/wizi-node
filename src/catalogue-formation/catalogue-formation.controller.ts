@@ -54,3 +54,14 @@ export class CatalogueFormationController {
     return await this.catalogueService.findAll();
   }
 }
+
+@Controller("formationParrainage")
+@UseGuards(AuthGuard("jwt"))
+export class FormationParrainageController {
+  constructor(private readonly catalogueService: CatalogueFormationService) {}
+
+  @Get()
+  async formations() {
+    return await this.catalogueService.findAll();
+  }
+}

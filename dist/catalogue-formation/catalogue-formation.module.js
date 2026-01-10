@@ -28,7 +28,7 @@ exports.CatalogueFormationModule = CatalogueFormationModule = __decorate([
                 stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
             ]),
         ],
-        controllers: [catalogue_formation_controller_1.CatalogueFormationController],
+        controllers: [catalogue_formation_controller_1.CatalogueFormationController, catalogue_formation_controller_1.FormationParrainageController],
         providers: [catalogue_formation_service_1.CatalogueFormationService],
         exports: [catalogue_formation_service_1.CatalogueFormationService],
     })

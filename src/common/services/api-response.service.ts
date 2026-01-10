@@ -27,7 +27,7 @@ export class ApiResponseService {
       return { success: true };
     }
 
-    return { data };
+    return data;
   }
 
   /**

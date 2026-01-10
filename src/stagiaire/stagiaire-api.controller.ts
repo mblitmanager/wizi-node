@@ -115,8 +115,22 @@ export class StagiaireApiController {
   }
 
   @Get("progress")
-  async progress() {
-    return this.apiResponse.success({});
+  async progress(@Request() req: any) {
+    const user = req.user;
+    return this.apiResponse.success({
+      stagiaire: {
+        id: user.stagiaire?.id?.toString() || "0",
+        prenom: user.stagiaire?.prenom || user.name,
+        image: user.image || null,
+      },
+      totalPoints: 0,
+      quizCount: 0,
+      averageScore: 0,
+      completedQuizzes: 0,
+      totalTimeSpent: 0,
+      rang: 0,
+      level: 0,
+    });
   }
 
   @Get("quizzes")

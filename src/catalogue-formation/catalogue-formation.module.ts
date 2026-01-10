@@ -4,7 +4,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
-import { CatalogueFormationController } from "./catalogue-formation.controller";
+import {
+  CatalogueFormationController,
+  FormationParrainageController,
+} from "./catalogue-formation.controller";
 import { CatalogueFormationService } from "./catalogue-formation.service";
 
 @Module({
@@ -16,7 +19,7 @@ import { CatalogueFormationService } from "./catalogue-formation.service";
       StagiaireCatalogueFormation,
     ]),
   ],
-  controllers: [CatalogueFormationController],
+  controllers: [CatalogueFormationController, FormationParrainageController],
   providers: [CatalogueFormationService],
   exports: [CatalogueFormationService],
 })

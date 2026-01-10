@@ -76,8 +76,22 @@ let StagiaireApiController = class StagiaireApiController {
     async contactsPoleSave() {
         return this.apiResponse.success([]);
     }
-    async progress() {
-        return this.apiResponse.success({});
+    async progress(req) {
+        const user = req.user;
+        return this.apiResponse.success({
+            stagiaire: {
+                id: user.stagiaire?.id?.toString() || "0",
+                prenom: user.stagiaire?.prenom || user.name,
+                image: user.image || null,
+            },
+            totalPoints: 0,
+            quizCount: 0,
+            averageScore: 0,
+            completedQuizzes: 0,
+            totalTimeSpent: 0,
+            rang: 0,
+            level: 0,
+        });
     }
     async quizzes() {
         return this.apiResponse.success([]);
@@ -241,8 +255,9 @@ __decorate([
 ], StagiaireApiController.prototype, "contactsPoleSave", null);
 __decorate([
     (0, common_1.Get)("progress"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StagiaireApiController.prototype, "progress", null);
 __decorate([

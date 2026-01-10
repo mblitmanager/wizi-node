@@ -9,31 +9,14 @@ import { Formation } from "../entities/formation.entity";
 import { Classement } from "../entities/classement.entity";
 import { QuizService } from "./quiz.service";
 import { QuizController } from "./quiz.controller";
-import {
-  QuizApiController,
-  FormationApiController,
-  FormationsApiController,
-  CatalogueFormationsApiController,
-  FormationParrainageApiController,
-  MediasApiController,
-  MediaApiController,
-} from "./quiz-api.controller";
+import { QuizApiController } from "./quiz-api.controller";
 
 @Module({
   imports: [
     CommonModule,
     TypeOrmModule.forFeature([Quiz, Question, Reponse, Formation, Classement]),
   ],
-  controllers: [
-    QuizController,
-    QuizApiController,
-    FormationApiController,
-    FormationsApiController,
-    CatalogueFormationsApiController,
-    FormationParrainageApiController,
-    MediasApiController,
-    MediaApiController,
-  ],
+  controllers: [QuizController, QuizApiController],
   providers: [QuizService, ApiResponseService],
   exports: [QuizService],
 })

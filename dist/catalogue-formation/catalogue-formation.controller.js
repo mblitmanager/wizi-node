@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CatalogueFormationController = void 0;
+exports.FormationParrainageController = exports.CatalogueFormationController = void 0;
 const common_1 = require("@nestjs/common");
 const catalogue_formation_service_1 = require("./catalogue-formation.service");
 const passport_1 = require("@nestjs/passport");
@@ -102,4 +102,24 @@ exports.CatalogueFormationController = CatalogueFormationController = __decorate
     __metadata("design:paramtypes", [catalogue_formation_service_1.CatalogueFormationService,
         api_response_service_1.ApiResponseService])
 ], CatalogueFormationController);
+let FormationParrainageController = class FormationParrainageController {
+    constructor(catalogueService) {
+        this.catalogueService = catalogueService;
+    }
+    async formations() {
+        return await this.catalogueService.findAll();
+    }
+};
+exports.FormationParrainageController = FormationParrainageController;
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FormationParrainageController.prototype, "formations", null);
+exports.FormationParrainageController = FormationParrainageController = __decorate([
+    (0, common_1.Controller)("formationParrainage"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    __metadata("design:paramtypes", [catalogue_formation_service_1.CatalogueFormationService])
+], FormationParrainageController);
 //# sourceMappingURL=catalogue-formation.controller.js.map

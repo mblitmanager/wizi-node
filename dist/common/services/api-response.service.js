@@ -13,7 +13,7 @@ let ApiResponseService = class ApiResponseService {
         if (data === undefined) {
             return { success: true };
         }
-        return { data };
+        return data;
     }
     error(message, statusCode = 400) {
         return {
