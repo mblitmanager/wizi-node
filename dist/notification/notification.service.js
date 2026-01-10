@@ -17,9 +17,13 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const notification_entity_1 = require("../entities/notification.entity");
+const user_entity_1 = require("../entities/user.entity");
+const fcm_service_1 = require("./fcm.service");
 let NotificationService = class NotificationService {
-    constructor(notificationRepository) {
+    constructor(notificationRepository, userRepository, fcmService) {
         this.notificationRepository = notificationRepository;
+        this.userRepository = userRepository;
+        this.fcmService = fcmService;
     }
     async createNotification(userId, type, message, data = {}) {
         const notification = this.notificationRepository.create({
@@ -29,7 +33,17 @@ let NotificationService = class NotificationService {
             data,
             read: false,
         });
-        return this.notificationRepository.save(notification);
+        const savedNotification = await this.notificationRepository.save(notification);
+        try {
+            const user = await this.userRepository.findOne({ where: { id: userId } });
+            if (user && user.fcm_token) {
+                await this.fcmService.sendPushNotification(user.fcm_token, "Nouvelle notification", message, data);
+            }
+        }
+        catch (error) {
+            console.error("Failed to send push notification:", error);
+        }
+        return savedNotification;
     }
     async getNotifications(userId) {
         return this.notificationRepository.find({
@@ -53,6 +67,9 @@ exports.NotificationService = NotificationService;
 exports.NotificationService = NotificationService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(notification_entity_1.Notification)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        fcm_service_1.FcmService])
 ], NotificationService);
 //# sourceMappingURL=notification.service.js.map

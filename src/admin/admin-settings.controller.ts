@@ -11,6 +11,7 @@ import { Roles } from "../common/decorators/roles.decorator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Setting } from "../entities/setting.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("admin/settings")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -18,7 +19,8 @@ import { Setting } from "../entities/setting.entity";
 export class AdminSettingsController {
   constructor(
     @InjectRepository(Setting)
-    private settingRepository: Repository<Setting>
+    private settingRepository: Repository<Setting>,
+    private apiResponse: ApiResponseService
   ) {}
 
   @Get()
@@ -37,9 +39,7 @@ export class AdminSettingsController {
         : Number(setting.value);
     });
 
-    return {
-      data: settingsObject,
-    };
+    return this.apiResponse.success(settingsObject);
   }
 
   @Post()
@@ -61,9 +61,6 @@ export class AdminSettingsController {
       }
     }
 
-    return {
-      data: body,
-      message: "Paramètres mis à jour avec succès",
-    };
+    return this.apiResponse.success(body);
   }
 }

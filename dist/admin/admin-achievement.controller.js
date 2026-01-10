@@ -20,9 +20,11 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const achievement_entity_1 = require("../entities/achievement.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminAchievementController = class AdminAchievementController {
-    constructor(achievementRepository) {
+    constructor(achievementRepository, apiResponse) {
         this.achievementRepository = achievementRepository;
+        this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
         const query = this.achievementRepository.createQueryBuilder("a");
@@ -36,18 +38,17 @@ let AdminAchievementController = class AdminAchievementController {
             .take(limit)
             .orderBy("a.id", "DESC")
             .getManyAndCount();
-        return {
-            data,
-            pagination: {
-                total,
-                page,
-                total_pages: Math.ceil(total / limit),
-            },
-        };
+        return this.apiResponse.paginated(data, total, page, limit);
     }
     async delete(id) {
+        const achievement = await this.achievementRepository.findOne({
+            where: { id },
+        });
+        if (!achievement) {
+            throw new common_1.NotFoundException("Achievement not found");
+        }
         await this.achievementRepository.delete(id);
-        return { success: true };
+        return this.apiResponse.success();
     }
 };
 exports.AdminAchievementController = AdminAchievementController;
@@ -72,6 +73,7 @@ exports.AdminAchievementController = AdminAchievementController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(achievement_entity_1.Achievement)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], AdminAchievementController);
 //# sourceMappingURL=admin-achievement.controller.js.map

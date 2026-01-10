@@ -20,9 +20,11 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const setting_entity_1 = require("../entities/setting.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminSettingsController = class AdminSettingsController {
-    constructor(settingRepository) {
+    constructor(settingRepository, apiResponse) {
         this.settingRepository = settingRepository;
+        this.apiResponse = apiResponse;
     }
     async getSettings() {
         const settings = await this.settingRepository.find();
@@ -36,9 +38,7 @@ let AdminSettingsController = class AdminSettingsController {
                         : setting.value
                 : Number(setting.value);
         });
-        return {
-            data: settingsObject,
-        };
+        return this.apiResponse.success(settingsObject);
     }
     async updateSettings(body) {
         for (const [key, value] of Object.entries(body)) {
@@ -57,10 +57,7 @@ let AdminSettingsController = class AdminSettingsController {
                 await this.settingRepository.save(newSetting);
             }
         }
-        return {
-            data: body,
-            message: "Paramètres mis à jour avec succès",
-        };
+        return this.apiResponse.success(body);
     }
 };
 exports.AdminSettingsController = AdminSettingsController;
@@ -82,6 +79,7 @@ exports.AdminSettingsController = AdminSettingsController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(setting_entity_1.Setting)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], AdminSettingsController);
 //# sourceMappingURL=admin-settings.controller.js.map

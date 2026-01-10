@@ -5,6 +5,7 @@ import {
   UseGuards,
   Query,
   Param,
+  NotFoundException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -12,6 +13,7 @@ import { Roles } from "../common/decorators/roles.decorator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Achievement } from "../entities/achievement.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("admin/achievements")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -19,7 +21,8 @@ import { Achievement } from "../entities/achievement.entity";
 export class AdminAchievementController {
   constructor(
     @InjectRepository(Achievement)
-    private achievementRepository: Repository<Achievement>
+    private achievementRepository: Repository<Achievement>,
+    private apiResponse: ApiResponseService
   ) {}
 
   @Get()
@@ -42,19 +45,20 @@ export class AdminAchievementController {
       .orderBy("a.id", "DESC")
       .getManyAndCount();
 
-    return {
-      data,
-      pagination: {
-        total,
-        page,
-        total_pages: Math.ceil(total / limit),
-      },
-    };
+    return this.apiResponse.paginated(data, total, page, limit);
   }
 
   @Delete(":id")
   async delete(@Param("id") id: number) {
+    const achievement = await this.achievementRepository.findOne({
+      where: { id },
+    });
+
+    if (!achievement) {
+      throw new NotFoundException("Achievement not found");
+    }
+
     await this.achievementRepository.delete(id);
-    return { success: true };
+    return this.apiResponse.success();
   }
 }

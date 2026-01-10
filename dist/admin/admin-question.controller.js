@@ -20,9 +20,11 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const question_entity_1 = require("../entities/question.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminQuestionController = class AdminQuestionController {
-    constructor(questionRepository) {
+    constructor(questionRepository, apiResponse) {
         this.questionRepository = questionRepository;
+        this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
         const query = this.questionRepository.createQueryBuilder("q")
@@ -36,31 +38,49 @@ let AdminQuestionController = class AdminQuestionController {
             .take(limit)
             .orderBy("q.id", "DESC")
             .getManyAndCount();
-        return {
-            data,
-            pagination: {
-                total,
-                page,
-                total_pages: Math.ceil(total / limit),
-            },
-        };
+        return this.apiResponse.paginated(data, total, page, limit);
     }
     async findOne(id) {
-        return this.questionRepository.findOne({
+        const question = await this.questionRepository.findOne({
             where: { id },
             relations: ["reponses", "quiz"],
         });
+        if (!question) {
+            throw new common_1.NotFoundException("Question not found");
+        }
+        return this.apiResponse.success(question);
     }
     async create(data) {
+        if (!data.texte) {
+            throw new common_1.BadRequestException("texte is required");
+        }
         const question = this.questionRepository.create(data);
-        return this.questionRepository.save(question);
+        const saved = await this.questionRepository.save(question);
+        return this.apiResponse.success(saved);
     }
     async update(id, data) {
+        const question = await this.questionRepository.findOne({
+            where: { id },
+        });
+        if (!question) {
+            throw new common_1.NotFoundException("Question not found");
+        }
         await this.questionRepository.update(id, data);
-        return this.findOne(id);
+        const updated = await this.questionRepository.findOne({
+            where: { id },
+            relations: ["reponses", "quiz"],
+        });
+        return this.apiResponse.success(updated);
     }
     async remove(id) {
-        return this.questionRepository.delete(id);
+        const question = await this.questionRepository.findOne({
+            where: { id },
+        });
+        if (!question) {
+            throw new common_1.NotFoundException("Question not found");
+        }
+        await this.questionRepository.delete(id);
+        return this.apiResponse.success();
     }
 };
 exports.AdminQuestionController = AdminQuestionController;
@@ -107,6 +127,7 @@ exports.AdminQuestionController = AdminQuestionController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(question_entity_1.Question)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], AdminQuestionController);
 //# sourceMappingURL=admin-question.controller.js.map

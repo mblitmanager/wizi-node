@@ -23,12 +23,14 @@ const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const quiz_entity_1 = require("../entities/quiz.entity");
 const formation_entity_1 = require("../entities/formation.entity");
 const achievement_entity_1 = require("../entities/achievement.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminDashboardController = class AdminDashboardController {
-    constructor(stagiaireRepository, quizRepository, formationRepository, achievementRepository) {
+    constructor(stagiaireRepository, quizRepository, formationRepository, achievementRepository, apiResponse) {
         this.stagiaireRepository = stagiaireRepository;
         this.quizRepository = quizRepository;
         this.formationRepository = formationRepository;
         this.achievementRepository = achievementRepository;
+        this.apiResponse = apiResponse;
     }
     async getStatsDashboard(period = "30d") {
         let daysBack = 30;
@@ -52,25 +54,22 @@ let AdminDashboardController = class AdminDashboardController {
             .createQueryBuilder("q")
             .where("q.created_at >= :date", { date: dateFrom })
             .getCount();
-        return {
-            success: true,
-            data: {
-                stats: {
-                    total_stagiaires: totalStagiaires,
-                    total_quizzes: totalQuizzes,
-                    total_formations: totalFormations,
-                    total_achievements: totalAchievements,
-                    new_stagiaires: newStagiaires,
-                    new_quizzes: newQuizzes,
-                },
-                charts: {
-                    stagiaires_trend: await this.getStagiairesTrendByPeriod(daysBack),
-                    quizzes_trend: await this.getQuizzesTrendByPeriod(daysBack),
-                    top_formations: await this.getTopFormations(),
-                },
-                recent_activity: await this.getRecentActivity(),
+        return this.apiResponse.success({
+            stats: {
+                total_stagiaires: totalStagiaires,
+                total_quizzes: totalQuizzes,
+                total_formations: totalFormations,
+                total_achievements: totalAchievements,
+                new_stagiaires: newStagiaires,
+                new_quizzes: newQuizzes,
             },
-        };
+            charts: {
+                stagiaires_trend: await this.getStagiairesTrendByPeriod(daysBack),
+                quizzes_trend: await this.getQuizzesTrendByPeriod(daysBack),
+                top_formations: await this.getTopFormations(),
+            },
+            recent_activity: await this.getRecentActivity(),
+        });
     }
     async getDashboardStats(req) {
         const totalStagiaires = await this.stagiaireRepository.count();
@@ -87,25 +86,22 @@ let AdminDashboardController = class AdminDashboardController {
             .createQueryBuilder("q")
             .where("q.created_at >= :date", { date: sevenDaysAgo })
             .getCount();
-        return {
-            success: true,
-            data: {
-                stats: {
-                    total_stagiaires: totalStagiaires,
-                    total_quizzes: totalQuizzes,
-                    total_formations: totalFormations,
-                    total_achievements: totalAchievements,
-                    recent_stagiaires: recentStagiaires,
-                    recent_quizzes: recentQuizzes,
-                },
-                charts: {
-                    stagiaires_trend: await this.getStagiairesTrend(),
-                    quizzes_trend: await this.getQuizzesTrend(),
-                    top_formations: await this.getTopFormations(),
-                },
-                recent_activity: await this.getRecentActivity(),
+        return this.apiResponse.success({
+            stats: {
+                total_stagiaires: totalStagiaires,
+                total_quizzes: totalQuizzes,
+                total_formations: totalFormations,
+                total_achievements: totalAchievements,
+                recent_stagiaires: recentStagiaires,
+                recent_quizzes: recentQuizzes,
             },
-        };
+            charts: {
+                stagiaires_trend: await this.getStagiairesTrend(),
+                quizzes_trend: await this.getQuizzesTrend(),
+                top_formations: await this.getTopFormations(),
+            },
+            recent_activity: await this.getRecentActivity(),
+        });
     }
     async getStagiairesTrend() {
         const lastMonth = new Date();
@@ -199,6 +195,7 @@ exports.AdminDashboardController = AdminDashboardController = __decorate([
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], AdminDashboardController);
 //# sourceMappingURL=admin-dashboard.controller.js.map

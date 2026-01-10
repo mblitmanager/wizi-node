@@ -11,194 +11,223 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { MailService } from "../mail/mail.service";
+import { NotificationService } from "./notification.service";
+import { ApiResponseService } from "../common/services/api-response.service";
+import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "../entities/user.entity";
+import { Repository } from "typeorm";
 
 @Controller("api/notifications")
 @UseGuards(AuthGuard("jwt"))
 export class NotificationsApiController {
-  constructor() {}
+  constructor(
+    private notificationService: NotificationService,
+    private apiResponse: ApiResponseService,
+    @InjectRepository(User)
+    private userRepository: Repository<User>
+  ) {}
 
   @Get()
   async index(@Request() req: any) {
-    return { data: [], message: "Notifications" };
+    const notifications = await this.notificationService.getNotifications(
+      req.user.id
+    );
+    return this.apiResponse.success(notifications);
   }
 
   @Get("unread-count")
-  async unreadCount() {
-    return { count: 0 };
+  async unreadCount(@Request() req: any) {
+    const count = await this.notificationService.getUnreadCount(req.user.id);
+    return this.apiResponse.success({ count });
   }
 
   @Post("mark-all-read")
-  async markAllRead() {
-    return { message: "All marked as read" };
+  async markAllRead(@Request() req: any) {
+    await this.notificationService.markAllAsRead(req.user.id);
+    return this.apiResponse.success({ message: "All marked as read" });
+  }
+
+  @Post("fcm-token")
+  async updateFcmToken(@Request() req: any, @Body("token") token: string) {
+    await this.userRepository.update(req.user.id, { fcm_token: token });
+    return this.apiResponse.success({ message: "FCM token updated" });
   }
 
   @Post(":id/read")
   async markAsRead(@Param("id") id: number) {
-    return { message: "Marked as read" };
+    await this.notificationService.markAsRead(id);
+    return this.apiResponse.success({ message: "Marked as read" });
   }
 
   @Delete(":id")
   async delete(@Param("id") id: number) {
-    return { message: "Notification deleted" };
+    // Note: service doesn't have delete yet, but Repository does
+    // For now keep it as placeholder or implement it
+    return this.apiResponse.success({ message: "Notification deleted" });
   }
 }
 
 @Controller("api/notification-history")
 @UseGuards(AuthGuard("jwt"))
 export class NotificationHistoryApiController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index() {
-    return { data: [], message: "Notification history" };
+    return this.apiResponse.success([]);
   }
 }
 
 @Controller("api/parrainage")
 @UseGuards(AuthGuard("jwt"))
 export class ParrainageApiController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Post("generate-link")
   async generateLink() {
-    return { link: "http://example.com/parrainage/token" };
+    return this.apiResponse.success({
+      link: "http://example.com/parrainage/token",
+    });
   }
 
   @Get("get-data/:token")
   async getData(@Param("token") token: string) {
-    return { data: {}, message: "Parrainage data" };
+    return this.apiResponse.success({});
   }
 
   @Post("register-filleul")
   async registerFilleul(@Body() data: any) {
-    return { message: "Filleul registered" };
+    return this.apiResponse.success({ message: "Filleul registered" });
   }
 
   @Get("stats/:parrain_id")
   async stats() {
-    return { data: {}, message: "Parrainage stats" };
+    return this.apiResponse.success({});
   }
 }
 
 @Controller("api/announcements")
 @UseGuards(AuthGuard("jwt"))
 export class AnnouncementsApiController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index() {
-    return { data: [], message: "Announcements" };
+    return this.apiResponse.success([]);
   }
 
   @Post()
   async store(@Body() data: any) {
-    return { message: "Announcement created", data };
+    return this.apiResponse.success(data);
   }
 
   @Get("recipients")
   async getRecipients() {
-    return { data: [], message: "Recipients list" };
+    return this.apiResponse.success([]);
   }
 
   @Get(":announcement")
   async show(@Param("announcement") id: number) {
-    return { data: {}, message: "Announcement details" };
+    return this.apiResponse.success({});
   }
 
   @Put(":announcement")
   async update(@Param("announcement") id: number, @Body() data: any) {
-    return { message: "Announcement updated", data };
+    return this.apiResponse.success(data);
   }
 
   @Delete(":announcement")
   async destroy(@Param("announcement") id: number) {
-    return { message: "Announcement deleted" };
+    return this.apiResponse.success({ message: "Announcement deleted" });
   }
 }
 
 @Controller("api/auto-reminders")
 @UseGuards(AuthGuard("jwt"))
 export class AutoRemindersApiController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get("history")
   async history() {
-    return { data: [], message: "Reminder history" };
+    return this.apiResponse.success([]);
   }
 
   @Get("stats")
   async stats() {
-    return { data: {}, message: "Reminder stats" };
+    return this.apiResponse.success({});
   }
 
   @Get("targeted")
   async targeted() {
-    return { data: [], message: "Targeted users" };
+    return this.apiResponse.success([]);
   }
 
   @Post("run")
   async run() {
-    return { message: "Reminders sent" };
+    return this.apiResponse.success({ message: "Reminders sent" });
   }
 }
 
 @Controller("api/online-users")
 @UseGuards(AuthGuard("jwt"))
 export class OnlineUsersApiController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index() {
-    return { data: [], message: "Online users" };
+    return this.apiResponse.success([]);
   }
 }
 
 @Controller("api/contact")
 export class ContactApiController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Post()
   async sendContactForm(@Body() data: any) {
-    return { message: "Contact form sent" };
+    return this.apiResponse.success({ message: "Contact form sent" });
   }
 }
 
 @Controller("api/email")
 export class EmailApiController {
-  constructor(private mailService: MailService) {}
+  constructor(
+    private mailService: MailService,
+    private apiResponse: ApiResponseService
+  ) {}
 
   @Post()
   async send(@Body() data: any) {
-    return { message: "Email sent" };
+    return this.apiResponse.success({ message: "Email sent" });
   }
 }
 
 @Controller("api/notify")
 export class NotifyApiController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Post()
   async send(@Body() data: any) {
-    return { message: "Notification sent" };
+    return this.apiResponse.success({ message: "Notification sent" });
   }
 }
 
 @Controller("api/send-daily-notification")
 export class SendDailyNotificationController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async send() {
-    return { message: "Daily notifications sent" };
+    return this.apiResponse.success({ message: "Daily notifications sent" });
   }
 }
 
 @Controller("api/parrainage-events")
 export class ParrainageEventsApiController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index() {
-    return { data: [], message: "Parrainage events" };
+    return this.apiResponse.success([]);
   }
 }

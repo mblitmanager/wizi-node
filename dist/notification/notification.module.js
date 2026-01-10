@@ -14,14 +14,20 @@ const api_response_service_1 = require("../common/services/api-response.service"
 const notification_service_1 = require("./notification.service");
 const notification_controller_1 = require("./notification.controller");
 const notification_entity_1 = require("../entities/notification.entity");
+const fcm_service_1 = require("./fcm.service");
+const config_1 = require("@nestjs/config");
 const notification_apis_controller_1 = require("./notification-apis.controller");
 let NotificationModule = class NotificationModule {
 };
 exports.NotificationModule = NotificationModule;
 exports.NotificationModule = NotificationModule = __decorate([
     (0, common_1.Module)({
-        imports: [common_module_1.CommonModule, typeorm_1.TypeOrmModule.forFeature([notification_entity_1.Notification])],
-        providers: [notification_service_1.NotificationService, api_response_service_1.ApiResponseService],
+        imports: [
+            config_1.ConfigModule,
+            common_module_1.CommonModule,
+            typeorm_1.TypeOrmModule.forFeature([notification_entity_1.Notification]),
+        ],
+        providers: [notification_service_1.NotificationService, api_response_service_1.ApiResponseService, fcm_service_1.FcmService],
         controllers: [
             notification_controller_1.NotificationController,
             notification_apis_controller_1.NotificationsApiController,
@@ -36,7 +42,7 @@ exports.NotificationModule = NotificationModule = __decorate([
             notification_apis_controller_1.SendDailyNotificationController,
             notification_apis_controller_1.ParrainageEventsApiController,
         ],
-        exports: [notification_service_1.NotificationService],
+        exports: [notification_service_1.NotificationService, fcm_service_1.FcmService],
     })
 ], NotificationModule);
 //# sourceMappingURL=notification.module.js.map

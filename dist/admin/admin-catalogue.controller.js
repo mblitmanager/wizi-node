@@ -20,9 +20,11 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminCatalogueController = class AdminCatalogueController {
-    constructor(catalogueRepository) {
+    constructor(catalogueRepository, apiResponse) {
         this.catalogueRepository = catalogueRepository;
+        this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
         const query = this.catalogueRepository.createQueryBuilder("cf");
@@ -153,6 +155,7 @@ exports.AdminCatalogueController = AdminCatalogueController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(catalogue_formation_entity_1.CatalogueFormation)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], AdminCatalogueController);
 //# sourceMappingURL=admin-catalogue.controller.js.map

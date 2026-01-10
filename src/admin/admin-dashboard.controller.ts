@@ -16,6 +16,7 @@ import { Stagiaire } from "../entities/stagiaire.entity";
 import { Quiz } from "../entities/quiz.entity";
 import { Formation } from "../entities/formation.entity";
 import { Achievement } from "../entities/achievement.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("admin")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -29,7 +30,8 @@ export class AdminDashboardController {
     @InjectRepository(Formation)
     private formationRepository: Repository<Formation>,
     @InjectRepository(Achievement)
-    private achievementRepository: Repository<Achievement>
+    private achievementRepository: Repository<Achievement>,
+    private apiResponse: ApiResponseService
   ) {}
 
   @Get("stats/dashboard")
@@ -60,25 +62,22 @@ export class AdminDashboardController {
       .where("q.created_at >= :date", { date: dateFrom })
       .getCount();
 
-    return {
-      success: true,
-      data: {
-        stats: {
-          total_stagiaires: totalStagiaires,
-          total_quizzes: totalQuizzes,
-          total_formations: totalFormations,
-          total_achievements: totalAchievements,
-          new_stagiaires: newStagiaires,
-          new_quizzes: newQuizzes,
-        },
-        charts: {
-          stagiaires_trend: await this.getStagiairesTrendByPeriod(daysBack),
-          quizzes_trend: await this.getQuizzesTrendByPeriod(daysBack),
-          top_formations: await this.getTopFormations(),
-        },
-        recent_activity: await this.getRecentActivity(),
+    return this.apiResponse.success({
+      stats: {
+        total_stagiaires: totalStagiaires,
+        total_quizzes: totalQuizzes,
+        total_formations: totalFormations,
+        total_achievements: totalAchievements,
+        new_stagiaires: newStagiaires,
+        new_quizzes: newQuizzes,
       },
-    };
+      charts: {
+        stagiaires_trend: await this.getStagiairesTrendByPeriod(daysBack),
+        quizzes_trend: await this.getQuizzesTrendByPeriod(daysBack),
+        top_formations: await this.getTopFormations(),
+      },
+      recent_activity: await this.getRecentActivity(),
+    });
   }
 
   @Get("dashboard")
@@ -102,25 +101,22 @@ export class AdminDashboardController {
       .where("q.created_at >= :date", { date: sevenDaysAgo })
       .getCount();
 
-    return {
-      success: true,
-      data: {
-        stats: {
-          total_stagiaires: totalStagiaires,
-          total_quizzes: totalQuizzes,
-          total_formations: totalFormations,
-          total_achievements: totalAchievements,
-          recent_stagiaires: recentStagiaires,
-          recent_quizzes: recentQuizzes,
-        },
-        charts: {
-          stagiaires_trend: await this.getStagiairesTrend(),
-          quizzes_trend: await this.getQuizzesTrend(),
-          top_formations: await this.getTopFormations(),
-        },
-        recent_activity: await this.getRecentActivity(),
+    return this.apiResponse.success({
+      stats: {
+        total_stagiaires: totalStagiaires,
+        total_quizzes: totalQuizzes,
+        total_formations: totalFormations,
+        total_achievements: totalAchievements,
+        recent_stagiaires: recentStagiaires,
+        recent_quizzes: recentQuizzes,
       },
-    };
+      charts: {
+        stagiaires_trend: await this.getStagiairesTrend(),
+        quizzes_trend: await this.getQuizzesTrend(),
+        top_formations: await this.getTopFormations(),
+      },
+      recent_activity: await this.getRecentActivity(),
+    });
   }
 
   private async getStagiairesTrend() {

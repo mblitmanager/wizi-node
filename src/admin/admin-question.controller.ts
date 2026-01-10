@@ -8,6 +8,8 @@ import {
   Param,
   UseGuards,
   Query,
+  NotFoundException,
+  BadRequestException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -15,6 +17,7 @@ import { Roles } from "../common/decorators/roles.decorator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Question } from "../entities/question.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("admin/questions")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -22,7 +25,8 @@ import { Question } from "../entities/question.entity";
 export class AdminQuestionController {
   constructor(
     @InjectRepository(Question)
-    private questionRepository: Repository<Question>
+    private questionRepository: Repository<Question>,
+    private apiResponse: ApiResponseService
   ) {}
 
   @Get()
@@ -45,38 +49,66 @@ export class AdminQuestionController {
       .orderBy("q.id", "DESC")
       .getManyAndCount();
 
-    return {
-      data,
-      pagination: {
-        total,
-        page,
-        total_pages: Math.ceil(total / limit),
-      },
-    };
+    return this.apiResponse.paginated(data, total, page, limit);
   }
 
   @Get(":id")
   async findOne(@Param("id") id: number) {
-    return this.questionRepository.findOne({
+    const question = await this.questionRepository.findOne({
       where: { id },
       relations: ["reponses", "quiz"],
     });
+
+    if (!question) {
+      throw new NotFoundException("Question not found");
+    }
+
+    return this.apiResponse.success(question);
   }
 
   @Post()
   async create(@Body() data: any) {
+    if (!data.texte) {
+      throw new BadRequestException("texte is required");
+    }
+
     const question = this.questionRepository.create(data);
-    return this.questionRepository.save(question);
+    const saved = await this.questionRepository.save(question);
+
+    return this.apiResponse.success(saved);
   }
 
   @Put(":id")
   async update(@Param("id") id: number, @Body() data: any) {
+    const question = await this.questionRepository.findOne({
+      where: { id },
+    });
+
+    if (!question) {
+      throw new NotFoundException("Question not found");
+    }
+
     await this.questionRepository.update(id, data);
-    return this.findOne(id);
+    const updated = await this.questionRepository.findOne({
+      where: { id },
+      relations: ["reponses", "quiz"],
+    });
+
+    return this.apiResponse.success(updated);
   }
 
   @Delete(":id")
   async remove(@Param("id") id: number) {
-    return this.questionRepository.delete(id);
+    const question = await this.questionRepository.findOne({
+      where: { id },
+    });
+
+    if (!question) {
+      throw new NotFoundException("Question not found");
+    }
+
+    await this.questionRepository.delete(id);
+
+    return this.apiResponse.success();
   }
 }

@@ -2,12 +2,17 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Notification } from "../entities/notification.entity";
+import { User } from "../entities/user.entity";
+import { FcmService } from "./fcm.service";
 
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectRepository(Notification)
-    private notificationRepository: Repository<Notification>
+    private notificationRepository: Repository<Notification>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    private fcmService: FcmService
   ) {}
 
   async createNotification(
@@ -23,7 +28,25 @@ export class NotificationService {
       data,
       read: false,
     });
-    return this.notificationRepository.save(notification);
+    const savedNotification =
+      await this.notificationRepository.save(notification);
+
+    // Send Push Notification via FCM
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (user && user.fcm_token) {
+        await this.fcmService.sendPushNotification(
+          user.fcm_token,
+          "Nouvelle notification",
+          message,
+          data
+        );
+      }
+    } catch (error) {
+      console.error("Failed to send push notification:", error);
+    }
+
+    return savedNotification;
   }
 
   async getNotifications(userId: number) {

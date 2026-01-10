@@ -1,8 +1,10 @@
 import { Repository } from "typeorm";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class AdminCatalogueController {
     private catalogueRepository;
-    constructor(catalogueRepository: Repository<CatalogueFormation>);
+    private apiResponse;
+    constructor(catalogueRepository: Repository<CatalogueFormation>, apiResponse: ApiResponseService);
     findAll(page?: number, limit?: number, search?: string): Promise<{
         data: CatalogueFormation[];
         pagination: {

@@ -1,17 +1,10 @@
 import { Repository } from "typeorm";
 import { Achievement } from "../entities/achievement.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class AdminAchievementController {
     private achievementRepository;
-    constructor(achievementRepository: Repository<Achievement>);
-    findAll(page?: number, limit?: number, search?: string): Promise<{
-        data: Achievement[];
-        pagination: {
-            total: number;
-            page: number;
-            total_pages: number;
-        };
-    }>;
-    delete(id: number): Promise<{
-        success: boolean;
-    }>;
+    private apiResponse;
+    constructor(achievementRepository: Repository<Achievement>, apiResponse: ApiResponseService);
+    findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Achievement>>;
+    delete(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
 }

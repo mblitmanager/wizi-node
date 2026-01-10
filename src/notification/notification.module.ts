@@ -5,6 +5,8 @@ import { ApiResponseService } from "../common/services/api-response.service";
 import { NotificationService } from "./notification.service";
 import { NotificationController } from "./notification.controller";
 import { Notification } from "../entities/notification.entity";
+import { FcmService } from "./fcm.service";
+import { ConfigModule } from "@nestjs/config";
 import {
   NotificationsApiController,
   NotificationHistoryApiController,
@@ -20,8 +22,12 @@ import {
 } from "./notification-apis.controller";
 
 @Module({
-  imports: [CommonModule, TypeOrmModule.forFeature([Notification])],
-  providers: [NotificationService, ApiResponseService],
+  imports: [
+    ConfigModule,
+    CommonModule,
+    TypeOrmModule.forFeature([Notification]),
+  ],
+  providers: [NotificationService, ApiResponseService, FcmService],
   controllers: [
     NotificationController,
     NotificationsApiController,
@@ -36,6 +42,6 @@ import {
     SendDailyNotificationController,
     ParrainageEventsApiController,
   ],
-  exports: [NotificationService],
+  exports: [NotificationService, FcmService],
 })
 export class NotificationModule {}

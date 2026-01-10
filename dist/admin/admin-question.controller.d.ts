@@ -1,18 +1,13 @@
 import { Repository } from "typeorm";
 import { Question } from "../entities/question.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class AdminQuestionController {
     private questionRepository;
-    constructor(questionRepository: Repository<Question>);
-    findAll(page?: number, limit?: number, search?: string): Promise<{
-        data: Question[];
-        pagination: {
-            total: number;
-            page: number;
-            total_pages: number;
-        };
-    }>;
-    findOne(id: number): Promise<Question>;
-    create(data: any): Promise<Question[]>;
-    update(id: number, data: any): Promise<Question>;
-    remove(id: number): Promise<import("typeorm").DeleteResult>;
+    private apiResponse;
+    constructor(questionRepository: Repository<Question>, apiResponse: ApiResponseService);
+    findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Question>>;
+    findOne(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Question>>;
+    create(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Question[]>>;
+    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Question>>;
+    remove(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
 }

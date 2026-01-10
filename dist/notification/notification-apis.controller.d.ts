@@ -1,127 +1,105 @@
 import { MailService } from "../mail/mail.service";
+import { NotificationService } from "./notification.service";
+import { ApiResponseService } from "../common/services/api-response.service";
+import { User } from "../entities/user.entity";
+import { Repository } from "typeorm";
 export declare class NotificationsApiController {
-    constructor();
-    index(req: any): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    unreadCount(): Promise<{
+    private notificationService;
+    private apiResponse;
+    private userRepository;
+    constructor(notificationService: NotificationService, apiResponse: ApiResponseService, userRepository: Repository<User>);
+    index(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<import("../entities/notification.entity").Notification[]>>;
+    unreadCount(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         count: number;
-    }>;
-    markAllRead(): Promise<{
+    }>>;
+    markAllRead(req: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         message: string;
-    }>;
-    markAsRead(id: number): Promise<{
+    }>>;
+    updateFcmToken(req: any, token: string): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         message: string;
-    }>;
-    delete(id: number): Promise<{
+    }>>;
+    markAsRead(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         message: string;
-    }>;
+    }>>;
+    delete(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
+        message: string;
+    }>>;
 }
 export declare class NotificationHistoryApiController {
-    constructor();
-    index(): Promise<{
-        data: any[];
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    index(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
 }
 export declare class ParrainageApiController {
-    constructor();
-    generateLink(): Promise<{
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    generateLink(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         link: string;
-    }>;
-    getData(token: string): Promise<{
-        data: {};
+    }>>;
+    getData(token: string): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    registerFilleul(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         message: string;
-    }>;
-    registerFilleul(data: any): Promise<{
-        message: string;
-    }>;
-    stats(): Promise<{
-        data: {};
-        message: string;
-    }>;
+    }>>;
+    stats(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
 }
 export declare class AnnouncementsApiController {
-    constructor();
-    index(): Promise<{
-        data: any[];
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    index(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    store(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    getRecipients(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    show(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any>>;
+    destroy(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         message: string;
-    }>;
-    store(data: any): Promise<{
-        message: string;
-        data: any;
-    }>;
-    getRecipients(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    show(id: number): Promise<{
-        data: {};
-        message: string;
-    }>;
-    update(id: number, data: any): Promise<{
-        message: string;
-        data: any;
-    }>;
-    destroy(id: number): Promise<{
-        message: string;
-    }>;
+    }>>;
 }
 export declare class AutoRemindersApiController {
-    constructor();
-    history(): Promise<{
-        data: any[];
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    history(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    stats(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{}>>;
+    targeted(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
+    run(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         message: string;
-    }>;
-    stats(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    targeted(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    run(): Promise<{
-        message: string;
-    }>;
+    }>>;
 }
 export declare class OnlineUsersApiController {
-    constructor();
-    index(): Promise<{
-        data: any[];
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    index(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
 }
 export declare class ContactApiController {
-    constructor();
-    sendContactForm(data: any): Promise<{
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    sendContactForm(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         message: string;
-    }>;
+    }>>;
 }
 export declare class EmailApiController {
     private mailService;
-    constructor(mailService: MailService);
-    send(data: any): Promise<{
+    private apiResponse;
+    constructor(mailService: MailService, apiResponse: ApiResponseService);
+    send(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         message: string;
-    }>;
+    }>>;
 }
 export declare class NotifyApiController {
-    constructor();
-    send(data: any): Promise<{
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    send(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         message: string;
-    }>;
+    }>>;
 }
 export declare class SendDailyNotificationController {
-    constructor();
-    send(): Promise<{
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    send(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<{
         message: string;
-    }>;
+    }>>;
 }
 export declare class ParrainageEventsApiController {
-    constructor();
-    index(): Promise<{
-        data: any[];
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    index(): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any[]>>;
 }

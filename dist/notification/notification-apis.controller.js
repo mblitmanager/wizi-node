@@ -16,22 +16,39 @@ exports.ParrainageEventsApiController = exports.SendDailyNotificationController 
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const mail_service_1 = require("../mail/mail.service");
+const notification_service_1 = require("./notification.service");
+const api_response_service_1 = require("../common/services/api-response.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const user_entity_1 = require("../entities/user.entity");
+const typeorm_2 = require("typeorm");
 let NotificationsApiController = class NotificationsApiController {
-    constructor() { }
+    constructor(notificationService, apiResponse, userRepository) {
+        this.notificationService = notificationService;
+        this.apiResponse = apiResponse;
+        this.userRepository = userRepository;
+    }
     async index(req) {
-        return { data: [], message: "Notifications" };
+        const notifications = await this.notificationService.getNotifications(req.user.id);
+        return this.apiResponse.success(notifications);
     }
-    async unreadCount() {
-        return { count: 0 };
+    async unreadCount(req) {
+        const count = await this.notificationService.getUnreadCount(req.user.id);
+        return this.apiResponse.success({ count });
     }
-    async markAllRead() {
-        return { message: "All marked as read" };
+    async markAllRead(req) {
+        await this.notificationService.markAllAsRead(req.user.id);
+        return this.apiResponse.success({ message: "All marked as read" });
+    }
+    async updateFcmToken(req, token) {
+        await this.userRepository.update(req.user.id, { fcm_token: token });
+        return this.apiResponse.success({ message: "FCM token updated" });
     }
     async markAsRead(id) {
-        return { message: "Marked as read" };
+        await this.notificationService.markAsRead(id);
+        return this.apiResponse.success({ message: "Marked as read" });
     }
     async delete(id) {
-        return { message: "Notification deleted" };
+        return this.apiResponse.success({ message: "Notification deleted" });
     }
 };
 exports.NotificationsApiController = NotificationsApiController;
@@ -44,16 +61,26 @@ __decorate([
 ], NotificationsApiController.prototype, "index", null);
 __decorate([
     (0, common_1.Get)("unread-count"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], NotificationsApiController.prototype, "unreadCount", null);
 __decorate([
     (0, common_1.Post)("mark-all-read"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], NotificationsApiController.prototype, "markAllRead", null);
+__decorate([
+    (0, common_1.Post)("fcm-token"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)("token")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], NotificationsApiController.prototype, "updateFcmToken", null);
 __decorate([
     (0, common_1.Post)(":id/read"),
     __param(0, (0, common_1.Param)("id")),
@@ -71,12 +98,17 @@ __decorate([
 exports.NotificationsApiController = NotificationsApiController = __decorate([
     (0, common_1.Controller)("api/notifications"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [notification_service_1.NotificationService,
+        api_response_service_1.ApiResponseService,
+        typeorm_2.Repository])
 ], NotificationsApiController);
 let NotificationHistoryApiController = class NotificationHistoryApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async index() {
-        return { data: [], message: "Notification history" };
+        return this.apiResponse.success([]);
     }
 };
 exports.NotificationHistoryApiController = NotificationHistoryApiController;
@@ -89,21 +121,25 @@ __decorate([
 exports.NotificationHistoryApiController = NotificationHistoryApiController = __decorate([
     (0, common_1.Controller)("api/notification-history"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], NotificationHistoryApiController);
 let ParrainageApiController = class ParrainageApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async generateLink() {
-        return { link: "http://example.com/parrainage/token" };
+        return this.apiResponse.success({
+            link: "http://example.com/parrainage/token",
+        });
     }
     async getData(token) {
-        return { data: {}, message: "Parrainage data" };
+        return this.apiResponse.success({});
     }
     async registerFilleul(data) {
-        return { message: "Filleul registered" };
+        return this.apiResponse.success({ message: "Filleul registered" });
     }
     async stats() {
-        return { data: {}, message: "Parrainage stats" };
+        return this.apiResponse.success({});
     }
 };
 exports.ParrainageApiController = ParrainageApiController;
@@ -136,27 +172,29 @@ __decorate([
 exports.ParrainageApiController = ParrainageApiController = __decorate([
     (0, common_1.Controller)("api/parrainage"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], ParrainageApiController);
 let AnnouncementsApiController = class AnnouncementsApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async index() {
-        return { data: [], message: "Announcements" };
+        return this.apiResponse.success([]);
     }
     async store(data) {
-        return { message: "Announcement created", data };
+        return this.apiResponse.success(data);
     }
     async getRecipients() {
-        return { data: [], message: "Recipients list" };
+        return this.apiResponse.success([]);
     }
     async show(id) {
-        return { data: {}, message: "Announcement details" };
+        return this.apiResponse.success({});
     }
     async update(id, data) {
-        return { message: "Announcement updated", data };
+        return this.apiResponse.success(data);
     }
     async destroy(id) {
-        return { message: "Announcement deleted" };
+        return this.apiResponse.success({ message: "Announcement deleted" });
     }
 };
 exports.AnnouncementsApiController = AnnouncementsApiController;
@@ -204,21 +242,23 @@ __decorate([
 exports.AnnouncementsApiController = AnnouncementsApiController = __decorate([
     (0, common_1.Controller)("api/announcements"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AnnouncementsApiController);
 let AutoRemindersApiController = class AutoRemindersApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async history() {
-        return { data: [], message: "Reminder history" };
+        return this.apiResponse.success([]);
     }
     async stats() {
-        return { data: {}, message: "Reminder stats" };
+        return this.apiResponse.success({});
     }
     async targeted() {
-        return { data: [], message: "Targeted users" };
+        return this.apiResponse.success([]);
     }
     async run() {
-        return { message: "Reminders sent" };
+        return this.apiResponse.success({ message: "Reminders sent" });
     }
 };
 exports.AutoRemindersApiController = AutoRemindersApiController;
@@ -249,12 +289,14 @@ __decorate([
 exports.AutoRemindersApiController = AutoRemindersApiController = __decorate([
     (0, common_1.Controller)("api/auto-reminders"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AutoRemindersApiController);
 let OnlineUsersApiController = class OnlineUsersApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async index() {
-        return { data: [], message: "Online users" };
+        return this.apiResponse.success([]);
     }
 };
 exports.OnlineUsersApiController = OnlineUsersApiController;
@@ -267,12 +309,14 @@ __decorate([
 exports.OnlineUsersApiController = OnlineUsersApiController = __decorate([
     (0, common_1.Controller)("api/online-users"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], OnlineUsersApiController);
 let ContactApiController = class ContactApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async sendContactForm(data) {
-        return { message: "Contact form sent" };
+        return this.apiResponse.success({ message: "Contact form sent" });
     }
 };
 exports.ContactApiController = ContactApiController;
@@ -285,14 +329,15 @@ __decorate([
 ], ContactApiController.prototype, "sendContactForm", null);
 exports.ContactApiController = ContactApiController = __decorate([
     (0, common_1.Controller)("api/contact"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], ContactApiController);
 let EmailApiController = class EmailApiController {
-    constructor(mailService) {
+    constructor(mailService, apiResponse) {
         this.mailService = mailService;
+        this.apiResponse = apiResponse;
     }
     async send(data) {
-        return { message: "Email sent" };
+        return this.apiResponse.success({ message: "Email sent" });
     }
 };
 exports.EmailApiController = EmailApiController;
@@ -305,12 +350,15 @@ __decorate([
 ], EmailApiController.prototype, "send", null);
 exports.EmailApiController = EmailApiController = __decorate([
     (0, common_1.Controller)("api/email"),
-    __metadata("design:paramtypes", [mail_service_1.MailService])
+    __metadata("design:paramtypes", [mail_service_1.MailService,
+        api_response_service_1.ApiResponseService])
 ], EmailApiController);
 let NotifyApiController = class NotifyApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async send(data) {
-        return { message: "Notification sent" };
+        return this.apiResponse.success({ message: "Notification sent" });
     }
 };
 exports.NotifyApiController = NotifyApiController;
@@ -323,12 +371,14 @@ __decorate([
 ], NotifyApiController.prototype, "send", null);
 exports.NotifyApiController = NotifyApiController = __decorate([
     (0, common_1.Controller)("api/notify"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], NotifyApiController);
 let SendDailyNotificationController = class SendDailyNotificationController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async send() {
-        return { message: "Daily notifications sent" };
+        return this.apiResponse.success({ message: "Daily notifications sent" });
     }
 };
 exports.SendDailyNotificationController = SendDailyNotificationController;
@@ -340,12 +390,14 @@ __decorate([
 ], SendDailyNotificationController.prototype, "send", null);
 exports.SendDailyNotificationController = SendDailyNotificationController = __decorate([
     (0, common_1.Controller)("api/send-daily-notification"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], SendDailyNotificationController);
 let ParrainageEventsApiController = class ParrainageEventsApiController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async index() {
-        return { data: [], message: "Parrainage events" };
+        return this.apiResponse.success([]);
     }
 };
 exports.ParrainageEventsApiController = ParrainageEventsApiController;
@@ -357,6 +409,6 @@ __decorate([
 ], ParrainageEventsApiController.prototype, "index", null);
 exports.ParrainageEventsApiController = ParrainageEventsApiController = __decorate([
     (0, common_1.Controller)("api/parrainage-events"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], ParrainageEventsApiController);
 //# sourceMappingURL=notification-apis.controller.js.map
