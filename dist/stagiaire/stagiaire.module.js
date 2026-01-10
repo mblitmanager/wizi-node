@@ -13,6 +13,7 @@ const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const stagiaire_service_1 = require("./stagiaire.service");
 const stagiaire_controller_1 = require("./stagiaire.controller");
 const stagiaires_controller_1 = require("./stagiaires.controller");
+const stagiaire_api_controller_1 = require("./stagiaire-api.controller");
 const classement_entity_1 = require("../entities/classement.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const quiz_entity_1 = require("../entities/quiz.entity");
@@ -38,7 +39,7 @@ exports.StagiaireModule = StagiaireModule = __decorate([
             ranking_module_1.RankingModule,
         ],
         providers: [stagiaire_service_1.StagiaireService],
-        controllers: [stagiaire_controller_1.StagiaireController, stagiaires_controller_1.StagiairesController],
+        controllers: [stagiaire_controller_1.StagiaireController, stagiaires_controller_1.StagiairesController, stagiaire_api_controller_1.StagiaireApiController, stagiaire_api_controller_1.ApiGeneralController],
         exports: [stagiaire_service_1.StagiaireService],
     })
 ], StagiaireModule);

@@ -12,6 +12,7 @@ import { User } from "../entities/user.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { MailService } from "../mail/mail.service";
 import * as crypto from "crypto";
 import * as bcrypt from "bcrypt";
 
@@ -32,7 +33,8 @@ export class ParrainageService {
     private demandeInscriptionRepository: Repository<DemandeInscription>,
     @InjectRepository(CatalogueFormation)
     private catalogueFormationRepository: Repository<CatalogueFormation>,
-    private dataSource: DataSource
+    private dataSource: DataSource,
+    private mailService: MailService
   ) {}
 
   async registerFilleul(data: any) {
@@ -124,6 +126,19 @@ export class ParrainageService {
       await queryRunner.manager.save(DemandeInscription, demande);
 
       await queryRunner.commitTransaction();
+
+      // Send confirmation email
+      try {
+        await this.mailService.sendMail(
+          savedUser.email,
+          "Confirmation d'inscription - Wizi Learn",
+          "confirmation",
+          { name: savedStagiaire.prenom || savedUser.name }
+        );
+      } catch (mailError) {
+        console.error("Failed to send confirmation email:", mailError);
+        // We don't throw here to avoid rolling back the transaction for a mail failure
+      }
 
       return {
         success: true,

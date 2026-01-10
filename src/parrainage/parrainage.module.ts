@@ -9,9 +9,11 @@ import { User } from "../entities/user.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { MailModule } from "../mail/mail.module";
 
 @Module({
   imports: [
+    MailModule,
     TypeOrmModule.forFeature([
       Parrainage,
       ParrainageToken,

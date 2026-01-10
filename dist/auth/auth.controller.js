@@ -38,13 +38,27 @@ let AuthController = class AuthController {
         return { message: "Token enregistré" };
     }
     getProfile(req) {
-        return req.user;
+        return this.transformUser(req.user);
     }
     getMe(req) {
-        return req.user;
+        return this.transformUser(req.user);
     }
     getUser(req) {
-        return req.user;
+        return this.transformUser(req.user);
+    }
+    transformUser(user) {
+        if (!user)
+            return user;
+        return {
+            ...user,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                image: user.image,
+            },
+        };
     }
 };
 exports.AuthController = AuthController;

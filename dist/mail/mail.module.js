@@ -40,7 +40,7 @@ exports.MailModule = MailModule = __decorate([
                         from: `"${config.get("MAIL_FROM_NAME")}" <${config.get("MAIL_FROM_ADDRESS")}>`,
                     },
                     template: {
-                        dir: (0, path_1.join)(__dirname, "templates"),
+                        dir: (0, path_1.join)(process.cwd(), "src", "mail", "templates"),
                         adapter: new handlebars_adapter_1.HandlebarsAdapter(),
                         options: {
                             strict: true,

@@ -23,10 +23,11 @@ const user_entity_1 = require("../entities/user.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const mail_service_1 = require("../mail/mail.service");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 let ParrainageService = class ParrainageService {
-    constructor(parrainageRepository, parrainageTokenRepository, parrainageEventRepository, userRepository, stagiaireRepository, demandeInscriptionRepository, catalogueFormationRepository, dataSource) {
+    constructor(parrainageRepository, parrainageTokenRepository, parrainageEventRepository, userRepository, stagiaireRepository, demandeInscriptionRepository, catalogueFormationRepository, dataSource, mailService) {
         this.parrainageRepository = parrainageRepository;
         this.parrainageTokenRepository = parrainageTokenRepository;
         this.parrainageEventRepository = parrainageEventRepository;
@@ -35,6 +36,7 @@ let ParrainageService = class ParrainageService {
         this.demandeInscriptionRepository = demandeInscriptionRepository;
         this.catalogueFormationRepository = catalogueFormationRepository;
         this.dataSource = dataSource;
+        this.mailService = mailService;
     }
     async registerFilleul(data) {
         const queryRunner = this.dataSource.createQueryRunner();
@@ -105,6 +107,12 @@ let ParrainageService = class ParrainageService {
             });
             await queryRunner.manager.save(demande_inscription_entity_1.DemandeInscription, demande);
             await queryRunner.commitTransaction();
+            try {
+                await this.mailService.sendMail(savedUser.email, "Confirmation d'inscription - Wizi Learn", "confirmation", { name: savedStagiaire.prenom || savedUser.name });
+            }
+            catch (mailError) {
+                console.error("Failed to send confirmation email:", mailError);
+            }
             return {
                 success: true,
                 message: "Inscription réussie! Les équipes ont été notifiées.",
@@ -274,6 +282,7 @@ exports.ParrainageService = ParrainageService = __decorate([
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.DataSource])
+        typeorm_2.DataSource,
+        mail_service_1.MailService])
 ], ParrainageService);
 //# sourceMappingURL=parrainage.service.js.map

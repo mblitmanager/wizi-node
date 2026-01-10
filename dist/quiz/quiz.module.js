@@ -16,6 +16,7 @@ const formation_entity_1 = require("../entities/formation.entity");
 const classement_entity_1 = require("../entities/classement.entity");
 const quiz_service_1 = require("./quiz.service");
 const quiz_controller_1 = require("./quiz.controller");
+const quiz_api_controller_1 = require("./quiz-api.controller");
 let QuizModule = class QuizModule {
 };
 exports.QuizModule = QuizModule;
@@ -24,7 +25,16 @@ exports.QuizModule = QuizModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([quiz_entity_1.Quiz, question_entity_1.Question, reponse_entity_1.Reponse, formation_entity_1.Formation, classement_entity_1.Classement]),
         ],
-        controllers: [quiz_controller_1.QuizController],
+        controllers: [
+            quiz_controller_1.QuizController,
+            quiz_api_controller_1.QuizApiController,
+            quiz_api_controller_1.FormationApiController,
+            quiz_api_controller_1.FormationsApiController,
+            quiz_api_controller_1.CatalogueFormationsApiController,
+            quiz_api_controller_1.FormationParrainageApiController,
+            quiz_api_controller_1.MediasApiController,
+            quiz_api_controller_1.MediaApiController,
+        ],
         providers: [quiz_service_1.QuizService],
         exports: [quiz_service_1.QuizService],
     })

@@ -12,6 +12,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const notification_service_1 = require("./notification.service");
 const notification_controller_1 = require("./notification.controller");
 const notification_entity_1 = require("../entities/notification.entity");
+const notification_apis_controller_1 = require("./notification-apis.controller");
 let NotificationModule = class NotificationModule {
 };
 exports.NotificationModule = NotificationModule;
@@ -19,7 +20,20 @@ exports.NotificationModule = NotificationModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([notification_entity_1.Notification])],
         providers: [notification_service_1.NotificationService],
-        controllers: [notification_controller_1.NotificationController],
+        controllers: [
+            notification_controller_1.NotificationController,
+            notification_apis_controller_1.NotificationsApiController,
+            notification_apis_controller_1.NotificationHistoryApiController,
+            notification_apis_controller_1.ParrainageApiController,
+            notification_apis_controller_1.AnnouncementsApiController,
+            notification_apis_controller_1.AutoRemindersApiController,
+            notification_apis_controller_1.OnlineUsersApiController,
+            notification_apis_controller_1.ContactApiController,
+            notification_apis_controller_1.EmailApiController,
+            notification_apis_controller_1.NotifyApiController,
+            notification_apis_controller_1.SendDailyNotificationController,
+            notification_apis_controller_1.ParrainageEventsApiController,
+        ],
         exports: [notification_service_1.NotificationService],
     })
 ], NotificationModule);

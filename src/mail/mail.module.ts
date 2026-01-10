@@ -29,7 +29,7 @@ import { join } from "path";
           from: `"${config.get("MAIL_FROM_NAME")}" <${config.get("MAIL_FROM_ADDRESS")}>`,
         },
         template: {
-          dir: join(__dirname, "templates"),
+          dir: join(process.cwd(), "src", "mail", "templates"),
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,

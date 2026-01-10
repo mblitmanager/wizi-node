@@ -8,19 +8,21 @@ import { Repository } from "typeorm";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { User } from "../entities/user.entity";
+import { MailService } from "../mail/mail.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private mailService: MailService
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { email },
-      select: ["id", "email", "password", "role"], // Include password for verification
+      select: ["id", "email", "password", "role", "name", "image"], // Include name and image
       relations: ["stagiaire"],
     });
 
@@ -39,8 +41,17 @@ export class AuthService {
     const payload = { email: user.email, sub: user.id, role: user.role };
     return {
       token: this.jwtService.sign(payload),
-      refresh_token: "dummy-refresh-token", // For now, can be improved later
-      user: user,
+      refresh_token: "dummy-refresh-token",
+      user: {
+        ...user,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          image: user.image,
+        },
+      },
     };
   }
 
@@ -56,10 +67,23 @@ export class AuthService {
     const user = this.userRepository.create({
       ...userData,
       password: hashedPassword,
-    });
+    } as any) as unknown as User;
 
     await this.userRepository.save(user);
     const { password, ...result } = user as any;
+
+    // Send confirmation email
+    try {
+      await this.mailService.sendMail(
+        (user as User).email,
+        "Bienvenue sur Wizi Learn",
+        "confirmation",
+        { name: (user as User).name }
+      );
+    } catch (mailError) {
+      console.error("Failed to send welcome email:", mailError);
+    }
+
     return result;
   }
 

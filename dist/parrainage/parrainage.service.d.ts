@@ -6,6 +6,7 @@ import { User } from "../entities/user.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { MailService } from "../mail/mail.service";
 export declare class ParrainageService {
     private parrainageRepository;
     private parrainageTokenRepository;
@@ -15,7 +16,8 @@ export declare class ParrainageService {
     private demandeInscriptionRepository;
     private catalogueFormationRepository;
     private dataSource;
-    constructor(parrainageRepository: Repository<Parrainage>, parrainageTokenRepository: Repository<ParrainageToken>, parrainageEventRepository: Repository<ParrainageEvent>, userRepository: Repository<User>, stagiaireRepository: Repository<Stagiaire>, demandeInscriptionRepository: Repository<DemandeInscription>, catalogueFormationRepository: Repository<CatalogueFormation>, dataSource: DataSource);
+    private mailService;
+    constructor(parrainageRepository: Repository<Parrainage>, parrainageTokenRepository: Repository<ParrainageToken>, parrainageEventRepository: Repository<ParrainageEvent>, userRepository: Repository<User>, stagiaireRepository: Repository<Stagiaire>, demandeInscriptionRepository: Repository<DemandeInscription>, catalogueFormationRepository: Repository<CatalogueFormation>, dataSource: DataSource, mailService: MailService);
     registerFilleul(data: any): Promise<{
         success: boolean;
         message: string;
