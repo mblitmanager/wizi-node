@@ -18,26 +18,27 @@ const passport_1 = require("@nestjs/passport");
 const roles_guard_1 = require("../common/guards/roles.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const admin_service_1 = require("./admin.service");
+const api_response_service_1 = require("../common/services/api-response.service");
 let FormateurController = class FormateurController {
-    constructor(adminService) {
+    constructor(adminService, apiResponse) {
         this.adminService = adminService;
+        this.apiResponse = apiResponse;
     }
     async getDashboardStats(req) {
-        return this.adminService.getFormateurDashboardStats(req.user.id);
+        const stats = await this.adminService.getFormateurDashboardStats(req.user.id);
+        return this.apiResponse.success(stats);
     }
     async getOnlineStagiaires() {
         const stagiaires = await this.adminService.getOnlineStagiaires();
-        return {
-            stagiaires: stagiaires.map((s) => ({
-                id: s.id,
-                prenom: s.prenom,
-                nom: s.user?.name,
-                email: s.user?.email,
-                last_activity_at: s.user?.last_activity_at,
-                formations: s.stagiaire_catalogue_formations?.map((scf) => scf.catalogue_formation?.titre) || [],
-            })),
-            total: stagiaires.length,
-        };
+        const formatted = stagiaires.map((s) => ({
+            id: s.id,
+            prenom: s.prenom,
+            nom: s.user?.name,
+            email: s.user?.email,
+            last_activity_at: s.user?.last_activity_at,
+            formations: s.stagiaire_catalogue_formations?.map((scf) => scf.catalogue_formation?.titre) || [],
+        }));
+        return this.apiResponse.success(formatted);
     }
 };
 exports.FormateurController = FormateurController;
@@ -58,6 +59,7 @@ exports.FormateurController = FormateurController = __decorate([
     (0, common_1.Controller)("formateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("formateur", "formatrice", "admin"),
-    __metadata("design:paramtypes", [admin_service_1.AdminService])
+    __metadata("design:paramtypes", [admin_service_1.AdminService,
+        api_response_service_1.ApiResponseService])
 ], FormateurController);
 //# sourceMappingURL=formateur.controller.js.map

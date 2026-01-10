@@ -8,15 +8,27 @@ export declare class StagiaireController {
     constructor(stagiaireService: StagiaireService, inscriptionService: InscriptionService, rankingService: RankingService);
     getProgress(req: any): Promise<{
         rang: number;
-        level: string;
         stagiaire: {
             id: any;
             prenom: any;
+            nom: any;
             image: any;
         };
+        formateurs: any;
         totalPoints: any;
         quizCount: any;
         averageScore: number;
+    } | {
+        stagiaire: {
+            id: string;
+            prenom: string;
+            image: any;
+        };
+        totalPoints: number;
+        quizCount: number;
+        averageScore: number;
+        rang: number;
+        level: string;
     }>;
     getProfile(req: any): Promise<import("../entities/stagiaire.entity").Stagiaire>;
     testAuth(): Promise<{

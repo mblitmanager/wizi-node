@@ -31,8 +31,8 @@ let QuizApiController = class QuizApiController {
     async byCategory() {
         return this.apiResponse.success([]);
     }
-    async globalClassement() {
-        const data = await this.rankingService.getGlobalRanking();
+    async globalClassement(period = "all") {
+        const data = await this.rankingService.getGlobalRanking(period);
         return this.apiResponse.success(data);
     }
     async history(req) {
@@ -119,8 +119,9 @@ __decorate([
 ], QuizApiController.prototype, "byCategory", null);
 __decorate([
     (0, common_1.Get)("classement/global"),
+    __param(0, (0, common_1.Query)("period")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "globalClassement", null);
 __decorate([

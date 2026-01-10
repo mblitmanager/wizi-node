@@ -1,18 +1,13 @@
 import { Repository } from "typeorm";
 import { Commercial } from "../entities/commercial.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class CommercialController {
     private commercialRepository;
-    constructor(commercialRepository: Repository<Commercial>);
-    findAll(page?: number, limit?: number, search?: string): Promise<{
-        data: Commercial[];
-        pagination: {
-            total: number;
-            page: number;
-            total_pages: number;
-        };
-    }>;
-    findOne(id: number): Promise<Commercial>;
-    create(data: any): Promise<Commercial[]>;
-    update(id: number, data: any): Promise<Commercial>;
-    remove(id: number): Promise<import("typeorm").DeleteResult>;
+    private apiResponse;
+    constructor(commercialRepository: Repository<Commercial>, apiResponse: ApiResponseService);
+    findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Commercial>>;
+    findOne(id: number): Promise<any>;
+    create(data: any): Promise<any>;
+    update(id: number, data: any): Promise<any>;
+    remove(id: number): Promise<any>;
 }

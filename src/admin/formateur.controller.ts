@@ -3,34 +3,37 @@ import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
 import { AdminService } from "./admin.service";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("formateur")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("formateur", "formatrice", "admin")
 export class FormateurController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private apiResponse: ApiResponseService
+  ) {}
 
   @Get("dashboard/stats")
   async getDashboardStats(@Request() req) {
-    return this.adminService.getFormateurDashboardStats(req.user.id);
+    const stats = await this.adminService.getFormateurDashboardStats(req.user.id);
+    return this.apiResponse.success(stats);
   }
 
   @Get("stagiaires/online")
   async getOnlineStagiaires() {
     const stagiaires = await this.adminService.getOnlineStagiaires();
-    return {
-      stagiaires: stagiaires.map((s) => ({
-        id: s.id,
-        prenom: s.prenom,
-        nom: s.user?.name,
-        email: s.user?.email,
-        last_activity_at: s.user?.last_activity_at,
-        formations:
-          s.stagiaire_catalogue_formations?.map(
-            (scf) => scf.catalogue_formation?.titre
-          ) || [],
-      })),
-      total: stagiaires.length,
-    };
+    const formatted = stagiaires.map((s) => ({
+      id: s.id,
+      prenom: s.prenom,
+      nom: s.user?.name,
+      email: s.user?.email,
+      last_activity_at: s.user?.last_activity_at,
+      formations:
+        s.stagiaire_catalogue_formations?.map(
+          (scf) => scf.catalogue_formation?.titre
+        ) || [],
+    }));
+    return this.apiResponse.success(formatted);
   }
 }

@@ -7,7 +7,7 @@ export declare class QuizApiController {
     byFormations(): Promise<any>;
     categories(): Promise<any>;
     byCategory(): Promise<any>;
-    globalClassement(): Promise<any>;
+    globalClassement(period?: string): Promise<any>;
     history(req: any): Promise<any>;
     stats(req: any): Promise<any>;
     statsCategories(req: any): Promise<any>;

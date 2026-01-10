@@ -36,8 +36,8 @@ export class QuizApiController {
   }
 
   @Get("classement/global")
-  async globalClassement() {
-    const data = await this.rankingService.getGlobalRanking();
+  async globalClassement(@Query("period") period: string = "all") {
+    const data = await this.rankingService.getGlobalRanking(period);
     return this.apiResponse.success(data);
   }
 

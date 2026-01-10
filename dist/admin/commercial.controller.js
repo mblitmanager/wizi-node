@@ -20,9 +20,11 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const commercial_entity_1 = require("../entities/commercial.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let CommercialController = class CommercialController {
-    constructor(commercialRepository) {
+    constructor(commercialRepository, apiResponse) {
         this.commercialRepository = commercialRepository;
+        this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
         const query = this.commercialRepository.createQueryBuilder("c")
@@ -38,31 +40,28 @@ let CommercialController = class CommercialController {
             .take(limit)
             .orderBy("c.created_at", "DESC")
             .getManyAndCount();
-        return {
-            data,
-            pagination: {
-                total,
-                page,
-                total_pages: Math.ceil(total / limit),
-            },
-        };
+        return this.apiResponse.paginated(data, total, page, limit);
     }
     async findOne(id) {
-        return this.commercialRepository.findOne({
+        const commercial = await this.commercialRepository.findOne({
             where: { id },
             relations: ["user", "stagiaires"],
         });
+        return this.apiResponse.success(commercial);
     }
     async create(data) {
         const commercial = this.commercialRepository.create(data);
-        return this.commercialRepository.save(commercial);
+        const saved = await this.commercialRepository.save(commercial);
+        return this.apiResponse.success(saved);
     }
     async update(id, data) {
         await this.commercialRepository.update(id, data);
-        return this.findOne(id);
+        const updated = await this.findOne(id);
+        return updated;
     }
     async remove(id) {
-        return this.commercialRepository.delete(id);
+        await this.commercialRepository.delete(id);
+        return this.apiResponse.success();
     }
 };
 exports.CommercialController = CommercialController;
@@ -109,6 +108,7 @@ exports.CommercialController = CommercialController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(commercial_entity_1.Commercial)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], CommercialController);
 //# sourceMappingURL=commercial.controller.js.map

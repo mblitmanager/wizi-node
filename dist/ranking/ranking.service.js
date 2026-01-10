@@ -31,32 +31,93 @@ let RankingService = class RankingService {
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
     }
-    async getGlobalRanking() {
-        const allClassements = await this.classementRepository.find({
-            relations: ["stagiaire", "stagiaire.user", "quiz"],
+    async getGlobalRanking(period = 'all') {
+        let query = this.classementRepository.createQueryBuilder('c')
+            .leftJoinAndSelect('c.stagiaire', 'stagiaire')
+            .leftJoinAndSelect('stagiaire.user', 'user')
+            .leftJoinAndSelect('stagiaire.formateurs', 'formateurs')
+            .leftJoinAndSelect('formateurs.user', 'formateurUser')
+            .leftJoinAndSelect('stagiaire.stagiaire_catalogue_formations', 'scf')
+            .leftJoinAndSelect('scf.catalogue_formation', 'catalogueFormation')
+            .leftJoinAndSelect('catalogueFormation.formation', 'formation')
+            .leftJoinAndSelect('c.quiz', 'quiz');
+        if (period === 'week') {
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            query = query.where('c.updated_at >= :weekAgo', { weekAgo });
+        }
+        else if (period === 'month') {
+            const monthAgo = new Date();
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            query = query.where('c.updated_at >= :monthAgo', { monthAgo });
+        }
+        const allClassements = await query.getMany();
+        const groupedByStagiaire = {};
+        allClassements.forEach((classement) => {
+            const stagiaireId = classement.stagiaire_id;
+            if (!groupedByStagiaire[stagiaireId]) {
+                groupedByStagiaire[stagiaireId] = [];
+            }
+            groupedByStagiaire[stagiaireId].push(classement);
         });
-        const groupedByStagiaire = this.groupBy(allClassements, "stagiaire_id");
-        const ranking = Object.keys(groupedByStagiaire).map((stagiaireId) => {
+        const ranking = Object.keys(groupedByStagiaire)
+            .map((stagiaireId) => {
             const group = groupedByStagiaire[stagiaireId];
             const totalPoints = group.reduce((sum, item) => sum + (item.points || 0), 0);
+            const quizCount = group.length;
+            const averageScore = quizCount > 0 ? totalPoints / quizCount : 0;
             const first = group[0];
             const stagiaire = first.stagiaire;
+            const formateurs = stagiaire.formateurs
+                ? stagiaire.formateurs.map((formateur) => {
+                    const formationsAssignees = stagiaire.stagiaire_catalogue_formations
+                        ?.filter((scf) => scf.formateur_id === formateur.id)
+                        ?.map((scf) => ({
+                        id: scf.catalogue_formation?.id,
+                        titre: scf.catalogue_formation?.titre,
+                        description: scf.catalogue_formation?.description,
+                        duree: scf.catalogue_formation?.duree,
+                        tarif: scf.catalogue_formation?.tarif,
+                        statut: scf.catalogue_formation?.statut,
+                        image_url: scf.catalogue_formation?.image_url,
+                        formation: scf.catalogue_formation?.formation
+                            ? {
+                                id: scf.catalogue_formation.formation.id,
+                                titre: scf.catalogue_formation.formation.titre,
+                                categorie: scf.catalogue_formation.formation.categorie,
+                                icon: scf.catalogue_formation.formation.icon,
+                            }
+                            : null,
+                    })) || [];
+                    return {
+                        id: formateur.id,
+                        civilite: formateur.civilite,
+                        prenom: formateur.prenom,
+                        nom: formateur.user?.name,
+                        telephone: formateur.telephone,
+                        image: formateur.user?.image || null,
+                        formations: formationsAssignees,
+                    };
+                })
+                : [];
+            const filteredFormateurs = formateurs.filter((f) => f.formations && f.formations.length > 0);
             return {
                 stagiaire: {
                     id: stagiaire.id.toString(),
                     prenom: stagiaire.prenom,
+                    nom: stagiaire.user?.name || '',
                     image: stagiaire.user?.image || null,
                 },
+                formateurs: filteredFormateurs,
                 totalPoints,
-                quizCount: group.length,
-                averageScore: totalPoints / group.length,
+                quizCount,
+                averageScore: Math.round(averageScore * 100) / 100,
             };
-        });
-        ranking.sort((a, b) => b.totalPoints - a.totalPoints);
+        })
+            .sort((a, b) => b.totalPoints - a.totalPoints);
         return ranking.map((item, index) => ({
             ...item,
             rang: index + 1,
-            level: this.calculateLevel(item.totalPoints),
         }));
     }
     async getMyRanking(userId) {
@@ -224,56 +285,83 @@ let RankingService = class RankingService {
         };
     }
     async getQuizHistory(userId) {
-        const participations = await this.participationRepository.find({
-            where: { user_id: userId, status: "completed" },
-            relations: ["quiz", "quiz.formation"],
-            order: { completed_at: "DESC" },
+        const progressions = await this.progressionRepository.find({
+            where: { user_id: userId },
+            relations: [
+                "quiz",
+                "quiz.formation",
+            ],
+            order: { created_at: "DESC" },
         });
-        return participations.map((p) => {
-            const totalQuestions = parseInt(p.quiz?.nb_points_total || "0") || 10;
-            const correctAnswers = p.correct_answers || p.score || 0;
+        return progressions
+            .filter((p) => p.quiz)
+            .map((progression) => {
+            const quiz = progression.quiz;
+            const niveau = quiz.niveau || 'débutant';
+            const totalQuestions = progression.total_questions || quiz.nb_questions || 0;
+            const quizData = {
+                id: quiz.id,
+                titre: quiz.titre,
+                description: quiz.description ? quiz.description.substring(0, 100) : '',
+                duree: quiz.duree,
+                niveau: quiz.niveau,
+                status: quiz.status,
+                nb_points_total: quiz.nb_points_total,
+                formation: quiz.formation
+                    ? {
+                        id: quiz.formation.id,
+                        titre: quiz.formation.titre,
+                        categorie: quiz.formation.categorie,
+                    }
+                    : null,
+                questions: [],
+            };
             return {
-                id: p.id.toString(),
-                quizId: p.quiz_id.toString(),
-                quiz: {
-                    titre: p.quiz?.titre,
-                    title: p.quiz?.titre,
-                    category: p.quiz?.formation?.categorie,
-                    totalPoints: totalQuestions,
-                    level: p.quiz?.niveau,
-                    formation: p.quiz?.formation,
-                },
-                score: p.score,
-                completedAt: p.completed_at || p.created_at,
-                timeSpent: p.time_spent || 0,
+                id: progression.id.toString(),
+                quiz: quizData,
+                score: progression.score,
+                completedAt: progression.created_at?.toISOString(),
+                timeSpent: progression.time_spent || 0,
                 totalQuestions: totalQuestions,
-                correctAnswers: correctAnswers,
+                correctAnswers: progression.correct_answers || 0,
             };
         });
     }
     async getQuizStats(userId) {
-        const participations = await this.participationRepository.find({
-            where: { user_id: userId, status: "completed" },
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!stagiaire) {
+            return {
+                totalQuizzes: 0,
+                averageScore: 0,
+                totalPoints: 0,
+                categoryStats: [],
+                levelProgress: [],
+            };
+        }
+        const classements = await this.classementRepository.find({
+            where: { stagiaire_id: stagiaire.id },
             relations: ["quiz", "quiz.formation"],
         });
-        const totalQuizzes = participations.length;
-        let totalPoints = 0;
+        const totalQuizzes = classements.length;
+        const totalPoints = classements.reduce((sum, c) => sum + (c.points || 0), 0);
+        const averageScore = totalQuizzes > 0 ? totalPoints / totalQuizzes : 0;
         const categoryMap = {};
         const levelProgress = {
             débutant: { completed: 0, totalScore: 0 },
             intermédiaire: { completed: 0, totalScore: 0 },
             avancé: { completed: 0, totalScore: 0 },
         };
-        participations.forEach((p) => {
-            const score = p.score || 0;
-            totalPoints += score;
-            const category = p.quiz?.formation?.categorie || "Général";
+        classements.forEach((c) => {
+            const score = c.points || 0;
+            const category = c.quiz?.formation?.categorie || "Général";
             if (!categoryMap[category]) {
                 categoryMap[category] = { count: 0, totalScore: 0 };
             }
             categoryMap[category].count++;
             categoryMap[category].totalScore += score;
-            const level = p.quiz?.niveau?.toLowerCase() || "débutant";
+            const level = c.quiz?.niveau?.toLowerCase() || "débutant";
             if (level.includes("débutant") || level.includes("debutant")) {
                 levelProgress.débutant.completed++;
                 levelProgress.débutant.totalScore += score;
@@ -292,32 +380,32 @@ let RankingService = class RankingService {
         const categoryStats = Object.keys(categoryMap).map((cat) => ({
             category: cat,
             quizCount: categoryMap[cat].count,
-            averageScore: categoryMap[cat].totalScore / categoryMap[cat].count,
+            averageScore: Math.round((categoryMap[cat].totalScore / categoryMap[cat].count) * 100) / 100,
         }));
-        const formatLevelProgress = (levelData) => ({
-            completed: levelData.completed,
-            averageScore: levelData.completed > 0
-                ? levelData.totalScore / levelData.completed
-                : null,
-        });
         return {
             totalQuizzes,
-            total_quizzes: totalQuizzes,
-            averageScore,
-            average_score: averageScore,
+            averageScore: Math.round(averageScore * 100) / 100,
             totalPoints,
-            total_points: totalPoints,
             categoryStats,
-            category_stats: categoryStats,
             levelProgress: {
-                débutant: formatLevelProgress(levelProgress.débutant),
-                intermédiaire: formatLevelProgress(levelProgress.intermédiaire),
-                avancé: formatLevelProgress(levelProgress.avancé),
-            },
-            level_progress: {
-                débutant: formatLevelProgress(levelProgress.débutant),
-                intermédiaire: formatLevelProgress(levelProgress.intermédiaire),
-                avancé: formatLevelProgress(levelProgress.avancé),
+                débutant: {
+                    completed: levelProgress.débutant.completed,
+                    averageScore: levelProgress.débutant.completed > 0
+                        ? Math.round((levelProgress.débutant.totalScore / levelProgress.débutant.completed) * 100) / 100
+                        : null,
+                },
+                intermédiaire: {
+                    completed: levelProgress.intermédiaire.completed,
+                    averageScore: levelProgress.intermédiaire.completed > 0
+                        ? Math.round((levelProgress.intermédiaire.totalScore / levelProgress.intermédiaire.completed) * 100) / 100
+                        : null,
+                },
+                avancé: {
+                    completed: levelProgress.avancé.completed,
+                    averageScore: levelProgress.avancé.completed > 0
+                        ? Math.round((levelProgress.avancé.totalScore / levelProgress.avancé.completed) * 100) / 100
+                        : null,
+                },
             },
         };
     }
