@@ -14,9 +14,12 @@ export class MediaController {
   }
 
   @Get("tutoriels")
-  @UseGuards(AuthGuard("jwt"))
-  getTutoriels() {
-    return this.mediaService.findByType("tutoriel");
+  async getTutoriels(@Query("page") page: string = "1", @Req() req: Request) {
+    const pageNum = parseInt(page) || 1;
+    // Build full URL based on request
+    const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/tutoriels`;
+    
+    return this.mediaService.findByCategoriePaginated("tutoriel", pageNum, 10, baseUrl);
   }
 
   @Get("astuces")

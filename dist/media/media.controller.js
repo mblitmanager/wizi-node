@@ -23,8 +23,10 @@ let MediaController = class MediaController {
     findAll() {
         return this.mediaService.findAll();
     }
-    getTutoriels() {
-        return this.mediaService.findByType("tutoriel");
+    async getTutoriels(page = "1", req) {
+        const pageNum = parseInt(page) || 1;
+        const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/tutoriels`;
+        return this.mediaService.findByCategoriePaginated("tutoriel", pageNum, 10, baseUrl);
     }
     async getAstuces(page = "1", req) {
         const pageNum = parseInt(page) || 1;
@@ -42,10 +44,11 @@ __decorate([
 ], MediaController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)("tutoriels"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    __param(0, (0, common_1.Query)("page")),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
 ], MediaController.prototype, "getTutoriels", null);
 __decorate([
     (0, common_1.Get)("astuces"),
