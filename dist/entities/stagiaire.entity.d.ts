@@ -1,0 +1,36 @@
+import { User } from "./user.entity";
+import { Media } from "./media.entity";
+import { Progression } from "./progression.entity";
+import { Commercial } from "./commercial.entity";
+import { PoleRelationClient } from "./pole-relation-client.entity";
+import { Classement } from "./classement.entity";
+import { Achievement } from "./achievement.entity";
+export declare class Stagiaire {
+    id: number;
+    civilite: string;
+    prenom: string;
+    telephone: string;
+    adresse: string;
+    date_naissance: Date;
+    ville: string;
+    code_postal: string;
+    date_debut_formation: Date;
+    date_inscription: Date;
+    role: string;
+    statut: string;
+    user_id: number;
+    date_fin_formation: Date;
+    onboarding_seen: boolean;
+    partenaire_id: number;
+    user: User;
+    catalogue_formations: any[];
+    medias: Media[];
+    progressions: Progression[];
+    formateurs: any[];
+    commercials: Commercial[];
+    poleRelationClients: PoleRelationClient[];
+    classements: Classement[];
+    achievements: Achievement[];
+    created_at: Date;
+    updated_at: Date;
+}

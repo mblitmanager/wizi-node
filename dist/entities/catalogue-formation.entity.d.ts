@@ -1,0 +1,29 @@
+export declare class CatalogueFormation {
+    id: number;
+    titre: string;
+    description: string;
+    statut: number;
+    certification: string;
+    prerequis: string;
+    duree: string;
+    image_url: string;
+    tarif: number;
+    formation_id: number;
+    formation: any;
+    cursus_pdf: string;
+    objectifs: string;
+    programme: string;
+    modalites: string;
+    modalites_accompagnement: string;
+    moyens_pedagogiques: string;
+    modalites_suivi: string;
+    evaluation: string;
+    lieu: string;
+    niveau: string;
+    public_cible: string;
+    nombre_participants: number;
+    created_at: Date;
+    updated_at: Date;
+    stagiaires: any[];
+    formateurs: any[];
+}

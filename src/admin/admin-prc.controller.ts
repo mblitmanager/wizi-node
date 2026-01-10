@@ -8,6 +8,8 @@ import {
   Param,
   UseGuards,
   Query,
+  NotFoundException,
+  BadRequestException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -15,6 +17,7 @@ import { Roles } from "../common/decorators/roles.decorator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { PoleRelationClient } from "../entities/pole-relation-client.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("administrateur/pole_relation_clients")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -22,7 +25,8 @@ import { PoleRelationClient } from "../entities/pole-relation-client.entity";
 export class AdminPoleRelationClientController {
   constructor(
     @InjectRepository(PoleRelationClient)
-    private prcRepository: Repository<PoleRelationClient>
+    private prcRepository: Repository<PoleRelationClient>,
+    private apiResponse: ApiResponseService
   ) {}
 
   @Get()
