@@ -24,19 +24,27 @@ let AdminFormateurController = class AdminFormateurController {
     constructor(formateurRepository) {
         this.formateurRepository = formateurRepository;
     }
-    async findAll(page = 1, limit = 10) {
-        const [data, total] = await this.formateurRepository.findAndCount({
-            relations: ["user", "stagiaires", "formations"],
-            skip: (page - 1) * limit,
-            take: limit,
-            order: { created_at: "DESC" },
-        });
+    async findAll(page = 1, limit = 10, search = "") {
+        const query = this.formateurRepository.createQueryBuilder("f")
+            .leftJoinAndSelect("f.user", "user")
+            .leftJoinAndSelect("f.stagiaires", "stagiaires")
+            .leftJoinAndSelect("f.formations", "formations");
+        if (search) {
+            query.where("f.prenom LIKE :search OR user.email LIKE :search", {
+                search: `%${search}%`,
+            });
+        }
+        const [data, total] = await query
+            .skip((page - 1) * limit)
+            .take(limit)
+            .orderBy("f.created_at", "DESC")
+            .getManyAndCount();
         return {
             data,
-            meta: {
+            pagination: {
                 total,
                 page,
-                last_page: Math.ceil(total / limit),
+                total_pages: Math.ceil(total / limit),
             },
         };
     }
@@ -63,8 +71,9 @@ __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)("page")),
     __param(1, (0, common_1.Query)("limit")),
+    __param(2, (0, common_1.Query)("search")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AdminFormateurController.prototype, "findAll", null);
 __decorate([

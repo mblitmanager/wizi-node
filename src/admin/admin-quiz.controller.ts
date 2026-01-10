@@ -37,7 +37,7 @@ export class AdminQuizController {
       .leftJoinAndSelect("q.formations", "formations");
 
     if (search) {
-      query.where("q.title LIKE :search OR q.description LIKE :search", {
+      query.where("q.titre LIKE :search OR q.description LIKE :search", {
         search: `%${search}%`,
       });
     }

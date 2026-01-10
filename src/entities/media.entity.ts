@@ -71,4 +71,24 @@ export class Media {
 
   @Column({ type: "timestamp", nullable: true })
   updated_at: Date;
+
+  // Virtual properties (computed)
+  video_url?: string;
+  subtitle_url?: string;
+
+  constructor(partial?: Partial<Media>) {
+    Object.assign(this, partial);
+    
+    // Compute video_url
+    if (this.video_platform === "server" && this.url) {
+      this.video_url = this.url;
+    } else if (this.video_file_path) {
+      this.video_url = this.video_file_path;
+    } else {
+      this.video_url = this.url || null;
+    }
+
+    // Compute subtitle_url
+    this.subtitle_url = this.subtitle_file_path || null;
+  }
 }

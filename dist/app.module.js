@@ -53,6 +53,7 @@ const admin_module_1 = require("./admin/admin.module");
 const media_module_1 = require("./media/media.module");
 const media_controller_1 = require("./media/media.controller");
 const media_service_1 = require("./media/media.service");
+const mail_module_1 = require("./mail/mail.module");
 let AppModule = class AppModule {
     constructor() {
         console.log("AppModule loaded - MediaModule should be active");
@@ -68,6 +69,7 @@ exports.AppModule = AppModule = __decorate([
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
             }),
+            mail_module_1.MailModule,
             typeorm_1.TypeOrmModule.forRootAsync({
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],

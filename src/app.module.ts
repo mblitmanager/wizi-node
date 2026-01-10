@@ -41,12 +41,14 @@ import { AdminModule } from "./admin/admin.module";
 import { MediaModule } from "./media/media.module";
 import { MediaController } from "./media/media.controller";
 import { MediaService } from "./media/media.service";
+import { MailModule } from "./mail/mail.module";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    MailModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

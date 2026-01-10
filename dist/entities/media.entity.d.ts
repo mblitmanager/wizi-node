@@ -21,4 +21,7 @@ export declare class Media {
     stagiaires: Stagiaire[];
     created_at: Date;
     updated_at: Date;
+    video_url?: string;
+    subtitle_url?: string;
+    constructor(partial?: Partial<Media>);
 }

@@ -3,12 +3,12 @@ import { Formateur } from "../entities/formateur.entity";
 export declare class AdminFormateurController {
     private formateurRepository;
     constructor(formateurRepository: Repository<Formateur>);
-    findAll(page?: number, limit?: number): Promise<{
+    findAll(page?: number, limit?: number, search?: string): Promise<{
         data: Formateur[];
-        meta: {
+        pagination: {
             total: number;
             page: number;
-            last_page: number;
+            total_pages: number;
         };
     }>;
     findOne(id: number): Promise<Formateur>;

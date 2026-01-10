@@ -26,20 +26,34 @@ export class AdminFormateurController {
   ) {}
 
   @Get()
-  async findAll(@Query("page") page = 1, @Query("limit") limit = 10) {
-    const [data, total] = await this.formateurRepository.findAndCount({
-      relations: ["user", "stagiaires", "formations"],
-      skip: (page - 1) * limit,
-      take: limit,
-      order: { created_at: "DESC" },
-    });
+  async findAll(
+    @Query("page") page = 1,
+    @Query("limit") limit = 10,
+    @Query("search") search = ""
+  ) {
+    const query = this.formateurRepository.createQueryBuilder("f")
+      .leftJoinAndSelect("f.user", "user")
+      .leftJoinAndSelect("f.stagiaires", "stagiaires")
+      .leftJoinAndSelect("f.formations", "formations");
+
+    if (search) {
+      query.where("f.prenom LIKE :search OR user.email LIKE :search", {
+        search: `%${search}%`,
+      });
+    }
+
+    const [data, total] = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy("f.created_at", "DESC")
+      .getManyAndCount();
 
     return {
       data,
-      meta: {
+      pagination: {
         total,
         page,
-        last_page: Math.ceil(total / limit),
+        total_pages: Math.ceil(total / limit),
       },
     };
   }

@@ -25,6 +25,7 @@ import { Setting } from "../entities/setting.entity";
 import { Media } from "../entities/media.entity";
 import { Question } from "../entities/question.entity";
 import { Formation } from "../entities/formation.entity";
+import { Commercial } from "../entities/commercial.entity";
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { Formation } from "../entities/formation.entity";
       Media,
       Question,
       Formation,
+      Commercial,
     ]),
   ],
   providers: [AdminService],

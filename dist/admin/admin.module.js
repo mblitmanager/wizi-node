@@ -34,6 +34,7 @@ const setting_entity_1 = require("../entities/setting.entity");
 const media_entity_1 = require("../entities/media.entity");
 const question_entity_1 = require("../entities/question.entity");
 const formation_entity_1 = require("../entities/formation.entity");
+const commercial_entity_1 = require("../entities/commercial.entity");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -52,6 +53,7 @@ exports.AdminModule = AdminModule = __decorate([
                 media_entity_1.Media,
                 question_entity_1.Question,
                 formation_entity_1.Formation,
+                commercial_entity_1.Commercial,
             ]),
         ],
         providers: [admin_service_1.AdminService],
