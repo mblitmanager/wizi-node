@@ -142,9 +142,17 @@ export declare class RankingService {
     }[]>;
     getQuizStats(userId: number): Promise<{
         totalQuizzes: number;
+        total_quizzes: number;
         averageScore: number;
+        average_score: number;
         totalPoints: number;
+        total_points: number;
         categoryStats: {
+            category: string;
+            quizCount: number;
+            averageScore: number;
+        }[];
+        category_stats: {
             category: string;
             quizCount: number;
             averageScore: number;
@@ -163,6 +171,33 @@ export declare class RankingService {
                 averageScore: number;
             };
         };
+        level_progress: {
+            débutant: {
+                completed: number;
+                averageScore: number;
+            };
+            intermédiaire: {
+                completed: number;
+                averageScore: number;
+            };
+            avancé: {
+                completed: number;
+                averageScore: number;
+            };
+        };
+    }>;
+    getCategoryStats(userId: number): Promise<{
+        completedQuizzes: number;
+        totalQuizzes: number;
+        completionRate: number;
+        category: string;
+        quizCount: number;
+        averageScore: number;
+    }[]>;
+    getProgressStats(userId: number): Promise<{
+        daily_progress: any[];
+        weekly_progress: any[];
+        monthly_progress: any[];
     }>;
     calculateLevel(points: number): string;
     private groupBy;

@@ -374,14 +374,59 @@ export class RankingService {
 
     return {
       totalQuizzes,
+      total_quizzes: totalQuizzes,
       averageScore,
+      average_score: averageScore,
       totalPoints,
+      total_points: totalPoints,
       categoryStats,
+      category_stats: categoryStats,
       levelProgress: {
         débutant: formatLevelProgress(levelProgress.débutant),
         intermédiaire: formatLevelProgress(levelProgress.intermédiaire),
         avancé: formatLevelProgress(levelProgress.avancé),
       },
+      level_progress: {
+        débutant: formatLevelProgress(levelProgress.débutant),
+        intermédiaire: formatLevelProgress(levelProgress.intermédiaire),
+        avancé: formatLevelProgress(levelProgress.avancé),
+      },
+    };
+  }
+
+  async getCategoryStats(userId: number) {
+    const stats = await this.getQuizStats(userId);
+    return (stats.categoryStats || []).map((cat) => ({
+      ...cat,
+      completedQuizzes: cat.quizCount,
+      totalQuizzes: cat.quizCount, // Simplified for now
+      completionRate: 100, // Simplified for now
+    }));
+  }
+
+  async getProgressStats(userId: number) {
+    const participations = await this.participationRepository.find({
+      where: { user_id: userId, status: "completed" },
+      order: { completed_at: "ASC" },
+    });
+
+    const daily = participations.reduce((acc, p) => {
+      const date = p.completed_at?.toISOString().split("T")[0];
+      if (!date) return acc;
+      if (!acc[date])
+        acc[date] = { date, completed_quizzes: 0, total_points: 0 };
+      acc[date].completed_quizzes++;
+      acc[date].total_points += p.score || 0;
+      return acc;
+    }, {});
+
+    return {
+      daily_progress: Object.values(daily).map((d: any) => ({
+        ...d,
+        average_points: d.total_points / d.completed_quizzes,
+      })),
+      weekly_progress: [],
+      monthly_progress: [],
     };
   }
 

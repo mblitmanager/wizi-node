@@ -54,9 +54,15 @@ export class QuizApiController {
   }
 
   @Get("stats/categories")
-  async statsCategories() {
-    // Laravel returns an array: [{ category: "...", totalQuizzes: 10, completedQuizzes: 5, completionRate: 50 }, ...]
-    return this.apiResponse.success([]);
+  async statsCategories(@Request() req: any) {
+    const data = await this.rankingService.getCategoryStats(req.user.id);
+    return this.apiResponse.success(data);
+  }
+
+  @Get("stats/progress")
+  async statsProgress(@Request() req: any) {
+    const data = await this.rankingService.getProgressStats(req.user.id);
+    return this.apiResponse.success(data);
   }
 
   @Get("stats/performance")
@@ -66,16 +72,6 @@ export class QuizApiController {
       strengths: [], // { category_id: "...", category_name: "...", score: 85 }
       weaknesses: [],
       improvement_areas: [],
-    });
-  }
-
-  @Get("stats/progress")
-  async statsProgress() {
-    // Laravel returns: { daily_progress: [...], weekly_progress: [...], monthly_progress: [...] }
-    return this.apiResponse.success({
-      daily_progress: [], // { date: "...", completed_quizzes: 2, average_score: 75 }
-      weekly_progress: [],
-      monthly_progress: [],
     });
   }
 

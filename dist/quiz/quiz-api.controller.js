@@ -43,21 +43,19 @@ let QuizApiController = class QuizApiController {
         const data = await this.rankingService.getQuizStats(req.user.id);
         return this.apiResponse.success(data);
     }
-    async statsCategories() {
-        return this.apiResponse.success([]);
+    async statsCategories(req) {
+        const data = await this.rankingService.getCategoryStats(req.user.id);
+        return this.apiResponse.success(data);
+    }
+    async statsProgress(req) {
+        const data = await this.rankingService.getProgressStats(req.user.id);
+        return this.apiResponse.success(data);
     }
     async statsPerformance() {
         return this.apiResponse.success({
             strengths: [],
             weaknesses: [],
             improvement_areas: [],
-        });
-    }
-    async statsProgress() {
-        return this.apiResponse.success({
-            daily_progress: [],
-            weekly_progress: [],
-            monthly_progress: [],
         });
     }
     async statsTrends() {
@@ -141,22 +139,24 @@ __decorate([
 ], QuizApiController.prototype, "stats", null);
 __decorate([
     (0, common_1.Get)("stats/categories"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "statsCategories", null);
+__decorate([
+    (0, common_1.Get)("stats/progress"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QuizApiController.prototype, "statsProgress", null);
 __decorate([
     (0, common_1.Get)("stats/performance"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "statsPerformance", null);
-__decorate([
-    (0, common_1.Get)("stats/progress"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], QuizApiController.prototype, "statsProgress", null);
 __decorate([
     (0, common_1.Get)("stats/trends"),
     __metadata("design:type", Function),

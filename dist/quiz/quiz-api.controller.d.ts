@@ -10,9 +10,9 @@ export declare class QuizApiController {
     globalClassement(): Promise<any>;
     history(req: any): Promise<any>;
     stats(req: any): Promise<any>;
-    statsCategories(): Promise<any>;
+    statsCategories(req: any): Promise<any>;
+    statsProgress(req: any): Promise<any>;
     statsPerformance(): Promise<any>;
-    statsProgress(): Promise<any>;
     statsTrends(): Promise<any>;
     getById(id: number): Promise<any>;
     submitResult(id: number, data: any): Promise<any>;
