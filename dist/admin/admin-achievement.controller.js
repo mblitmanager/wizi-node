@@ -27,7 +27,7 @@ let AdminAchievementController = class AdminAchievementController {
     async findAll(page = 1, limit = 10, search = "") {
         const query = this.achievementRepository.createQueryBuilder("a");
         if (search) {
-            query.where("a.titre LIKE :search OR a.description LIKE :search", {
+            query.where("a.name LIKE :search OR a.description LIKE :search", {
                 search: `%${search}%`,
             });
         }

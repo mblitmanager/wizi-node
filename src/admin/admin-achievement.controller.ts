@@ -31,7 +31,7 @@ export class AdminAchievementController {
     const query = this.achievementRepository.createQueryBuilder("a");
 
     if (search) {
-      query.where("a.titre LIKE :search OR a.description LIKE :search", {
+      query.where("a.name LIKE :search OR a.description LIKE :search", {
         search: `%${search}%`,
       });
     }

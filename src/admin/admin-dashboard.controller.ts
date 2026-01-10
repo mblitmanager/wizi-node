@@ -5,6 +5,7 @@ import {
   UseGuards,
   Request,
   Response,
+  Query,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -16,7 +17,7 @@ import { Quiz } from "../entities/quiz.entity";
 import { Formation } from "../entities/formation.entity";
 import { Achievement } from "../entities/achievement.entity";
 
-@Controller("admin/dashboard")
+@Controller("admin")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminDashboardController {
@@ -31,7 +32,56 @@ export class AdminDashboardController {
     private achievementRepository: Repository<Achievement>
   ) {}
 
-  @Get()
+  @Get("stats/dashboard")
+  async getStatsDashboard(@Query("period") period: string = "30d") {
+    // Parse period (30d, 7d, 1m, 3m, etc.)
+    let daysBack = 30;
+    if (period.includes("d")) {
+      daysBack = parseInt(period.replace("d", ""));
+    } else if (period.includes("m")) {
+      daysBack = parseInt(period.replace("m", "")) * 30;
+    }
+
+    const dateFrom = new Date();
+    dateFrom.setDate(dateFrom.getDate() - daysBack);
+
+    const totalStagiaires = await this.stagiaireRepository.count();
+    const totalQuizzes = await this.quizRepository.count();
+    const totalFormations = await this.formationRepository.count();
+    const totalAchievements = await this.achievementRepository.count();
+
+    const newStagiaires = await this.stagiaireRepository
+      .createQueryBuilder("s")
+      .where("s.created_at >= :date", { date: dateFrom })
+      .getCount();
+
+    const newQuizzes = await this.quizRepository
+      .createQueryBuilder("q")
+      .where("q.created_at >= :date", { date: dateFrom })
+      .getCount();
+
+    return {
+      success: true,
+      data: {
+        stats: {
+          total_stagiaires: totalStagiaires,
+          total_quizzes: totalQuizzes,
+          total_formations: totalFormations,
+          total_achievements: totalAchievements,
+          new_stagiaires: newStagiaires,
+          new_quizzes: newQuizzes,
+        },
+        charts: {
+          stagiaires_trend: await this.getStagiairesTrendByPeriod(daysBack),
+          quizzes_trend: await this.getQuizzesTrendByPeriod(daysBack),
+          top_formations: await this.getTopFormations(),
+        },
+        recent_activity: await this.getRecentActivity(),
+      },
+    };
+  }
+
+  @Get("dashboard")
   async getDashboardStats(@Request() req: any) {
     const totalStagiaires = await this.stagiaireRepository.count();
     const totalQuizzes = await this.quizRepository.count();
@@ -85,6 +135,18 @@ export class AdminDashboardController {
       .getRawMany();
   }
 
+  private async getStagiairesTrendByPeriod(daysBack: number) {
+    const dateFrom = new Date();
+    dateFrom.setDate(dateFrom.getDate() - daysBack);
+
+    return this.stagiaireRepository
+      .createQueryBuilder("s")
+      .select("DATE(s.created_at) as date, COUNT(*) as count")
+      .where("s.created_at >= :date", { date: dateFrom })
+      .groupBy("DATE(s.created_at)")
+      .getRawMany();
+  }
+
   private async getQuizzesTrend() {
     const lastMonth = new Date();
     lastMonth.setMonth(lastMonth.getMonth() - 1);
@@ -97,11 +159,23 @@ export class AdminDashboardController {
       .getRawMany();
   }
 
+  private async getQuizzesTrendByPeriod(daysBack: number) {
+    const dateFrom = new Date();
+    dateFrom.setDate(dateFrom.getDate() - daysBack);
+
+    return this.quizRepository
+      .createQueryBuilder("q")
+      .select("DATE(q.created_at) as date, COUNT(*) as count")
+      .where("q.created_at >= :date", { date: dateFrom })
+      .groupBy("DATE(q.created_at)")
+      .getRawMany();
+  }
+
   private async getTopFormations() {
     return this.formationRepository
       .createQueryBuilder("f")
-      .select("f.titre, COUNT(sf.id) as count")
-      .leftJoin("f.stagiaires", "sf")
+      .select("f.titre as titre, COUNT(p.id) as count")
+      .leftJoin("f.progressions", "p")
       .groupBy("f.id")
       .orderBy("count", "DESC")
       .take(5)
@@ -109,18 +183,16 @@ export class AdminDashboardController {
   }
 
   private async getRecentActivity() {
-    const recentStagiaires = await this.stagiaireRepository
-      .find({
-        order: { created_at: "DESC" },
-        take: 5,
-        relations: ["user"],
-      });
+    const recentStagiaires = await this.stagiaireRepository.find({
+      order: { created_at: "DESC" },
+      take: 5,
+      relations: ["user"],
+    });
 
-    const recentQuizzes = await this.quizRepository
-      .find({
-        order: { created_at: "DESC" },
-        take: 5,
-      });
+    const recentQuizzes = await this.quizRepository.find({
+      order: { created_at: "DESC" },
+      take: 5,
+    });
 
     return {
       recent_stagiaires: recentStagiaires,

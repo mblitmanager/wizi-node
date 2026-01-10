@@ -30,6 +30,48 @@ let AdminDashboardController = class AdminDashboardController {
         this.formationRepository = formationRepository;
         this.achievementRepository = achievementRepository;
     }
+    async getStatsDashboard(period = "30d") {
+        let daysBack = 30;
+        if (period.includes("d")) {
+            daysBack = parseInt(period.replace("d", ""));
+        }
+        else if (period.includes("m")) {
+            daysBack = parseInt(period.replace("m", "")) * 30;
+        }
+        const dateFrom = new Date();
+        dateFrom.setDate(dateFrom.getDate() - daysBack);
+        const totalStagiaires = await this.stagiaireRepository.count();
+        const totalQuizzes = await this.quizRepository.count();
+        const totalFormations = await this.formationRepository.count();
+        const totalAchievements = await this.achievementRepository.count();
+        const newStagiaires = await this.stagiaireRepository
+            .createQueryBuilder("s")
+            .where("s.created_at >= :date", { date: dateFrom })
+            .getCount();
+        const newQuizzes = await this.quizRepository
+            .createQueryBuilder("q")
+            .where("q.created_at >= :date", { date: dateFrom })
+            .getCount();
+        return {
+            success: true,
+            data: {
+                stats: {
+                    total_stagiaires: totalStagiaires,
+                    total_quizzes: totalQuizzes,
+                    total_formations: totalFormations,
+                    total_achievements: totalAchievements,
+                    new_stagiaires: newStagiaires,
+                    new_quizzes: newQuizzes,
+                },
+                charts: {
+                    stagiaires_trend: await this.getStagiairesTrendByPeriod(daysBack),
+                    quizzes_trend: await this.getQuizzesTrendByPeriod(daysBack),
+                    top_formations: await this.getTopFormations(),
+                },
+                recent_activity: await this.getRecentActivity(),
+            },
+        };
+    }
     async getDashboardStats(req) {
         const totalStagiaires = await this.stagiaireRepository.count();
         const totalQuizzes = await this.quizRepository.count();
@@ -75,6 +117,16 @@ let AdminDashboardController = class AdminDashboardController {
             .groupBy("DATE(s.created_at)")
             .getRawMany();
     }
+    async getStagiairesTrendByPeriod(daysBack) {
+        const dateFrom = new Date();
+        dateFrom.setDate(dateFrom.getDate() - daysBack);
+        return this.stagiaireRepository
+            .createQueryBuilder("s")
+            .select("DATE(s.created_at) as date, COUNT(*) as count")
+            .where("s.created_at >= :date", { date: dateFrom })
+            .groupBy("DATE(s.created_at)")
+            .getRawMany();
+    }
     async getQuizzesTrend() {
         const lastMonth = new Date();
         lastMonth.setMonth(lastMonth.getMonth() - 1);
@@ -85,25 +137,33 @@ let AdminDashboardController = class AdminDashboardController {
             .groupBy("DATE(q.created_at)")
             .getRawMany();
     }
+    async getQuizzesTrendByPeriod(daysBack) {
+        const dateFrom = new Date();
+        dateFrom.setDate(dateFrom.getDate() - daysBack);
+        return this.quizRepository
+            .createQueryBuilder("q")
+            .select("DATE(q.created_at) as date, COUNT(*) as count")
+            .where("q.created_at >= :date", { date: dateFrom })
+            .groupBy("DATE(q.created_at)")
+            .getRawMany();
+    }
     async getTopFormations() {
         return this.formationRepository
             .createQueryBuilder("f")
-            .select("f.titre, COUNT(sf.id) as count")
-            .leftJoin("f.stagiaires", "sf")
+            .select("f.titre as titre, COUNT(p.id) as count")
+            .leftJoin("f.progressions", "p")
             .groupBy("f.id")
             .orderBy("count", "DESC")
             .take(5)
             .getRawMany();
     }
     async getRecentActivity() {
-        const recentStagiaires = await this.stagiaireRepository
-            .find({
+        const recentStagiaires = await this.stagiaireRepository.find({
             order: { created_at: "DESC" },
             take: 5,
             relations: ["user"],
         });
-        const recentQuizzes = await this.quizRepository
-            .find({
+        const recentQuizzes = await this.quizRepository.find({
             order: { created_at: "DESC" },
             take: 5,
         });
@@ -115,14 +175,21 @@ let AdminDashboardController = class AdminDashboardController {
 };
 exports.AdminDashboardController = AdminDashboardController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)("stats/dashboard"),
+    __param(0, (0, common_1.Query)("period")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AdminDashboardController.prototype, "getStatsDashboard", null);
+__decorate([
+    (0, common_1.Get)("dashboard"),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AdminDashboardController.prototype, "getDashboardStats", null);
 exports.AdminDashboardController = AdminDashboardController = __decorate([
-    (0, common_1.Controller)("admin/dashboard"),
+    (0, common_1.Controller)("admin"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(stagiaire_entity_1.Stagiaire)),

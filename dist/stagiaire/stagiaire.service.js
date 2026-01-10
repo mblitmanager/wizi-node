@@ -22,6 +22,7 @@ const catalogue_formation_entity_1 = require("../entities/catalogue-formation.en
 const formation_entity_1 = require("../entities/formation.entity");
 const quiz_entity_1 = require("../entities/quiz.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
+const typeorm_3 = require("typeorm");
 let StagiaireService = class StagiaireService {
     constructor(stagiaireRepository, classementRepository, catalogueRepository, formationRepository, quizRepository, participationRepository) {
         this.stagiaireRepository = stagiaireRepository;
@@ -131,12 +132,27 @@ let StagiaireService = class StagiaireService {
         }
     }
     async getStagiaireQuizzes(userId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { user_id: userId },
+            relations: ["catalogue_formations"],
+        });
+        if (!stagiaire)
+            return { data: [] };
+        const formationIds = (stagiaire.catalogue_formations || [])
+            .map((cat) => cat.formation_id)
+            .filter((id) => id !== null);
+        if (formationIds.length === 0)
+            return { data: [] };
         const quizzes = await this.quizRepository.find({
-            where: { status: "actif" },
+            where: {
+                status: "actif",
+                formation_id: (0, typeorm_3.In)(formationIds),
+            },
             relations: ["formation", "questions", "questions.reponses"],
         });
         const participations = await this.participationRepository.find({
             where: { user_id: userId },
+            order: { created_at: "DESC" },
         });
         const mappedQuizzes = quizzes.map((quiz) => {
             const participation = participations.find((p) => p.quiz_id === quiz.id);
@@ -144,28 +160,28 @@ let StagiaireService = class StagiaireService {
                 id: quiz.id.toString(),
                 titre: quiz.titre,
                 description: quiz.description,
-                duree: quiz.duree,
-                niveau: quiz.niveau,
-                status: quiz.status,
-                nb_points_total: quiz.nb_points_total,
+                duree: quiz.duree || null,
+                niveau: quiz.niveau || "débutant",
+                status: quiz.status || "actif",
+                nb_points_total: Number(quiz.nb_points_total) || 0,
                 formationId: quiz.formation_id?.toString(),
-                categorie: quiz.formation?.categorie,
+                categorie: quiz.formation?.categorie || null,
                 formation: quiz.formation
                     ? {
                         id: quiz.formation.id,
-                        titre: quiz.formation.titre,
-                        categorie: quiz.formation.categorie,
+                        titre: quiz.formation.titre || null,
+                        categorie: quiz.formation.categorie || null,
                     }
                     : null,
                 questions: (quiz.questions || []).map((q) => ({
                     id: q.id.toString(),
-                    text: q.text,
-                    type: q.type,
-                    points: q.points,
+                    text: q.text || null,
+                    type: q.type || null,
+                    points: Number(q.points) || 0,
                     answers: (q.reponses || []).map((r) => ({
                         id: r.id.toString(),
                         text: r.text,
-                        isCorrect: r.isCorrect,
+                        isCorrect: Boolean(r.isCorrect),
                     })),
                 })),
                 userParticipation: participation
@@ -175,8 +191,12 @@ let StagiaireService = class StagiaireService {
                         score: participation.score,
                         correct_answers: participation.correct_answers,
                         time_spent: participation.time_spent,
-                        started_at: participation.started_at,
-                        completed_at: participation.completed_at,
+                        started_at: participation.started_at
+                            ? participation.started_at.toISOString()
+                            : null,
+                        completed_at: participation.completed_at
+                            ? participation.completed_at.toISOString()
+                            : null,
                     }
                     : null,
             };

@@ -162,7 +162,7 @@ export declare class StagiaireController {
             duree: string;
             niveau: string;
             status: string;
-            nb_points_total: string;
+            nb_points_total: number;
             formationId: string;
             categorie: string;
             formation: {
@@ -174,7 +174,7 @@ export declare class StagiaireController {
                 id: string;
                 text: string;
                 type: string;
-                points: string;
+                points: number;
                 answers: {
                     id: string;
                     text: string;
@@ -187,8 +187,8 @@ export declare class StagiaireController {
                 score: number;
                 correct_answers: number;
                 time_spent: number;
-                started_at: Date;
-                completed_at: Date;
+                started_at: string;
+                completed_at: string;
             };
         }[];
     }>;

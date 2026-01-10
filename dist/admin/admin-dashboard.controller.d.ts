@@ -9,6 +9,28 @@ export declare class AdminDashboardController {
     private formationRepository;
     private achievementRepository;
     constructor(stagiaireRepository: Repository<Stagiaire>, quizRepository: Repository<Quiz>, formationRepository: Repository<Formation>, achievementRepository: Repository<Achievement>);
+    getStatsDashboard(period?: string): Promise<{
+        success: boolean;
+        data: {
+            stats: {
+                total_stagiaires: number;
+                total_quizzes: number;
+                total_formations: number;
+                total_achievements: number;
+                new_stagiaires: number;
+                new_quizzes: number;
+            };
+            charts: {
+                stagiaires_trend: any[];
+                quizzes_trend: any[];
+                top_formations: any[];
+            };
+            recent_activity: {
+                recent_stagiaires: Stagiaire[];
+                recent_quizzes: Quiz[];
+            };
+        };
+    }>;
     getDashboardStats(req: any): Promise<{
         success: boolean;
         data: {
@@ -32,7 +54,9 @@ export declare class AdminDashboardController {
         };
     }>;
     private getStagiairesTrend;
+    private getStagiairesTrendByPeriod;
     private getQuizzesTrend;
+    private getQuizzesTrendByPeriod;
     private getTopFormations;
     private getRecentActivity;
 }
