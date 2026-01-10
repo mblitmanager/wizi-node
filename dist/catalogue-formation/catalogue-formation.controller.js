@@ -119,7 +119,6 @@ __decorate([
 ], FormationParrainageController.prototype, "formations", null);
 exports.FormationParrainageController = FormationParrainageController = __decorate([
     (0, common_1.Controller)("formationParrainage"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [catalogue_formation_service_1.CatalogueFormationService])
 ], FormationParrainageController);
 //# sourceMappingURL=catalogue-formation.controller.js.map

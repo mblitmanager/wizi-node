@@ -1,95 +1,33 @@
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class FormateurWebController {
-    constructor();
-    dashboard(req: any): Promise<{
-        message: string;
-        user: any;
-    }>;
-    catalogue(): Promise<{
-        message: string;
-    }>;
-    classement(): Promise<{
-        message: string;
-    }>;
-    formations(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    showFormation(): Promise<{
-        message: string;
-    }>;
-    profile(req: any): Promise<{
-        message: string;
-        user: any;
-    }>;
-    updateProfile(req: any, data: any): Promise<{
-        message: string;
-        user: any;
-    }>;
-    stagiaires(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    stagiaireEnCours(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    stagiaireTermines(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    stagiaireApplication(): Promise<{
-        data: any[];
-        message: string;
-    }>;
-    showStagiaire(): Promise<{
-        message: string;
-    }>;
-    stagiaireClassement(): Promise<{
-        message: string;
-    }>;
-    stats(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    statsExport(): Promise<{
-        message: string;
-    }>;
-    statsExportXlsx(): Promise<{
-        message: string;
-    }>;
-    affluence(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    statsClassement(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    statsParFormation(): Promise<{
-        data: {};
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    dashboard(req: any): Promise<any>;
+    catalogue(): Promise<any>;
+    classement(): Promise<any>;
+    formations(): Promise<any>;
+    showFormation(): Promise<any>;
+    profile(req: any): Promise<any>;
+    updateProfile(req: any, data: any): Promise<any>;
+    stagiaires(): Promise<any>;
+    stagiaireEnCours(): Promise<any>;
+    stagiaireTermines(): Promise<any>;
+    stagiaireApplication(): Promise<any>;
+    showStagiaire(): Promise<any>;
+    stagiaireClassement(): Promise<any>;
+    stats(): Promise<any>;
+    statsExport(): Promise<any>;
+    statsExportXlsx(): Promise<any>;
+    affluence(): Promise<any>;
+    statsClassement(): Promise<any>;
+    statsParFormation(): Promise<any>;
 }
 export declare class CommercialWebController {
-    constructor();
-    dashboard(req: any): Promise<{
-        message: string;
-        user: any;
-    }>;
-    affluence(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    classement(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    parFormateur(): Promise<{
-        data: {};
-        message: string;
-    }>;
-    parFormation(): Promise<{
-        data: {};
-        message: string;
-    }>;
+    private apiResponse;
+    constructor(apiResponse: ApiResponseService);
+    dashboard(req: any): Promise<any>;
+    affluence(): Promise<any>;
+    classement(): Promise<any>;
+    parFormateur(): Promise<any>;
+    parFormation(): Promise<any>;
 }

@@ -125,12 +125,14 @@ exports.AdminClassementController = AdminClassementController = __decorate([
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminClassementController);
 let AdminParrainageController = class AdminParrainageController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async index() {
-        return { data: [], message: "Parrainage list" };
+        return this.apiResponse.success([]);
     }
     async show(id) {
-        return { id, message: "Parrainage details" };
+        return this.apiResponse.success({ id });
     }
 };
 exports.AdminParrainageController = AdminParrainageController;
@@ -151,39 +153,32 @@ exports.AdminParrainageController = AdminParrainageController = __decorate([
     (0, common_1.Controller)("administrateur/parrainage"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminParrainageController);
 let AdminPartenaireController = class AdminPartenaireController {
-    constructor() { }
-    async index(page = 1, limit = 10, search = "") {
-        return {
-            data: [],
-            pagination: { total: 0, page, total_pages: 0 },
-        };
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
     }
-    async create() {
-        return { message: "Create partenaire form" };
+    async index(page = 1, limit = 10, search = "") {
+        return this.apiResponse.paginated([], 0, page, limit);
     }
     async store(data) {
-        return { message: "Partenaire created", data };
+        return this.apiResponse.success(data);
     }
     async import(data) {
-        return { message: "Partenaires imported", data };
+        return this.apiResponse.success(data);
     }
     async show(id) {
-        return { id, message: "Partenaire details" };
-    }
-    async edit(id) {
-        return { id, message: "Edit partenaire form" };
+        return this.apiResponse.success({ id });
     }
     async update(id, data) {
-        return { id, message: "Partenaire updated", data };
+        return this.apiResponse.success(data);
     }
     async destroy(id) {
-        return { id, message: "Partenaire deleted" };
+        return this.apiResponse.success();
     }
     async classements(id) {
-        return { id, message: "Partenaire classements" };
+        return this.apiResponse.success({ id });
     }
 };
 exports.AdminPartenaireController = AdminPartenaireController;
@@ -196,12 +191,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AdminPartenaireController.prototype, "index", null);
-__decorate([
-    (0, common_1.Get)("create"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AdminPartenaireController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -223,13 +212,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminPartenaireController.prototype, "show", null);
-__decorate([
-    (0, common_1.Get)(":partenaire/edit"),
-    __param(0, (0, common_1.Param)("partenaire")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], AdminPartenaireController.prototype, "edit", null);
 __decorate([
     (0, common_1.Put)(":partenaire"),
     __param(0, (0, common_1.Param)("partenaire")),
@@ -256,33 +238,26 @@ exports.AdminPartenaireController = AdminPartenaireController = __decorate([
     (0, common_1.Controller)("administrateur/partenaires"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminPartenaireController);
 let AdminMediasController = class AdminMediasController {
-    constructor() { }
-    async index(page = 1, limit = 10, search = "") {
-        return {
-            data: [],
-            pagination: { total: 0, page, total_pages: 0 },
-        };
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
     }
-    async create() {
-        return { message: "Create media form" };
+    async index(page = 1, limit = 10, search = "") {
+        return this.apiResponse.paginated([], 0, page, limit);
     }
     async store(data) {
-        return { message: "Media created", data };
+        return this.apiResponse.success(data);
     }
     async show(id) {
-        return { id, message: "Media details" };
-    }
-    async edit(id) {
-        return { id, message: "Edit media form" };
+        return this.apiResponse.success({ id });
     }
     async update(id, data) {
-        return { id, message: "Media updated", data };
+        return this.apiResponse.success(data);
     }
     async destroy(id) {
-        return { id, message: "Media deleted" };
+        return this.apiResponse.success();
     }
 };
 exports.AdminMediasController = AdminMediasController;
@@ -295,12 +270,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AdminMediasController.prototype, "index", null);
-__decorate([
-    (0, common_1.Get)("create"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AdminMediasController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -315,13 +284,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminMediasController.prototype, "show", null);
-__decorate([
-    (0, common_1.Get)(":media/edit"),
-    __param(0, (0, common_1.Param)("media")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], AdminMediasController.prototype, "edit", null);
 __decorate([
     (0, common_1.Put)(":media"),
     __param(0, (0, common_1.Param)("media")),
@@ -341,6 +303,6 @@ exports.AdminMediasController = AdminMediasController = __decorate([
     (0, common_1.Controller)("administrateur/medias"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminMediasController);
 //# sourceMappingURL=admin-misc.controller.js.map

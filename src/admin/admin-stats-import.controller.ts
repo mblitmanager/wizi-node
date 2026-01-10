@@ -11,36 +11,37 @@ import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
 import { Response } from "express";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("administrateur/stats")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminStatsController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get("affluence")
   async affluence() {
-    return { data: {}, message: "Affluence statistics" };
+    return this.apiResponse.success({});
   }
 
   @Get("classement")
   async classement() {
-    return { data: {}, message: "Classement statistics" };
+    return this.apiResponse.success({});
   }
 
   @Get("par-catalogue")
   async parCatalogue() {
-    return { data: {}, message: "Stats par catalogue" };
+    return this.apiResponse.success({});
   }
 
   @Get("par-formateur")
   async parFormateur() {
-    return { data: {}, message: "Stats par formateur" };
+    return this.apiResponse.success({});
   }
 
   @Get("par-formation")
   async parFormation() {
-    return { data: {}, message: "Stats par formation" };
+    return this.apiResponse.success({});
   }
 
   @Get("stagiaires")
@@ -48,10 +49,7 @@ export class AdminStatsController {
     @Query("page") page = 1,
     @Query("limit") limit = 10
   ) {
-    return {
-      data: [],
-      pagination: { total: 0, page, total_pages: 0 },
-    };
+    return this.apiResponse.paginated([], 0, page, limit);
   }
 
   @Get("stagiaires/export")
@@ -74,61 +72,61 @@ export class AdminStatsController {
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminImportController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Post("stagiaires")
   async importStagiaires(@Body() data: any) {
-    return { message: "Stagiaires imported", data };
+    return this.apiResponse.success(data);
   }
 
   @Post("quiz")
   async importQuiz(@Body() data: any) {
-    return { message: "Quiz imported", data };
+    return this.apiResponse.success(data);
   }
 
   @Post("formateur")
   async importFormateur(@Body() data: any) {
-    return { message: "Formateur imported", data };
+    return this.apiResponse.success(data);
   }
 
   @Post("commercials")
   async importCommercials(@Body() data: any) {
-    return { message: "Commercials imported", data };
+    return this.apiResponse.success(data);
   }
 
   @Post("prc")
   async importPrc(@Body() data: any) {
-    return { message: "PRC imported", data };
+    return this.apiResponse.success(data);
   }
 
   @Get("status")
   async status() {
-    return { status: "pending" };
+    return this.apiResponse.success({ status: "pending" });
   }
 
   @Get("reports")
   async reports() {
-    return { data: [], message: "Import reports" };
+    return this.apiResponse.success([]);
   }
 
   @Get("report/:filename")
   async getReport() {
-    return { message: "Report file" };
+    return this.apiResponse.success({});
   }
 
   @Post("reports/purge")
   async purgeReports() {
-    return { message: "Reports purged" };
+    return this.apiResponse.success();
   }
 
   @Post("quiz-question/new")
   async newQuizQuestion(@Body() data: any) {
-    return { message: "Question created", data };
+    return this.apiResponse.success(data);
   }
 
   @Post("question-import")
   async questionImport(@Body() data: any) {
-    return { message: "Questions imported", data };
+    return this.apiResponse.success(data);
   }
 }
 
@@ -136,16 +134,16 @@ export class AdminImportController {
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminInactivityController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get("inactivity")
   async index() {
-    return { data: [], message: "Inactive users" };
+    return this.apiResponse.success([]);
   }
 
   @Post("inactivity/notify")
   async notify() {
-    return { message: "Notifications sent" };
+    return this.apiResponse.success();
   }
 
   @Get("user-app-usages")
@@ -153,15 +151,12 @@ export class AdminInactivityController {
     @Query("page") page = 1,
     @Query("limit") limit = 10
   ) {
-    return {
-      data: [],
-      pagination: { total: 0, page, total_pages: 0 },
-    };
+    return this.apiResponse.paginated([], 0, page, limit);
   }
 
   @Get("user-app-usages/export")
   async userAppUsagesExport() {
-    return { message: "Export data" };
+    return this.apiResponse.success({});
   }
 
   @Get("telecharger-modele-commercial")
@@ -196,6 +191,6 @@ export class AdminInactivityController {
 
   @Get("manual")
   async manual() {
-    return { message: "Manual" };
+    return this.apiResponse.success({});
   }
 }

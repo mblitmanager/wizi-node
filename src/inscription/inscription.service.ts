@@ -83,57 +83,15 @@ export class InscriptionService {
       "Nous avons bien reçu votre demande d'inscription, votre conseiller/conseillère va prendre contact avec vous."
     );
 
+    // Prepare all email promises
+    const emailPromises = [];
+
     // Send confirmation email to Stagiaire
-    try {
-      await this.mailService.sendMail(
-        stagiaire.user.email,
-        "Confirmation d'inscription à une formation - Wizi Learn",
-        "inscription_catalogue",
-        {
-          firstName: stagiaire.prenom || stagiaire.user.name,
-          lastName: stagiaire.user.name,
-          civility: stagiaire.civilite || "Non renseigné",
-          phone: stagiaire.telephone || "Non renseigné",
-          email: stagiaire.user.email,
-          formationTitle: catalogueFormation.titre,
-          formationDuration: catalogueFormation.duree,
-          formationPrice: catalogueFormation.tarif
-            ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
-            : null,
-          isPoleRelation: false,
-        },
-        [
-          {
-            filename: "aopia.png",
-            path: join(process.cwd(), "src/mail/templates/assets/aopia.png"),
-            cid: "aopia",
-          },
-          {
-            filename: "like.png",
-            path: join(process.cwd(), "src/mail/templates/assets/like.png"),
-            cid: "like",
-          },
-        ]
-      );
-    } catch (mailError) {
-      console.error(
-        "Failed to send inscription confirmation email:",
-        mailError
-      );
-    }
-
-    // Send notification email to Pole Relation (Backoffice)
-    const notificationEmails = [
-      "adv@aopia.fr",
-      "alexandre.florek@aopia.fr",
-      "mbl.service.mada2@gmail.com",
-    ];
-
-    for (const email of notificationEmails) {
-      try {
-        await this.mailService.sendMail(
-          email,
-          "Nouvelle inscription à une formation - Wizi Learn",
+    emailPromises.push(
+      this.mailService
+        .sendMail(
+          stagiaire.user.email,
+          "Confirmation d'inscription à une formation - Wizi Learn",
           "inscription_catalogue",
           {
             firstName: stagiaire.prenom || stagiaire.user.name,
@@ -146,7 +104,7 @@ export class InscriptionService {
             formationPrice: catalogueFormation.tarif
               ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
               : null,
-            isPoleRelation: true,
+            isPoleRelation: false,
           },
           [
             {
@@ -160,14 +118,71 @@ export class InscriptionService {
               cid: "like",
             },
           ]
-        );
-      } catch (mailError) {
-        console.error(
-          `Failed to send backoffice notification email to ${email}:`,
-          mailError
-        );
-      }
+        )
+        .catch((mailError) => {
+          console.error(
+            "Failed to send inscription confirmation email:",
+            mailError
+          );
+        })
+    );
+
+    // Send notification email to Pole Relation (Backoffice)
+    const notificationEmails = [
+      "adv@aopia.fr",
+      "alexandre.florek@aopia.fr",
+      "mbl.service.mada2@gmail.com",
+    ];
+
+    for (const email of notificationEmails) {
+      emailPromises.push(
+        this.mailService
+          .sendMail(
+            email,
+            "Nouvelle inscription à une formation - Wizi Learn",
+            "inscription_catalogue",
+            {
+              firstName: stagiaire.prenom || stagiaire.user.name,
+              lastName: stagiaire.user.name,
+              civility: stagiaire.civilite || "Non renseigné",
+              phone: stagiaire.telephone || "Non renseigné",
+              email: stagiaire.user.email,
+              formationTitle: catalogueFormation.titre,
+              formationDuration: catalogueFormation.duree,
+              formationPrice: catalogueFormation.tarif
+                ? new Intl.NumberFormat("fr-FR").format(
+                    catalogueFormation.tarif
+                  )
+                : null,
+              isPoleRelation: true,
+            },
+            [
+              {
+                filename: "aopia.png",
+                path: join(
+                  process.cwd(),
+                  "src/mail/templates/assets/aopia.png"
+                ),
+                cid: "aopia",
+              },
+              {
+                filename: "like.png",
+                path: join(process.cwd(), "src/mail/templates/assets/like.png"),
+                cid: "like",
+              },
+            ]
+          )
+          .catch((mailError) => {
+            console.error(
+              `Failed to send backoffice notification email to ${email}:`,
+              mailError
+            );
+          })
+      );
     }
+
+    // Wait for all messages to be dispatched (parallely)
+    await Promise.all(emailPromises);
 
     return {
       success: true,

@@ -76,16 +76,16 @@ export class AdminClassementController {
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminParrainageController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index() {
-    return { data: [], message: "Parrainage list" };
+    return this.apiResponse.success([]);
   }
 
   @Get(":id")
   async show(@Param("id") id: number) {
-    return { id, message: "Parrainage details" };
+    return this.apiResponse.success({ id });
   }
 }
 
@@ -93,7 +93,7 @@ export class AdminParrainageController {
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminPartenaireController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index(
@@ -101,50 +101,37 @@ export class AdminPartenaireController {
     @Query("limit") limit = 10,
     @Query("search") search = ""
   ) {
-    return {
-      data: [],
-      pagination: { total: 0, page, total_pages: 0 },
-    };
-  }
-
-  @Get("create")
-  async create() {
-    return { message: "Create partenaire form" };
+    return this.apiResponse.paginated([], 0, page, limit);
   }
 
   @Post()
   async store(@Body() data: any) {
-    return { message: "Partenaire created", data };
+    return this.apiResponse.success(data);
   }
 
   @Post("import")
   async import(@Body() data: any) {
-    return { message: "Partenaires imported", data };
+    return this.apiResponse.success(data);
   }
 
   @Get(":partenaire")
   async show(@Param("partenaire") id: number) {
-    return { id, message: "Partenaire details" };
-  }
-
-  @Get(":partenaire/edit")
-  async edit(@Param("partenaire") id: number) {
-    return { id, message: "Edit partenaire form" };
+    return this.apiResponse.success({ id });
   }
 
   @Put(":partenaire")
   async update(@Param("partenaire") id: number, @Body() data: any) {
-    return { id, message: "Partenaire updated", data };
+    return this.apiResponse.success(data);
   }
 
   @Delete(":partenaire")
   async destroy(@Param("partenaire") id: number) {
-    return { id, message: "Partenaire deleted" };
+    return this.apiResponse.success();
   }
 
   @Get(":partenaire/classements")
   async classements(@Param("partenaire") id: number) {
-    return { id, message: "Partenaire classements" };
+    return this.apiResponse.success({ id });
   }
 }
 
@@ -152,7 +139,7 @@ export class AdminPartenaireController {
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminMediasController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index(
@@ -160,39 +147,26 @@ export class AdminMediasController {
     @Query("limit") limit = 10,
     @Query("search") search = ""
   ) {
-    return {
-      data: [],
-      pagination: { total: 0, page, total_pages: 0 },
-    };
-  }
-
-  @Get("create")
-  async create() {
-    return { message: "Create media form" };
+    return this.apiResponse.paginated([], 0, page, limit);
   }
 
   @Post()
   async store(@Body() data: any) {
-    return { message: "Media created", data };
+    return this.apiResponse.success(data);
   }
 
   @Get(":media")
   async show(@Param("media") id: number) {
-    return { id, message: "Media details" };
-  }
-
-  @Get(":media/edit")
-  async edit(@Param("media") id: number) {
-    return { id, message: "Edit media form" };
+    return this.apiResponse.success({ id });
   }
 
   @Put(":media")
   async update(@Param("media") id: number, @Body() data: any) {
-    return { id, message: "Media updated", data };
+    return this.apiResponse.success(data);
   }
 
   @Delete(":media")
   async destroy(@Param("media") id: number) {
-    return { id, message: "Media deleted" };
+    return this.apiResponse.success();
   }
 }

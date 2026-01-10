@@ -56,7 +56,6 @@ export class CatalogueFormationController {
 }
 
 @Controller("formationParrainage")
-@UseGuards(AuthGuard("jwt"))
 export class FormationParrainageController {
   constructor(private readonly catalogueService: CatalogueFormationService) {}
 

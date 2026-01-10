@@ -9,115 +9,113 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("formateur")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("formateur")
 export class FormateurWebController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get("dashboard")
   async dashboard(@Request() req: any) {
-    return {
-      message: "Formateur Dashboard",
+    return this.apiResponse.success({
       user: req.user,
-    };
+    });
   }
 
   @Get("catalogue")
   async catalogue() {
-    return { message: "Catalogue de formations" };
+    return this.apiResponse.success({});
   }
 
   @Get("classement")
   async classement() {
-    return { message: "Classement des stagiaires" };
+    return this.apiResponse.success({});
   }
 
   @Get("formations")
   async formations() {
-    return { data: [], message: "Mes formations" };
+    return this.apiResponse.success([]);
   }
 
   @Get("formations/:id")
   async showFormation() {
-    return { message: "Formation details" };
+    return this.apiResponse.success({});
   }
 
   @Get("profile")
   async profile(@Request() req: any) {
-    return {
-      message: "Formateur Profile",
+    return this.apiResponse.success({
       user: req.user,
-    };
+    });
   }
 
   @Post("profile")
   async updateProfile(@Request() req: any, @Body() data: any) {
-    return {
-      message: "Profile updated",
+    return this.apiResponse.success({
       user: req.user,
-    };
+    });
   }
 
   @Get("stagiaires")
   async stagiaires() {
-    return { data: [], message: "Tous les stagiaires" };
+    return this.apiResponse.success([]);
   }
 
   @Get("stagiaires/en-cours")
   async stagiaireEnCours() {
-    return { data: [], message: "Stagiaires en cours" };
+    return this.apiResponse.success([]);
   }
 
   @Get("stagiaires/termines")
   async stagiaireTermines() {
-    return { data: [], message: "Stagiaires terminés" };
+    return this.apiResponse.success([]);
   }
 
   @Get("stagiaires-application")
   async stagiaireApplication() {
-    return { data: [], message: "Stagiaires application" };
+    return this.apiResponse.success([]);
   }
 
   @Get("stagiaires/:id")
   async showStagiaire() {
-    return { message: "Stagiaire details" };
+    return this.apiResponse.success({});
   }
 
   @Get("stagiaires/:id/classement")
   async stagiaireClassement() {
-    return { message: "Stagiaire classement details" };
+    return this.apiResponse.success({});
   }
 
   @Get("stagiaires/stats")
   async stats() {
-    return { data: {}, message: "Statistics" };
+    return this.apiResponse.success({});
   }
 
   @Get("stagiaires/stats/export")
   async statsExport() {
-    return { message: "Export CSV" };
+    return this.apiResponse.success({});
   }
 
   @Get("stagiaires/stats/export-xlsx")
   async statsExportXlsx() {
-    return { message: "Export XLSX" };
+    return this.apiResponse.success({});
   }
 
   @Get("stats/affluence")
   async affluence() {
-    return { data: {}, message: "Affluence stats" };
+    return this.apiResponse.success({});
   }
 
   @Get("stats/classement")
   async statsClassement() {
-    return { data: {}, message: "Classement stats" };
+    return this.apiResponse.success({});
   }
 
   @Get("stats/par-formation")
   async statsParFormation() {
-    return { data: {}, message: "Stats par formation" };
+    return this.apiResponse.success({});
   }
 }
 
@@ -125,33 +123,32 @@ export class FormateurWebController {
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("commercial")
 export class CommercialWebController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get("dashboard")
   async dashboard(@Request() req: any) {
-    return {
-      message: "Commercial Dashboard",
+    return this.apiResponse.success({
       user: req.user,
-    };
+    });
   }
 
   @Get("stats/affluence")
   async affluence() {
-    return { data: {}, message: "Affluence stats" };
+    return this.apiResponse.success({});
   }
 
   @Get("stats/classement")
   async classement() {
-    return { data: {}, message: "Classement stats" };
+    return this.apiResponse.success({});
   }
 
   @Get("stats/par-formateur")
   async parFormateur() {
-    return { data: {}, message: "Stats par formateur" };
+    return this.apiResponse.success({});
   }
 
   @Get("stats/par-formation")
   async parFormation() {
-    return { data: {}, message: "Stats par formation" };
+    return this.apiResponse.success({});
   }
 }

@@ -9,17 +9,14 @@ export declare class StagiaireController {
     getProgress(req: any): Promise<{
         rang: number;
         level: string;
-        id: any;
-        firstname: any;
-        lastname: any;
-        name: any;
-        image: any;
-        score: any;
+        stagiaire: {
+            id: any;
+            prenom: any;
+            image: any;
+        };
         totalPoints: any;
         quizCount: any;
-        completedQuizzes: any;
         averageScore: number;
-        formateurs: any;
     }>;
     getProfile(req: any): Promise<import("../entities/stagiaire.entity").Stagiaire>;
     testAuth(): Promise<{

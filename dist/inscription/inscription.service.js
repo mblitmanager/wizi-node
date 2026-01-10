@@ -72,8 +72,43 @@ let InscriptionService = class InscriptionService {
         });
         const savedDemande = await this.demandeRepository.save(demande);
         await this.notificationService.createNotification(userId, "inscription", "Nous avons bien reçu votre demande d'inscription, votre conseiller/conseillère va prendre contact avec vous.");
-        try {
-            await this.mailService.sendMail(stagiaire.user.email, "Confirmation d'inscription à une formation - Wizi Learn", "inscription_catalogue", {
+        const emailPromises = [];
+        emailPromises.push(this.mailService
+            .sendMail(stagiaire.user.email, "Confirmation d'inscription à une formation - Wizi Learn", "inscription_catalogue", {
+            firstName: stagiaire.prenom || stagiaire.user.name,
+            lastName: stagiaire.user.name,
+            civility: stagiaire.civilite || "Non renseigné",
+            phone: stagiaire.telephone || "Non renseigné",
+            email: stagiaire.user.email,
+            formationTitle: catalogueFormation.titre,
+            formationDuration: catalogueFormation.duree,
+            formationPrice: catalogueFormation.tarif
+                ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
+                : null,
+            isPoleRelation: false,
+        }, [
+            {
+                filename: "aopia.png",
+                path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
+                cid: "aopia",
+            },
+            {
+                filename: "like.png",
+                path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
+                cid: "like",
+            },
+        ])
+            .catch((mailError) => {
+            console.error("Failed to send inscription confirmation email:", mailError);
+        }));
+        const notificationEmails = [
+            "adv@aopia.fr",
+            "alexandre.florek@aopia.fr",
+            "mbl.service.mada2@gmail.com",
+        ];
+        for (const email of notificationEmails) {
+            emailPromises.push(this.mailService
+                .sendMail(email, "Nouvelle inscription à une formation - Wizi Learn", "inscription_catalogue", {
                 firstName: stagiaire.prenom || stagiaire.user.name,
                 lastName: stagiaire.user.name,
                 civility: stagiaire.civilite || "Non renseigné",
@@ -84,7 +119,7 @@ let InscriptionService = class InscriptionService {
                 formationPrice: catalogueFormation.tarif
                     ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
                     : null,
-                isPoleRelation: false,
+                isPoleRelation: true,
             }, [
                 {
                     filename: "aopia.png",
@@ -96,47 +131,12 @@ let InscriptionService = class InscriptionService {
                     path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
                     cid: "like",
                 },
-            ]);
-        }
-        catch (mailError) {
-            console.error("Failed to send inscription confirmation email:", mailError);
-        }
-        const notificationEmails = [
-            "adv@aopia.fr",
-            "alexandre.florek@aopia.fr",
-            "mbl.service.mada2@gmail.com",
-        ];
-        for (const email of notificationEmails) {
-            try {
-                await this.mailService.sendMail(email, "Nouvelle inscription à une formation - Wizi Learn", "inscription_catalogue", {
-                    firstName: stagiaire.prenom || stagiaire.user.name,
-                    lastName: stagiaire.user.name,
-                    civility: stagiaire.civilite || "Non renseigné",
-                    phone: stagiaire.telephone || "Non renseigné",
-                    email: stagiaire.user.email,
-                    formationTitle: catalogueFormation.titre,
-                    formationDuration: catalogueFormation.duree,
-                    formationPrice: catalogueFormation.tarif
-                        ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
-                        : null,
-                    isPoleRelation: true,
-                }, [
-                    {
-                        filename: "aopia.png",
-                        path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
-                        cid: "aopia",
-                    },
-                    {
-                        filename: "like.png",
-                        path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
-                        cid: "like",
-                    },
-                ]);
-            }
-            catch (mailError) {
+            ])
+                .catch((mailError) => {
                 console.error(`Failed to send backoffice notification email to ${email}:`, mailError);
-            }
+            }));
         }
+        await Promise.all(emailPromises);
         return {
             success: true,
             message: "Un mail de confirmation vous a été envoyé, votre conseiller va bientôt prendre contact avec vous.",

@@ -17,73 +17,73 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const roles_guard_1 = require("../common/guards/roles.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
+const api_response_service_1 = require("../common/services/api-response.service");
 let FormateurWebController = class FormateurWebController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async dashboard(req) {
-        return {
-            message: "Formateur Dashboard",
+        return this.apiResponse.success({
             user: req.user,
-        };
+        });
     }
     async catalogue() {
-        return { message: "Catalogue de formations" };
+        return this.apiResponse.success({});
     }
     async classement() {
-        return { message: "Classement des stagiaires" };
+        return this.apiResponse.success({});
     }
     async formations() {
-        return { data: [], message: "Mes formations" };
+        return this.apiResponse.success([]);
     }
     async showFormation() {
-        return { message: "Formation details" };
+        return this.apiResponse.success({});
     }
     async profile(req) {
-        return {
-            message: "Formateur Profile",
+        return this.apiResponse.success({
             user: req.user,
-        };
+        });
     }
     async updateProfile(req, data) {
-        return {
-            message: "Profile updated",
+        return this.apiResponse.success({
             user: req.user,
-        };
+        });
     }
     async stagiaires() {
-        return { data: [], message: "Tous les stagiaires" };
+        return this.apiResponse.success([]);
     }
     async stagiaireEnCours() {
-        return { data: [], message: "Stagiaires en cours" };
+        return this.apiResponse.success([]);
     }
     async stagiaireTermines() {
-        return { data: [], message: "Stagiaires terminés" };
+        return this.apiResponse.success([]);
     }
     async stagiaireApplication() {
-        return { data: [], message: "Stagiaires application" };
+        return this.apiResponse.success([]);
     }
     async showStagiaire() {
-        return { message: "Stagiaire details" };
+        return this.apiResponse.success({});
     }
     async stagiaireClassement() {
-        return { message: "Stagiaire classement details" };
+        return this.apiResponse.success({});
     }
     async stats() {
-        return { data: {}, message: "Statistics" };
+        return this.apiResponse.success({});
     }
     async statsExport() {
-        return { message: "Export CSV" };
+        return this.apiResponse.success({});
     }
     async statsExportXlsx() {
-        return { message: "Export XLSX" };
+        return this.apiResponse.success({});
     }
     async affluence() {
-        return { data: {}, message: "Affluence stats" };
+        return this.apiResponse.success({});
     }
     async statsClassement() {
-        return { data: {}, message: "Classement stats" };
+        return this.apiResponse.success({});
     }
     async statsParFormation() {
-        return { data: {}, message: "Stats par formation" };
+        return this.apiResponse.success({});
     }
 };
 exports.FormateurWebController = FormateurWebController;
@@ -209,27 +209,28 @@ exports.FormateurWebController = FormateurWebController = __decorate([
     (0, common_1.Controller)("formateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("formateur"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], FormateurWebController);
 let CommercialWebController = class CommercialWebController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async dashboard(req) {
-        return {
-            message: "Commercial Dashboard",
+        return this.apiResponse.success({
             user: req.user,
-        };
+        });
     }
     async affluence() {
-        return { data: {}, message: "Affluence stats" };
+        return this.apiResponse.success({});
     }
     async classement() {
-        return { data: {}, message: "Classement stats" };
+        return this.apiResponse.success({});
     }
     async parFormateur() {
-        return { data: {}, message: "Stats par formateur" };
+        return this.apiResponse.success({});
     }
     async parFormation() {
-        return { data: {}, message: "Stats par formation" };
+        return this.apiResponse.success({});
     }
 };
 exports.CommercialWebController = CommercialWebController;
@@ -268,6 +269,6 @@ exports.CommercialWebController = CommercialWebController = __decorate([
     (0, common_1.Controller)("commercial"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("commercial"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], CommercialWebController);
 //# sourceMappingURL=formateur-commercial-web.controller.js.map

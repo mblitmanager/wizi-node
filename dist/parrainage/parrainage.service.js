@@ -117,16 +117,37 @@ let ParrainageService = class ParrainageService {
             });
             await queryRunner.manager.save(demande_inscription_entity_1.DemandeInscription, demande);
             await queryRunner.commitTransaction();
-            try {
-                await this.mailService.sendMail(savedUser.email, "Confirmation d'inscription - Wizi Learn", "sponsorship", {
-                    firstName: savedStagiaire.prenom || savedUser.name,
-                    lastName: savedUser.name,
-                    parrainName: parrain?.name || "Votre parrain",
-                    formationTitle: catalogueFormation?.titre || "votre formation",
-                    formationDuration: catalogueFormation?.duree || "N/A",
-                    formationPrice: catalogueFormation?.tarif
-                        ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
-                        : null,
+            const emailPromises = [];
+            emailPromises.push(this.mailService
+                .sendMail(savedUser.email, "Confirmation d'inscription - Wizi Learn", "sponsorship", {
+                firstName: savedStagiaire.prenom || savedUser.name,
+                lastName: savedUser.name,
+                parrainName: parrain?.name || "Votre parrain",
+                formationTitle: catalogueFormation?.titre || "votre formation",
+                formationDuration: catalogueFormation?.duree || "N/A",
+                formationPrice: catalogueFormation?.tarif
+                    ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
+                    : null,
+            }, [
+                {
+                    filename: "aopia.png",
+                    path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
+                    cid: "aopia",
+                },
+                {
+                    filename: "like.png",
+                    path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
+                    cid: "like",
+                },
+            ])
+                .catch((mailError) => {
+                console.error("Failed to send filleul confirmation email:", mailError);
+            }));
+            if (parrain && parrain.email) {
+                emailPromises.push(this.mailService
+                    .sendMail(parrain.email, "Confirmation de Parrainage - Wizi Learn", "sponsorship_notification", {
+                    parrainName: parrain.name,
+                    filleulName: `${savedStagiaire.prenom || ""} ${savedUser.name || ""}`.trim(),
                 }, [
                     {
                         filename: "aopia.png",
@@ -138,33 +159,12 @@ let ParrainageService = class ParrainageService {
                         path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
                         cid: "like",
                     },
-                ]);
-            }
-            catch (mailError) {
-                console.error("Failed to send filleul confirmation email:", mailError);
-            }
-            if (parrain && parrain.email) {
-                try {
-                    await this.mailService.sendMail(parrain.email, "Confirmation de Parrainage - Wizi Learn", "sponsorship_notification", {
-                        parrainName: parrain.name,
-                        filleulName: `${savedStagiaire.prenom || ""} ${savedUser.name || ""}`.trim(),
-                    }, [
-                        {
-                            filename: "aopia.png",
-                            path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
-                            cid: "aopia",
-                        },
-                        {
-                            filename: "like.png",
-                            path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
-                            cid: "like",
-                        },
-                    ]);
-                }
-                catch (mailError) {
+                ])
+                    .catch((mailError) => {
                     console.error("Failed to send parrain notification email:", mailError);
-                }
+                }));
             }
+            await Promise.all(emailPromises);
             return {
                 success: true,
                 message: "Inscription réussie! Les équipes ont été notifiées.",

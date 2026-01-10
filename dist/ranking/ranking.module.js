@@ -13,12 +13,25 @@ const ranking_service_1 = require("./ranking.service");
 const ranking_controller_1 = require("./ranking.controller");
 const classement_entity_1 = require("../entities/classement.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
+const progression_entity_1 = require("../entities/progression.entity");
+const quiz_entity_1 = require("../entities/quiz.entity");
+const user_entity_1 = require("../entities/user.entity");
 let RankingModule = class RankingModule {
 };
 exports.RankingModule = RankingModule;
 exports.RankingModule = RankingModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([classement_entity_1.Classement, stagiaire_entity_1.Stagiaire])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                classement_entity_1.Classement,
+                stagiaire_entity_1.Stagiaire,
+                quiz_participation_entity_1.QuizParticipation,
+                progression_entity_1.Progression,
+                quiz_entity_1.Quiz,
+                user_entity_1.User,
+            ]),
+        ],
         providers: [ranking_service_1.RankingService],
         controllers: [ranking_controller_1.RankingController],
         exports: [ranking_service_1.RankingService],

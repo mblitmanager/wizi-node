@@ -17,28 +17,28 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const roles_guard_1 = require("../common/guards/roles.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminStatsController = class AdminStatsController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async affluence() {
-        return { data: {}, message: "Affluence statistics" };
+        return this.apiResponse.success({});
     }
     async classement() {
-        return { data: {}, message: "Classement statistics" };
+        return this.apiResponse.success({});
     }
     async parCatalogue() {
-        return { data: {}, message: "Stats par catalogue" };
+        return this.apiResponse.success({});
     }
     async parFormateur() {
-        return { data: {}, message: "Stats par formateur" };
+        return this.apiResponse.success({});
     }
     async parFormation() {
-        return { data: {}, message: "Stats par formation" };
+        return this.apiResponse.success({});
     }
     async stagiaires(page = 1, limit = 10) {
-        return {
-            data: [],
-            pagination: { total: 0, page, total_pages: 0 },
-        };
+        return this.apiResponse.paginated([], 0, page, limit);
     }
     async stagiaireExport(res) {
         res.setHeader("Content-Type", "text/csv");
@@ -106,42 +106,44 @@ exports.AdminStatsController = AdminStatsController = __decorate([
     (0, common_1.Controller)("administrateur/stats"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminStatsController);
 let AdminImportController = class AdminImportController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async importStagiaires(data) {
-        return { message: "Stagiaires imported", data };
+        return this.apiResponse.success(data);
     }
     async importQuiz(data) {
-        return { message: "Quiz imported", data };
+        return this.apiResponse.success(data);
     }
     async importFormateur(data) {
-        return { message: "Formateur imported", data };
+        return this.apiResponse.success(data);
     }
     async importCommercials(data) {
-        return { message: "Commercials imported", data };
+        return this.apiResponse.success(data);
     }
     async importPrc(data) {
-        return { message: "PRC imported", data };
+        return this.apiResponse.success(data);
     }
     async status() {
-        return { status: "pending" };
+        return this.apiResponse.success({ status: "pending" });
     }
     async reports() {
-        return { data: [], message: "Import reports" };
+        return this.apiResponse.success([]);
     }
     async getReport() {
-        return { message: "Report file" };
+        return this.apiResponse.success({});
     }
     async purgeReports() {
-        return { message: "Reports purged" };
+        return this.apiResponse.success();
     }
     async newQuizQuestion(data) {
-        return { message: "Question created", data };
+        return this.apiResponse.success(data);
     }
     async questionImport(data) {
-        return { message: "Questions imported", data };
+        return this.apiResponse.success(data);
     }
 };
 exports.AdminImportController = AdminImportController;
@@ -222,24 +224,23 @@ exports.AdminImportController = AdminImportController = __decorate([
     (0, common_1.Controller)("administrateur/import"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminImportController);
 let AdminInactivityController = class AdminInactivityController {
-    constructor() { }
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
+    }
     async index() {
-        return { data: [], message: "Inactive users" };
+        return this.apiResponse.success([]);
     }
     async notify() {
-        return { message: "Notifications sent" };
+        return this.apiResponse.success();
     }
     async userAppUsages(page = 1, limit = 10) {
-        return {
-            data: [],
-            pagination: { total: 0, page, total_pages: 0 },
-        };
+        return this.apiResponse.paginated([], 0, page, limit);
     }
     async userAppUsagesExport() {
-        return { message: "Export data" };
+        return this.apiResponse.success({});
     }
     async downloadCommercialModel(res) {
         res.setHeader("Content-Type", "text/csv");
@@ -262,7 +263,7 @@ let AdminInactivityController = class AdminInactivityController {
         res.send("CSV Template");
     }
     async manual() {
-        return { message: "Manual" };
+        return this.apiResponse.success({});
     }
 };
 exports.AdminInactivityController = AdminInactivityController;
@@ -337,6 +338,6 @@ exports.AdminInactivityController = AdminInactivityController = __decorate([
     (0, common_1.Controller)("administrateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminInactivityController);
 //# sourceMappingURL=admin-stats-import.controller.js.map

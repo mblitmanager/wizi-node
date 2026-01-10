@@ -17,34 +17,28 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const roles_guard_1 = require("../common/guards/roles.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminPermissionController = class AdminPermissionController {
-    constructor() { }
-    async index(page = 1, limit = 10, search = "") {
-        return {
-            data: [],
-            pagination: { total: 0, page, total_pages: 0 },
-        };
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
     }
-    async create() {
-        return { message: "Create permission form" };
+    async index(page = 1, limit = 10, search = "") {
+        return this.apiResponse.paginated([], 0, page, limit);
     }
     async store(data) {
-        return { message: "Permission created", data };
+        return this.apiResponse.success(data);
     }
     async show(id) {
-        return { id, message: "Permission details" };
-    }
-    async edit(id) {
-        return { id, message: "Edit permission form" };
+        return this.apiResponse.success({ id });
     }
     async update(id, data) {
-        return { id, message: "Permission updated", data };
+        return this.apiResponse.success(data);
     }
     async destroy(id) {
-        return { id, message: "Permission deleted" };
+        return this.apiResponse.success();
     }
     async toggleStatus(id) {
-        return { id, message: "Permission status toggled" };
+        return this.apiResponse.success({ id });
     }
 };
 exports.AdminPermissionController = AdminPermissionController;
@@ -57,12 +51,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AdminPermissionController.prototype, "index", null);
-__decorate([
-    (0, common_1.Get)("create"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AdminPermissionController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -77,13 +65,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminPermissionController.prototype, "show", null);
-__decorate([
-    (0, common_1.Get)(":permission/edit"),
-    __param(0, (0, common_1.Param)("permission")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], AdminPermissionController.prototype, "edit", null);
 __decorate([
     (0, common_1.Put)(":permission"),
     __param(0, (0, common_1.Param)("permission")),
@@ -110,36 +91,29 @@ exports.AdminPermissionController = AdminPermissionController = __decorate([
     (0, common_1.Controller)("administrateur/permissions"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminPermissionController);
 let AdminRoleController = class AdminRoleController {
-    constructor() { }
-    async index(page = 1, limit = 10, search = "") {
-        return {
-            data: [],
-            pagination: { total: 0, page, total_pages: 0 },
-        };
+    constructor(apiResponse) {
+        this.apiResponse = apiResponse;
     }
-    async create() {
-        return { message: "Create role form" };
+    async index(page = 1, limit = 10, search = "") {
+        return this.apiResponse.paginated([], 0, page, limit);
     }
     async store(data) {
-        return { message: "Role created", data };
+        return this.apiResponse.success(data);
     }
     async show(id) {
-        return { id, message: "Role details" };
-    }
-    async edit(id) {
-        return { id, message: "Edit role form" };
+        return this.apiResponse.success({ id });
     }
     async update(id, data) {
-        return { id, message: "Role updated", data };
+        return this.apiResponse.success(data);
     }
     async destroy(id) {
-        return { id, message: "Role deleted" };
+        return this.apiResponse.success();
     }
     async toggleStatus(id) {
-        return { id, message: "Role status toggled" };
+        return this.apiResponse.success({ id });
     }
 };
 exports.AdminRoleController = AdminRoleController;
@@ -152,12 +126,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AdminRoleController.prototype, "index", null);
-__decorate([
-    (0, common_1.Get)("create"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AdminRoleController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -172,13 +140,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminRoleController.prototype, "show", null);
-__decorate([
-    (0, common_1.Get)(":role/edit"),
-    __param(0, (0, common_1.Param)("role")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], AdminRoleController.prototype, "edit", null);
 __decorate([
     (0, common_1.Put)(":role"),
     __param(0, (0, common_1.Param)("role")),
@@ -205,6 +166,6 @@ exports.AdminRoleController = AdminRoleController = __decorate([
     (0, common_1.Controller)("administrateur/roles"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AdminRoleController);
 //# sourceMappingURL=admin-permission-role.controller.js.map

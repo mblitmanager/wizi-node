@@ -27,8 +27,20 @@ let RankingController = class RankingController {
         return this.rankingService.getMyRanking(req.user.id);
     }
     async getMyPoints(req) {
-        const ranking = await this.rankingService.getMyRanking(req.user.id);
-        return { points: ranking?.totalPoints || 0 };
+        const points = await this.rankingService.getUserPoints(req.user.id);
+        return points;
+    }
+    async getFormationRanking(formationId) {
+        return this.rankingService.getFormationRanking(formationId);
+    }
+    async getMyRewards(req) {
+        return this.rankingService.getStagiaireRewards(req.user.id);
+    }
+    async getMyProgress(req) {
+        return this.rankingService.getStagiaireProgress(req.user.id);
+    }
+    async getStagiaireDetails(stagiaireId) {
+        return this.rankingService.getStagiaireDetails(stagiaireId);
     }
 };
 exports.RankingController = RankingController;
@@ -54,6 +66,38 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], RankingController.prototype, "getMyPoints", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("formation/:formationId"),
+    __param(0, (0, common_1.Param)("formationId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], RankingController.prototype, "getFormationRanking", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("rewards"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], RankingController.prototype, "getMyRewards", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("progress"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], RankingController.prototype, "getMyProgress", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("details/:stagiaireId"),
+    __param(0, (0, common_1.Param)("stagiaireId")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], RankingController.prototype, "getStagiaireDetails", null);
 exports.RankingController = RankingController = __decorate([
     (0, common_1.Controller)(["classement", "quiz/classement"]),
     __metadata("design:paramtypes", [ranking_service_1.RankingService])

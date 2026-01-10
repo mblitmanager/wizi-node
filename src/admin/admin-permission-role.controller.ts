@@ -14,13 +14,14 @@ import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 // Placeholder entities pour permissions/roles
 @Controller("administrateur/permissions")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminPermissionController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index(
@@ -28,45 +29,32 @@ export class AdminPermissionController {
     @Query("limit") limit = 10,
     @Query("search") search = ""
   ) {
-    return {
-      data: [],
-      pagination: { total: 0, page, total_pages: 0 },
-    };
-  }
-
-  @Get("create")
-  async create() {
-    return { message: "Create permission form" };
+    return this.apiResponse.paginated([], 0, page, limit);
   }
 
   @Post()
   async store(@Body() data: any) {
-    return { message: "Permission created", data };
+    return this.apiResponse.success(data);
   }
 
   @Get(":permission")
   async show(@Param("permission") id: number) {
-    return { id, message: "Permission details" };
-  }
-
-  @Get(":permission/edit")
-  async edit(@Param("permission") id: number) {
-    return { id, message: "Edit permission form" };
+    return this.apiResponse.success({ id });
   }
 
   @Put(":permission")
   async update(@Param("permission") id: number, @Body() data: any) {
-    return { id, message: "Permission updated", data };
+    return this.apiResponse.success(data);
   }
 
   @Delete(":permission")
   async destroy(@Param("permission") id: number) {
-    return { id, message: "Permission deleted" };
+    return this.apiResponse.success();
   }
 
   @Post(":permission/toggle-status")
   async toggleStatus(@Param("permission") id: number) {
-    return { id, message: "Permission status toggled" };
+    return this.apiResponse.success({ id });
   }
 }
 
@@ -74,7 +62,7 @@ export class AdminPermissionController {
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminRoleController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index(
@@ -82,44 +70,31 @@ export class AdminRoleController {
     @Query("limit") limit = 10,
     @Query("search") search = ""
   ) {
-    return {
-      data: [],
-      pagination: { total: 0, page, total_pages: 0 },
-    };
-  }
-
-  @Get("create")
-  async create() {
-    return { message: "Create role form" };
+    return this.apiResponse.paginated([], 0, page, limit);
   }
 
   @Post()
   async store(@Body() data: any) {
-    return { message: "Role created", data };
+    return this.apiResponse.success(data);
   }
 
   @Get(":role")
   async show(@Param("role") id: number) {
-    return { id, message: "Role details" };
-  }
-
-  @Get(":role/edit")
-  async edit(@Param("role") id: number) {
-    return { id, message: "Edit role form" };
+    return this.apiResponse.success({ id });
   }
 
   @Put(":role")
   async update(@Param("role") id: number, @Body() data: any) {
-    return { id, message: "Role updated", data };
+    return this.apiResponse.success(data);
   }
 
   @Delete(":role")
   async destroy(@Param("role") id: number) {
-    return { id, message: "Role deleted" };
+    return this.apiResponse.success();
   }
 
   @Post(":role/toggle-status")
   async toggleStatus(@Param("role") id: number) {
-    return { id, message: "Role status toggled" };
+    return this.apiResponse.success({ id });
   }
 }
