@@ -27,11 +27,11 @@ __decorate([
     __metadata("design:type", Number)
 ], ParrainageEvent.prototype, "prix", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
+    (0, typeorm_1.Column)({ type: "date", nullable: true }),
     __metadata("design:type", Date)
 ], ParrainageEvent.prototype, "date_debut", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
+    (0, typeorm_1.Column)({ type: "date", nullable: true }),
     __metadata("design:type", Date)
 ], ParrainageEvent.prototype, "date_fin", void 0);
 __decorate([
@@ -42,6 +42,10 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], ParrainageEvent.prototype, "updated_at", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "enum", enum: ["active", "inactive"], default: "active" }),
+    __metadata("design:type", String)
+], ParrainageEvent.prototype, "status", void 0);
 exports.ParrainageEvent = ParrainageEvent = __decorate([
     (0, typeorm_1.Entity)("parrainage_events")
 ], ParrainageEvent);

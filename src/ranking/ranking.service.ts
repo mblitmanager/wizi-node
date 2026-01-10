@@ -25,26 +25,27 @@ export class RankingService {
     private userRepository: Repository<User>
   ) {}
 
-  async getGlobalRanking(period: string = 'all') {
-    let query = this.classementRepository.createQueryBuilder('c')
-      .leftJoinAndSelect('c.stagiaire', 'stagiaire')
-      .leftJoinAndSelect('stagiaire.user', 'user')
-      .leftJoinAndSelect('stagiaire.formateurs', 'formateurs')
-      .leftJoinAndSelect('formateurs.user', 'formateurUser')
-      .leftJoinAndSelect('stagiaire.stagiaire_catalogue_formations', 'scf')
-      .leftJoinAndSelect('scf.catalogue_formation', 'catalogueFormation')
-      .leftJoinAndSelect('catalogueFormation.formation', 'formation')
-      .leftJoinAndSelect('c.quiz', 'quiz');
+  async getGlobalRanking(period: string = "all") {
+    let query = this.classementRepository
+      .createQueryBuilder("c")
+      .leftJoinAndSelect("c.stagiaire", "stagiaire")
+      .leftJoinAndSelect("stagiaire.user", "user")
+      .leftJoinAndSelect("stagiaire.formateurs", "formateurs")
+      .leftJoinAndSelect("formateurs.user", "formateurUser")
+      .leftJoinAndSelect("stagiaire.stagiaire_catalogue_formations", "scf")
+      .leftJoinAndSelect("scf.catalogue_formation", "catalogueFormation")
+      .leftJoinAndSelect("catalogueFormation.formation", "formation")
+      .leftJoinAndSelect("c.quiz", "quiz");
 
     // Apply period filter if needed
-    if (period === 'week') {
+    if (period === "week") {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
-      query = query.where('c.updated_at >= :weekAgo', { weekAgo });
-    } else if (period === 'month') {
+      query = query.where("c.updated_at >= :weekAgo", { weekAgo });
+    } else if (period === "month") {
       const monthAgo = new Date();
       monthAgo.setMonth(monthAgo.getMonth() - 1);
-      query = query.where('c.updated_at >= :monthAgo', { monthAgo });
+      query = query.where("c.updated_at >= :monthAgo", { monthAgo });
     }
 
     const allClassements = await query.getMany();
@@ -75,25 +76,27 @@ export class RankingService {
         const formateurs = stagiaire.formateurs
           ? stagiaire.formateurs.map((formateur) => {
               // Get formations assigned to this stagiaire by this formateur
-              const formationsAssignees = stagiaire.stagiaire_catalogue_formations
-                ?.filter((scf) => scf.formateur_id === formateur.id)
-                ?.map((scf) => ({
-                  id: scf.catalogue_formation?.id,
-                  titre: scf.catalogue_formation?.titre,
-                  description: scf.catalogue_formation?.description,
-                  duree: scf.catalogue_formation?.duree,
-                  tarif: scf.catalogue_formation?.tarif,
-                  statut: scf.catalogue_formation?.statut,
-                  image_url: scf.catalogue_formation?.image_url,
-                  formation: scf.catalogue_formation?.formation
-                    ? {
-                        id: scf.catalogue_formation.formation.id,
-                        titre: scf.catalogue_formation.formation.titre,
-                        categorie: scf.catalogue_formation.formation.categorie,
-                        icon: scf.catalogue_formation.formation.icon,
-                      }
-                    : null,
-                })) || [];
+              const formationsAssignees =
+                stagiaire.stagiaire_catalogue_formations
+                  ?.filter((scf) => scf.formateur_id === formateur.id)
+                  ?.map((scf) => ({
+                    id: scf.catalogue_formation?.id,
+                    titre: scf.catalogue_formation?.titre,
+                    description: scf.catalogue_formation?.description,
+                    duree: scf.catalogue_formation?.duree,
+                    tarif: scf.catalogue_formation?.tarif,
+                    statut: scf.catalogue_formation?.statut,
+                    image_url: scf.catalogue_formation?.image_url,
+                    formation: scf.catalogue_formation?.formation
+                      ? {
+                          id: scf.catalogue_formation.formation.id,
+                          titre: scf.catalogue_formation.formation.titre,
+                          categorie:
+                            scf.catalogue_formation.formation.categorie,
+                          icon: scf.catalogue_formation.formation.icon,
+                        }
+                      : null,
+                  })) || [];
 
               return {
                 id: formateur.id,
@@ -116,7 +119,7 @@ export class RankingService {
           stagiaire: {
             id: stagiaire.id.toString(),
             prenom: stagiaire.prenom,
-            nom: stagiaire.user?.name || '',
+            nom: stagiaire.user?.name || "",
             image: stagiaire.user?.image || null,
           },
           formateurs: filteredFormateurs,
@@ -131,6 +134,7 @@ export class RankingService {
     return ranking.map((item, index) => ({
       ...item,
       rang: index + 1,
+      level: this.calculateLevel(item.totalPoints),
     }));
   }
 
@@ -347,15 +351,17 @@ export class RankingService {
       accessibleLevels,
     };
   }
-
   async getQuizHistory(userId: number) {
-    // Use Progression table like Laravel, not QuizParticipation
-    const progressions = await this.progressionRepository.find({
+    // Progression table uses stagiaire_id, not user_id directly
+    const stagiaire = await this.stagiaireRepository.findOne({
       where: { user_id: userId },
-      relations: [
-        "quiz",
-        "quiz.formation",
-      ],
+    });
+
+    if (!stagiaire) return [];
+
+    const progressions = await this.progressionRepository.find({
+      where: { stagiaire_id: stagiaire.id },
+      relations: ["quiz", "quiz.formation"],
       order: { created_at: "DESC" },
     });
 
@@ -363,13 +369,18 @@ export class RankingService {
       .filter((p) => p.quiz) // Filter out null quiz (deleted quizzes)
       .map((progression) => {
         const quiz = progression.quiz;
-        const niveau = quiz.niveau || 'débutant';
-        const totalQuestions = progression.total_questions || quiz.nb_questions || 0;
+        const niveau = quiz.niveau || "débutant";
+        const totalQuestions =
+          progression.total_questions ||
+          parseInt(quiz.nb_points_total || "0") ||
+          0;
 
         const quizData = {
           id: quiz.id,
           titre: quiz.titre,
-          description: quiz.description ? quiz.description.substring(0, 100) : '',
+          description: quiz.description
+            ? quiz.description.substring(0, 100)
+            : "",
           duree: quiz.duree,
           niveau: quiz.niveau,
           status: quiz.status,
@@ -408,7 +419,11 @@ export class RankingService {
         averageScore: 0,
         totalPoints: 0,
         categoryStats: [],
-        levelProgress: [],
+        levelProgress: {
+          débutant: { completed: 0, averageScore: null },
+          intermédiaire: { completed: 0, averageScore: null },
+          avancé: { completed: 0, averageScore: null },
+        },
       };
     }
 
@@ -419,7 +434,10 @@ export class RankingService {
     });
 
     const totalQuizzes = classements.length;
-    const totalPoints = classements.reduce((sum, c) => sum + (c.points || 0), 0);
+    const totalPoints = classements.reduce(
+      (sum, c) => sum + (c.points || 0),
+      0
+    );
     const averageScore = totalQuizzes > 0 ? totalPoints / totalQuizzes : 0;
 
     const categoryMap: {
@@ -459,12 +477,13 @@ export class RankingService {
       }
     });
 
-    const averageScore = totalQuizzes > 0 ? totalPoints / totalQuizzes : 0;
-
     const categoryStats = Object.keys(categoryMap).map((cat) => ({
       category: cat,
       quizCount: categoryMap[cat].count,
-      averageScore: Math.round((categoryMap[cat].totalScore / categoryMap[cat].count) * 100) / 100,
+      averageScore:
+        Math.round(
+          (categoryMap[cat].totalScore / categoryMap[cat].count) * 100
+        ) / 100,
     }));
 
     return {
@@ -475,21 +494,36 @@ export class RankingService {
       levelProgress: {
         débutant: {
           completed: levelProgress.débutant.completed,
-          averageScore: levelProgress.débutant.completed > 0 
-            ? Math.round((levelProgress.débutant.totalScore / levelProgress.débutant.completed) * 100) / 100 
-            : null,
+          averageScore:
+            levelProgress.débutant.completed > 0
+              ? Math.round(
+                  (levelProgress.débutant.totalScore /
+                    levelProgress.débutant.completed) *
+                    100
+                ) / 100
+              : null,
         },
         intermédiaire: {
           completed: levelProgress.intermédiaire.completed,
-          averageScore: levelProgress.intermédiaire.completed > 0 
-            ? Math.round((levelProgress.intermédiaire.totalScore / levelProgress.intermédiaire.completed) * 100) / 100 
-            : null,
+          averageScore:
+            levelProgress.intermédiaire.completed > 0
+              ? Math.round(
+                  (levelProgress.intermédiaire.totalScore /
+                    levelProgress.intermédiaire.completed) *
+                    100
+                ) / 100
+              : null,
         },
         avancé: {
           completed: levelProgress.avancé.completed,
-          averageScore: levelProgress.avancé.completed > 0 
-            ? Math.round((levelProgress.avancé.totalScore / levelProgress.avancé.completed) * 100) / 100 
-            : null,
+          averageScore:
+            levelProgress.avancé.completed > 0
+              ? Math.round(
+                  (levelProgress.avancé.totalScore /
+                    levelProgress.avancé.completed) *
+                    100
+                ) / 100
+              : null,
         },
       },
     };

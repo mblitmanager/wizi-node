@@ -11,14 +11,22 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { ApiResponseService } from "../common/services/api-response.service";
 import { RankingService } from "../ranking/ranking.service";
+import { QuizService } from "./quiz.service";
 
 @Controller("quiz")
 @UseGuards(AuthGuard("jwt"))
 export class QuizApiController {
   constructor(
     private rankingService: RankingService,
+    private quizService: QuizService,
     private apiResponse: ApiResponseService
   ) {}
+
+  @Get()
+  async getAll() {
+    const data = await this.quizService.getAllQuizzes();
+    return this.apiResponse.success(data);
+  }
 
   @Get("by-formations")
   async byFormations() {
@@ -27,7 +35,8 @@ export class QuizApiController {
 
   @Get("categories")
   async categories() {
-    return this.apiResponse.success([]);
+    const data = await this.quizService.getCategories();
+    return this.apiResponse.success(data);
   }
 
   @Get("category/:categoryId")
@@ -86,7 +95,8 @@ export class QuizApiController {
 
   @Get(":id")
   async getById(@Param("id") id: number) {
-    return this.apiResponse.success({});
+    const data = await this.quizService.getQuizDetails(id);
+    return this.apiResponse.success(data);
   }
 
   @Post(":id/result")
@@ -96,7 +106,8 @@ export class QuizApiController {
 
   @Get(":quizId/questions")
   async getQuestions(@Param("quizId") quizId: number) {
-    return this.apiResponse.success([]);
+    const data = await this.quizService.getQuestionsByQuiz(quizId);
+    return this.apiResponse.success(data);
   }
 
   @Post(":quizId/submit")

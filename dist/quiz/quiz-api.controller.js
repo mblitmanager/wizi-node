@@ -17,16 +17,23 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const api_response_service_1 = require("../common/services/api-response.service");
 const ranking_service_1 = require("../ranking/ranking.service");
+const quiz_service_1 = require("./quiz.service");
 let QuizApiController = class QuizApiController {
-    constructor(rankingService, apiResponse) {
+    constructor(rankingService, quizService, apiResponse) {
         this.rankingService = rankingService;
+        this.quizService = quizService;
         this.apiResponse = apiResponse;
+    }
+    async getAll() {
+        const data = await this.quizService.getAllQuizzes();
+        return this.apiResponse.success(data);
     }
     async byFormations() {
         return this.apiResponse.success({});
     }
     async categories() {
-        return this.apiResponse.success([]);
+        const data = await this.quizService.getCategories();
+        return this.apiResponse.success(data);
     }
     async byCategory() {
         return this.apiResponse.success([]);
@@ -65,13 +72,15 @@ let QuizApiController = class QuizApiController {
         });
     }
     async getById(id) {
-        return this.apiResponse.success({});
+        const data = await this.quizService.getQuizDetails(id);
+        return this.apiResponse.success(data);
     }
     async submitResult(id, data) {
         return this.apiResponse.success();
     }
     async getQuestions(quizId) {
-        return this.apiResponse.success([]);
+        const data = await this.quizService.getQuestionsByQuiz(quizId);
+        return this.apiResponse.success(data);
     }
     async submit(quizId, data) {
         return this.apiResponse.success();
@@ -99,6 +108,12 @@ let QuizApiController = class QuizApiController {
     }
 };
 exports.QuizApiController = QuizApiController;
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QuizApiController.prototype, "getAll", null);
 __decorate([
     (0, common_1.Get)("by-formations"),
     __metadata("design:type", Function),
@@ -248,6 +263,7 @@ exports.QuizApiController = QuizApiController = __decorate([
     (0, common_1.Controller)("quiz"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [ranking_service_1.RankingService,
+        quiz_service_1.QuizService,
         api_response_service_1.ApiResponseService])
 ], QuizApiController);
 //# sourceMappingURL=quiz-api.controller.js.map

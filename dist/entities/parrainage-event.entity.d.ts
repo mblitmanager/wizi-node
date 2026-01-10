@@ -6,4 +6,5 @@ export declare class ParrainageEvent {
     date_fin: Date;
     created_at: Date;
     updated_at: Date;
+    status: string;
 }

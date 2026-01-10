@@ -61,13 +61,22 @@ export class QuizService {
       .select("COUNT(*)", "total_quizzes")
       .addSelect("SUM(classement.points)", "total_points")
       .addSelect("AVG(classement.points)", "average_score")
-      .where("classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId })
+      .where(
+        "classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
+        { userId }
+      )
       .getRawOne();
 
     return {
-      total_quizzes: parseInt(stats?.total_quizzes || "0") || 0,
-      total_points: parseInt(stats?.total_points || "0") || 0,
-      average_score: parseFloat(stats?.average_score || "0") || 0,
+      totalQuizzes: parseInt(stats?.total_quizzes || "0") || 0,
+      totalPoints: parseInt(stats?.total_points || "0") || 0,
+      averageScore: parseFloat(stats?.average_score || "0") || 0,
+      categoryStats: [],
+      levelProgress: {
+        débutant: { completed: 0, averageScore: null },
+        intermédiaire: { completed: 0, averageScore: null },
+        avancé: { completed: 0, averageScore: null },
+      },
     };
   }
 
@@ -79,14 +88,17 @@ export class QuizService {
       .select("formation.categorie", "category")
       .addSelect("COUNT(classement.id)", "count")
       .addSelect("AVG(classement.points)", "average_points")
-      .where("classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId })
+      .where(
+        "classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
+        { userId }
+      )
       .groupBy("formation.categorie")
       .getRawMany();
   }
 
   async getStatsProgress(userId: number) {
     return this.classementRepository.find({
-      where: { 
+      where: {
         stagiaire_id: userId,
       },
       relations: ["quiz"],
@@ -101,7 +113,10 @@ export class QuizService {
       .select("DATE(classement.created_at)", "date")
       .addSelect("COUNT(classement.id)", "count")
       .addSelect("AVG(classement.points)", "average_points")
-      .where("classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId })
+      .where(
+        "classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
+        { userId }
+      )
       .groupBy("DATE(classement.created_at)")
       .orderBy("DATE(classement.created_at)", "DESC")
       .limit(30)
@@ -115,7 +130,10 @@ export class QuizService {
       .select("quiz.titre", "quiz_title")
       .addSelect("classement.points", "score")
       .addSelect("classement.created_at", "date")
-      .where("classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId })
+      .where(
+        "classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
+        { userId }
+      )
       .orderBy("classement.created_at", "DESC")
       .take(20)
       .getRawMany();

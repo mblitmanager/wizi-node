@@ -66,9 +66,23 @@ let NotificationService = class NotificationService {
         return this.notificationRepository.update({ user_id: userId }, { read: true });
     }
     async getParrainageEvents() {
-        return this.parrainageEventRepository.find({
+        const events = await this.parrainageEventRepository.find({
             order: { date_debut: "DESC" },
         });
+        return events.map((event) => ({
+            id: event.id,
+            titre: event.titre,
+            prix: event.prix ? event.prix.toString() : "0.00",
+            date_debut: event.date_debut
+                ? new Date(event.date_debut).toISOString().split("T")[0]
+                : null,
+            date_fin: event.date_fin
+                ? new Date(event.date_fin).toISOString().split("T")[0]
+                : null,
+            created_at: event.created_at?.toISOString(),
+            updated_at: event.updated_at?.toISOString(),
+            status: event.status,
+        }));
     }
 };
 exports.NotificationService = NotificationService;

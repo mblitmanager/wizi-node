@@ -15,6 +15,7 @@ export declare class RankingService {
     constructor(classementRepository: Repository<Classement>, stagiaireRepository: Repository<Stagiaire>, participationRepository: Repository<QuizParticipation>, progressionRepository: Repository<Progression>, quizRepository: Repository<Quiz>, userRepository: Repository<User>);
     getGlobalRanking(period?: string): Promise<{
         rang: number;
+        level: string;
         stagiaire: {
             id: any;
             prenom: any;
@@ -28,6 +29,7 @@ export declare class RankingService {
     }[]>;
     getMyRanking(userId: number): Promise<{
         rang: number;
+        level: string;
         stagiaire: {
             id: any;
             prenom: any;
@@ -69,12 +71,12 @@ export declare class RankingService {
         totalTimeSpent: number;
         rang: number;
         level: number;
-        categoryStats: any[] | {
+        categoryStats: {
             category: string;
             quizCount: number;
             averageScore: number;
         }[];
-        levelProgress: any[] | {
+        levelProgress: {
             débutant: {
                 completed: number;
                 averageScore: number;
@@ -115,7 +117,7 @@ export declare class RankingService {
             totalCompleted: number;
             totalQuiz: number;
             pourcentageReussite: number;
-            byLevel: any[] | {
+            byLevel: {
                 débutant: {
                     completed: number;
                     averageScore: number;
@@ -156,16 +158,10 @@ export declare class RankingService {
         score: number;
         completedAt: string;
         timeSpent: number;
-        totalQuestions: any;
+        totalQuestions: number;
         correctAnswers: number;
     }[]>;
     getQuizStats(userId: number): Promise<{
-        totalQuizzes: number;
-        averageScore: number;
-        totalPoints: number;
-        categoryStats: any[];
-        levelProgress: any[];
-    } | {
         totalQuizzes: number;
         averageScore: number;
         totalPoints: number;
@@ -189,7 +185,14 @@ export declare class RankingService {
             };
         };
     }>;
-    getCategoryStats(userId: number): Promise<any[]>;
+    getCategoryStats(userId: number): Promise<{
+        completedQuizzes: number;
+        totalQuizzes: number;
+        completionRate: number;
+        category: string;
+        quizCount: number;
+        averageScore: number;
+    }[]>;
     getProgressStats(userId: number): Promise<{
         daily_progress: any[];
         weekly_progress: any[];

@@ -66,9 +66,15 @@ let QuizService = class QuizService {
             .where("classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId })
             .getRawOne();
         return {
-            total_quizzes: parseInt(stats?.total_quizzes || "0") || 0,
-            total_points: parseInt(stats?.total_points || "0") || 0,
-            average_score: parseFloat(stats?.average_score || "0") || 0,
+            totalQuizzes: parseInt(stats?.total_quizzes || "0") || 0,
+            totalPoints: parseInt(stats?.total_points || "0") || 0,
+            averageScore: parseFloat(stats?.average_score || "0") || 0,
+            categoryStats: [],
+            levelProgress: {
+                débutant: { completed: 0, averageScore: null },
+                intermédiaire: { completed: 0, averageScore: null },
+                avancé: { completed: 0, averageScore: null },
+            },
         };
     }
     async getStatsCategories(userId) {

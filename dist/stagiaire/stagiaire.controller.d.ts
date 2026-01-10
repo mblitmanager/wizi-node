@@ -8,6 +8,7 @@ export declare class StagiaireController {
     constructor(stagiaireService: StagiaireService, inscriptionService: InscriptionService, rankingService: RankingService);
     getProgress(req: any): Promise<{
         rang: number;
+        level: string;
         stagiaire: {
             id: any;
             prenom: any;

@@ -17,10 +17,10 @@ export class ParrainageEvent {
   @Column({ type: "decimal", precision: 10, scale: 2, nullable: true })
   prix: number;
 
-  @Column({ type: "timestamp", nullable: true })
+  @Column({ type: "date", nullable: true })
   date_debut: Date;
 
-  @Column({ type: "timestamp", nullable: true })
+  @Column({ type: "date", nullable: true })
   date_fin: Date;
 
   @CreateDateColumn()
@@ -28,4 +28,7 @@ export class ParrainageEvent {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @Column({ type: "enum", enum: ["active", "inactive"], default: "active" })
+  status: string;
 }

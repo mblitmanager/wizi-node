@@ -4,6 +4,7 @@ export declare class RankingController {
     constructor(rankingService: RankingService);
     getGlobalRanking(): Promise<{
         rang: number;
+        level: string;
         stagiaire: {
             id: any;
             prenom: any;
@@ -17,6 +18,7 @@ export declare class RankingController {
     }[]>;
     getMyRanking(req: any): Promise<{
         rang: number;
+        level: string;
         stagiaire: {
             id: any;
             prenom: any;
@@ -67,12 +69,12 @@ export declare class RankingController {
         totalTimeSpent: number;
         rang: number;
         level: number;
-        categoryStats: any[] | {
+        categoryStats: {
             category: string;
             quizCount: number;
             averageScore: number;
         }[];
-        levelProgress: any[] | {
+        levelProgress: {
             débutant: {
                 completed: number;
                 averageScore: number;
@@ -108,7 +110,7 @@ export declare class RankingController {
             totalCompleted: number;
             totalQuiz: number;
             pourcentageReussite: number;
-            byLevel: any[] | {
+            byLevel: {
                 débutant: {
                     completed: number;
                     averageScore: number;

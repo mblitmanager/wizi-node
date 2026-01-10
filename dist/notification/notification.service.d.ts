@@ -14,5 +14,14 @@ export declare class NotificationService {
     markAsRead(notificationId: number): Promise<import("typeorm").UpdateResult>;
     getUnreadCount(userId: number): Promise<number>;
     markAllAsRead(userId: number): Promise<import("typeorm").UpdateResult>;
-    getParrainageEvents(): Promise<ParrainageEvent[]>;
+    getParrainageEvents(): Promise<{
+        id: number;
+        titre: string;
+        prix: string;
+        date_debut: string;
+        date_fin: string;
+        created_at: string;
+        updated_at: string;
+        status: string;
+    }[]>;
 }

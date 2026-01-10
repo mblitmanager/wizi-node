@@ -8,7 +8,6 @@ import { Reponse } from "../entities/reponse.entity";
 import { Formation } from "../entities/formation.entity";
 import { Classement } from "../entities/classement.entity";
 import { QuizService } from "./quiz.service";
-import { QuizController } from "./quiz.controller";
 import { QuizApiController } from "./quiz-api.controller";
 import { RankingModule } from "../ranking/ranking.module";
 
@@ -18,7 +17,7 @@ import { RankingModule } from "../ranking/ranking.module";
     TypeOrmModule.forFeature([Quiz, Question, Reponse, Formation, Classement]),
     RankingModule,
   ],
-  controllers: [QuizController, QuizApiController],
+  controllers: [QuizApiController],
   providers: [QuizService, ApiResponseService],
   exports: [QuizService],
 })

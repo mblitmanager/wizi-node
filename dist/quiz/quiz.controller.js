@@ -14,7 +14,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuizController = void 0;
 const common_1 = require("@nestjs/common");
-const passport_1 = require("@nestjs/passport");
 const quiz_service_1 = require("./quiz.service");
 let QuizController = class QuizController {
     constructor(quizService) {
@@ -22,24 +21,6 @@ let QuizController = class QuizController {
     }
     async getCategories() {
         return this.quizService.getCategories();
-    }
-    async getStats(req) {
-        return this.quizService.getStats(req.user.id);
-    }
-    async getStatsCategories(req) {
-        return this.quizService.getStatsCategories(req.user.id);
-    }
-    async getStatsProgress(req) {
-        return this.quizService.getStatsProgress(req.user.id);
-    }
-    async getStatsTrends(req) {
-        return this.quizService.getStatsTrends(req.user.id);
-    }
-    async getStatsPerformance(req) {
-        return this.quizService.getStatsPerformance(req.user.id);
-    }
-    async getHistory(req) {
-        return this.quizService.getHistoryByStagiaire(req.user.id);
     }
     async getAllQuizzes() {
         return this.quizService.getAllQuizzes();
@@ -58,54 +39,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], QuizController.prototype, "getCategories", null);
-__decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    (0, common_1.Get)("stats"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QuizController.prototype, "getStats", null);
-__decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    (0, common_1.Get)("stats/categories"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QuizController.prototype, "getStatsCategories", null);
-__decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    (0, common_1.Get)("stats/progress"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QuizController.prototype, "getStatsProgress", null);
-__decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    (0, common_1.Get)("stats/trends"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QuizController.prototype, "getStatsTrends", null);
-__decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    (0, common_1.Get)("stats/performance"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QuizController.prototype, "getStatsPerformance", null);
-__decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    (0, common_1.Get)("history"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QuizController.prototype, "getHistory", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
