@@ -24,6 +24,9 @@ export class Notification {
   @Column()
   type: string;
 
+  @Column({ nullable: true })
+  title: string;
+
   @Column({ type: "text" })
   message: string;
 

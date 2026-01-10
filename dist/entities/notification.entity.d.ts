@@ -4,6 +4,7 @@ export declare class Notification {
     user_id: number;
     user: User;
     type: string;
+    title: string;
     message: string;
     data: any;
     read: boolean;

@@ -12,12 +12,13 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("administrateur/parametre")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminParametreController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index(
@@ -25,55 +26,37 @@ export class AdminParametreController {
     @Query("limit") limit = 10,
     @Query("search") search = ""
   ) {
-    return {
-      data: [],
-      pagination: { total: 0, page, total_pages: 0 },
-    };
-  }
-
-  @Get("create")
-  async create() {
-    return { message: "Create parametre form" };
+    return this.apiResponse.paginated([], 0, page, limit);
   }
 
   @Post()
   async store(@Body() data: any) {
-    return { message: "Parametre created", data };
+    return this.apiResponse.success(data);
   }
 
   @Get(":parametre")
   async show(@Param("parametre") id: number) {
-    return { id, message: "Parametre details" };
-  }
-
-  @Get(":parametre/edit")
-  async edit(@Param("parametre") id: number) {
-    return { id, message: "Edit parametre form" };
+    return this.apiResponse.success({ id });
   }
 
   @Put(":parametre")
   async update(@Param("parametre") id: number, @Body() data: any) {
-    return { id, message: "Parametre updated", data };
+    return this.apiResponse.success(data);
   }
 
   @Delete(":parametre")
   async destroy(@Param("parametre") id: number) {
-    return { id, message: "Parametre deleted" };
-  }
-
-  @Get("reset-data")
-  async resetDataForm() {
-    return { message: "Reset data confirmation form" };
+    return this.apiResponse.success();
   }
 
   @Post("reset-data")
   async resetData() {
-    return { message: "Data reset completed" };
+    return this.apiResponse.success();
   }
 
   @Put(":id/update-image")
   async updateImage(@Param("id") id: number, @Body() data: any) {
-    return { id, message: "Image updated", data };
+    return this.apiResponse.success(data);
   }
 }
 
@@ -81,11 +64,11 @@ export class AdminParametreController {
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminClassementController {
-  constructor() {}
+  constructor(private apiResponse: ApiResponseService) {}
 
   @Get()
   async index() {
-    return { data: [], message: "Classements list" };
+    return this.apiResponse.success([]);
   }
 }
 

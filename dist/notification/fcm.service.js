@@ -20,9 +20,10 @@ let FcmService = class FcmService {
     onModuleInit() {
         const projectId = this.configService.get("FIREBASE_PROJECT_ID");
         const clientEmail = this.configService.get("FIREBASE_CLIENT_EMAIL");
-        const privateKey = this.configService
-            .get("FIREBASE_PRIVATE_KEY")
-            ?.replace(/\\n/g, "\n");
+        let privateKey = this.configService.get("FIREBASE_PRIVATE_KEY");
+        if (privateKey) {
+            privateKey = privateKey.replace(/^['"]|['"]$/g, "").replace(/\\n/g, "\n");
+        }
         if (projectId && clientEmail && privateKey) {
             if (!admin.apps.length) {
                 this.firebaseApp = admin.initializeApp({

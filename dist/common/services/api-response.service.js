@@ -13,19 +13,13 @@ let ApiResponseService = class ApiResponseService {
         if (data === undefined) {
             return { success: true };
         }
-        if (Array.isArray(data)) {
-            return data;
-        }
-        if (data && typeof data === 'object' && 'pagination' in data) {
-            return data;
-        }
-        return data;
+        return { data };
     }
     error(message, statusCode = 400) {
         return {
             success: false,
             error: message,
-            status: statusCode
+            status: statusCode,
         };
     }
     list(data, message) {
@@ -39,8 +33,8 @@ let ApiResponseService = class ApiResponseService {
                 count: data.length,
                 per_page: perPage,
                 current_page: currentPage,
-                total_pages: Math.ceil(total / perPage)
-            }
+                total_pages: Math.ceil(total / perPage),
+            },
         };
     }
     transform(laravelResponse) {
@@ -55,7 +49,7 @@ let ApiResponseService = class ApiResponseService {
     file(url, filename) {
         return {
             success: true,
-            data: { image: url, filename }
+            data: { image: url, filename },
         };
     }
     token(token) {

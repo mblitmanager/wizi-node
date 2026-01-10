@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { ApiResponse, PaginatedResponse, ListResponse } from '../interfaces/api-response.interface';
+import { Injectable } from "@nestjs/common";
+import {
+  ApiResponse,
+  PaginatedResponse,
+  ListResponse,
+} from "../interfaces/api-response.interface";
 
 /**
  * Service pour formater les réponses API
  * Assure la parité Node.js = Laravel
- * 
+ *
  * Patterns supportés:
  * 1. Simple data: { data: {...} }
  * 2. Success message: { success: true }
@@ -18,23 +22,12 @@ export class ApiResponseService {
    * Format succès avec données
    * Ex: return this.apiResponse.success(user)
    */
-  success<T>(data?: T, message?: string): ApiResponse<T> {
+  success<T>(data?: T, message?: string): any {
     if (data === undefined) {
       return { success: true };
     }
 
-    // Si c'est un tableau, on retourne directement
-    if (Array.isArray(data)) {
-      return data as any;
-    }
-
-    // Si c'est un objet avec pagination
-    if (data && typeof data === 'object' && 'pagination' in data) {
-      return data as any;
-    }
-
-    // Si c'est un objet simple
-    return data as any;
+    return { data };
   }
 
   /**
@@ -45,7 +38,7 @@ export class ApiResponseService {
     return {
       success: false,
       error: message,
-      status: statusCode
+      status: statusCode,
     };
   }
 
@@ -74,8 +67,8 @@ export class ApiResponseService {
         count: data.length,
         per_page: perPage,
         current_page: currentPage,
-        total_pages: Math.ceil(total / perPage)
-      }
+        total_pages: Math.ceil(total / perPage),
+      },
     };
   }
 
@@ -105,7 +98,7 @@ export class ApiResponseService {
   file(url: string, filename?: string): ApiResponse {
     return {
       success: true,
-      data: { image: url, filename }
+      data: { image: url, filename },
     } as any;
   }
 

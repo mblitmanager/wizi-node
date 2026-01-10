@@ -11,9 +11,10 @@ export class FcmService implements OnModuleInit {
   onModuleInit() {
     const projectId = this.configService.get<string>("FIREBASE_PROJECT_ID");
     const clientEmail = this.configService.get<string>("FIREBASE_CLIENT_EMAIL");
-    const privateKey = this.configService
-      .get<string>("FIREBASE_PRIVATE_KEY")
-      ?.replace(/\\n/g, "\n");
+    let privateKey = this.configService.get<string>("FIREBASE_PRIVATE_KEY");
+    if (privateKey) {
+      privateKey = privateKey.replace(/^['"]|['"]$/g, "").replace(/\\n/g, "\n");
+    }
 
     if (projectId && clientEmail && privateKey) {
       if (!admin.apps.length) {

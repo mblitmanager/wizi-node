@@ -8,10 +8,12 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { PassportModule } from "@nestjs/passport";
 import { JwtStrategy } from "./jwt.strategy";
 import { MailModule } from "../mail/mail.module";
+import { CommonModule } from "../common/common.module";
 
 @Module({
   imports: [
     MailModule,
+    CommonModule,
     TypeOrmModule.forFeature([User]),
     PassportModule,
     JwtModule.registerAsync({

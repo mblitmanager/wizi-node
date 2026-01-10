@@ -19,11 +19,13 @@ export class NotificationService {
     userId: number,
     type: string,
     message: string,
-    data: any = {}
+    data: any = {},
+    title?: string
   ) {
     const notification = this.notificationRepository.create({
       user_id: userId,
       type,
+      title: title || null,
       message,
       data,
       read: false,
@@ -37,7 +39,7 @@ export class NotificationService {
       if (user && user.fcm_token) {
         await this.fcmService.sendPushNotification(
           user.fcm_token,
-          "Nouvelle notification",
+          title || "Nouvelle notification",
           message,
           data
         );

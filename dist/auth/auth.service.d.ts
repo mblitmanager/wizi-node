@@ -15,4 +15,6 @@ export declare class AuthService {
     }>;
     register(userData: any): Promise<any>;
     updateFcmToken(userId: number, token: string): Promise<void>;
+    logout(userId: number): Promise<boolean>;
+    logoutAll(userId: number): Promise<boolean>;
 }

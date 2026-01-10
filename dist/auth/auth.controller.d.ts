@@ -1,18 +1,15 @@
 import { AuthService } from "./auth.service";
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class AuthController {
     private authService;
-    constructor(authService: AuthService);
-    login(credentials: any): Promise<{
-        token: string;
-        refresh_token: string;
-        user: any;
-    } | {
-        error: string;
-    }>;
+    private apiResponse;
+    constructor(authService: AuthService, apiResponse: ApiResponseService);
+    login(credentials: any): Promise<any>;
     register(userData: any): Promise<any>;
-    updateFcmToken(req: any, token: string): Promise<{
-        message: string;
-    }>;
+    logout(req: any): Promise<any>;
+    logoutAll(req: any): Promise<any>;
+    refresh(refreshToken: string): Promise<any>;
+    updateFcmToken(req: any, token: string): Promise<any>;
     getProfile(req: any): any;
     getMe(req: any): any;
     getUser(req: any): any;

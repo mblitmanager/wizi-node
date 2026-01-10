@@ -51,43 +51,67 @@ export class AdminCatalogueController {
       .orderBy("cf.id", "DESC")
       .getManyAndCount();
 
-    return {
-      data,
-      pagination: {
-        total,
-        page,
-        total_pages: Math.ceil(total / limit),
-      },
-    };
+    return this.apiResponse.paginated(data, total, page, limit);
   }
 
   @Get(":id")
   async findOne(@Param("id") id: number) {
-    return this.catalogueRepository.findOne({
+    const catalogue = await this.catalogueRepository.findOne({
       where: { id },
       relations: ["formation", "stagiaires"],
     });
+
+    if (!catalogue) {
+      throw new NotFoundException("Catalogue not found");
+    }
+
+    return this.apiResponse.success(catalogue);
   }
 
   @Post()
   async create(@Body() body: any) {
+    if (!body.titre) {
+      throw new BadRequestException("titre is required");
+    }
+
     const catalogue = this.catalogueRepository.create(body);
-    return this.catalogueRepository.save(catalogue);
+    const saved = await this.catalogueRepository.save(catalogue);
+
+    return this.apiResponse.success(saved);
   }
 
   @Put(":id")
   async update(@Param("id") id: number, @Body() body: any) {
+    const catalogue = await this.catalogueRepository.findOne({
+      where: { id },
+    });
+
+    if (!catalogue) {
+      throw new NotFoundException("Catalogue not found");
+    }
+
     await this.catalogueRepository.update(id, body);
-    return this.catalogueRepository.findOne({
+    const updated = await this.catalogueRepository.findOne({
       where: { id },
       relations: ["formation", "stagiaires"],
     });
+
+    return this.apiResponse.success(updated);
   }
 
   @Delete(":id")
   async delete(@Param("id") id: number) {
+    const catalogue = await this.catalogueRepository.findOne({
+      where: { id },
+    });
+
+    if (!catalogue) {
+      throw new NotFoundException("Catalogue not found");
+    }
+
     await this.catalogueRepository.delete(id);
-    return { success: true };
+
+    return this.apiResponse.success();
   }
 
   @Post(":id/duplicate")
@@ -98,7 +122,7 @@ export class AdminCatalogueController {
     });
 
     if (!original) {
-      throw new Error("Catalogue not found");
+      throw new NotFoundException("Catalogue not found");
     }
 
     const newCatalogue = this.catalogueRepository.create({
@@ -106,7 +130,9 @@ export class AdminCatalogueController {
       titre: `${original.titre} (Copie)`,
     });
 
-    return this.catalogueRepository.save(newCatalogue);
+    const saved = await this.catalogueRepository.save(newCatalogue);
+
+    return this.apiResponse.success(saved);
   }
 
   @Get(":id/download-pdf")
@@ -116,13 +142,13 @@ export class AdminCatalogueController {
     });
 
     if (!catalogue) {
-      throw new Error("Catalogue not found");
+      throw new NotFoundException("Catalogue not found");
     }
 
     // Return base64 encoded PDF or generate one
-    return {
+    return this.apiResponse.success({
       filename: `${catalogue.titre}.pdf`,
       content: Buffer.from("PDF content here").toString("base64"),
-    };
+    });
   }
 }

@@ -25,10 +25,11 @@ let NotificationService = class NotificationService {
         this.userRepository = userRepository;
         this.fcmService = fcmService;
     }
-    async createNotification(userId, type, message, data = {}) {
+    async createNotification(userId, type, message, data = {}, title) {
         const notification = this.notificationRepository.create({
             user_id: userId,
             type,
+            title: title || null,
             message,
             data,
             read: false,
@@ -37,7 +38,7 @@ let NotificationService = class NotificationService {
         try {
             const user = await this.userRepository.findOne({ where: { id: userId } });
             if (user && user.fcm_token) {
-                await this.fcmService.sendPushNotification(user.fcm_token, "Nouvelle notification", message, data);
+                await this.fcmService.sendPushNotification(user.fcm_token, title || "Nouvelle notification", message, data);
             }
         }
         catch (error) {

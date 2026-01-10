@@ -33,6 +33,10 @@ __decorate([
     __metadata("design:type", String)
 ], Notification.prototype, "type", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Notification.prototype, "title", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: "text" }),
     __metadata("design:type", String)
 ], Notification.prototype, "message", void 0);

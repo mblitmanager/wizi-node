@@ -8,10 +8,14 @@ import {
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthGuard } from "@nestjs/passport";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller()
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private apiResponse: ApiResponseService
+  ) {}
 
   @Post("login")
   async login(@Body() credentials: any) {
@@ -22,40 +26,65 @@ export class AuthController {
     );
     if (!user) {
       console.log("Login failed for:", credentials.email);
-      return { error: "Invalid credentials" };
+      return this.apiResponse.error("Invalid credentials", 401);
     }
     console.log("Login success for:", credentials.email);
-    return this.authService.login(user);
+    const result = await this.authService.login(user);
+    return this.apiResponse.success(result);
   }
 
   @Post("register")
   async register(@Body() userData: any) {
-    return this.authService.register(userData);
+    const result = await this.authService.register(userData);
+    return this.apiResponse.success(result);
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("logout")
+  async logout(@Request() req) {
+    await this.authService.logout(req.user.id);
+    return this.apiResponse.success({ message: "Success" });
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("logout-all")
+  async logoutAll(@Request() req) {
+    await this.authService.logoutAll(req.user.id);
+    return this.apiResponse.success({ message: "Success" });
+  }
+
+  @Post("refresh")
+  async refresh(@Body("refresh_token") refreshToken: string) {
+    // Basic placeholder for frontend parity
+    return this.apiResponse.success({
+      access_token: "dummy-new-token",
+      refresh_token: "dummy-new-refresh-token",
+    });
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Post("fcm-token")
   async updateFcmToken(@Request() req, @Body("token") token: string) {
     await this.authService.updateFcmToken(req.user.id, token);
-    return { message: "Token enregistré" };
+    return this.apiResponse.success({ message: "Token enregistré" });
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Get("profile")
   getProfile(@Request() req) {
-    return this.transformUser(req.user);
+    return this.apiResponse.success(this.transformUser(req.user));
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Get("me")
   getMe(@Request() req) {
-    return this.transformUser(req.user);
+    return this.apiResponse.success(this.transformUser(req.user));
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Get("user")
   getUser(@Request() req) {
-    return this.transformUser(req.user);
+    return this.apiResponse.success(this.transformUser(req.user));
   }
 
   private transformUser(user: any) {

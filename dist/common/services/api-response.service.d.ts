@@ -1,6 +1,6 @@
-import { ApiResponse, PaginatedResponse } from '../interfaces/api-response.interface';
+import { ApiResponse, PaginatedResponse } from "../interfaces/api-response.interface";
 export declare class ApiResponseService {
-    success<T>(data?: T, message?: string): ApiResponse<T>;
+    success<T>(data?: T, message?: string): any;
     error(message: string | string[], statusCode?: number): ApiResponse;
     list<T>(data: T[], message?: string): T[];
     paginated<T>(data: T[], total: number, currentPage?: number, perPage?: number): PaginatedResponse<T>;

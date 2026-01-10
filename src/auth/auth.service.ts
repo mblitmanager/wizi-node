@@ -103,4 +103,17 @@ export class AuthService {
   async updateFcmToken(userId: number, token: string) {
     await this.userRepository.update(userId, { fcm_token: token });
   }
+
+  async logout(userId: number) {
+    // Clear last_activity_at or fcm_token if needed
+    // In a stateless JWT system, client just deletes the token
+    // But we can clear the fcm_token if the user logs out
+    await this.userRepository.update(userId, { fcm_token: null });
+    return true;
+  }
+
+  async logoutAll(userId: number) {
+    await this.userRepository.update(userId, { fcm_token: null });
+    return true;
+  }
 }

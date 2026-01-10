@@ -95,6 +95,14 @@ let AuthService = class AuthService {
     async updateFcmToken(userId, token) {
         await this.userRepository.update(userId, { fcm_token: token });
     }
+    async logout(userId) {
+        await this.userRepository.update(userId, { fcm_token: null });
+        return true;
+    }
+    async logoutAll(userId) {
+        await this.userRepository.update(userId, { fcm_token: null });
+        return true;
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

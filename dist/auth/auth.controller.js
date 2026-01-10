@@ -16,35 +16,53 @@ exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const passport_1 = require("@nestjs/passport");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AuthController = class AuthController {
-    constructor(authService) {
+    constructor(authService, apiResponse) {
         this.authService = authService;
+        this.apiResponse = apiResponse;
     }
     async login(credentials) {
         console.log("Login attempt:", credentials.email);
         const user = await this.authService.validateUser(credentials.email, credentials.password);
         if (!user) {
             console.log("Login failed for:", credentials.email);
-            return { error: "Invalid credentials" };
+            return this.apiResponse.error("Invalid credentials", 401);
         }
         console.log("Login success for:", credentials.email);
-        return this.authService.login(user);
+        const result = await this.authService.login(user);
+        return this.apiResponse.success(result);
     }
     async register(userData) {
-        return this.authService.register(userData);
+        const result = await this.authService.register(userData);
+        return this.apiResponse.success(result);
+    }
+    async logout(req) {
+        await this.authService.logout(req.user.id);
+        return this.apiResponse.success({ message: "Success" });
+    }
+    async logoutAll(req) {
+        await this.authService.logoutAll(req.user.id);
+        return this.apiResponse.success({ message: "Success" });
+    }
+    async refresh(refreshToken) {
+        return this.apiResponse.success({
+            access_token: "dummy-new-token",
+            refresh_token: "dummy-new-refresh-token",
+        });
     }
     async updateFcmToken(req, token) {
         await this.authService.updateFcmToken(req.user.id, token);
-        return { message: "Token enregistré" };
+        return this.apiResponse.success({ message: "Token enregistré" });
     }
     getProfile(req) {
-        return this.transformUser(req.user);
+        return this.apiResponse.success(this.transformUser(req.user));
     }
     getMe(req) {
-        return this.transformUser(req.user);
+        return this.apiResponse.success(this.transformUser(req.user));
     }
     getUser(req) {
-        return this.transformUser(req.user);
+        return this.apiResponse.success(this.transformUser(req.user));
     }
     transformUser(user) {
         if (!user)
@@ -76,6 +94,29 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Post)("logout"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Post)("logout-all"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logoutAll", null);
+__decorate([
+    (0, common_1.Post)("refresh"),
+    __param(0, (0, common_1.Body)("refresh_token")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refresh", null);
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     (0, common_1.Post)("fcm-token"),
@@ -111,6 +152,7 @@ __decorate([
 ], AuthController.prototype, "getUser", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
+    __metadata("design:paramtypes", [auth_service_1.AuthService,
+        api_response_service_1.ApiResponseService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map
