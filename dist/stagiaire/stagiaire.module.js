@@ -9,6 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StagiaireModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const common_module_1 = require("../common/common.module");
+const api_response_service_1 = require("../common/services/api-response.service");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const stagiaire_service_1 = require("./stagiaire.service");
 const stagiaire_controller_1 = require("./stagiaire.controller");
@@ -27,6 +29,7 @@ exports.StagiaireModule = StagiaireModule;
 exports.StagiaireModule = StagiaireModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            common_module_1.CommonModule,
             typeorm_1.TypeOrmModule.forFeature([
                 stagiaire_entity_1.Stagiaire,
                 classement_entity_1.Classement,
@@ -38,7 +41,7 @@ exports.StagiaireModule = StagiaireModule = __decorate([
             inscription_module_1.InscriptionModule,
             ranking_module_1.RankingModule,
         ],
-        providers: [stagiaire_service_1.StagiaireService],
+        providers: [stagiaire_service_1.StagiaireService, api_response_service_1.ApiResponseService],
         controllers: [stagiaire_controller_1.StagiaireController, stagiaires_controller_1.StagiairesController, stagiaire_api_controller_1.StagiaireApiController, stagiaire_api_controller_1.ApiGeneralController],
         exports: [stagiaire_service_1.StagiaireService],
     })

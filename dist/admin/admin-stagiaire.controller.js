@@ -20,49 +20,68 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminStagiaireController = class AdminStagiaireController {
-    constructor(stagiaireRepository) {
+    constructor(stagiaireRepository, apiResponse) {
         this.stagiaireRepository = stagiaireRepository;
+        this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
-        const query = this.stagiaireRepository.createQueryBuilder("s")
+        const query = this.stagiaireRepository
+            .createQueryBuilder("s")
             .leftJoinAndSelect("s.user", "user")
             .leftJoinAndSelect("s.catalogue_formations", "catalogue_formations");
         if (search) {
-            query.where("s.prenom LIKE :search OR s.civilite LIKE :search OR s.ville LIKE :search", {
-                search: `%${search}%`,
-            });
+            query.where("s.prenom LIKE :search OR s.civilite LIKE :search OR s.ville LIKE :search", { search: `%${search}%` });
         }
         const [data, total] = await query
             .skip((page - 1) * limit)
             .take(limit)
             .orderBy("s.created_at", "DESC")
             .getManyAndCount();
-        return {
-            data,
-            pagination: {
-                total,
-                page,
-                total_pages: Math.ceil(total / limit),
-            },
-        };
+        return this.apiResponse.paginated(data, total, page, limit);
     }
     async findOne(id) {
-        return this.stagiaireRepository.findOne({
+        const stagiaire = await this.stagiaireRepository.findOne({
             where: { id },
             relations: ["user", "catalogue_formations", "achievements"],
         });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException("Stagiaire non trouvé");
+        }
+        return this.apiResponse.success(stagiaire);
     }
     async create(data) {
+        if (!data.user_id) {
+            throw new common_1.BadRequestException("user_id est obligatoire");
+        }
         const stagiaire = this.stagiaireRepository.create(data);
-        return this.stagiaireRepository.save(stagiaire);
+        const saved = await this.stagiaireRepository.save(stagiaire);
+        return this.apiResponse.success(saved);
     }
     async update(id, data) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { id },
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException("Stagiaire non trouvé");
+        }
         await this.stagiaireRepository.update(id, data);
-        return this.findOne(id);
+        const updated = await this.stagiaireRepository.findOne({
+            where: { id },
+            relations: ["user", "catalogue_formations", "achievements"],
+        });
+        return this.apiResponse.success(updated);
     }
     async remove(id) {
-        return this.stagiaireRepository.delete(id);
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { id },
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException("Stagiaire non trouvé");
+        }
+        await this.stagiaireRepository.delete(id);
+        return this.apiResponse.success();
     }
 };
 exports.AdminStagiaireController = AdminStagiaireController;
@@ -72,7 +91,7 @@ __decorate([
     __param(1, (0, common_1.Query)("limit")),
     __param(2, (0, common_1.Query)("search")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:paramtypes", [Number, Number, String]),
     __metadata("design:returntype", Promise)
 ], AdminStagiaireController.prototype, "findAll", null);
 __decorate([
@@ -109,6 +128,7 @@ exports.AdminStagiaireController = AdminStagiaireController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(stagiaire_entity_1.Stagiaire)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], AdminStagiaireController);
 //# sourceMappingURL=admin-stagiaire.controller.js.map

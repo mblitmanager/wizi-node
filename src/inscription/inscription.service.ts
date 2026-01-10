@@ -5,6 +5,7 @@ import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { NotificationService } from "../notification/notification.service";
+import { MailService } from "../mail/mail.service";
 
 @Injectable()
 export class InscriptionService {
@@ -15,7 +16,8 @@ export class InscriptionService {
     private stagiaireRepository: Repository<Stagiaire>,
     @InjectRepository(CatalogueFormation)
     private catalogueRepository: Repository<CatalogueFormation>,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private mailService: MailService
   ) {}
 
   async inscrire(userId: number, catalogueFormationId: number) {
@@ -66,12 +68,27 @@ export class InscriptionService {
 
     const savedDemande = await this.demandeRepository.save(demande);
 
-    // Notify user
+    // Notify user via in-app notification
     await this.notificationService.createNotification(
       userId,
       "inscription",
       "Nous avons bien reçu votre demande d'inscription, votre conseiller/conseillère va prendre contact avec vous."
     );
+
+    // Send confirmation email
+    try {
+      await this.mailService.sendMail(
+        stagiaire.user.email,
+        "Confirmation d'inscription à une formation - Wizi Learn",
+        "confirmation",
+        { name: stagiaire.prenom || stagiaire.user.name }
+      );
+    } catch (mailError) {
+      console.error(
+        "Failed to send inscription confirmation email:",
+        mailError
+      );
+    }
 
     return {
       success: true,

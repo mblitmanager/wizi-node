@@ -10,11 +10,12 @@ import {
   Request,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { InscriptionService } from "../inscription/inscription.service";
 
 @Controller("api/stagiaire")
 @UseGuards(AuthGuard("jwt"))
 export class StagiaireApiController {
-  constructor() {}
+  constructor(private inscriptionService: InscriptionService) {}
 
   @Get("profile")
   async profile(@Request() req: any) {
@@ -58,7 +59,10 @@ export class StagiaireApiController {
 
   @Post("inscription-catalogue-formation")
   async inscriptionCatalogueFormation(@Request() req: any, @Body() data: any) {
-    return { message: "Inscription successful" };
+    return this.inscriptionService.inscrire(
+      req.user.id,
+      data.catalogue_formation_id
+    );
   }
 
   @Post("onboarding-seen")

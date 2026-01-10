@@ -15,8 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiGeneralController = exports.StagiaireApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
+const inscription_service_1 = require("../inscription/inscription.service");
 let StagiaireApiController = class StagiaireApiController {
-    constructor() { }
+    constructor(inscriptionService) {
+        this.inscriptionService = inscriptionService;
+    }
     async profile(req) {
         return { user: req.user, message: "User profile" };
     }
@@ -42,7 +45,7 @@ let StagiaireApiController = class StagiaireApiController {
         return { data: [], message: "Formation ranking" };
     }
     async inscriptionCatalogueFormation(req, data) {
-        return { message: "Inscription successful" };
+        return this.inscriptionService.inscrire(req.user.id, data.catalogue_formation_id);
     }
     async onboardingSeen(req) {
         return { message: "Onboarding marked as seen" };
@@ -318,7 +321,7 @@ __decorate([
 exports.StagiaireApiController = StagiaireApiController = __decorate([
     (0, common_1.Controller)("api/stagiaire"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [inscription_service_1.InscriptionService])
 ], StagiaireApiController);
 let ApiGeneralController = class ApiGeneralController {
     constructor() { }

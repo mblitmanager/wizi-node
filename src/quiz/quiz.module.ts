@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { CommonModule } from "../common/common.module";
+import { ApiResponseService } from "../common/services/api-response.service";
 import { Quiz } from "../entities/quiz.entity";
 import { Question } from "../entities/question.entity";
 import { Reponse } from "../entities/reponse.entity";
@@ -19,6 +21,7 @@ import {
 
 @Module({
   imports: [
+    CommonModule,
     TypeOrmModule.forFeature([Quiz, Question, Reponse, Formation, Classement]),
   ],
   controllers: [
@@ -31,7 +34,7 @@ import {
     MediasApiController,
     MediaApiController,
   ],
-  providers: [QuizService],
+  providers: [QuizService, ApiResponseService],
   exports: [QuizService],
 })
 export class QuizModule {}

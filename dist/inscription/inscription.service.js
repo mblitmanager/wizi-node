@@ -20,12 +20,14 @@ const demande_inscription_entity_1 = require("../entities/demande-inscription.en
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const notification_service_1 = require("../notification/notification.service");
+const mail_service_1 = require("../mail/mail.service");
 let InscriptionService = class InscriptionService {
-    constructor(demandeRepository, stagiaireRepository, catalogueRepository, notificationService) {
+    constructor(demandeRepository, stagiaireRepository, catalogueRepository, notificationService, mailService) {
         this.demandeRepository = demandeRepository;
         this.stagiaireRepository = stagiaireRepository;
         this.catalogueRepository = catalogueRepository;
         this.notificationService = notificationService;
+        this.mailService = mailService;
     }
     async inscrire(userId, catalogueFormationId) {
         const stagiaire = await this.stagiaireRepository.findOne({
@@ -63,6 +65,12 @@ let InscriptionService = class InscriptionService {
         });
         const savedDemande = await this.demandeRepository.save(demande);
         await this.notificationService.createNotification(userId, "inscription", "Nous avons bien reçu votre demande d'inscription, votre conseiller/conseillère va prendre contact avec vous.");
+        try {
+            await this.mailService.sendMail(stagiaire.user.email, "Confirmation d'inscription à une formation - Wizi Learn", "confirmation", { name: stagiaire.prenom || stagiaire.user.name });
+        }
+        catch (mailError) {
+            console.error("Failed to send inscription confirmation email:", mailError);
+        }
         return {
             success: true,
             message: "Un mail de confirmation vous a été envoyé, votre conseiller va bientôt prendre contact avec vous.",
@@ -79,6 +87,7 @@ exports.InscriptionService = InscriptionService = __decorate([
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        notification_service_1.NotificationService])
+        notification_service_1.NotificationService,
+        mail_service_1.MailService])
 ], InscriptionService);
 //# sourceMappingURL=inscription.service.js.map

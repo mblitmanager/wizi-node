@@ -1,5 +1,7 @@
+import { InscriptionService } from "../inscription/inscription.service";
 export declare class StagiaireApiController {
-    constructor();
+    private inscriptionService;
+    constructor(inscriptionService: InscriptionService);
     profile(req: any): Promise<{
         user: any;
         message: string;
@@ -31,7 +33,9 @@ export declare class StagiaireApiController {
         message: string;
     }>;
     inscriptionCatalogueFormation(req: any, data: any): Promise<{
+        success: boolean;
         message: string;
+        demande: import("../entities/demande-inscription.entity").DemandeInscription;
     }>;
     onboardingSeen(req: any): Promise<{
         message: string;

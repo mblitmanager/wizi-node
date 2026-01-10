@@ -3,12 +3,14 @@ import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { NotificationService } from "../notification/notification.service";
+import { MailService } from "../mail/mail.service";
 export declare class InscriptionService {
     private demandeRepository;
     private stagiaireRepository;
     private catalogueRepository;
     private notificationService;
-    constructor(demandeRepository: Repository<DemandeInscription>, stagiaireRepository: Repository<Stagiaire>, catalogueRepository: Repository<CatalogueFormation>, notificationService: NotificationService);
+    private mailService;
+    constructor(demandeRepository: Repository<DemandeInscription>, stagiaireRepository: Repository<Stagiaire>, catalogueRepository: Repository<CatalogueFormation>, notificationService: NotificationService, mailService: MailService);
     inscrire(userId: number, catalogueFormationId: number): Promise<{
         success: boolean;
         message: string;

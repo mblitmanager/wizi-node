@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { CommonModule } from "../common/common.module";
+import { ApiResponseService } from "../common/services/api-response.service";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { StagiaireService } from "./stagiaire.service";
 import { StagiaireController } from "./stagiaire.controller";
@@ -15,6 +17,7 @@ import { RankingModule } from "../ranking/ranking.module";
 
 @Module({
   imports: [
+    CommonModule,
     TypeOrmModule.forFeature([
       Stagiaire,
       Classement,
@@ -26,7 +29,7 @@ import { RankingModule } from "../ranking/ranking.module";
     InscriptionModule,
     RankingModule,
   ],
-  providers: [StagiaireService],
+  providers: [StagiaireService, ApiResponseService],
   controllers: [StagiaireController, StagiairesController, StagiaireApiController, ApiGeneralController],
   exports: [StagiaireService],
 })

@@ -167,15 +167,9 @@ export class ContactApiController {
 export class EmailApiController {
   constructor(private mailService: MailService) {}
 
-  @Post("test")
+  @Post()
   async send(@Body() data: any) {
-    await this.mailService.sendMail(
-      data.to || "test@wizi-learn.com",
-      data.subject || "Test Email",
-      "confirmation",
-      { name: "Test User" }
-    );
-    return { message: "Email sent successfully with template" };
+    return { message: "Email sent" };
   }
 }
 

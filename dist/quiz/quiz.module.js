@@ -9,6 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuizModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const common_module_1 = require("../common/common.module");
+const api_response_service_1 = require("../common/services/api-response.service");
 const quiz_entity_1 = require("../entities/quiz.entity");
 const question_entity_1 = require("../entities/question.entity");
 const reponse_entity_1 = require("../entities/reponse.entity");
@@ -23,6 +25,7 @@ exports.QuizModule = QuizModule;
 exports.QuizModule = QuizModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            common_module_1.CommonModule,
             typeorm_1.TypeOrmModule.forFeature([quiz_entity_1.Quiz, question_entity_1.Question, reponse_entity_1.Reponse, formation_entity_1.Formation, classement_entity_1.Classement]),
         ],
         controllers: [
@@ -35,7 +38,7 @@ exports.QuizModule = QuizModule = __decorate([
             quiz_api_controller_1.MediasApiController,
             quiz_api_controller_1.MediaApiController,
         ],
-        providers: [quiz_service_1.QuizService],
+        providers: [quiz_service_1.QuizService, api_response_service_1.ApiResponseService],
         exports: [quiz_service_1.QuizService],
     })
 ], QuizModule);

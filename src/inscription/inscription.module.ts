@@ -6,6 +6,7 @@ import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { NotificationModule } from "../notification/notification.module";
+import { MailModule } from "../mail/mail.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { NotificationModule } from "../notification/notification.module";
       CatalogueFormation,
     ]),
     NotificationModule,
+    MailModule,
   ],
   providers: [InscriptionService],
   controllers: [InscriptionController],

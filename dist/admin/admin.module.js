@@ -10,6 +10,8 @@ exports.AdminModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const mail_module_1 = require("../mail/mail.module");
+const common_module_1 = require("../common/common.module");
+const api_response_service_1 = require("../common/services/api-response.service");
 const admin_service_1 = require("./admin.service");
 const admin_controller_1 = require("./admin.controller");
 const admin_dashboard_controller_1 = require("./admin-dashboard.controller");
@@ -52,6 +54,7 @@ exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mail_module_1.MailModule,
+            common_module_1.CommonModule,
             typeorm_1.TypeOrmModule.forFeature([
                 stagiaire_entity_1.Stagiaire,
                 user_entity_1.User,
@@ -68,7 +71,7 @@ exports.AdminModule = AdminModule = __decorate([
                 pole_relation_client_entity_1.PoleRelationClient,
             ]),
         ],
-        providers: [admin_service_1.AdminService],
+        providers: [admin_service_1.AdminService, api_response_service_1.ApiResponseService],
         controllers: [
             admin_controller_1.AdminController,
             admin_dashboard_controller_1.AdminDashboardController,

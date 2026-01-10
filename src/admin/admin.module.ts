@@ -1,6 +1,8 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { MailModule } from "../mail/mail.module";
+import { CommonModule } from "../common/common.module";
+import { ApiResponseService } from "../common/services/api-response.service";
 import { AdminService } from "./admin.service";
 import { AdminController } from "./admin.controller";
 import { AdminDashboardController } from "./admin-dashboard.controller";
@@ -61,6 +63,7 @@ import { PoleRelationClient } from "../entities/pole-relation-client.entity";
 @Module({
   imports: [
     MailModule,
+    CommonModule,
     TypeOrmModule.forFeature([
       Stagiaire,
       User,
@@ -77,7 +80,7 @@ import { PoleRelationClient } from "../entities/pole-relation-client.entity";
       PoleRelationClient,
     ]),
   ],
-  providers: [AdminService],
+  providers: [AdminService, ApiResponseService],
   controllers: [
     // Existing
     AdminController,

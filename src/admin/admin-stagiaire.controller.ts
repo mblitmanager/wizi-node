@@ -8,6 +8,8 @@ import {
   Param,
   UseGuards,
   Query,
+  NotFoundException,
+  BadRequestException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -15,6 +17,7 @@ import { Roles } from "../common/decorators/roles.decorator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Stagiaire } from "../entities/stagiaire.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("admin/stagiaires")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -22,23 +25,26 @@ import { Stagiaire } from "../entities/stagiaire.entity";
 export class AdminStagiaireController {
   constructor(
     @InjectRepository(Stagiaire)
-    private stagiaireRepository: Repository<Stagiaire>
+    private stagiaireRepository: Repository<Stagiaire>,
+    private apiResponse: ApiResponseService
   ) {}
 
   @Get()
   async findAll(
-    @Query("page") page = 1,
-    @Query("limit") limit = 10,
-    @Query("search") search = ""
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 10,
+    @Query("search") search: string = ""
   ) {
-    const query = this.stagiaireRepository.createQueryBuilder("s")
+    const query = this.stagiaireRepository
+      .createQueryBuilder("s")
       .leftJoinAndSelect("s.user", "user")
       .leftJoinAndSelect("s.catalogue_formations", "catalogue_formations");
 
     if (search) {
-      query.where("s.prenom LIKE :search OR s.civilite LIKE :search OR s.ville LIKE :search", {
-        search: `%${search}%`,
-      });
+      query.where(
+        "s.prenom LIKE :search OR s.civilite LIKE :search OR s.ville LIKE :search",
+        { search: `%${search}%` }
+      );
     }
 
     const [data, total] = await query
@@ -47,38 +53,66 @@ export class AdminStagiaireController {
       .orderBy("s.created_at", "DESC")
       .getManyAndCount();
 
-    return {
-      data,
-      pagination: {
-        total,
-        page,
-        total_pages: Math.ceil(total / limit),
-      },
-    };
+    return this.apiResponse.paginated(data, total, page, limit);
   }
 
   @Get(":id")
   async findOne(@Param("id") id: number) {
-    return this.stagiaireRepository.findOne({
+    const stagiaire = await this.stagiaireRepository.findOne({
       where: { id },
       relations: ["user", "catalogue_formations", "achievements"],
     });
+
+    if (!stagiaire) {
+      throw new NotFoundException("Stagiaire non trouvé");
+    }
+
+    return this.apiResponse.success(stagiaire);
   }
 
   @Post()
   async create(@Body() data: any) {
+    if (!data.user_id) {
+      throw new BadRequestException("user_id est obligatoire");
+    }
+
     const stagiaire = this.stagiaireRepository.create(data);
-    return this.stagiaireRepository.save(stagiaire);
+    const saved = await this.stagiaireRepository.save(stagiaire);
+
+    return this.apiResponse.success(saved);
   }
 
   @Put(":id")
   async update(@Param("id") id: number, @Body() data: any) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { id },
+    });
+
+    if (!stagiaire) {
+      throw new NotFoundException("Stagiaire non trouvé");
+    }
+
     await this.stagiaireRepository.update(id, data);
-    return this.findOne(id);
+    const updated = await this.stagiaireRepository.findOne({
+      where: { id },
+      relations: ["user", "catalogue_formations", "achievements"],
+    });
+
+    return this.apiResponse.success(updated);
   }
 
   @Delete(":id")
   async remove(@Param("id") id: number) {
-    return this.stagiaireRepository.delete(id);
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { id },
+    });
+
+    if (!stagiaire) {
+      throw new NotFoundException("Stagiaire non trouvé");
+    }
+
+    await this.stagiaireRepository.delete(id);
+
+    return this.apiResponse.success();
   }
 }

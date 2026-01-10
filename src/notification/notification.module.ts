@@ -1,5 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { CommonModule } from "../common/common.module";
+import { ApiResponseService } from "../common/services/api-response.service";
 import { NotificationService } from "./notification.service";
 import { NotificationController } from "./notification.controller";
 import { Notification } from "../entities/notification.entity";
@@ -18,8 +20,8 @@ import {
 } from "./notification-apis.controller";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Notification])],
-  providers: [NotificationService],
+  imports: [CommonModule, TypeOrmModule.forFeature([Notification])],
+  providers: [NotificationService, ApiResponseService],
   controllers: [
     NotificationController,
     NotificationsApiController,

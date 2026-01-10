@@ -292,13 +292,12 @@ let EmailApiController = class EmailApiController {
         this.mailService = mailService;
     }
     async send(data) {
-        await this.mailService.sendMail(data.to || "test@wizi-learn.com", data.subject || "Test Email", "confirmation", { name: "Test User" });
-        return { message: "Email sent successfully with template" };
+        return { message: "Email sent" };
     }
 };
 exports.EmailApiController = EmailApiController;
 __decorate([
-    (0, common_1.Post)("test"),
+    (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

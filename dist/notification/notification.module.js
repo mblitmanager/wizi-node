@@ -9,6 +9,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const common_module_1 = require("../common/common.module");
+const api_response_service_1 = require("../common/services/api-response.service");
 const notification_service_1 = require("./notification.service");
 const notification_controller_1 = require("./notification.controller");
 const notification_entity_1 = require("../entities/notification.entity");
@@ -18,8 +20,8 @@ let NotificationModule = class NotificationModule {
 exports.NotificationModule = NotificationModule;
 exports.NotificationModule = NotificationModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([notification_entity_1.Notification])],
-        providers: [notification_service_1.NotificationService],
+        imports: [common_module_1.CommonModule, typeorm_1.TypeOrmModule.forFeature([notification_entity_1.Notification])],
+        providers: [notification_service_1.NotificationService, api_response_service_1.ApiResponseService],
         controllers: [
             notification_controller_1.NotificationController,
             notification_apis_controller_1.NotificationsApiController,
