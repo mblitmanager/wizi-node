@@ -20,9 +20,11 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const formation_entity_1 = require("../entities/formation.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminFormationController = class AdminFormationController {
-    constructor(formationRepository) {
+    constructor(formationRepository, apiResponse) {
         this.formationRepository = formationRepository;
+        this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
         const query = this.formationRepository
@@ -39,31 +41,49 @@ let AdminFormationController = class AdminFormationController {
             .take(limit)
             .orderBy("cf.id", "DESC")
             .getManyAndCount();
-        return {
-            data,
-            pagination: {
-                total,
-                page,
-                total_pages: Math.ceil(total / limit),
-            },
-        };
+        return this.apiResponse.paginated(data, total, page, limit);
     }
     async findOne(id) {
-        return this.formationRepository.findOne({
+        const formation = await this.formationRepository.findOne({
             where: { id },
             relations: ["medias", "quizzes", "stagiaires"],
         });
+        if (!formation) {
+            throw new common_1.NotFoundException("Formation non trouvée");
+        }
+        return this.apiResponse.success(formation);
     }
     async create(data) {
+        if (!data.titre) {
+            throw new common_1.BadRequestException("titre est obligatoire");
+        }
         const formation = this.formationRepository.create(data);
-        return this.formationRepository.save(formation);
+        const saved = await this.formationRepository.save(formation);
+        return this.apiResponse.success(saved);
     }
     async update(id, data) {
+        const formation = await this.formationRepository.findOne({
+            where: { id },
+        });
+        if (!formation) {
+            throw new common_1.NotFoundException("Formation non trouvée");
+        }
         await this.formationRepository.update(id, data);
-        return this.findOne(id);
+        const updated = await this.formationRepository.findOne({
+            where: { id },
+            relations: ["medias", "quizzes", "stagiaires"],
+        });
+        return this.apiResponse.success(updated);
     }
     async remove(id) {
-        return this.formationRepository.delete(id);
+        const formation = await this.formationRepository.findOne({
+            where: { id },
+        });
+        if (!formation) {
+            throw new common_1.NotFoundException("Formation non trouvée");
+        }
+        await this.formationRepository.delete(id);
+        return this.apiResponse.success();
     }
     async duplicate(id) {
         const original = await this.formationRepository.findOne({
@@ -71,14 +91,15 @@ let AdminFormationController = class AdminFormationController {
             relations: ["medias", "quizzes"],
         });
         if (!original) {
-            throw new Error("Formation not found");
+            throw new common_1.NotFoundException("Formation non trouvée");
         }
         const newFormation = this.formationRepository.create({
             ...original,
             titre: `${original.titre} (Copie)`,
             id: undefined,
         });
-        return this.formationRepository.save(newFormation);
+        const saved = await this.formationRepository.save(newFormation);
+        return this.apiResponse.success(saved);
     }
 };
 exports.AdminFormationController = AdminFormationController;
@@ -88,7 +109,7 @@ __decorate([
     __param(1, (0, common_1.Query)("limit")),
     __param(2, (0, common_1.Query)("search")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:paramtypes", [Number, Number, String]),
     __metadata("design:returntype", Promise)
 ], AdminFormationController.prototype, "findAll", null);
 __decorate([
@@ -132,6 +153,7 @@ exports.AdminFormationController = AdminFormationController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], AdminFormationController);
 //# sourceMappingURL=admin-formation.controller.js.map

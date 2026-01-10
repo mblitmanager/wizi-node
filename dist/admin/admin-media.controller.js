@@ -21,9 +21,11 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const platform_express_1 = require("@nestjs/platform-express");
 const media_entity_1 = require("../entities/media.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminMediaController = class AdminMediaController {
-    constructor(mediaRepository) {
+    constructor(mediaRepository, apiResponse) {
         this.mediaRepository = mediaRepository;
+        this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
         const query = this.mediaRepository.createQueryBuilder("m");
@@ -37,34 +39,51 @@ let AdminMediaController = class AdminMediaController {
             .take(limit)
             .orderBy("m.id", "DESC")
             .getManyAndCount();
-        return {
-            data,
-            pagination: {
-                total,
-                page,
-                total_pages: Math.ceil(total / limit),
-            },
-        };
+        return this.apiResponse.paginated(data, total, page, limit);
     }
     async findOne(id) {
-        return this.mediaRepository.findOne({
+        const media = await this.mediaRepository.findOne({
             where: { id },
         });
+        if (!media) {
+            throw new common_1.NotFoundException("Média non trouvé");
+        }
+        return this.apiResponse.success(media);
     }
     async create(data, file) {
+        if (!data.titre) {
+            throw new common_1.BadRequestException("titre est obligatoire");
+        }
         const mediaData = {
             ...data,
             file_path: file ? `/uploads/${file.filename}` : null,
         };
         const media = this.mediaRepository.create(mediaData);
-        return this.mediaRepository.save(media);
+        const saved = await this.mediaRepository.save(media);
+        return this.apiResponse.success(saved);
     }
     async update(id, data) {
+        const media = await this.mediaRepository.findOne({
+            where: { id },
+        });
+        if (!media) {
+            throw new common_1.NotFoundException("Média non trouvé");
+        }
         await this.mediaRepository.update(id, data);
-        return this.findOne(id);
+        const updated = await this.mediaRepository.findOne({
+            where: { id },
+        });
+        return this.apiResponse.success(updated);
     }
     async remove(id) {
-        return this.mediaRepository.delete(id);
+        const media = await this.mediaRepository.findOne({
+            where: { id },
+        });
+        if (!media) {
+            throw new common_1.NotFoundException("Média non trouvé");
+        }
+        await this.mediaRepository.delete(id);
+        return this.apiResponse.success();
     }
 };
 exports.AdminMediaController = AdminMediaController;
@@ -113,6 +132,7 @@ exports.AdminMediaController = AdminMediaController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(media_entity_1.Media)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], AdminMediaController);
 //# sourceMappingURL=admin-media.controller.js.map

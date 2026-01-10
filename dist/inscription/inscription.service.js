@@ -21,6 +21,7 @@ const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const notification_service_1 = require("../notification/notification.service");
 const mail_service_1 = require("../mail/mail.service");
+const path_1 = require("path");
 let InscriptionService = class InscriptionService {
     constructor(demandeRepository, stagiaireRepository, catalogueRepository, notificationService, mailService) {
         this.demandeRepository = demandeRepository;
@@ -66,10 +67,69 @@ let InscriptionService = class InscriptionService {
         const savedDemande = await this.demandeRepository.save(demande);
         await this.notificationService.createNotification(userId, "inscription", "Nous avons bien reçu votre demande d'inscription, votre conseiller/conseillère va prendre contact avec vous.");
         try {
-            await this.mailService.sendMail(stagiaire.user.email, "Confirmation d'inscription à une formation - Wizi Learn", "confirmation", { name: stagiaire.prenom || stagiaire.user.name });
+            await this.mailService.sendMail(stagiaire.user.email, "Confirmation d'inscription à une formation - Wizi Learn", "inscription_catalogue", {
+                firstName: stagiaire.prenom || stagiaire.user.name,
+                lastName: stagiaire.user.name,
+                civility: stagiaire.civilite || "Non renseigné",
+                phone: stagiaire.telephone || "Non renseigné",
+                email: stagiaire.user.email,
+                formationTitle: catalogueFormation.titre,
+                formationDuration: catalogueFormation.duree,
+                formationPrice: catalogueFormation.tarif
+                    ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
+                    : null,
+                isPoleRelation: false,
+            }, [
+                {
+                    filename: "aopia.png",
+                    path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
+                    cid: "aopia",
+                },
+                {
+                    filename: "like.png",
+                    path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
+                    cid: "like",
+                },
+            ]);
         }
         catch (mailError) {
             console.error("Failed to send inscription confirmation email:", mailError);
+        }
+        const notificationEmails = [
+            "adv@aopia.fr",
+            "alexandre.florek@aopia.fr",
+            "mbl.service.mada2@gmail.com",
+        ];
+        for (const email of notificationEmails) {
+            try {
+                await this.mailService.sendMail(email, "Nouvelle inscription à une formation - Wizi Learn", "inscription_catalogue", {
+                    firstName: stagiaire.prenom || stagiaire.user.name,
+                    lastName: stagiaire.user.name,
+                    civility: stagiaire.civilite || "Non renseigné",
+                    phone: stagiaire.telephone || "Non renseigné",
+                    email: stagiaire.user.email,
+                    formationTitle: catalogueFormation.titre,
+                    formationDuration: catalogueFormation.duree,
+                    formationPrice: catalogueFormation.tarif
+                        ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
+                        : null,
+                    isPoleRelation: true,
+                }, [
+                    {
+                        filename: "aopia.png",
+                        path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
+                        cid: "aopia",
+                    },
+                    {
+                        filename: "like.png",
+                        path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
+                        cid: "like",
+                    },
+                ]);
+            }
+            catch (mailError) {
+                console.error(`Failed to send backoffice notification email to ${email}:`, mailError);
+            }
         }
         return {
             success: true,

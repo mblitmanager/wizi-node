@@ -8,6 +8,8 @@ import {
   Param,
   UseGuards,
   Query,
+  NotFoundException,
+  BadRequestException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -15,6 +17,7 @@ import { Roles } from "../common/decorators/roles.decorator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Formation } from "../entities/formation.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("admin/formations")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -22,14 +25,15 @@ import { Formation } from "../entities/formation.entity";
 export class AdminFormationController {
   constructor(
     @InjectRepository(Formation)
-    private formationRepository: Repository<Formation>
+    private formationRepository: Repository<Formation>,
+    private apiResponse: ApiResponseService
   ) {}
 
   @Get()
   async findAll(
-    @Query("page") page = 1,
-    @Query("limit") limit = 10,
-    @Query("search") search = ""
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 10,
+    @Query("search") search: string = ""
   ) {
     const query = this.formationRepository
       .createQueryBuilder("cf")
@@ -48,39 +52,67 @@ export class AdminFormationController {
       .orderBy("cf.id", "DESC")
       .getManyAndCount();
 
-    return {
-      data,
-      pagination: {
-        total,
-        page,
-        total_pages: Math.ceil(total / limit),
-      },
-    };
+    return this.apiResponse.paginated(data, total, page, limit);
   }
 
   @Get(":id")
   async findOne(@Param("id") id: number) {
-    return this.formationRepository.findOne({
+    const formation = await this.formationRepository.findOne({
       where: { id },
       relations: ["medias", "quizzes", "stagiaires"],
     });
+
+    if (!formation) {
+      throw new NotFoundException("Formation non trouvée");
+    }
+
+    return this.apiResponse.success(formation);
   }
 
   @Post()
   async create(@Body() data: any) {
+    if (!data.titre) {
+      throw new BadRequestException("titre est obligatoire");
+    }
+
     const formation = this.formationRepository.create(data);
-    return this.formationRepository.save(formation);
+    const saved = await this.formationRepository.save(formation);
+
+    return this.apiResponse.success(saved);
   }
 
   @Put(":id")
   async update(@Param("id") id: number, @Body() data: any) {
+    const formation = await this.formationRepository.findOne({
+      where: { id },
+    });
+
+    if (!formation) {
+      throw new NotFoundException("Formation non trouvée");
+    }
+
     await this.formationRepository.update(id, data);
-    return this.findOne(id);
+    const updated = await this.formationRepository.findOne({
+      where: { id },
+      relations: ["medias", "quizzes", "stagiaires"],
+    });
+
+    return this.apiResponse.success(updated);
   }
 
   @Delete(":id")
   async remove(@Param("id") id: number) {
-    return this.formationRepository.delete(id);
+    const formation = await this.formationRepository.findOne({
+      where: { id },
+    });
+
+    if (!formation) {
+      throw new NotFoundException("Formation non trouvée");
+    }
+
+    await this.formationRepository.delete(id);
+
+    return this.apiResponse.success();
   }
 
   @Post(":id/duplicate")
@@ -91,7 +123,7 @@ export class AdminFormationController {
     });
 
     if (!original) {
-      throw new Error("Formation not found");
+      throw new NotFoundException("Formation non trouvée");
     }
 
     const newFormation = this.formationRepository.create({
@@ -100,6 +132,8 @@ export class AdminFormationController {
       id: undefined,
     });
 
-    return this.formationRepository.save(newFormation);
+    const saved = await this.formationRepository.save(newFormation);
+
+    return this.apiResponse.success(saved);
   }
 }

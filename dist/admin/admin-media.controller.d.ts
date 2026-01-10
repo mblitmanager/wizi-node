@@ -1,18 +1,13 @@
 import { Repository } from "typeorm";
 import { Media } from "../entities/media.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class AdminMediaController {
     private mediaRepository;
-    constructor(mediaRepository: Repository<Media>);
-    findAll(page?: number, limit?: number, search?: string): Promise<{
-        data: Media[];
-        pagination: {
-            total: number;
-            page: number;
-            total_pages: number;
-        };
-    }>;
-    findOne(id: number): Promise<Media>;
-    create(data: any, file?: Express.Multer.File): Promise<Media[]>;
-    update(id: number, data: any): Promise<Media>;
-    remove(id: number): Promise<import("typeorm").DeleteResult>;
+    private apiResponse;
+    constructor(mediaRepository: Repository<Media>, apiResponse: ApiResponseService);
+    findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Media>>;
+    findOne(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Media>>;
+    create(data: any, file?: Express.Multer.File): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Media[]>>;
+    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Media>>;
+    remove(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
 }

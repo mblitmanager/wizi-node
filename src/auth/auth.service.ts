@@ -9,6 +9,7 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { User } from "../entities/user.entity";
 import { MailService } from "../mail/mail.service";
+import { join } from "path";
 
 @Injectable()
 export class AuthService {
@@ -72,13 +73,25 @@ export class AuthService {
     await this.userRepository.save(user);
     const { password, ...result } = user as any;
 
-    // Send confirmation email
+    // Send welcome email
     try {
       await this.mailService.sendMail(
         (user as User).email,
         "Bienvenue sur Wizi Learn",
-        "confirmation",
-        { name: (user as User).name }
+        "welcome",
+        { name: (user as User).name },
+        [
+          {
+            filename: "aopia.png",
+            path: join(process.cwd(), "src/mail/templates/assets/aopia.png"),
+            cid: "aopia",
+          },
+          {
+            filename: "like.png",
+            path: join(process.cwd(), "src/mail/templates/assets/like.png"),
+            cid: "like",
+          },
+        ]
       );
     } catch (mailError) {
       console.error("Failed to send welcome email:", mailError);

@@ -1,21 +1,16 @@
 import { Repository } from "typeorm";
 import { Quiz } from "../entities/quiz.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 export declare class AdminQuizController {
     private quizRepository;
-    constructor(quizRepository: Repository<Quiz>);
-    findAll(page?: number, limit?: number, search?: string): Promise<{
-        data: Quiz[];
-        pagination: {
-            total: number;
-            page: number;
-            total_pages: number;
-        };
-    }>;
-    findOne(id: number): Promise<Quiz>;
-    create(data: any): Promise<Quiz[]>;
-    update(id: number, data: any): Promise<Quiz>;
-    remove(id: number): Promise<import("typeorm").DeleteResult>;
-    duplicate(id: number): Promise<Quiz>;
-    enable(id: number): Promise<Quiz>;
-    disable(id: number): Promise<Quiz>;
+    private apiResponse;
+    constructor(quizRepository: Repository<Quiz>, apiResponse: ApiResponseService);
+    findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Quiz>>;
+    findOne(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz>>;
+    create(data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz[]>>;
+    update(id: number, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz>>;
+    remove(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<unknown>>;
+    duplicate(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz>>;
+    enable(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz>>;
+    disable(id: number): Promise<import("../common/interfaces/api-response.interface").ApiResponse<Quiz>>;
 }

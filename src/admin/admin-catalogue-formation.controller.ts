@@ -8,6 +8,8 @@ import {
   Param,
   UseGuards,
   Query,
+  NotFoundException,
+  BadRequestException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -15,6 +17,7 @@ import { Roles } from "../common/decorators/roles.decorator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("administrateur/catalogue_formation")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -22,26 +25,24 @@ import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 export class AdminCatalogueFormationController {
   constructor(
     @InjectRepository(CatalogueFormation)
-    private catalogueRepository: Repository<CatalogueFormation>
+    private catalogueRepository: Repository<CatalogueFormation>,
+    private apiResponse: ApiResponseService
   ) {}
 
   @Get()
   async index(
-    @Query("page") page = 1,
-    @Query("limit") limit = 10,
-    @Query("search") search = ""
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 10,
+    @Query("search") search: string = ""
   ) {
     const query = this.catalogueRepository
       .createQueryBuilder("cf")
       .leftJoinAndSelect("cf.formations", "formations");
 
     if (search) {
-      query.where(
-        "cf.titre LIKE :search OR cf.description LIKE :search",
-        {
-          search: `%${search}%`,
-        }
-      );
+      query.where("cf.titre LIKE :search OR cf.description LIKE :search", {
+        search: `%${search}%`,
+      });
     }
 
     const [data, total] = await query
@@ -50,10 +51,7 @@ export class AdminCatalogueFormationController {
       .orderBy("cf.id", "DESC")
       .getManyAndCount();
 
-    return {
-      data,
-      pagination: { total, page, total_pages: Math.ceil(total / limit) },
-    };
+    return this.apiResponse.paginated(data, total, page, limit);
   }
 
   @Get("create")
@@ -63,16 +61,28 @@ export class AdminCatalogueFormationController {
 
   @Post()
   async store(@Body() data: any) {
+    if (!data.titre) {
+      throw new BadRequestException("titre est obligatoire");
+    }
+
     const catalogue = this.catalogueRepository.create(data);
-    return this.catalogueRepository.save(catalogue);
+    const saved = await this.catalogueRepository.save(catalogue);
+
+    return this.apiResponse.success(saved);
   }
 
   @Get(":id")
   async show(@Param("id") id: number) {
-    return this.catalogueRepository.findOne({
+    const catalogue = await this.catalogueRepository.findOne({
       where: { id },
       relations: ["formations"],
     });
+
+    if (!catalogue) {
+      throw new NotFoundException("Catalogue formation non trouvé");
+    }
+
+    return this.apiResponse.success(catalogue);
   }
 
   @Get(":id/edit")
@@ -85,14 +95,40 @@ export class AdminCatalogueFormationController {
   }
 
   @Put(":catalogue_formation")
-  async update(@Param("catalogue_formation") id: number, @Body() data: any) {
+  async update(
+    @Param("catalogue_formation") id: number,
+    @Body() data: any
+  ) {
+    const catalogue = await this.catalogueRepository.findOne({
+      where: { id },
+    });
+
+    if (!catalogue) {
+      throw new NotFoundException("Catalogue formation non trouvé");
+    }
+
     await this.catalogueRepository.update(id, data);
-    return this.catalogueRepository.findOne({ where: { id } });
+    const updated = await this.catalogueRepository.findOne({
+      where: { id },
+      relations: ["formations"],
+    });
+
+    return this.apiResponse.success(updated);
   }
 
   @Delete(":catalogue_formation")
   async destroy(@Param("catalogue_formation") id: number) {
-    return this.catalogueRepository.delete(id);
+    const catalogue = await this.catalogueRepository.findOne({
+      where: { id },
+    });
+
+    if (!catalogue) {
+      throw new NotFoundException("Catalogue formation non trouvé");
+    }
+
+    await this.catalogueRepository.delete(id);
+
+    return this.apiResponse.success();
   }
 
   @Post(":id/duplicate")
@@ -102,7 +138,9 @@ export class AdminCatalogueFormationController {
       relations: ["formations"],
     });
 
-    if (!original) throw new Error("Catalogue not found");
+    if (!original) {
+      throw new NotFoundException("Catalogue formation non trouvé");
+    }
 
     const newCatalogue = this.catalogueRepository.create({
       ...original,
@@ -110,7 +148,9 @@ export class AdminCatalogueFormationController {
       id: undefined,
     });
 
-    return this.catalogueRepository.save(newCatalogue);
+    const saved = await this.catalogueRepository.save(newCatalogue);
+
+    return this.apiResponse.success(saved);
   }
 
   @Get(":id/download-pdf")

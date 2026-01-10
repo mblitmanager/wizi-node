@@ -20,6 +20,7 @@ const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
 const user_entity_1 = require("../entities/user.entity");
 const mail_service_1 = require("../mail/mail.service");
+const path_1 = require("path");
 let AuthService = class AuthService {
     constructor(userRepository, jwtService, mailService) {
         this.userRepository = userRepository;
@@ -73,7 +74,18 @@ let AuthService = class AuthService {
         await this.userRepository.save(user);
         const { password, ...result } = user;
         try {
-            await this.mailService.sendMail(user.email, "Bienvenue sur Wizi Learn", "confirmation", { name: user.name });
+            await this.mailService.sendMail(user.email, "Bienvenue sur Wizi Learn", "welcome", { name: user.name }, [
+                {
+                    filename: "aopia.png",
+                    path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
+                    cid: "aopia",
+                },
+                {
+                    filename: "like.png",
+                    path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
+                    cid: "like",
+                },
+            ]);
         }
         catch (mailError) {
             console.error("Failed to send welcome email:", mailError);

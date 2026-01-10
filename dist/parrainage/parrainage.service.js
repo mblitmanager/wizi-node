@@ -26,6 +26,7 @@ const catalogue_formation_entity_1 = require("../entities/catalogue-formation.en
 const mail_service_1 = require("../mail/mail.service");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
+const path_1 = require("path");
 let ParrainageService = class ParrainageService {
     constructor(parrainageRepository, parrainageTokenRepository, parrainageEventRepository, userRepository, stagiaireRepository, demandeInscriptionRepository, catalogueFormationRepository, dataSource, mailService) {
         this.parrainageRepository = parrainageRepository;
@@ -78,6 +79,15 @@ let ParrainageService = class ParrainageService {
                 statut: data.statut || "en_attente",
             });
             const savedStagiaire = await queryRunner.manager.save(stagiaire_entity_1.Stagiaire, stagiaire);
+            const parrain = await queryRunner.manager.findOne(user_entity_1.User, {
+                where: { id: data.parrain_id },
+            });
+            let catalogueFormation = null;
+            if (data.catalogue_formation_id) {
+                catalogueFormation = await queryRunner.manager.findOne(catalogue_formation_entity_1.CatalogueFormation, {
+                    where: { id: data.catalogue_formation_id },
+                });
+            }
             const parrainage = queryRunner.manager.create(parrainage_entity_1.Parrainage, {
                 parrain_id: data.parrain_id,
                 filleul_id: savedUser.id,
@@ -108,10 +118,51 @@ let ParrainageService = class ParrainageService {
             await queryRunner.manager.save(demande_inscription_entity_1.DemandeInscription, demande);
             await queryRunner.commitTransaction();
             try {
-                await this.mailService.sendMail(savedUser.email, "Confirmation d'inscription - Wizi Learn", "confirmation", { name: savedStagiaire.prenom || savedUser.name });
+                await this.mailService.sendMail(savedUser.email, "Confirmation d'inscription - Wizi Learn", "sponsorship", {
+                    firstName: savedStagiaire.prenom || savedUser.name,
+                    parrainName: parrain?.name || "Votre parrain",
+                    formationTitle: catalogueFormation?.titre || "votre formation",
+                    formationDuration: catalogueFormation?.duree || "N/A",
+                    formationPrice: catalogueFormation?.tarif
+                        ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
+                        : null,
+                }, [
+                    {
+                        filename: "aopia.png",
+                        path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
+                        cid: "aopia",
+                    },
+                    {
+                        filename: "like.png",
+                        path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
+                        cid: "like",
+                    },
+                ]);
             }
             catch (mailError) {
-                console.error("Failed to send confirmation email:", mailError);
+                console.error("Failed to send filleul confirmation email:", mailError);
+            }
+            if (parrain && parrain.email) {
+                try {
+                    await this.mailService.sendMail(parrain.email, "Confirmation de Parrainage - Wizi Learn", "sponsorship_notification", {
+                        parrainName: parrain.name,
+                        filleulName: `${savedStagiaire.prenom || ""} ${savedUser.name || ""}`.trim(),
+                    }, [
+                        {
+                            filename: "aopia.png",
+                            path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
+                            cid: "aopia",
+                        },
+                        {
+                            filename: "like.png",
+                            path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
+                            cid: "like",
+                        },
+                    ]);
+                }
+                catch (mailError) {
+                    console.error("Failed to send parrain notification email:", mailError);
+                }
             }
             return {
                 success: true,

@@ -20,9 +20,11 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const quiz_entity_1 = require("../entities/quiz.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminQuizController = class AdminQuizController {
-    constructor(quizRepository) {
+    constructor(quizRepository, apiResponse) {
         this.quizRepository = quizRepository;
+        this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
         const query = this.quizRepository.createQueryBuilder("q")
@@ -38,31 +40,49 @@ let AdminQuizController = class AdminQuizController {
             .take(limit)
             .orderBy("q.id", "DESC")
             .getManyAndCount();
-        return {
-            data,
-            pagination: {
-                total,
-                page,
-                total_pages: Math.ceil(total / limit),
-            },
-        };
+        return this.apiResponse.paginated(data, total, page, limit);
     }
     async findOne(id) {
-        return this.quizRepository.findOne({
+        const quiz = await this.quizRepository.findOne({
             where: { id },
             relations: ["questions", "questions.reponses", "formations"],
         });
+        if (!quiz) {
+            throw new common_1.NotFoundException("Quiz non trouvé");
+        }
+        return this.apiResponse.success(quiz);
     }
     async create(data) {
+        if (!data.titre) {
+            throw new common_1.BadRequestException("titre est obligatoire");
+        }
         const quiz = this.quizRepository.create(data);
-        return this.quizRepository.save(quiz);
+        const saved = await this.quizRepository.save(quiz);
+        return this.apiResponse.success(saved);
     }
     async update(id, data) {
+        const quiz = await this.quizRepository.findOne({
+            where: { id },
+        });
+        if (!quiz) {
+            throw new common_1.NotFoundException("Quiz non trouvé");
+        }
         await this.quizRepository.update(id, data);
-        return this.findOne(id);
+        const updated = await this.quizRepository.findOne({
+            where: { id },
+            relations: ["questions", "questions.reponses", "formations"],
+        });
+        return this.apiResponse.success(updated);
     }
     async remove(id) {
-        return this.quizRepository.delete(id);
+        const quiz = await this.quizRepository.findOne({
+            where: { id },
+        });
+        if (!quiz) {
+            throw new common_1.NotFoundException("Quiz non trouvé");
+        }
+        await this.quizRepository.delete(id);
+        return this.apiResponse.success();
     }
     async duplicate(id) {
         const original = await this.quizRepository.findOne({
@@ -70,22 +90,43 @@ let AdminQuizController = class AdminQuizController {
             relations: ["questions", "questions.reponses"],
         });
         if (!original) {
-            throw new Error("Quiz not found");
+            throw new common_1.NotFoundException("Quiz non trouvé");
         }
         const newQuiz = this.quizRepository.create({
             ...original,
             titre: `${original.titre} (Copie)`,
             id: undefined,
         });
-        return this.quizRepository.save(newQuiz);
+        const saved = await this.quizRepository.save(newQuiz);
+        return this.apiResponse.success(saved);
     }
     async enable(id) {
+        const quiz = await this.quizRepository.findOne({
+            where: { id },
+        });
+        if (!quiz) {
+            throw new common_1.NotFoundException("Quiz non trouvé");
+        }
         await this.quizRepository.update(id, { status: "actif" });
-        return this.findOne(id);
+        const updated = await this.quizRepository.findOne({
+            where: { id },
+            relations: ["questions", "questions.reponses", "formations"],
+        });
+        return this.apiResponse.success(updated);
     }
     async disable(id) {
+        const quiz = await this.quizRepository.findOne({
+            where: { id },
+        });
+        if (!quiz) {
+            throw new common_1.NotFoundException("Quiz non trouvé");
+        }
         await this.quizRepository.update(id, { status: "inactif" });
-        return this.findOne(id);
+        const updated = await this.quizRepository.findOne({
+            where: { id },
+            relations: ["questions", "questions.reponses", "formations"],
+        });
+        return this.apiResponse.success(updated);
     }
 };
 exports.AdminQuizController = AdminQuizController;
@@ -95,7 +136,7 @@ __decorate([
     __param(1, (0, common_1.Query)("limit")),
     __param(2, (0, common_1.Query)("search")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:paramtypes", [Number, Number, String]),
     __metadata("design:returntype", Promise)
 ], AdminQuizController.prototype, "findAll", null);
 __decorate([
@@ -153,6 +194,7 @@ exports.AdminQuizController = AdminQuizController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], AdminQuizController);
 //# sourceMappingURL=admin-quiz.controller.js.map

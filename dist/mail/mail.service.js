@@ -16,13 +16,14 @@ let MailService = class MailService {
     constructor(mailerService) {
         this.mailerService = mailerService;
     }
-    async sendMail(to, subject, template, context) {
+    async sendMail(to, subject, template, context, attachments) {
         try {
             await this.mailerService.sendMail({
                 to,
                 subject,
                 template: `./${template}`,
                 context,
+                attachments,
             });
             return true;
         }

@@ -15,6 +15,7 @@ import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { MailService } from "../mail/mail.service";
 import * as crypto from "crypto";
 import * as bcrypt from "bcrypt";
+import { join } from "path";
 
 @Injectable()
 export class ParrainageService {
@@ -91,6 +92,21 @@ export class ParrainageService {
         stagiaire
       );
 
+      // Fetch parrain and formation details for email
+      const parrain = await queryRunner.manager.findOne(User, {
+        where: { id: data.parrain_id },
+      });
+
+      let catalogueFormation = null;
+      if (data.catalogue_formation_id) {
+        catalogueFormation = await queryRunner.manager.findOne(
+          CatalogueFormation,
+          {
+            where: { id: data.catalogue_formation_id },
+          }
+        );
+      }
+
       // Create Parrainage
       const parrainage = queryRunner.manager.create(Parrainage, {
         parrain_id: data.parrain_id,
@@ -127,17 +143,72 @@ export class ParrainageService {
 
       await queryRunner.commitTransaction();
 
-      // Send confirmation email
+      // Send confirmation email to Filleul
       try {
         await this.mailService.sendMail(
           savedUser.email,
           "Confirmation d'inscription - Wizi Learn",
-          "confirmation",
-          { name: savedStagiaire.prenom || savedUser.name }
+          "sponsorship",
+          {
+            firstName: savedStagiaire.prenom || savedUser.name,
+            parrainName: parrain?.name || "Votre parrain",
+            formationTitle: catalogueFormation?.titre || "votre formation",
+            formationDuration: catalogueFormation?.duree || "N/A",
+            formationPrice: catalogueFormation?.tarif
+              ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
+              : null,
+          },
+          [
+            {
+              filename: "aopia.png",
+              path: join(process.cwd(), "src/mail/templates/assets/aopia.png"),
+              cid: "aopia",
+            },
+            {
+              filename: "like.png",
+              path: join(process.cwd(), "src/mail/templates/assets/like.png"),
+              cid: "like",
+            },
+          ]
         );
       } catch (mailError) {
-        console.error("Failed to send confirmation email:", mailError);
-        // We don't throw here to avoid rolling back the transaction for a mail failure
+        console.error("Failed to send filleul confirmation email:", mailError);
+      }
+
+      // Send notification email to Parrain
+      if (parrain && parrain.email) {
+        try {
+          await this.mailService.sendMail(
+            parrain.email,
+            "Confirmation de Parrainage - Wizi Learn",
+            "sponsorship_notification",
+            {
+              parrainName: parrain.name,
+              filleulName:
+                `${savedStagiaire.prenom || ""} ${savedUser.name || ""}`.trim(),
+            },
+            [
+              {
+                filename: "aopia.png",
+                path: join(
+                  process.cwd(),
+                  "src/mail/templates/assets/aopia.png"
+                ),
+                cid: "aopia",
+              },
+              {
+                filename: "like.png",
+                path: join(process.cwd(), "src/mail/templates/assets/like.png"),
+                cid: "like",
+              },
+            ]
+          );
+        } catch (mailError) {
+          console.error(
+            "Failed to send parrain notification email:",
+            mailError
+          );
+        }
       }
 
       return {

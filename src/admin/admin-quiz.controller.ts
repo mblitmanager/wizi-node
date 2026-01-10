@@ -9,6 +9,8 @@ import {
   Param,
   UseGuards,
   Query,
+  NotFoundException,
+  BadRequestException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -16,6 +18,7 @@ import { Roles } from "../common/decorators/roles.decorator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Quiz } from "../entities/quiz.entity";
+import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("admin/quiz")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -23,14 +26,15 @@ import { Quiz } from "../entities/quiz.entity";
 export class AdminQuizController {
   constructor(
     @InjectRepository(Quiz)
-    private quizRepository: Repository<Quiz>
+    private quizRepository: Repository<Quiz>,
+    private apiResponse: ApiResponseService
   ) {}
 
   @Get()
   async findAll(
-    @Query("page") page = 1,
-    @Query("limit") limit = 10,
-    @Query("search") search = ""
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 10,
+    @Query("search") search: string = ""
   ) {
     const query = this.quizRepository.createQueryBuilder("q")
       .leftJoinAndSelect("q.questions", "questions")
@@ -48,39 +52,67 @@ export class AdminQuizController {
       .orderBy("q.id", "DESC")
       .getManyAndCount();
 
-    return {
-      data,
-      pagination: {
-        total,
-        page,
-        total_pages: Math.ceil(total / limit),
-      },
-    };
+    return this.apiResponse.paginated(data, total, page, limit);
   }
 
   @Get(":id")
   async findOne(@Param("id") id: number) {
-    return this.quizRepository.findOne({
+    const quiz = await this.quizRepository.findOne({
       where: { id },
       relations: ["questions", "questions.reponses", "formations"],
     });
+
+    if (!quiz) {
+      throw new NotFoundException("Quiz non trouvé");
+    }
+
+    return this.apiResponse.success(quiz);
   }
 
   @Post()
   async create(@Body() data: any) {
+    if (!data.titre) {
+      throw new BadRequestException("titre est obligatoire");
+    }
+
     const quiz = this.quizRepository.create(data);
-    return this.quizRepository.save(quiz);
+    const saved = await this.quizRepository.save(quiz);
+
+    return this.apiResponse.success(saved);
   }
 
   @Put(":id")
   async update(@Param("id") id: number, @Body() data: any) {
+    const quiz = await this.quizRepository.findOne({
+      where: { id },
+    });
+
+    if (!quiz) {
+      throw new NotFoundException("Quiz non trouvé");
+    }
+
     await this.quizRepository.update(id, data);
-    return this.findOne(id);
+    const updated = await this.quizRepository.findOne({
+      where: { id },
+      relations: ["questions", "questions.reponses", "formations"],
+    });
+
+    return this.apiResponse.success(updated);
   }
 
   @Delete(":id")
   async remove(@Param("id") id: number) {
-    return this.quizRepository.delete(id);
+    const quiz = await this.quizRepository.findOne({
+      where: { id },
+    });
+
+    if (!quiz) {
+      throw new NotFoundException("Quiz non trouvé");
+    }
+
+    await this.quizRepository.delete(id);
+
+    return this.apiResponse.success();
   }
 
   @Post(":id/duplicate")
@@ -91,7 +123,7 @@ export class AdminQuizController {
     });
 
     if (!original) {
-      throw new Error("Quiz not found");
+      throw new NotFoundException("Quiz non trouvé");
     }
 
     const newQuiz = this.quizRepository.create({
@@ -100,18 +132,46 @@ export class AdminQuizController {
       id: undefined,
     });
 
-    return this.quizRepository.save(newQuiz);
+    const saved = await this.quizRepository.save(newQuiz);
+
+    return this.apiResponse.success(saved);
   }
 
   @Patch(":id/enable")
   async enable(@Param("id") id: number) {
+    const quiz = await this.quizRepository.findOne({
+      where: { id },
+    });
+
+    if (!quiz) {
+      throw new NotFoundException("Quiz non trouvé");
+    }
+
     await this.quizRepository.update(id, { status: "actif" });
-    return this.findOne(id);
+    const updated = await this.quizRepository.findOne({
+      where: { id },
+      relations: ["questions", "questions.reponses", "formations"],
+    });
+
+    return this.apiResponse.success(updated);
   }
 
   @Patch(":id/disable")
   async disable(@Param("id") id: number) {
+    const quiz = await this.quizRepository.findOne({
+      where: { id },
+    });
+
+    if (!quiz) {
+      throw new NotFoundException("Quiz non trouvé");
+    }
+
     await this.quizRepository.update(id, { status: "inactif" });
-    return this.findOne(id);
+    const updated = await this.quizRepository.findOne({
+      where: { id },
+      relations: ["questions", "questions.reponses", "formations"],
+    });
+
+    return this.apiResponse.success(updated);
   }
 }

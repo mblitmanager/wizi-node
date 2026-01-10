@@ -20,9 +20,11 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const api_response_service_1 = require("../common/services/api-response.service");
 let AdminCatalogueFormationController = class AdminCatalogueFormationController {
-    constructor(catalogueRepository) {
+    constructor(catalogueRepository, apiResponse) {
         this.catalogueRepository = catalogueRepository;
+        this.apiResponse = apiResponse;
     }
     async index(page = 1, limit = 10, search = "") {
         const query = this.catalogueRepository
@@ -38,23 +40,28 @@ let AdminCatalogueFormationController = class AdminCatalogueFormationController 
             .take(limit)
             .orderBy("cf.id", "DESC")
             .getManyAndCount();
-        return {
-            data,
-            pagination: { total, page, total_pages: Math.ceil(total / limit) },
-        };
+        return this.apiResponse.paginated(data, total, page, limit);
     }
     async create() {
         return { message: "Create catalogue formation form" };
     }
     async store(data) {
+        if (!data.titre) {
+            throw new common_1.BadRequestException("titre est obligatoire");
+        }
         const catalogue = this.catalogueRepository.create(data);
-        return this.catalogueRepository.save(catalogue);
+        const saved = await this.catalogueRepository.save(catalogue);
+        return this.apiResponse.success(saved);
     }
     async show(id) {
-        return this.catalogueRepository.findOne({
+        const catalogue = await this.catalogueRepository.findOne({
             where: { id },
             relations: ["formations"],
         });
+        if (!catalogue) {
+            throw new common_1.NotFoundException("Catalogue formation non trouvé");
+        }
+        return this.apiResponse.success(catalogue);
     }
     async edit(id) {
         const catalogue = await this.catalogueRepository.findOne({
@@ -64,25 +71,44 @@ let AdminCatalogueFormationController = class AdminCatalogueFormationController 
         return { form: catalogue };
     }
     async update(id, data) {
+        const catalogue = await this.catalogueRepository.findOne({
+            where: { id },
+        });
+        if (!catalogue) {
+            throw new common_1.NotFoundException("Catalogue formation non trouvé");
+        }
         await this.catalogueRepository.update(id, data);
-        return this.catalogueRepository.findOne({ where: { id } });
+        const updated = await this.catalogueRepository.findOne({
+            where: { id },
+            relations: ["formations"],
+        });
+        return this.apiResponse.success(updated);
     }
     async destroy(id) {
-        return this.catalogueRepository.delete(id);
+        const catalogue = await this.catalogueRepository.findOne({
+            where: { id },
+        });
+        if (!catalogue) {
+            throw new common_1.NotFoundException("Catalogue formation non trouvé");
+        }
+        await this.catalogueRepository.delete(id);
+        return this.apiResponse.success();
     }
     async duplicate(id) {
         const original = await this.catalogueRepository.findOne({
             where: { id },
             relations: ["formations"],
         });
-        if (!original)
-            throw new Error("Catalogue not found");
+        if (!original) {
+            throw new common_1.NotFoundException("Catalogue formation non trouvé");
+        }
         const newCatalogue = this.catalogueRepository.create({
             ...original,
             titre: `${original.titre} (Copie)`,
             id: undefined,
         });
-        return this.catalogueRepository.save(newCatalogue);
+        const saved = await this.catalogueRepository.save(newCatalogue);
+        return this.apiResponse.success(saved);
     }
     async downloadPdf(id) {
         return { message: "PDF download for catalogue", catalogueId: id };
@@ -95,7 +121,7 @@ __decorate([
     __param(1, (0, common_1.Query)("limit")),
     __param(2, (0, common_1.Query)("search")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object]),
+    __metadata("design:paramtypes", [Number, Number, String]),
     __metadata("design:returntype", Promise)
 ], AdminCatalogueFormationController.prototype, "index", null);
 __decorate([
@@ -159,6 +185,7 @@ exports.AdminCatalogueFormationController = AdminCatalogueFormationController = 
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(catalogue_formation_entity_1.CatalogueFormation)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        api_response_service_1.ApiResponseService])
 ], AdminCatalogueFormationController);
 //# sourceMappingURL=admin-catalogue-formation.controller.js.map
