@@ -4,7 +4,6 @@ import { Formation } from "../entities/formation.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 import { FormationService } from "./formation.service";
-import { FormationController } from "./formation.controller";
 
 @Module({
   imports: [
@@ -14,7 +13,7 @@ import { FormationController } from "./formation.controller";
       StagiaireCatalogueFormation,
     ]),
   ],
-  controllers: [FormationController],
+  controllers: [],
   providers: [FormationService],
   exports: [FormationService],
 })

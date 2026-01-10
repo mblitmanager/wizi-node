@@ -22,77 +22,82 @@ let CatalogueFormationController = class CatalogueFormationController {
         this.catalogueService = catalogueService;
         this.apiResponse = apiResponse;
     }
-    async getAllForParrainage() {
-        const result = await this.catalogueService.findAll();
-        return this.apiResponse.success(result);
-    }
     async getAll() {
-        const result = await this.catalogueService.findAll();
-        return this.apiResponse.success(result);
+        return await this.catalogueService.findAll();
     }
     async getAllFormations() {
-        const result = await this.catalogueService.findAll();
-        return this.apiResponse.success(result);
+        return await this.catalogueService.findAll();
     }
-    async getOne(id) {
-        const result = await this.catalogueService.findOne(id);
-        return this.apiResponse.success(result);
+    async getWithFormations(req) {
+        return await this.catalogueService.getCataloguesWithFormations(req.query);
     }
     async getMyStagiaireCatalogues(req) {
         const stagiaireId = req.user.stagiaire?.id;
         if (!stagiaireId) {
             return this.apiResponse.error("Stagiaire not found for this user", 404);
         }
-        const result = await this.catalogueService.getFormationsAndCatalogues(stagiaireId);
-        return this.apiResponse.success(result);
+        return await this.catalogueService.getFormationsAndCatalogues(stagiaireId);
     }
     async getStagiaireCatalogues(id) {
-        const result = await this.catalogueService.getFormationsAndCatalogues(id);
-        return this.apiResponse.success(result);
+        return await this.catalogueService.getFormationsAndCatalogues(id);
+    }
+    async getOne(id) {
+        const result = await this.catalogueService.findOne(id);
+        return result;
+    }
+    async getAllForParrainage() {
+        return await this.catalogueService.findAll();
     }
 };
 exports.CatalogueFormationController = CatalogueFormationController;
 __decorate([
-    (0, common_1.Get)("formationParrainage"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], CatalogueFormationController.prototype, "getAllForParrainage", null);
-__decorate([
-    (0, common_1.Get)("catalogueFormations"),
+    (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CatalogueFormationController.prototype, "getAll", null);
 __decorate([
-    (0, common_1.Get)("catalogueFormations/formations"),
+    (0, common_1.Get)("formations"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], CatalogueFormationController.prototype, "getAllFormations", null);
 __decorate([
-    (0, common_1.Get)("catalogueFormations/formations/:id"),
-    __param(0, (0, common_1.Param)("id")),
+    (0, common_1.Get)("with-formations"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], CatalogueFormationController.prototype, "getOne", null);
+], CatalogueFormationController.prototype, "getWithFormations", null);
 __decorate([
-    (0, common_1.Get)("catalogueFormations/stagiaire"),
+    (0, common_1.Get)("stagiaire"),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], CatalogueFormationController.prototype, "getMyStagiaireCatalogues", null);
 __decorate([
-    (0, common_1.Get)("catalogueFormations/stagiaire/:id"),
+    (0, common_1.Get)("stagiaire/:id"),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], CatalogueFormationController.prototype, "getStagiaireCatalogues", null);
+__decorate([
+    (0, common_1.Get)("formations/:id"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], CatalogueFormationController.prototype, "getOne", null);
+__decorate([
+    (0, common_1.Get)("formationParrainage"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], CatalogueFormationController.prototype, "getAllForParrainage", null);
 exports.CatalogueFormationController = CatalogueFormationController = __decorate([
-    (0, common_1.Controller)("api"),
+    (0, common_1.Controller)("catalogueFormations"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [catalogue_formation_service_1.CatalogueFormationService,
         api_response_service_1.ApiResponseService])

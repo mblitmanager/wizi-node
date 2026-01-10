@@ -3,7 +3,7 @@ import { CatalogueFormationService } from "./catalogue-formation.service";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("api")
+@Controller("catalogueFormations")
 @UseGuards(AuthGuard("jwt"))
 export class CatalogueFormationController {
   constructor(
@@ -11,45 +11,46 @@ export class CatalogueFormationController {
     private readonly apiResponse: ApiResponseService
   ) {}
 
-  @Get("formationParrainage")
-  async getAllForParrainage() {
-    const result = await this.catalogueService.findAll();
-    return this.apiResponse.success(result);
-  }
-
-  @Get("catalogueFormations")
+  @Get()
   async getAll() {
-    const result = await this.catalogueService.findAll();
-    return this.apiResponse.success(result);
+    // Laravel returns the array directly if not paginated
+    return await this.catalogueService.findAll();
   }
 
-  @Get("catalogueFormations/formations")
+  @Get("formations")
   async getAllFormations() {
-    const result = await this.catalogueService.findAll();
-    return this.apiResponse.success(result);
+    return await this.catalogueService.findAll();
   }
 
-  @Get("catalogueFormations/formations/:id")
-  async getOne(@Param("id") id: number) {
-    const result = await this.catalogueService.findOne(id);
-    return this.apiResponse.success(result);
+  @Get("with-formations")
+  async getWithFormations(@Request() req: any) {
+    // getCataloguesWithFormations returns the full paginated object
+    return await this.catalogueService.getCataloguesWithFormations(req.query);
   }
 
-  @Get("catalogueFormations/stagiaire")
+  @Get("stagiaire")
   async getMyStagiaireCatalogues(@Request() req: any) {
-    // Get stagiaire ID from authenticated user
     const stagiaireId = req.user.stagiaire?.id;
     if (!stagiaireId) {
       return this.apiResponse.error("Stagiaire not found for this user", 404);
     }
-    const result =
-      await this.catalogueService.getFormationsAndCatalogues(stagiaireId);
-    return this.apiResponse.success(result);
+    return await this.catalogueService.getFormationsAndCatalogues(stagiaireId);
   }
 
-  @Get("catalogueFormations/stagiaire/:id")
+  @Get("stagiaire/:id")
   async getStagiaireCatalogues(@Param("id") id: number) {
-    const result = await this.catalogueService.getFormationsAndCatalogues(id);
-    return this.apiResponse.success(result);
+    return await this.catalogueService.getFormationsAndCatalogues(id);
+  }
+
+  @Get("formations/:id")
+  async getOne(@Param("id") id: number) {
+    const result = await this.catalogueService.findOne(id);
+    // Laravel show returns the object directly
+    return result;
+  }
+
+  @Get("formationParrainage")
+  async getAllForParrainage() {
+    return await this.catalogueService.findAll();
   }
 }
