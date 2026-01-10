@@ -16,10 +16,12 @@ exports.ApiGeneralController = exports.StagiaireApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const inscription_service_1 = require("../inscription/inscription.service");
+const ranking_service_1 = require("../ranking/ranking.service");
 const api_response_service_1 = require("../common/services/api-response.service");
 let StagiaireApiController = class StagiaireApiController {
-    constructor(inscriptionService, apiResponse) {
+    constructor(inscriptionService, rankingService, apiResponse) {
         this.inscriptionService = inscriptionService;
+        this.rankingService = rankingService;
         this.apiResponse = apiResponse;
     }
     async profile(req) {
@@ -43,8 +45,9 @@ let StagiaireApiController = class StagiaireApiController {
     async formations(req) {
         return this.apiResponse.success([]);
     }
-    async formationClassement() {
-        return this.apiResponse.success([]);
+    async formationClassement(formationId) {
+        const data = await this.rankingService.getFormationRanking(formationId);
+        return this.apiResponse.success(data);
     }
     async inscriptionCatalogueFormation(req, data) {
         return this.inscriptionService.inscrire(req.user.id, data.catalogue_formation_id);
@@ -77,33 +80,23 @@ let StagiaireApiController = class StagiaireApiController {
         return this.apiResponse.success([]);
     }
     async progress(req) {
-        const user = req.user;
-        return this.apiResponse.success({
-            stagiaire: {
-                id: user.stagiaire?.id?.toString() || "0",
-                prenom: user.stagiaire?.prenom || user.name,
-                image: user.image || null,
-            },
-            totalPoints: 0,
-            quizCount: 0,
-            averageScore: 0,
-            completedQuizzes: 0,
-            totalTimeSpent: 0,
-            rang: 0,
-            level: 0,
-        });
+        const data = await this.rankingService.getStagiaireProgress(req.user.id);
+        return this.apiResponse.success(data);
     }
     async quizzes() {
         return this.apiResponse.success([]);
     }
     async rankingGlobal() {
-        return this.apiResponse.success([]);
+        const data = await this.rankingService.getGlobalRanking();
+        return this.apiResponse.success(data);
     }
-    async rankingFormation() {
-        return this.apiResponse.success([]);
+    async rankingFormation(formationId) {
+        const data = await this.rankingService.getFormationRanking(formationId);
+        return this.apiResponse.success(data);
     }
-    async rewards() {
-        return this.apiResponse.success([]);
+    async rewards(req) {
+        const data = await this.rankingService.getStagiaireRewards(req.user.id);
+        return this.apiResponse.success(data);
     }
     async partner() {
         return this.apiResponse.success({});
@@ -185,8 +178,9 @@ __decorate([
 ], StagiaireApiController.prototype, "formations", null);
 __decorate([
     (0, common_1.Get)("formations/:formationId/classement"),
+    __param(0, (0, common_1.Param)("formationId")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], StagiaireApiController.prototype, "formationClassement", null);
 __decorate([
@@ -274,14 +268,16 @@ __decorate([
 ], StagiaireApiController.prototype, "rankingGlobal", null);
 __decorate([
     (0, common_1.Get)("ranking/formation/:formationId"),
+    __param(0, (0, common_1.Param)("formationId")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], StagiaireApiController.prototype, "rankingFormation", null);
 __decorate([
     (0, common_1.Get)("rewards"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StagiaireApiController.prototype, "rewards", null);
 __decorate([
@@ -336,13 +332,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], StagiaireApiController.prototype, "userCatalogueFormations", null);
 exports.StagiaireApiController = StagiaireApiController = __decorate([
-    (0, common_1.Controller)("api/stagiaire"),
+    (0, common_1.Controller)("stagiaire"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [inscription_service_1.InscriptionService,
+        ranking_service_1.RankingService,
         api_response_service_1.ApiResponseService])
 ], StagiaireApiController);
 let ApiGeneralController = class ApiGeneralController {
-    constructor(apiResponse) {
+    constructor(rankingService, apiResponse) {
+        this.rankingService = rankingService;
         this.apiResponse = apiResponse;
     }
     async getUser(req) {
@@ -364,7 +362,8 @@ let ApiGeneralController = class ApiGeneralController {
         return this.apiResponse.success();
     }
     async getUserPoints(req) {
-        return this.apiResponse.success({ points: 0 });
+        const data = await this.rankingService.getUserPoints(req.user.id);
+        return this.apiResponse.success(data);
     }
     async updateFcmToken(req, token) {
         return this.apiResponse.success();
@@ -432,8 +431,9 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ApiGeneralController.prototype, "updateFcmToken", null);
 exports.ApiGeneralController = ApiGeneralController = __decorate([
-    (0, common_1.Controller)("api"),
+    (0, common_1.Controller)(),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
+    __metadata("design:paramtypes", [ranking_service_1.RankingService,
+        api_response_service_1.ApiResponseService])
 ], ApiGeneralController);
 //# sourceMappingURL=stagiaire-api.controller.js.map

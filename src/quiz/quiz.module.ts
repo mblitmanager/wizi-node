@@ -10,11 +10,13 @@ import { Classement } from "../entities/classement.entity";
 import { QuizService } from "./quiz.service";
 import { QuizController } from "./quiz.controller";
 import { QuizApiController } from "./quiz-api.controller";
+import { RankingModule } from "../ranking/ranking.module";
 
 @Module({
   imports: [
     CommonModule,
     TypeOrmModule.forFeature([Quiz, Question, Reponse, Formation, Classement]),
+    RankingModule,
   ],
   controllers: [QuizController, QuizApiController],
   providers: [QuizService, ApiResponseService],

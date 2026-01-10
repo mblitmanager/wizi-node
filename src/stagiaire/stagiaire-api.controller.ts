@@ -11,13 +11,15 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { InscriptionService } from "../inscription/inscription.service";
+import { RankingService } from "../ranking/ranking.service";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("api/stagiaire")
+@Controller("stagiaire")
 @UseGuards(AuthGuard("jwt"))
 export class StagiaireApiController {
   constructor(
     private inscriptionService: InscriptionService,
+    private rankingService: RankingService,
     private apiResponse: ApiResponseService
   ) {}
 
@@ -57,8 +59,9 @@ export class StagiaireApiController {
   }
 
   @Get("formations/:formationId/classement")
-  async formationClassement() {
-    return this.apiResponse.success([]);
+  async formationClassement(@Param("formationId") formationId: number) {
+    const data = await this.rankingService.getFormationRanking(formationId);
+    return this.apiResponse.success(data);
   }
 
   @Post("inscription-catalogue-formation")
@@ -116,21 +119,8 @@ export class StagiaireApiController {
 
   @Get("progress")
   async progress(@Request() req: any) {
-    const user = req.user;
-    return this.apiResponse.success({
-      stagiaire: {
-        id: user.stagiaire?.id?.toString() || "0",
-        prenom: user.stagiaire?.prenom || user.name,
-        image: user.image || null,
-      },
-      totalPoints: 0,
-      quizCount: 0,
-      averageScore: 0,
-      completedQuizzes: 0,
-      totalTimeSpent: 0,
-      rang: 0,
-      level: 0,
-    });
+    const data = await this.rankingService.getStagiaireProgress(req.user.id);
+    return this.apiResponse.success(data);
   }
 
   @Get("quizzes")
@@ -140,17 +130,20 @@ export class StagiaireApiController {
 
   @Get("ranking/global")
   async rankingGlobal() {
-    return this.apiResponse.success([]);
+    const data = await this.rankingService.getGlobalRanking();
+    return this.apiResponse.success(data);
   }
 
   @Get("ranking/formation/:formationId")
-  async rankingFormation() {
-    return this.apiResponse.success([]);
+  async rankingFormation(@Param("formationId") formationId: number) {
+    const data = await this.rankingService.getFormationRanking(formationId);
+    return this.apiResponse.success(data);
   }
 
   @Get("rewards")
-  async rewards() {
-    return this.apiResponse.success([]);
+  async rewards(@Request() req: any) {
+    const data = await this.rankingService.getStagiaireRewards(req.user.id);
+    return this.apiResponse.success(data);
   }
 
   @Get("partner")
@@ -194,10 +187,13 @@ export class StagiaireApiController {
   }
 }
 
-@Controller("api")
+@Controller()
 @UseGuards(AuthGuard("jwt"))
 export class ApiGeneralController {
-  constructor(private apiResponse: ApiResponseService) {}
+  constructor(
+    private rankingService: RankingService,
+    private apiResponse: ApiResponseService
+  ) {}
 
   @Get("user")
   async getUser(@Request() req: any) {
@@ -231,7 +227,8 @@ export class ApiGeneralController {
 
   @Get("users/me/points")
   async getUserPoints(@Request() req: any) {
-    return this.apiResponse.success({ points: 0 });
+    const data = await this.rankingService.getUserPoints(req.user.id);
+    return this.apiResponse.success(data);
   }
 
   @Post("fcm-token")

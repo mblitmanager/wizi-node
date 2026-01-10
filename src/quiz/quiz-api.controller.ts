@@ -10,11 +10,15 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiResponseService } from "../common/services/api-response.service";
+import { RankingService } from "../ranking/ranking.service";
 
-@Controller("api/quiz")
+@Controller("quiz")
 @UseGuards(AuthGuard("jwt"))
 export class QuizApiController {
-  constructor(private apiResponse: ApiResponseService) {}
+  constructor(
+    private rankingService: RankingService,
+    private apiResponse: ApiResponseService
+  ) {}
 
   @Get("by-formations")
   async byFormations() {
@@ -33,7 +37,8 @@ export class QuizApiController {
 
   @Get("classement/global")
   async globalClassement() {
-    return this.apiResponse.success([]);
+    const data = await this.rankingService.getGlobalRanking();
+    return this.apiResponse.success(data);
   }
 
   @Get("history")

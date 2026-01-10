@@ -16,8 +16,10 @@ exports.QuizApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const api_response_service_1 = require("../common/services/api-response.service");
+const ranking_service_1 = require("../ranking/ranking.service");
 let QuizApiController = class QuizApiController {
-    constructor(apiResponse) {
+    constructor(rankingService, apiResponse) {
+        this.rankingService = rankingService;
         this.apiResponse = apiResponse;
     }
     async byFormations() {
@@ -30,7 +32,8 @@ let QuizApiController = class QuizApiController {
         return this.apiResponse.success([]);
     }
     async globalClassement() {
-        return this.apiResponse.success([]);
+        const data = await this.rankingService.getGlobalRanking();
+        return this.apiResponse.success(data);
     }
     async history() {
         return this.apiResponse.success([]);
@@ -237,8 +240,9 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "getUserParticipations", null);
 exports.QuizApiController = QuizApiController = __decorate([
-    (0, common_1.Controller)("api/quiz"),
+    (0, common_1.Controller)("quiz"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
+    __metadata("design:paramtypes", [ranking_service_1.RankingService,
+        api_response_service_1.ApiResponseService])
 ], QuizApiController);
 //# sourceMappingURL=quiz-api.controller.js.map

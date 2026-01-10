@@ -1,9 +1,11 @@
 import { InscriptionService } from "../inscription/inscription.service";
+import { RankingService } from "../ranking/ranking.service";
 import { ApiResponseService } from "../common/services/api-response.service";
 export declare class StagiaireApiController {
     private inscriptionService;
+    private rankingService;
     private apiResponse;
-    constructor(inscriptionService: InscriptionService, apiResponse: ApiResponseService);
+    constructor(inscriptionService: InscriptionService, rankingService: RankingService, apiResponse: ApiResponseService);
     profile(req: any): Promise<any>;
     updateProfile(req: any, data: any): Promise<any>;
     patchProfile(req: any, data: any): Promise<any>;
@@ -11,7 +13,7 @@ export declare class StagiaireApiController {
     show(req: any): Promise<any>;
     dashboardHome(req: any): Promise<any>;
     formations(req: any): Promise<any>;
-    formationClassement(): Promise<any>;
+    formationClassement(formationId: number): Promise<any>;
     inscriptionCatalogueFormation(req: any, data: any): Promise<{
         success: boolean;
         message: string;
@@ -29,8 +31,8 @@ export declare class StagiaireApiController {
     progress(req: any): Promise<any>;
     quizzes(): Promise<any>;
     rankingGlobal(): Promise<any>;
-    rankingFormation(): Promise<any>;
-    rewards(): Promise<any>;
+    rankingFormation(formationId: number): Promise<any>;
+    rewards(req: any): Promise<any>;
     partner(): Promise<any>;
     parainageStats(): Promise<any>;
     parainageHistory(): Promise<any>;
@@ -41,8 +43,9 @@ export declare class StagiaireApiController {
     userCatalogueFormations(id: number): Promise<any>;
 }
 export declare class ApiGeneralController {
+    private rankingService;
     private apiResponse;
-    constructor(apiResponse: ApiResponseService);
+    constructor(rankingService: RankingService, apiResponse: ApiResponseService);
     getUser(req: any): Promise<any>;
     getMe(req: any): Promise<any>;
     getUserSettings(req: any): Promise<any>;
