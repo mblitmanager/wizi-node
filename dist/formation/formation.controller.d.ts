@@ -32,7 +32,7 @@ export declare class FormationController {
             nombre_participants: number;
             created_at: Date;
             updated_at: Date;
-            stagiaires: any[];
+            stagiaire_catalogue_formations: import("../entities/stagiaire-catalogue-formation.entity").StagiaireCatalogueFormation[];
             formateurs: any[];
         }[];
         total: number;

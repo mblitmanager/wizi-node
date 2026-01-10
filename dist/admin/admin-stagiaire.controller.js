@@ -30,7 +30,9 @@ let AdminStagiaireController = class AdminStagiaireController {
         const query = this.stagiaireRepository
             .createQueryBuilder("s")
             .leftJoinAndSelect("s.user", "user")
-            .leftJoinAndSelect("s.catalogue_formations", "catalogue_formations");
+            .leftJoinAndSelect("s.stagiaire_catalogue_formations", "scf")
+            .leftJoinAndSelect("scf.catalogue_formation", "cf")
+            .leftJoinAndSelect("cf.formation", "f");
         if (search) {
             query.where("s.prenom LIKE :search OR s.civilite LIKE :search OR s.ville LIKE :search", { search: `%${search}%` });
         }
@@ -44,7 +46,13 @@ let AdminStagiaireController = class AdminStagiaireController {
     async findOne(id) {
         const stagiaire = await this.stagiaireRepository.findOne({
             where: { id },
-            relations: ["user", "catalogue_formations", "achievements"],
+            relations: [
+                "user",
+                "stagiaire_catalogue_formations",
+                "stagiaire_catalogue_formations.catalogue_formation",
+                "stagiaire_catalogue_formations.catalogue_formation.formation",
+                "achievements",
+            ],
         });
         if (!stagiaire) {
             throw new common_1.NotFoundException("Stagiaire non trouvé");
@@ -69,7 +77,13 @@ let AdminStagiaireController = class AdminStagiaireController {
         await this.stagiaireRepository.update(id, data);
         const updated = await this.stagiaireRepository.findOne({
             where: { id },
-            relations: ["user", "catalogue_formations", "achievements"],
+            relations: [
+                "user",
+                "stagiaire_catalogue_formations",
+                "stagiaire_catalogue_formations.catalogue_formation",
+                "stagiaire_catalogue_formations.catalogue_formation.formation",
+                "achievements",
+            ],
         });
         return this.apiResponse.success(updated);
     }

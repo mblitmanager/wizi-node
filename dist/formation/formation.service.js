@@ -39,8 +39,8 @@ let FormationService = class FormationService {
         const queryBuilder = this.catalogueRepository
             .createQueryBuilder("catalogue")
             .leftJoinAndSelect("catalogue.formation", "formation")
-            .leftJoin("catalogue.stagiaires", "stagiaires")
-            .loadRelationCountAndMap("catalogue.stagiaires_count", "catalogue.stagiaires")
+            .leftJoin("catalogue.stagiaire_catalogue_formations", "scf")
+            .loadRelationCountAndMap("catalogue.stagiaires_count", "catalogue.stagiaire_catalogue_formations")
             .where("catalogue.statut = :statut", { statut: 1 });
         if (category && category !== "Tous") {
             queryBuilder.andWhere("formation.categorie = :category", { category });
@@ -69,7 +69,7 @@ let FormationService = class FormationService {
     async getFormationsAndCatalogues(stagiaireId) {
         return this.catalogueRepository.find({
             where: {
-                stagiaires: { id: stagiaireId },
+                stagiaire_catalogue_formations: { stagiaire_id: stagiaireId },
             },
             relations: ["formation"],
         });

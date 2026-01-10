@@ -6,7 +6,9 @@ import {
   ManyToOne,
   JoinColumn,
   JoinTable,
+  OneToMany,
 } from "typeorm";
+import { StagiaireCatalogueFormation } from "./stagiaire-catalogue-formation.entity";
 
 @Entity("catalogue_formations")
 export class CatalogueFormation {
@@ -86,13 +88,11 @@ export class CatalogueFormation {
   @Column({ type: "timestamp", nullable: true })
   updated_at: Date;
 
-  @ManyToMany("Stagiaire", (stagiaire: any) => stagiaire.catalogue_formations)
-  @JoinTable({
-    name: "stagiaire_catalogue_formations",
-    joinColumn: { name: "catalogue_formation_id", referencedColumnName: "id" },
-    inverseJoinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
-  })
-  stagiaires: any[];
+  @OneToMany(
+    () => StagiaireCatalogueFormation,
+    (scf) => scf.catalogue_formation
+  )
+  stagiaire_catalogue_formations: StagiaireCatalogueFormation[];
 
   @ManyToMany("Formateur", (formateur: any) => formateur.formations)
   @JoinTable({

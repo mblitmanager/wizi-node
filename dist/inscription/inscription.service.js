@@ -19,21 +19,23 @@ const typeorm_2 = require("typeorm");
 const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
 const notification_service_1 = require("../notification/notification.service");
 const mail_service_1 = require("../mail/mail.service");
 const path_1 = require("path");
 let InscriptionService = class InscriptionService {
-    constructor(demandeRepository, stagiaireRepository, catalogueRepository, notificationService, mailService) {
+    constructor(demandeRepository, stagiaireRepository, catalogueRepository, scfRepository, notificationService, mailService) {
         this.demandeRepository = demandeRepository;
         this.stagiaireRepository = stagiaireRepository;
         this.catalogueRepository = catalogueRepository;
+        this.scfRepository = scfRepository;
         this.notificationService = notificationService;
         this.mailService = mailService;
     }
     async inscrire(userId, catalogueFormationId) {
         const stagiaire = await this.stagiaireRepository.findOne({
             where: { user_id: userId },
-            relations: ["catalogue_formations", "user"],
+            relations: ["stagiaire_catalogue_formations", "user"],
         });
         if (!stagiaire) {
             throw new Error("Stagiaire not found");
@@ -44,10 +46,14 @@ let InscriptionService = class InscriptionService {
         if (!catalogueFormation) {
             throw new Error("Formation not found");
         }
-        const alreadyEnrolled = stagiaire.catalogue_formations.some((cf) => cf.id === catalogueFormationId);
+        const alreadyEnrolled = stagiaire.stagiaire_catalogue_formations.some((scf) => scf.catalogue_formation_id === catalogueFormationId);
         if (!alreadyEnrolled) {
-            stagiaire.catalogue_formations.push(catalogueFormation);
-            await this.stagiaireRepository.save(stagiaire);
+            const scf = this.scfRepository.create({
+                stagiaire_id: stagiaire.id,
+                catalogue_formation_id: catalogueFormationId,
+                date_inscription: new Date(),
+            });
+            await this.scfRepository.save(scf);
         }
         const demande = this.demandeRepository.create({
             parrain_id: userId,
@@ -144,7 +150,9 @@ exports.InscriptionService = InscriptionService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(demande_inscription_entity_1.DemandeInscription)),
     __param(1, (0, typeorm_1.InjectRepository)(stagiaire_entity_1.Stagiaire)),
     __param(2, (0, typeorm_1.InjectRepository)(catalogue_formation_entity_1.CatalogueFormation)),
+    __param(3, (0, typeorm_1.InjectRepository)(stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         notification_service_1.NotificationService,

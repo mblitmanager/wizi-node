@@ -152,13 +152,13 @@ export class StagiaireService {
   async getStagiaireQuizzes(userId: number) {
     const stagiaire = await this.stagiaireRepository.findOne({
       where: { user_id: userId },
-      relations: ["catalogue_formations"],
+      relations: ["stagiaire_catalogue_formations"],
     });
 
     if (!stagiaire) return { data: [] };
 
-    const formationIds = (stagiaire.catalogue_formations || [])
-      .map((cat) => cat.formation_id)
+    const formationIds = (stagiaire.stagiaire_catalogue_formations || [])
+      .map((scf) => scf.catalogue_formation_id)
       .filter((id) => id !== null);
 
     if (formationIds.length === 0) return { data: [] };
@@ -232,14 +232,22 @@ export class StagiaireService {
   async getFormationsByStagiaire(stagiaireId: number) {
     const stagiaire = await this.stagiaireRepository.findOne({
       where: { id: stagiaireId },
-      relations: ["catalogue_formations", "catalogue_formations.formation"],
+      relations: [
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation",
+      ],
     });
 
     if (!stagiaire) {
       throw new NotFoundException("Stagiaire not found");
     }
 
-    return stagiaire.catalogue_formations || [];
+    return (
+      stagiaire.stagiaire_catalogue_formations?.map(
+        (scf) => scf.catalogue_formation
+      ) || []
+    );
   }
 
   async getStagiaireById(id: number) {
@@ -253,8 +261,9 @@ export class StagiaireService {
         "commercials.user",
         "poleRelationClients",
         "poleRelationClients.user",
-        "catalogue_formations",
-        "catalogue_formations.formation",
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation",
       ],
     });
 
@@ -331,10 +340,12 @@ export class StagiaireService {
       avatar: stagiaire.user?.image || null,
       rang: rank || 0,
       totalPoints: parseInt(stats?.totalPoints || "0"),
-      formations: (stagiaire.catalogue_formations || []).map((cf) => ({
-        id: cf.id,
-        titre: cf.formation?.titre || "N/A",
-      })),
+      formations: (stagiaire.stagiaire_catalogue_formations || []).map(
+        (scf) => ({
+          id: scf.catalogue_formation?.id,
+          titre: scf.catalogue_formation?.formation?.titre || "N/A",
+        })
+      ),
       formateurs: (stagiaire.formateurs || []).map((f) => ({
         id: f.id,
         prenom: f.prenom || "",

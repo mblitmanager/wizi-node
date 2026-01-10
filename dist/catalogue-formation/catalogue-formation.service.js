@@ -17,9 +17,11 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 let CatalogueFormationService = class CatalogueFormationService {
-    constructor(catalogueRepository) {
+    constructor(catalogueRepository, stagiaireRepository) {
         this.catalogueRepository = catalogueRepository;
+        this.stagiaireRepository = stagiaireRepository;
     }
     async findAll() {
         return this.catalogueRepository.find({
@@ -39,7 +41,12 @@ let CatalogueFormationService = class CatalogueFormationService {
         try {
             const formation = await this.catalogueRepository.findOne({
                 where: { id },
-                relations: ["formation", "formateurs", "stagiaires"],
+                relations: [
+                    "formation",
+                    "formateurs",
+                    "stagiaire_catalogue_formations",
+                    "stagiaire_catalogue_formations.stagiaire",
+                ],
             });
             if (!formation) {
                 throw new common_1.NotFoundException("Catalogue formation not found");
@@ -51,11 +58,68 @@ let CatalogueFormationService = class CatalogueFormationService {
             throw error;
         }
     }
+    async getFormationsAndCatalogues(stagiaireId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { id: stagiaireId },
+            relations: [
+                "stagiaire_catalogue_formations",
+                "stagiaire_catalogue_formations.catalogue_formation",
+                "stagiaire_catalogue_formations.catalogue_formation.formation",
+            ],
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException("Stagiaire introuvable");
+        }
+        const catalogues = stagiaire.stagiaire_catalogue_formations.map((scf) => {
+            const catalogue = scf.catalogue_formation;
+            const formation = catalogue.formation;
+            return {
+                pivot: {
+                    stagiaire_id: scf.stagiaire_id,
+                    catalogue_formation_id: scf.catalogue_formation_id,
+                    date_debut: scf.date_debut,
+                    date_inscription: scf.date_inscription,
+                    date_fin: scf.date_fin,
+                    formateur_id: scf.formateur_id,
+                    created_at: scf.created_at,
+                    updated_at: scf.updated_at,
+                },
+                catalogue: {
+                    ...catalogue,
+                    formation: formation,
+                },
+                formation: formation,
+            };
+        });
+        const stagiaireData = {
+            ...stagiaire,
+            catalogue_formations: stagiaire.stagiaire_catalogue_formations.map((scf) => ({
+                ...scf.catalogue_formation,
+                pivot: {
+                    stagiaire_id: scf.stagiaire_id,
+                    catalogue_formation_id: scf.catalogue_formation_id,
+                    date_debut: scf.date_debut,
+                    date_inscription: scf.date_inscription,
+                    date_fin: scf.date_fin,
+                    formateur_id: scf.formateur_id,
+                    created_at: scf.created_at,
+                    updated_at: scf.updated_at,
+                },
+            })),
+        };
+        delete stagiaireData.stagiaire_catalogue_formations;
+        return {
+            stagiaire: stagiaireData,
+            catalogues: catalogues,
+        };
+    }
 };
 exports.CatalogueFormationService = CatalogueFormationService;
 exports.CatalogueFormationService = CatalogueFormationService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(catalogue_formation_entity_1.CatalogueFormation)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(stagiaire_entity_1.Stagiaire)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], CatalogueFormationService);
 //# sourceMappingURL=catalogue-formation.service.js.map

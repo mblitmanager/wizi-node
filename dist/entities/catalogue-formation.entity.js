@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CatalogueFormation = void 0;
 const typeorm_1 = require("typeorm");
+const stagiaire_catalogue_formation_entity_1 = require("./stagiaire-catalogue-formation.entity");
 let CatalogueFormation = class CatalogueFormation {
 };
 exports.CatalogueFormation = CatalogueFormation;
@@ -116,14 +117,9 @@ __decorate([
     __metadata("design:type", Date)
 ], CatalogueFormation.prototype, "updated_at", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)("Stagiaire", (stagiaire) => stagiaire.catalogue_formations),
-    (0, typeorm_1.JoinTable)({
-        name: "stagiaire_catalogue_formations",
-        joinColumn: { name: "catalogue_formation_id", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
-    }),
+    (0, typeorm_1.OneToMany)(() => stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation, (scf) => scf.catalogue_formation),
     __metadata("design:type", Array)
-], CatalogueFormation.prototype, "stagiaires", void 0);
+], CatalogueFormation.prototype, "stagiaire_catalogue_formations", void 0);
 __decorate([
     (0, typeorm_1.ManyToMany)("Formateur", (formateur) => formateur.formations),
     (0, typeorm_1.JoinTable)({

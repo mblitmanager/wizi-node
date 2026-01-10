@@ -11,7 +11,7 @@ export declare class StagiairesController {
         rang: number;
         totalPoints: number;
         formations: {
-            id: any;
+            id: number;
             titre: any;
         }[];
         formateurs: {

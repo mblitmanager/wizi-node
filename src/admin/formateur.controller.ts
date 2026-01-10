@@ -25,7 +25,10 @@ export class FormateurController {
         nom: s.user?.name,
         email: s.user?.email,
         last_activity_at: s.user?.last_activity_at,
-        formations: s.catalogue_formations?.map((f) => f.titre) || [],
+        formations:
+          s.stagiaire_catalogue_formations?.map(
+            (scf) => scf.catalogue_formation?.titre
+          ) || [],
       })),
       total: stagiaires.length,
     };

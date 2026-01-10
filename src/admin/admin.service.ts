@@ -79,7 +79,11 @@ export class AdminService {
   async getOnlineStagiaires() {
     return this.stagiaireRepository.find({
       where: { user: { is_online: true } },
-      relations: ["user", "catalogue_formations"],
+      relations: [
+        "user",
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+      ],
     });
   }
 }

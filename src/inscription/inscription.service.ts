@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 import { NotificationService } from "../notification/notification.service";
 import { MailService } from "../mail/mail.service";
 import { join } from "path";
@@ -17,6 +18,8 @@ export class InscriptionService {
     private stagiaireRepository: Repository<Stagiaire>,
     @InjectRepository(CatalogueFormation)
     private catalogueRepository: Repository<CatalogueFormation>,
+    @InjectRepository(StagiaireCatalogueFormation)
+    private scfRepository: Repository<StagiaireCatalogueFormation>,
     private notificationService: NotificationService,
     private mailService: MailService
   ) {}
@@ -24,7 +27,7 @@ export class InscriptionService {
   async inscrire(userId: number, catalogueFormationId: number) {
     const stagiaire = await this.stagiaireRepository.findOne({
       where: { user_id: userId },
-      relations: ["catalogue_formations", "user"],
+      relations: ["stagiaire_catalogue_formations", "user"],
     });
 
     if (!stagiaire) {
@@ -41,13 +44,17 @@ export class InscriptionService {
 
     // syncWithoutDetaching logic:
     // Check if already enrolled
-    const alreadyEnrolled = stagiaire.catalogue_formations.some(
-      (cf) => cf.id === catalogueFormationId
+    const alreadyEnrolled = stagiaire.stagiaire_catalogue_formations.some(
+      (scf) => scf.catalogue_formation_id === catalogueFormationId
     );
 
     if (!alreadyEnrolled) {
-      stagiaire.catalogue_formations.push(catalogueFormation);
-      await this.stagiaireRepository.save(stagiaire);
+      const scf = this.scfRepository.create({
+        stagiaire_id: stagiaire.id,
+        catalogue_formation_id: catalogueFormationId,
+        date_inscription: new Date(),
+      });
+      await this.scfRepository.save(scf);
     }
 
     // Create DemandeInscription entry

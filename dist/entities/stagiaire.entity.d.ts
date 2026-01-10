@@ -1,6 +1,7 @@
 import { User } from "./user.entity";
 import { Media } from "./media.entity";
 import { Progression } from "./progression.entity";
+import { StagiaireCatalogueFormation } from "./stagiaire-catalogue-formation.entity";
 import { Commercial } from "./commercial.entity";
 import { PoleRelationClient } from "./pole-relation-client.entity";
 import { Classement } from "./classement.entity";
@@ -23,7 +24,7 @@ export declare class Stagiaire {
     onboarding_seen: boolean;
     partenaire_id: number;
     user: User;
-    catalogue_formations: any[];
+    stagiaire_catalogue_formations: StagiaireCatalogueFormation[];
     medias: Media[];
     progressions: Progression[];
     formateurs: any[];

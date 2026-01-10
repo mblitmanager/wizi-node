@@ -38,7 +38,9 @@ export class AdminStagiaireController {
     const query = this.stagiaireRepository
       .createQueryBuilder("s")
       .leftJoinAndSelect("s.user", "user")
-      .leftJoinAndSelect("s.catalogue_formations", "catalogue_formations");
+      .leftJoinAndSelect("s.stagiaire_catalogue_formations", "scf")
+      .leftJoinAndSelect("scf.catalogue_formation", "cf")
+      .leftJoinAndSelect("cf.formation", "f");
 
     if (search) {
       query.where(
@@ -60,7 +62,13 @@ export class AdminStagiaireController {
   async findOne(@Param("id") id: number) {
     const stagiaire = await this.stagiaireRepository.findOne({
       where: { id },
-      relations: ["user", "catalogue_formations", "achievements"],
+      relations: [
+        "user",
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation",
+        "achievements",
+      ],
     });
 
     if (!stagiaire) {
@@ -95,7 +103,13 @@ export class AdminStagiaireController {
     await this.stagiaireRepository.update(id, data);
     const updated = await this.stagiaireRepository.findOne({
       where: { id },
-      relations: ["user", "catalogue_formations", "achievements"],
+      relations: [
+        "user",
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation",
+        "achievements",
+      ],
     });
 
     return this.apiResponse.success(updated);

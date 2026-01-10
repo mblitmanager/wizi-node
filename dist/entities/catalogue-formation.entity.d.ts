@@ -1,3 +1,4 @@
+import { StagiaireCatalogueFormation } from "./stagiaire-catalogue-formation.entity";
 export declare class CatalogueFormation {
     id: number;
     titre: string;
@@ -24,6 +25,6 @@ export declare class CatalogueFormation {
     nombre_participants: number;
     created_at: Date;
     updated_at: Date;
-    stagiaires: any[];
+    stagiaire_catalogue_formations: StagiaireCatalogueFormation[];
     formateurs: any[];
 }

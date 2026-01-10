@@ -148,7 +148,7 @@ export declare class StagiaireService {
             };
         }[];
     }>;
-    getFormationsByStagiaire(stagiaireId: number): Promise<any[]>;
+    getFormationsByStagiaire(stagiaireId: number): Promise<CatalogueFormation[]>;
     getStagiaireById(id: number): Promise<{
         id: number;
         firstname: string;
@@ -158,7 +158,7 @@ export declare class StagiaireService {
         rang: number;
         totalPoints: number;
         formations: {
-            id: any;
+            id: number;
             titre: any;
         }[];
         formateurs: {

@@ -11,6 +11,7 @@ import {
 import { User } from "./user.entity";
 import { Media } from "./media.entity";
 import { Progression } from "./progression.entity";
+import { StagiaireCatalogueFormation } from "./stagiaire-catalogue-formation.entity";
 // Removed to fix circular imports
 // import { CatalogueFormation } from "./catalogue-formation.entity";
 // import { Formateur } from "./formateur.entity";
@@ -73,16 +74,8 @@ export class Stagiaire {
   @JoinColumn({ name: "user_id" })
   user: User;
 
-  @ManyToMany("CatalogueFormation", (catalogue: any) => catalogue.stagiaires)
-  @JoinTable({
-    name: "stagiaire_catalogue_formations",
-    joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
-    inverseJoinColumn: {
-      name: "catalogue_formation_id",
-      referencedColumnName: "id",
-    },
-  })
-  catalogue_formations: any[];
+  @OneToMany(() => StagiaireCatalogueFormation, (scf) => scf.stagiaire)
+  stagiaire_catalogue_formations: StagiaireCatalogueFormation[];
 
   @ManyToMany(() => Media, (media) => media.stagiaires)
   @JoinTable({

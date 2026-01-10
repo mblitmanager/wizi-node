@@ -36,10 +36,10 @@ export class FormationService {
     const queryBuilder = this.catalogueRepository
       .createQueryBuilder("catalogue")
       .leftJoinAndSelect("catalogue.formation", "formation")
-      .leftJoin("catalogue.stagiaires", "stagiaires")
+      .leftJoin("catalogue.stagiaire_catalogue_formations", "scf")
       .loadRelationCountAndMap(
         "catalogue.stagiaires_count",
-        "catalogue.stagiaires"
+        "catalogue.stagiaire_catalogue_formations"
       )
       .where("catalogue.statut = :statut", { statut: 1 });
 
@@ -78,7 +78,7 @@ export class FormationService {
     // This replicates getFormationsAndCatalogues in Laravel
     return this.catalogueRepository.find({
       where: {
-        stagiaires: { id: stagiaireId },
+        stagiaire_catalogue_formations: { stagiaire_id: stagiaireId },
       },
       relations: ["formation"],
     });
