@@ -59,6 +59,7 @@ import { Question } from "../entities/question.entity";
 import { Formation } from "../entities/formation.entity";
 import { Commercial } from "../entities/commercial.entity";
 import { PoleRelationClient } from "../entities/pole-relation-client.entity";
+import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { PoleRelationClient } from "../entities/pole-relation-client.entity";
       Formation,
       Commercial,
       PoleRelationClient,
+      StagiaireCatalogueFormation,
     ]),
   ],
   providers: [AdminService, ApiResponseService],

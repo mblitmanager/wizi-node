@@ -5,6 +5,7 @@ import { InscriptionController } from "./inscription.controller";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 import { NotificationModule } from "../notification/notification.module";
 import { MailModule } from "../mail/mail.module";
 
@@ -14,6 +15,7 @@ import { MailModule } from "../mail/mail.module";
       DemandeInscription,
       Stagiaire,
       CatalogueFormation,
+      StagiaireCatalogueFormation,
     ]),
     NotificationModule,
     MailModule,

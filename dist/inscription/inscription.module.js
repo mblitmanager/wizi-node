@@ -14,6 +14,7 @@ const inscription_controller_1 = require("./inscription.controller");
 const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
 const notification_module_1 = require("../notification/notification.module");
 const mail_module_1 = require("../mail/mail.module");
 let InscriptionModule = class InscriptionModule {
@@ -26,6 +27,7 @@ exports.InscriptionModule = InscriptionModule = __decorate([
                 demande_inscription_entity_1.DemandeInscription,
                 stagiaire_entity_1.Stagiaire,
                 catalogue_formation_entity_1.CatalogueFormation,
+                stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
             ]),
             notification_module_1.NotificationModule,
             mail_module_1.MailModule,

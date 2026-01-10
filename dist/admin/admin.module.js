@@ -47,6 +47,7 @@ const question_entity_1 = require("../entities/question.entity");
 const formation_entity_1 = require("../entities/formation.entity");
 const commercial_entity_1 = require("../entities/commercial.entity");
 const pole_relation_client_entity_1 = require("../entities/pole-relation-client.entity");
+const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -69,6 +70,7 @@ exports.AdminModule = AdminModule = __decorate([
                 formation_entity_1.Formation,
                 commercial_entity_1.Commercial,
                 pole_relation_client_entity_1.PoleRelationClient,
+                stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
             ]),
         ],
         providers: [admin_service_1.AdminService, api_response_service_1.ApiResponseService],
