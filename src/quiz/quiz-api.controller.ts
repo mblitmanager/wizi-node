@@ -42,15 +42,15 @@ export class QuizApiController {
   }
 
   @Get("history")
-  async history() {
-    // Laravel returns an array of progression objects
-    // Example: [{ id: "1", quiz: { id: 1, titre: "...", ... }, score: 80, ... }]
-    return this.apiResponse.success([]);
+  async history(@Request() req: any) {
+    const data = await this.rankingService.getQuizHistory(req.user.id);
+    return this.apiResponse.success(data);
   }
 
   @Get("stats")
-  async stats() {
-    return this.apiResponse.success({});
+  async stats(@Request() req: any) {
+    const data = await this.rankingService.getQuizStats(req.user.id);
+    return this.apiResponse.success(data);
   }
 
   @Get("stats/categories")

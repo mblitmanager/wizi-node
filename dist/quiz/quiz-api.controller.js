@@ -35,11 +35,13 @@ let QuizApiController = class QuizApiController {
         const data = await this.rankingService.getGlobalRanking();
         return this.apiResponse.success(data);
     }
-    async history() {
-        return this.apiResponse.success([]);
+    async history(req) {
+        const data = await this.rankingService.getQuizHistory(req.user.id);
+        return this.apiResponse.success(data);
     }
-    async stats() {
-        return this.apiResponse.success({});
+    async stats(req) {
+        const data = await this.rankingService.getQuizStats(req.user.id);
+        return this.apiResponse.success(data);
     }
     async statsCategories() {
         return this.apiResponse.success([]);
@@ -125,14 +127,16 @@ __decorate([
 ], QuizApiController.prototype, "globalClassement", null);
 __decorate([
     (0, common_1.Get)("history"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "history", null);
 __decorate([
     (0, common_1.Get)("stats"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "stats", null);
 __decorate([

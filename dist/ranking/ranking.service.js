@@ -122,6 +122,7 @@ let RankingService = class RankingService {
         const totalTimeSpent = participations.reduce((sum, p) => sum + (p.time_spent || 0), 0);
         const globalRanking = await this.getGlobalRanking();
         const myRanking = globalRanking.find((item) => item.stagiaire.id === stagiaireId.toString());
+        const quizStats = await this.getQuizStats(userId);
         return {
             stagiaire: {
                 id: stagiaireId.toString(),
@@ -129,12 +130,14 @@ let RankingService = class RankingService {
                 image: user.image || null,
             },
             totalPoints: myRanking?.totalPoints || 0,
-            quizCount: completedQuizzes,
-            averageScore: myRanking?.averageScore || 0,
-            completedQuizzes: myRanking?.quizCount || 0,
+            quizCount: quizStats.totalQuizzes,
+            averageScore: quizStats.averageScore,
+            completedQuizzes: quizStats.totalQuizzes,
             totalTimeSpent: totalTimeSpent,
             rang: myRanking?.rang || globalRanking.length + 1,
             level: parseInt(myRanking?.level || "1"),
+            categoryStats: quizStats.categoryStats,
+            levelProgress: quizStats.levelProgress,
         };
     }
     async getStagiaireRewards(stagiaireId) {
@@ -174,6 +177,7 @@ let RankingService = class RankingService {
                 stagiaire.classements.length) *
                 100
             : 0;
+        const quizStats = await this.getQuizStats(stagiaire.user_id);
         return {
             id: stagiaire.id,
             firstname: stagiaire.prenom,
@@ -195,11 +199,7 @@ let RankingService = class RankingService {
                 totalCompleted: stagiaire.classements.length,
                 totalQuiz: stagiaire.classements.length,
                 pourcentageReussite: successPercentage,
-                byLevel: {
-                    debutant: { completed: 0, total: 0 },
-                    intermediaire: { completed: 0, total: 0 },
-                    expert: { completed: 0, total: 0 },
-                },
+                byLevel: quizStats.levelProgress,
                 lastActivity: stagiaire.updated_at,
             },
         };
@@ -221,6 +221,95 @@ let RankingService = class RankingService {
         return {
             totalPoints,
             accessibleLevels,
+        };
+    }
+    async getQuizHistory(userId) {
+        const participations = await this.participationRepository.find({
+            where: { user_id: userId, status: "completed" },
+            relations: ["quiz", "quiz.formation"],
+            order: { completed_at: "DESC" },
+        });
+        return participations.map((p) => {
+            const totalQuestions = parseInt(p.quiz?.nb_points_total || "0") || 10;
+            const correctAnswers = p.correct_answers || p.score || 0;
+            return {
+                id: p.id.toString(),
+                quizId: p.quiz_id.toString(),
+                quiz: {
+                    titre: p.quiz?.titre,
+                    title: p.quiz?.titre,
+                    category: p.quiz?.formation?.categorie,
+                    totalPoints: totalQuestions,
+                    level: p.quiz?.niveau,
+                    formation: p.quiz?.formation,
+                },
+                score: p.score,
+                completedAt: p.completed_at || p.created_at,
+                timeSpent: p.time_spent || 0,
+                totalQuestions: totalQuestions,
+                correctAnswers: correctAnswers,
+            };
+        });
+    }
+    async getQuizStats(userId) {
+        const participations = await this.participationRepository.find({
+            where: { user_id: userId, status: "completed" },
+            relations: ["quiz", "quiz.formation"],
+        });
+        const totalQuizzes = participations.length;
+        let totalPoints = 0;
+        const categoryMap = {};
+        const levelProgress = {
+            débutant: { completed: 0, totalScore: 0 },
+            intermédiaire: { completed: 0, totalScore: 0 },
+            avancé: { completed: 0, totalScore: 0 },
+        };
+        participations.forEach((p) => {
+            const score = p.score || 0;
+            totalPoints += score;
+            const category = p.quiz?.formation?.categorie || "Général";
+            if (!categoryMap[category]) {
+                categoryMap[category] = { count: 0, totalScore: 0 };
+            }
+            categoryMap[category].count++;
+            categoryMap[category].totalScore += score;
+            const level = p.quiz?.niveau?.toLowerCase() || "débutant";
+            if (level.includes("débutant") || level.includes("debutant")) {
+                levelProgress.débutant.completed++;
+                levelProgress.débutant.totalScore += score;
+            }
+            else if (level.includes("intermédiaire") ||
+                level.includes("intermediaire")) {
+                levelProgress.intermédiaire.completed++;
+                levelProgress.intermédiaire.totalScore += score;
+            }
+            else if (level.includes("expert") || level.includes("avancé")) {
+                levelProgress.avancé.completed++;
+                levelProgress.avancé.totalScore += score;
+            }
+        });
+        const averageScore = totalQuizzes > 0 ? totalPoints / totalQuizzes : 0;
+        const categoryStats = Object.keys(categoryMap).map((cat) => ({
+            category: cat,
+            quizCount: categoryMap[cat].count,
+            averageScore: categoryMap[cat].totalScore / categoryMap[cat].count,
+        }));
+        const formatLevelProgress = (levelData) => ({
+            completed: levelData.completed,
+            averageScore: levelData.completed > 0
+                ? levelData.totalScore / levelData.completed
+                : null,
+        });
+        return {
+            totalQuizzes,
+            averageScore,
+            totalPoints,
+            categoryStats,
+            levelProgress: {
+                débutant: formatLevelProgress(levelProgress.débutant),
+                intermédiaire: formatLevelProgress(levelProgress.intermédiaire),
+                avancé: formatLevelProgress(levelProgress.avancé),
+            },
         };
     }
     calculateLevel(points) {

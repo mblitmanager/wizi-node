@@ -8,8 +8,8 @@ export declare class QuizApiController {
     categories(): Promise<any>;
     byCategory(): Promise<any>;
     globalClassement(): Promise<any>;
-    history(): Promise<any>;
-    stats(): Promise<any>;
+    history(req: any): Promise<any>;
+    stats(req: any): Promise<any>;
     statsCategories(): Promise<any>;
     statsPerformance(): Promise<any>;
     statsProgress(): Promise<any>;

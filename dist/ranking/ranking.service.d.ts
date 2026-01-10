@@ -52,10 +52,29 @@ export declare class RankingService {
         totalPoints: any;
         quizCount: number;
         averageScore: number;
-        completedQuizzes: any;
+        completedQuizzes: number;
         totalTimeSpent: number;
         rang: number;
         level: number;
+        categoryStats: {
+            category: string;
+            quizCount: number;
+            averageScore: number;
+        }[];
+        levelProgress: {
+            débutant: {
+                completed: number;
+                averageScore: number;
+            };
+            intermédiaire: {
+                completed: number;
+                averageScore: number;
+            };
+            avancé: {
+                completed: number;
+                averageScore: number;
+            };
+        };
     }>;
     getStagiaireRewards(stagiaireId: number): Promise<{
         points: number;
@@ -84,17 +103,17 @@ export declare class RankingService {
             totalQuiz: number;
             pourcentageReussite: number;
             byLevel: {
-                debutant: {
+                débutant: {
                     completed: number;
-                    total: number;
+                    averageScore: number;
                 };
-                intermediaire: {
+                intermédiaire: {
                     completed: number;
-                    total: number;
+                    averageScore: number;
                 };
-                expert: {
+                avancé: {
                     completed: number;
-                    total: number;
+                    averageScore: number;
                 };
             };
             lastActivity: Date;
@@ -103,6 +122,47 @@ export declare class RankingService {
     getUserPoints(userId: number): Promise<{
         totalPoints: number;
         accessibleLevels: string[];
+    }>;
+    getQuizHistory(userId: number): Promise<{
+        id: string;
+        quizId: string;
+        quiz: {
+            titre: string;
+            title: string;
+            category: string;
+            totalPoints: number;
+            level: string;
+            formation: import("../entities/formation.entity").Formation;
+        };
+        score: number;
+        completedAt: Date;
+        timeSpent: number;
+        totalQuestions: number;
+        correctAnswers: number;
+    }[]>;
+    getQuizStats(userId: number): Promise<{
+        totalQuizzes: number;
+        averageScore: number;
+        totalPoints: number;
+        categoryStats: {
+            category: string;
+            quizCount: number;
+            averageScore: number;
+        }[];
+        levelProgress: {
+            débutant: {
+                completed: number;
+                averageScore: number;
+            };
+            intermédiaire: {
+                completed: number;
+                averageScore: number;
+            };
+            avancé: {
+                completed: number;
+                averageScore: number;
+            };
+        };
     }>;
     calculateLevel(points: number): string;
     private groupBy;

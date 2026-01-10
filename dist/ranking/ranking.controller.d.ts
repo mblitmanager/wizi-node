@@ -50,10 +50,29 @@ export declare class RankingController {
         totalPoints: any;
         quizCount: number;
         averageScore: number;
-        completedQuizzes: any;
+        completedQuizzes: number;
         totalTimeSpent: number;
         rang: number;
         level: number;
+        categoryStats: {
+            category: string;
+            quizCount: number;
+            averageScore: number;
+        }[];
+        levelProgress: {
+            débutant: {
+                completed: number;
+                averageScore: number;
+            };
+            intermédiaire: {
+                completed: number;
+                averageScore: number;
+            };
+            avancé: {
+                completed: number;
+                averageScore: number;
+            };
+        };
     }>;
     getStagiaireDetails(stagiaireId: number): Promise<{
         id: number;
@@ -77,17 +96,17 @@ export declare class RankingController {
             totalQuiz: number;
             pourcentageReussite: number;
             byLevel: {
-                debutant: {
+                débutant: {
                     completed: number;
-                    total: number;
+                    averageScore: number;
                 };
-                intermediaire: {
+                intermédiaire: {
                     completed: number;
-                    total: number;
+                    averageScore: number;
                 };
-                expert: {
+                avancé: {
                     completed: number;
-                    total: number;
+                    averageScore: number;
                 };
             };
             lastActivity: Date;
