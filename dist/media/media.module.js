@@ -15,6 +15,7 @@ const stagiaire_media_controller_1 = require("./stagiaire-media.controller");
 const media_entity_1 = require("../entities/media.entity");
 const media_stagiaire_entity_1 = require("../entities/media-stagiaire.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const formation_entity_1 = require("../entities/formation.entity");
 const achievement_module_1 = require("../achievement/achievement.module");
 let MediaModule = class MediaModule {
 };
@@ -22,7 +23,7 @@ exports.MediaModule = MediaModule;
 exports.MediaModule = MediaModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([media_entity_1.Media, media_stagiaire_entity_1.MediaStagiaire, stagiaire_entity_1.Stagiaire]),
+            typeorm_1.TypeOrmModule.forFeature([media_entity_1.Media, media_stagiaire_entity_1.MediaStagiaire, stagiaire_entity_1.Stagiaire, formation_entity_1.Formation]),
             achievement_module_1.AchievementModule,
         ],
         controllers: [media_controller_1.MediaController, stagiaire_media_controller_1.StagiaireMediaController],

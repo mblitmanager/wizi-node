@@ -210,4 +210,6 @@ export declare class FormationService {
             };
         }[];
     }[]>;
+    getFormationsByCategory(category: string): Promise<{}>;
+    private formatIso;
 }

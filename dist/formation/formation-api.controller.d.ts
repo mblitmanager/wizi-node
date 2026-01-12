@@ -3,6 +3,7 @@ export declare class FormationApiController {
     private formationService;
     constructor(formationService: FormationService);
     getCategories(): Promise<string[]>;
+    getFormationsByCategory(category: string): Promise<{}>;
     listFormations(page: string, req: any): Promise<{
         data: {
             current_page: number;

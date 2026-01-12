@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { Media } from "../entities/media.entity";
 import { MediaStagiaire } from "../entities/media-stagiaire.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
+import { Formation } from "../entities/formation.entity";
 import { AchievementService } from "../achievement/achievement.service";
 
 @Injectable()
@@ -15,6 +16,8 @@ export class MediaService {
     private mediaStagiaireRepository: Repository<MediaStagiaire>,
     @InjectRepository(Stagiaire)
     private stagiaireRepository: Repository<Stagiaire>,
+    @InjectRepository(Formation)
+    private formationRepository: Repository<Formation>,
     private achievementService: AchievementService
   ) {}
 
@@ -135,12 +138,9 @@ export class MediaService {
       .orderBy("m.id", "DESC");
 
     if (userId) {
-      query.leftJoinAndSelect(
-        "m.mediaStagiaires",
-        "ms",
-        "ms.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
-        { userId }
-      );
+      query
+        .leftJoinAndSelect("m.mediaStagiaires", "ms")
+        .leftJoinAndSelect("ms.stagiaire", "s");
     }
 
     const [data, total] = await query
@@ -166,6 +166,31 @@ export class MediaService {
       to: Math.min(page * perPage, total),
       total,
     };
+  }
+
+  async getFormationsWithStatus() {
+    const formations = await this.formationRepository
+      .createQueryBuilder("f")
+      .leftJoinAndSelect("f.medias", "m")
+      .leftJoinAndSelect("m.mediaStagiaires", "ms")
+      .leftJoinAndSelect("ms.stagiaire", "s")
+      .orderBy("f.id", "ASC")
+      .getMany();
+
+    return formations.map((f) => ({
+      id: f.id,
+      titre: f.titre,
+      slug: f.slug,
+      description: f.description,
+      statut: f.statut,
+      duree: f.duree,
+      categorie: f.categorie,
+      image: f.image,
+      icon: f.icon,
+      created_at: this.formatIso(f.created_at),
+      updated_at: this.formatIso(f.updated_at),
+      medias: (f.medias || []).map((m) => this.formatMedia(m)),
+    }));
   }
 
   async markAsWatched(mediaId: number, userId: number) {
@@ -223,23 +248,66 @@ export class MediaService {
       duree: media.duree,
       ordre: media.ordre,
       formation_id: media.formation_id,
-      created_at: media.created_at?.toISOString(),
-      updated_at: media.updated_at?.toISOString(),
+      created_at: this.formatIso(media.created_at),
+      updated_at: this.formatIso(media.updated_at),
       video_url: media.video_url,
       subtitle_url: media.subtitle_url,
-      stagiaires: (media.mediaStagiaires || []).map((ms) => ({
-        id: ms.stagiaire_id,
-        is_watched: ms.is_watched ? 1 : 0,
-        watched_at: ms.watched_at,
-        pivot: {
-          media_id: media.id,
-          stagiaire_id: ms.stagiaire_id,
-          is_watched: ms.is_watched ? 1 : 0,
-          watched_at: ms.watched_at,
-          created_at: ms.created_at,
-          updated_at: ms.updated_at,
-        },
-      })),
+      stagiaires: (media.mediaStagiaires || [])
+        .map((ms) => {
+          const s = ms.stagiaire;
+          if (!s) return null;
+          return {
+            id: s.id,
+            prenom: s.prenom,
+            civilite: s.civilite,
+            telephone: s.telephone,
+            adresse: s.adresse,
+            date_naissance: s.date_naissance
+              ? s.date_naissance.toISOString().split("T")[0]
+              : null,
+            ville: s.ville,
+            code_postal: s.code_postal,
+            date_debut_formation: s.date_debut_formation
+              ? s.date_debut_formation.toISOString().split("T")[0]
+              : null,
+            date_inscription: s.date_inscription
+              ? s.date_inscription.toISOString().split("T")[0]
+              : null,
+            role: s.role,
+            statut: s.statut,
+            user_id: s.user_id,
+            deleted_at: null,
+            created_at: this.formatIso(s.created_at),
+            updated_at: this.formatIso(s.updated_at),
+            date_fin_formation: s.date_fin_formation
+              ? s.date_fin_formation.toISOString().split("T")[0]
+              : null,
+            login_streak: s.login_streak,
+            last_login_at: this.formatIso(s.last_login_at),
+            onboarding_seen: s.onboarding_seen ? 1 : 0,
+            partenaire_id: s.partenaire_id,
+            pivot: {
+              media_id: media.id,
+              stagiaire_id: s.id,
+              is_watched: ms.is_watched ? 1 : 0,
+              watched_at: this.formatIso(ms.watched_at)?.replace(
+                ".000000Z",
+                ""
+              ), // Laravel shows as space separated if not careful, but ISO is safer. Laravel snippet shows space
+              // "watched_at": "2025-11-27 10:42:36"
+              created_at: null,
+              updated_at: this.formatIso(ms.updated_at),
+            },
+          };
+        })
+        .filter(Boolean),
     };
+  }
+
+  private formatIso(date: any) {
+    if (!date) return null;
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString().replace(".000Z", ".000000Z");
   }
 }

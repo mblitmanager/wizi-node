@@ -92,14 +92,6 @@ let FormationService = class FormationService {
             skip: (page - 1) * perPage,
         });
         const lastPage = Math.ceil(total / perPage);
-        const formatIso = (date) => {
-            if (!date)
-                return null;
-            const d = new Date(date);
-            if (isNaN(d.getTime()))
-                return null;
-            return d.toISOString().replace(".000Z", ".000000Z");
-        };
         const data = items.map((formation) => ({
             id: formation.id,
             titre: formation.titre,
@@ -110,8 +102,8 @@ let FormationService = class FormationService {
             categorie: formation.categorie,
             image: formation.image,
             icon: formation.icon,
-            created_at: formatIso(formation.created_at),
-            updated_at: formatIso(formation.updated_at),
+            created_at: this.formatIso(formation.created_at),
+            updated_at: this.formatIso(formation.updated_at),
             catalogue_formation: (formation.catalogue_formations || []).map((cat) => ({
                 id: cat.id,
                 titre: cat.titre,
@@ -125,8 +117,8 @@ let FormationService = class FormationService {
                 duree: cat.duree,
                 formation_id: cat.formation_id,
                 deleted_at: null,
-                created_at: formatIso(cat.created_at),
-                updated_at: formatIso(cat.updated_at),
+                created_at: this.formatIso(cat.created_at),
+                updated_at: this.formatIso(cat.updated_at),
                 objectifs: cat.objectifs,
                 programme: cat.programme,
                 modalites: cat.modalites,
@@ -187,14 +179,6 @@ let FormationService = class FormationService {
             ],
             order: { id: "ASC" },
         });
-        const formatIso = (date) => {
-            if (!date)
-                return null;
-            const d = new Date(date);
-            if (isNaN(d.getTime()))
-                return null;
-            return d.toISOString().replace(".000Z", ".000000Z");
-        };
         return items.map((cat) => ({
             id: cat.id,
             titre: cat.titre,
@@ -208,8 +192,8 @@ let FormationService = class FormationService {
             duree: cat.duree,
             formation_id: cat.formation_id,
             deleted_at: null,
-            created_at: formatIso(cat.created_at),
-            updated_at: formatIso(cat.updated_at),
+            created_at: this.formatIso(cat.created_at),
+            updated_at: this.formatIso(cat.updated_at),
             objectifs: cat.objectifs,
             programme: cat.programme,
             modalites: cat.modalites,
@@ -232,8 +216,8 @@ let FormationService = class FormationService {
                     categorie: cat.formation.categorie,
                     image: cat.formation.image,
                     icon: cat.formation.icon,
-                    created_at: formatIso(cat.formation.created_at),
-                    updated_at: formatIso(cat.formation.updated_at),
+                    created_at: this.formatIso(cat.formation.created_at),
+                    updated_at: this.formatIso(cat.formation.updated_at),
                 }
                 : null,
             formateurs: (cat.formateurs || []).map((f) => ({
@@ -244,8 +228,8 @@ let FormationService = class FormationService {
                 user_id: f.user_id,
                 telephone: f.telephone,
                 deleted_at: null,
-                created_at: formatIso(f.created_at),
-                updated_at: formatIso(f.updated_at),
+                created_at: this.formatIso(f.created_at),
+                updated_at: this.formatIso(f.updated_at),
                 pivot: {
                     catalogue_formation_id: cat.id,
                     formateur_id: f.id,
@@ -266,11 +250,11 @@ let FormationService = class FormationService {
                 statut: scf.stagiaire.statut,
                 user_id: scf.stagiaire.user_id,
                 deleted_at: null,
-                created_at: formatIso(scf.stagiaire.created_at),
-                updated_at: formatIso(scf.stagiaire.updated_at),
+                created_at: this.formatIso(scf.stagiaire.created_at),
+                updated_at: this.formatIso(scf.stagiaire.updated_at),
                 date_fin_formation: scf.stagiaire.date_fin_formation,
                 login_streak: scf.stagiaire.login_streak,
-                last_login_at: formatIso(scf.stagiaire.last_login_at),
+                last_login_at: this.formatIso(scf.stagiaire.last_login_at),
                 onboarding_seen: scf.stagiaire.onboarding_seen ? 1 : 0,
                 partenaire_id: scf.stagiaire.partenaire_id,
                 pivot: {
@@ -280,11 +264,73 @@ let FormationService = class FormationService {
                     date_inscription: scf.date_inscription,
                     date_fin: scf.date_fin,
                     formateur_id: scf.formateur_id,
-                    created_at: formatIso(scf.created_at),
-                    updated_at: formatIso(scf.updated_at),
+                    created_at: this.formatIso(scf.created_at),
+                    updated_at: this.formatIso(scf.updated_at),
                 },
             })),
         }));
+    }
+    async getFormationsByCategory(category) {
+        const allFormations = await this.formationRepository.find({
+            relations: ["catalogue_formations"],
+            order: { id: "ASC" },
+        });
+        const result = {};
+        allFormations.forEach((formation, index) => {
+            if (formation.categorie === category) {
+                result[index.toString()] = {
+                    id: formation.id,
+                    titre: formation.titre,
+                    slug: formation.slug,
+                    description: formation.description,
+                    statut: formation.statut,
+                    duree: formation.duree,
+                    categorie: formation.categorie,
+                    image: formation.image,
+                    icon: formation.icon,
+                    created_at: this.formatIso(formation.created_at),
+                    updated_at: this.formatIso(formation.updated_at),
+                    catalogue_formation: (formation.catalogue_formations || []).map((cat) => ({
+                        id: cat.id,
+                        titre: cat.titre,
+                        description: cat.description,
+                        prerequis: cat.prerequis,
+                        image_url: cat.image_url,
+                        cursus_pdf: cat.cursus_pdf,
+                        tarif: cat.tarif
+                            ? parseFloat(cat.tarif.toString()).toFixed(2)
+                            : null,
+                        certification: cat.certification,
+                        statut: cat.statut,
+                        duree: cat.duree,
+                        formation_id: cat.formation_id,
+                        deleted_at: null,
+                        created_at: this.formatIso(cat.created_at),
+                        updated_at: this.formatIso(cat.updated_at),
+                        objectifs: cat.objectifs,
+                        programme: cat.programme,
+                        modalites: cat.modalites,
+                        modalites_accompagnement: cat.modalites_accompagnement,
+                        moyens_pedagogiques: cat.moyens_pedagogiques,
+                        modalites_suivi: cat.modalites_suivi,
+                        evaluation: cat.evaluation,
+                        lieu: cat.lieu,
+                        niveau: cat.niveau,
+                        public_cible: cat.public_cible,
+                        nombre_participants: cat.nombre_participants,
+                    })),
+                };
+            }
+        });
+        return result;
+    }
+    formatIso(date) {
+        if (!date)
+            return null;
+        const d = new Date(date);
+        if (isNaN(d.getTime()))
+            return null;
+        return d.toISOString().replace(".000Z", ".000000Z");
     }
 };
 exports.FormationService = FormationService;

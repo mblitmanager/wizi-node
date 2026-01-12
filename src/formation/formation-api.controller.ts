@@ -1,14 +1,26 @@
-import { Controller, Get, Query, Request, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Request,
+  UseGuards,
+} from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { FormationService } from "./formation.service";
 
-@Controller("formation")
+@Controller(["formation", "formations"])
 export class FormationApiController {
   constructor(private formationService: FormationService) {}
 
   @Get("categories")
   async getCategories() {
     return this.formationService.getCategories();
+  }
+
+  @Get("categories/:category")
+  async getFormationsByCategory(@Param("category") category: string) {
+    return this.formationService.getFormationsByCategory(category);
   }
 
   @Get("listFormation")

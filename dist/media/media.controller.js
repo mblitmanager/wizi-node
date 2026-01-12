@@ -47,6 +47,9 @@ let MediaController = class MediaController {
         const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/formations/${formationId}/astuces`;
         return this.mediaService.findByFormationAndCategorie(formationId, "astuce", pageNum, 10, baseUrl, userId);
     }
+    async getFormationsWithStatus() {
+        return this.mediaService.getFormationsWithStatus();
+    }
 };
 exports.MediaController = MediaController;
 __decorate([
@@ -92,6 +95,12 @@ __decorate([
     __metadata("design:paramtypes", [Number, Object, String]),
     __metadata("design:returntype", Promise)
 ], MediaController.prototype, "getAstucesByFormation", null);
+__decorate([
+    (0, common_1.Get)("formations-with-status"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], MediaController.prototype, "getFormationsWithStatus", null);
 exports.MediaController = MediaController = __decorate([
     (0, common_1.Controller)("medias"),
     __metadata("design:paramtypes", [media_service_1.MediaService])

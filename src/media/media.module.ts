@@ -6,11 +6,12 @@ import { StagiaireMediaController } from "./stagiaire-media.controller";
 import { Media } from "../entities/media.entity";
 import { MediaStagiaire } from "../entities/media-stagiaire.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
+import { Formation } from "../entities/formation.entity";
 import { AchievementModule } from "../achievement/achievement.module";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Media, MediaStagiaire, Stagiaire]),
+    TypeOrmModule.forFeature([Media, MediaStagiaire, Stagiaire, Formation]),
     AchievementModule,
   ],
   controllers: [MediaController, StagiaireMediaController],

@@ -22,6 +22,9 @@ let FormationApiController = class FormationApiController {
     async getCategories() {
         return this.formationService.getCategories();
     }
+    async getFormationsByCategory(category) {
+        return this.formationService.getFormationsByCategory(category);
+    }
     async listFormations(page, req) {
         const baseUrl = `${req.protocol}://${req.get("host")}`;
         return this.formationService.listFormations({
@@ -38,6 +41,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormationApiController.prototype, "getCategories", null);
 __decorate([
+    (0, common_1.Get)("categories/:category"),
+    __param(0, (0, common_1.Param)("category")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], FormationApiController.prototype, "getFormationsByCategory", null);
+__decorate([
     (0, common_1.Get)("listFormation"),
     __param(0, (0, common_1.Query)("page")),
     __param(1, (0, common_1.Request)()),
@@ -46,7 +56,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormationApiController.prototype, "listFormations", null);
 exports.FormationApiController = FormationApiController = __decorate([
-    (0, common_1.Controller)("formation"),
+    (0, common_1.Controller)(["formation", "formations"]),
     __metadata("design:paramtypes", [formation_service_1.FormationService])
 ], FormationApiController);
 //# sourceMappingURL=formation-api.controller.js.map

@@ -86,4 +86,9 @@ export class MediaController {
       userId
     );
   }
+
+  @Get("formations-with-status")
+  async getFormationsWithStatus() {
+    return this.mediaService.getFormationsWithStatus();
+  }
 }
