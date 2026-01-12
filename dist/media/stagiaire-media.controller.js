@@ -20,22 +20,22 @@ let StagiaireMediaController = class StagiaireMediaController {
     constructor(mediaService) {
         this.mediaService = mediaService;
     }
-    async watch(id, req) {
+    async watched(id, req) {
         const userId = req.user.id;
         return this.mediaService.markAsWatched(id, userId);
     }
 };
 exports.StagiaireMediaController = StagiaireMediaController;
 __decorate([
-    (0, common_1.Post)(":id/watch"),
+    (0, common_1.Post)(":id/watched"),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
-], StagiaireMediaController.prototype, "watch", null);
+], StagiaireMediaController.prototype, "watched", null);
 exports.StagiaireMediaController = StagiaireMediaController = __decorate([
-    (0, common_1.Controller)("stagiaire/medias"),
+    (0, common_1.Controller)("medias"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [media_service_1.MediaService])
 ], StagiaireMediaController);

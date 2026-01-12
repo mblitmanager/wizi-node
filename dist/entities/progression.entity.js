@@ -67,6 +67,14 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
+], Progression.prototype, "points", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], Progression.prototype, "completed_challenges", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
 ], Progression.prototype, "correct_answers", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: 0 }),

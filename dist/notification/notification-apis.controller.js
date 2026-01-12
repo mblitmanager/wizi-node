@@ -96,7 +96,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NotificationsApiController.prototype, "delete", null);
 exports.NotificationsApiController = NotificationsApiController = __decorate([
-    (0, common_1.Controller)("api/notifications"),
+    (0, common_1.Controller)("notifications"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [notification_service_1.NotificationService,
@@ -119,7 +119,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NotificationHistoryApiController.prototype, "index", null);
 exports.NotificationHistoryApiController = NotificationHistoryApiController = __decorate([
-    (0, common_1.Controller)("api/notification-history"),
+    (0, common_1.Controller)("notification-history"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], NotificationHistoryApiController);
@@ -170,7 +170,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ParrainageApiController.prototype, "stats", null);
 exports.ParrainageApiController = ParrainageApiController = __decorate([
-    (0, common_1.Controller)("api/parrainage"),
+    (0, common_1.Controller)("parrainage"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], ParrainageApiController);
@@ -240,7 +240,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AnnouncementsApiController.prototype, "destroy", null);
 exports.AnnouncementsApiController = AnnouncementsApiController = __decorate([
-    (0, common_1.Controller)("api/announcements"),
+    (0, common_1.Controller)("announcements"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AnnouncementsApiController);
@@ -287,7 +287,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AutoRemindersApiController.prototype, "run", null);
 exports.AutoRemindersApiController = AutoRemindersApiController = __decorate([
-    (0, common_1.Controller)("api/auto-reminders"),
+    (0, common_1.Controller)("auto-reminders"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], AutoRemindersApiController);
@@ -307,7 +307,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], OnlineUsersApiController.prototype, "index", null);
 exports.OnlineUsersApiController = OnlineUsersApiController = __decorate([
-    (0, common_1.Controller)("api/online-users"),
+    (0, common_1.Controller)("online-users"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], OnlineUsersApiController);
@@ -328,7 +328,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ContactApiController.prototype, "sendContactForm", null);
 exports.ContactApiController = ContactApiController = __decorate([
-    (0, common_1.Controller)("api/contact"),
+    (0, common_1.Controller)("contact"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], ContactApiController);
 let EmailApiController = class EmailApiController {
@@ -349,7 +349,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], EmailApiController.prototype, "send", null);
 exports.EmailApiController = EmailApiController = __decorate([
-    (0, common_1.Controller)("api/email"),
+    (0, common_1.Controller)("email"),
     __metadata("design:paramtypes", [mail_service_1.MailService,
         api_response_service_1.ApiResponseService])
 ], EmailApiController);
@@ -370,7 +370,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NotifyApiController.prototype, "send", null);
 exports.NotifyApiController = NotifyApiController = __decorate([
-    (0, common_1.Controller)("api/notify"),
+    (0, common_1.Controller)("notify"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], NotifyApiController);
 let SendDailyNotificationController = class SendDailyNotificationController {
@@ -389,7 +389,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SendDailyNotificationController.prototype, "send", null);
 exports.SendDailyNotificationController = SendDailyNotificationController = __decorate([
-    (0, common_1.Controller)("api/send-daily-notification"),
+    (0, common_1.Controller)("send-daily-notification"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], SendDailyNotificationController);
 let ParrainageEventsApiController = class ParrainageEventsApiController {
@@ -410,7 +410,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ParrainageEventsApiController.prototype, "index", null);
 exports.ParrainageEventsApiController = ParrainageEventsApiController = __decorate([
-    (0, common_1.Controller)("api/parrainage-events"),
+    (0, common_1.Controller)("parrainage-events"),
     __metadata("design:paramtypes", [notification_service_1.NotificationService,
         api_response_service_1.ApiResponseService])
 ], ParrainageEventsApiController);

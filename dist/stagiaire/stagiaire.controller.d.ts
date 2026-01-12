@@ -31,7 +31,110 @@ export declare class StagiaireController {
         rang: number;
         level: string;
     }>;
-    getProfile(req: any): Promise<import("../entities/stagiaire.entity").Stagiaire>;
+    getProfile(req: any): Promise<{
+        stagiaire: {
+            id: number;
+            civilite: string;
+            prenom: string;
+            telephone: string;
+            adresse: string;
+            ville: string;
+            code_postal: string;
+            date_naissance: Date;
+            date_debut_formation: Date;
+            date_inscription: Date;
+            role: string;
+            statut: string;
+            user_id: number;
+            onboarding_seen: boolean;
+            user: {
+                id: number;
+                name: string;
+                email: string;
+                image: string;
+            };
+        };
+        stats: {
+            stagiaire: {
+                id: string;
+                prenom: string;
+                image: string;
+            };
+            totalPoints: any;
+            quizCount: number;
+            averageScore: number;
+            completedQuizzes: number;
+            totalTimeSpent: number;
+            rang: number;
+            level: number;
+            categoryStats: {
+                category: string;
+                quizCount: number;
+                averageScore: number;
+            }[];
+            levelProgress: {
+                débutant: {
+                    completed: number;
+                    averageScore: number;
+                };
+                intermédiaire: {
+                    completed: number;
+                    averageScore: number;
+                };
+                avancé: {
+                    completed: number;
+                    averageScore: number;
+                };
+            };
+        };
+        formations: {
+            success: boolean;
+            data: any[];
+        };
+        agenda: {
+            formations: any[];
+            events: import("../entities/agenda.entity").Agenda[];
+            upcoming_events: import("../entities/agenda.entity").Agenda[];
+        };
+        notifications: import("../entities/notification.entity").Notification[];
+        media: {
+            tutorials: {
+                id: number;
+                titre: string;
+                description: string;
+                url: string;
+                size: number;
+                mime: string;
+                uploaded_by: number;
+                video_platform: string;
+                video_file_path: string;
+                subtitle_file_path: string;
+                subtitle_language: string;
+                type: string;
+                categorie: string;
+                duree: string;
+                ordre: number;
+                formation_id: number;
+                created_at: string;
+                updated_at: string;
+                video_url: string;
+                subtitle_url: string;
+                stagiaires: {
+                    id: number;
+                    is_watched: number;
+                    watched_at: Date;
+                    pivot: {
+                        media_id: number;
+                        stagiaire_id: number;
+                        is_watched: number;
+                        watched_at: Date;
+                        created_at: Date;
+                        updated_at: Date;
+                    };
+                }[];
+            }[];
+        };
+    }>;
     testAuth(): Promise<{
         message: string;
     }>;
@@ -211,5 +314,21 @@ export declare class StagiaireController {
         logo: string;
         actif: boolean;
         contacts: any;
+    }>;
+    updatePassword(req: any, data: any): Promise<{
+        success: boolean;
+    }>;
+    setOnboardingSeen(req: any): Promise<{
+        success: boolean;
+    }>;
+    getOnlineUsers(): Promise<{
+        online_users: import("../entities/user.entity").User[];
+        recently_online: import("../entities/user.entity").User[];
+        all_users: import("../entities/user.entity").User[];
+    }>;
+    uploadProfilePhoto(req: any, file: any): Promise<{
+        success: boolean;
+        image: string;
+        image_url: string;
     }>;
 }

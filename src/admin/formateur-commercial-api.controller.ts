@@ -10,7 +10,7 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("api/formateur")
+@Controller("formateur")
 @UseGuards(AuthGuard("jwt"))
 export class FormateurApiController {
   constructor(private apiResponse: ApiResponseService) {}
@@ -96,7 +96,7 @@ export class FormateurApiController {
   }
 }
 
-@Controller("api/commercial/stats")
+@Controller("commercial/stats")
 @UseGuards(AuthGuard("jwt"))
 export class CommercialApiController {
   constructor(private apiResponse: ApiResponseService) {}

@@ -176,7 +176,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "stats", null);
 exports.FormateurApiController = FormateurApiController = __decorate([
-    (0, common_1.Controller)("api/formateur"),
+    (0, common_1.Controller)("formateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], FormateurApiController);
@@ -197,7 +197,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CommercialApiController.prototype, "dashboard", null);
 exports.CommercialApiController = CommercialApiController = __decorate([
-    (0, common_1.Controller)("api/commercial/stats"),
+    (0, common_1.Controller)("commercial/stats"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], CommercialApiController);

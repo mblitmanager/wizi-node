@@ -17,7 +17,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "../entities/user.entity";
 import { Repository } from "typeorm";
 
-@Controller("api/notifications")
+@Controller("notifications")
 @UseGuards(AuthGuard("jwt"))
 export class NotificationsApiController {
   constructor(
@@ -67,7 +67,7 @@ export class NotificationsApiController {
   }
 }
 
-@Controller("api/notification-history")
+@Controller("notification-history")
 @UseGuards(AuthGuard("jwt"))
 export class NotificationHistoryApiController {
   constructor(private apiResponse: ApiResponseService) {}
@@ -78,7 +78,7 @@ export class NotificationHistoryApiController {
   }
 }
 
-@Controller("api/parrainage")
+@Controller("parrainage")
 @UseGuards(AuthGuard("jwt"))
 export class ParrainageApiController {
   constructor(private apiResponse: ApiResponseService) {}
@@ -106,7 +106,7 @@ export class ParrainageApiController {
   }
 }
 
-@Controller("api/announcements")
+@Controller("announcements")
 @UseGuards(AuthGuard("jwt"))
 export class AnnouncementsApiController {
   constructor(private apiResponse: ApiResponseService) {}
@@ -142,7 +142,7 @@ export class AnnouncementsApiController {
   }
 }
 
-@Controller("api/auto-reminders")
+@Controller("auto-reminders")
 @UseGuards(AuthGuard("jwt"))
 export class AutoRemindersApiController {
   constructor(private apiResponse: ApiResponseService) {}
@@ -168,7 +168,7 @@ export class AutoRemindersApiController {
   }
 }
 
-@Controller("api/online-users")
+@Controller("online-users")
 @UseGuards(AuthGuard("jwt"))
 export class OnlineUsersApiController {
   constructor(private apiResponse: ApiResponseService) {}
@@ -179,7 +179,7 @@ export class OnlineUsersApiController {
   }
 }
 
-@Controller("api/contact")
+@Controller("contact")
 export class ContactApiController {
   constructor(private apiResponse: ApiResponseService) {}
 
@@ -189,7 +189,7 @@ export class ContactApiController {
   }
 }
 
-@Controller("api/email")
+@Controller("email")
 export class EmailApiController {
   constructor(
     private mailService: MailService,
@@ -202,7 +202,7 @@ export class EmailApiController {
   }
 }
 
-@Controller("api/notify")
+@Controller("notify")
 export class NotifyApiController {
   constructor(private apiResponse: ApiResponseService) {}
 
@@ -212,7 +212,7 @@ export class NotifyApiController {
   }
 }
 
-@Controller("api/send-daily-notification")
+@Controller("send-daily-notification")
 export class SendDailyNotificationController {
   constructor(private apiResponse: ApiResponseService) {}
 
@@ -222,7 +222,7 @@ export class SendDailyNotificationController {
   }
 }
 
-@Controller("api/parrainage-events")
+@Controller("parrainage-events")
 export class ParrainageEventsApiController {
   constructor(
     private notificationService: NotificationService,

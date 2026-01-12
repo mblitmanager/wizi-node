@@ -5,6 +5,10 @@ import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { Formation } from "../entities/formation.entity";
 import { Quiz } from "../entities/quiz.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
+import { RankingService } from "../ranking/ranking.service";
+import { User } from "../entities/user.entity";
+import { AgendaService } from "../agenda/agenda.service";
+import { MediaService } from "../media/media.service";
 export declare class StagiaireService {
     private stagiaireRepository;
     private classementRepository;
@@ -12,7 +16,11 @@ export declare class StagiaireService {
     private formationRepository;
     private quizRepository;
     private participationRepository;
-    constructor(stagiaireRepository: Repository<Stagiaire>, classementRepository: Repository<Classement>, catalogueRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, quizRepository: Repository<Quiz>, participationRepository: Repository<QuizParticipation>);
+    private userRepository;
+    private rankingService;
+    private agendaService;
+    private mediaService;
+    constructor(stagiaireRepository: Repository<Stagiaire>, classementRepository: Repository<Classement>, catalogueRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, quizRepository: Repository<Quiz>, participationRepository: Repository<QuizParticipation>, userRepository: Repository<User>, rankingService: RankingService, agendaService: AgendaService, mediaService: MediaService);
     getProfile(userId: number): Promise<Stagiaire>;
     getHomeData(userId: number): Promise<{
         user: {
@@ -191,5 +199,117 @@ export declare class StagiaireService {
         logo: string;
         actif: boolean;
         contacts: any;
+    }>;
+    getDetailedProfile(userId: number): Promise<{
+        stagiaire: {
+            id: number;
+            civilite: string;
+            prenom: string;
+            telephone: string;
+            adresse: string;
+            ville: string;
+            code_postal: string;
+            date_naissance: Date;
+            date_debut_formation: Date;
+            date_inscription: Date;
+            role: string;
+            statut: string;
+            user_id: number;
+            onboarding_seen: boolean;
+            user: {
+                id: number;
+                name: string;
+                email: string;
+                image: string;
+            };
+        };
+        stats: {
+            stagiaire: {
+                id: string;
+                prenom: string;
+                image: string;
+            };
+            totalPoints: any;
+            quizCount: number;
+            averageScore: number;
+            completedQuizzes: number;
+            totalTimeSpent: number;
+            rang: number;
+            level: number;
+            categoryStats: {
+                category: string;
+                quizCount: number;
+                averageScore: number;
+            }[];
+            levelProgress: {
+                débutant: {
+                    completed: number;
+                    averageScore: number;
+                };
+                intermédiaire: {
+                    completed: number;
+                    averageScore: number;
+                };
+                avancé: {
+                    completed: number;
+                    averageScore: number;
+                };
+            };
+        };
+        formations: {
+            success: boolean;
+            data: any[];
+        };
+        agenda: {
+            formations: any[];
+            events: import("../entities/agenda.entity").Agenda[];
+            upcoming_events: import("../entities/agenda.entity").Agenda[];
+        };
+        notifications: import("../entities/notification.entity").Notification[];
+        media: {
+            tutorials: {
+                id: number;
+                titre: string;
+                description: string;
+                url: string;
+                size: number;
+                mime: string;
+                uploaded_by: number;
+                video_platform: string;
+                video_file_path: string;
+                subtitle_file_path: string;
+                subtitle_language: string;
+                type: string;
+                categorie: string;
+                duree: string;
+                ordre: number;
+                formation_id: number;
+                created_at: string;
+                updated_at: string;
+                video_url: string;
+                subtitle_url: string;
+                stagiaires: {
+                    id: number;
+                    is_watched: number;
+                    watched_at: Date;
+                    pivot: {
+                        media_id: number;
+                        stagiaire_id: number;
+                        is_watched: number;
+                        watched_at: Date;
+                        created_at: Date;
+                        updated_at: Date;
+                    };
+                }[];
+            }[];
+        };
+    }>;
+    updatePassword(userId: number, data: any): Promise<boolean>;
+    updateProfilePhoto(userId: number, photoPath: string): Promise<boolean>;
+    setOnboardingSeen(userId: number): Promise<boolean>;
+    getOnlineUsers(): Promise<{
+        online_users: User[];
+        recently_online: User[];
+        all_users: User[];
     }>;
 }

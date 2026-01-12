@@ -19,6 +19,9 @@ import { Formation } from "../entities/formation.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 import { InscriptionModule } from "../inscription/inscription.module";
 import { RankingModule } from "../ranking/ranking.module";
+import { AgendaModule } from "../agenda/agenda.module";
+import { MediaModule } from "../media/media.module";
+import { User } from "../entities/user.entity";
 
 @Module({
   imports: [
@@ -32,9 +35,12 @@ import { RankingModule } from "../ranking/ranking.module";
       Quiz,
       QuizParticipation,
       StagiaireCatalogueFormation,
+      User,
     ]),
     InscriptionModule,
     RankingModule,
+    AgendaModule,
+    MediaModule,
   ],
   providers: [StagiaireService, ApiResponseService],
   controllers: [

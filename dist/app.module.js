@@ -62,6 +62,7 @@ const media_module_1 = require("./media/media.module");
 const mail_module_1 = require("./mail/mail.module");
 const agenda_module_1 = require("./agenda/agenda.module");
 const announcement_module_1 = require("./announcement/announcement.module");
+const challenge_module_1 = require("./challenge/challenge.module");
 let AppModule = class AppModule {
     constructor() {
         console.log("AppModule loaded - MediaModule should be active");
@@ -164,6 +165,7 @@ exports.AppModule = AppModule = __decorate([
             media_module_1.MediaModule,
             agenda_module_1.AgendaModule,
             announcement_module_1.AnnouncementModule,
+            challenge_module_1.ChallengeModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

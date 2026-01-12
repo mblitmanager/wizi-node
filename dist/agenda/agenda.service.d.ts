@@ -14,5 +14,7 @@ export declare class AgendaService {
     }>;
     exportAgendaToICS(userId: number): Promise<string>;
     getStagiaireNotifications(userId: number): Promise<Notification[]>;
+    markNotificationAsRead(notificationId: number): Promise<boolean>;
+    markAllNotificationsAsRead(userId: number): Promise<boolean>;
     private formatDateForICS;
 }

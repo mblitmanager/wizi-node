@@ -9,8 +9,14 @@ import {
   Param,
   Body,
   NotFoundException,
+  Put,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { extname } from "path";
 import { StagiaireService } from "./stagiaire.service";
 import { InscriptionService } from "../inscription/inscription.service";
 import { RankingService } from "../ranking/ranking.service";
@@ -32,7 +38,14 @@ export class StagiaireController {
   @UseGuards(AuthGuard("jwt"))
   @Get("profile")
   async getProfile(@Request() req) {
-    return this.stagiaireService.getProfile(req.user.id);
+    try {
+      return await this.stagiaireService.getDetailedProfile(req.user.id);
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
   @Get("test-auth")
@@ -191,6 +204,89 @@ export class StagiaireController {
         error instanceof NotFoundException
           ? HttpStatus.NOT_FOUND
           : HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("update-password")
+  async updatePassword(@Request() req, @Body() data: any) {
+    try {
+      const success = await this.stagiaireService.updatePassword(
+        req.user.id,
+        data
+      );
+      return { success };
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("onboarding-seen")
+  async setOnboardingSeen(@Request() req) {
+    try {
+      const success = await this.stagiaireService.setOnboardingSeen(
+        req.user.id
+      );
+      return { success };
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("online-users")
+  async getOnlineUsers() {
+    try {
+      return await this.stagiaireService.getOnlineUsers();
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Post("profile-photo")
+  @UseInterceptors(
+    FileInterceptor("avatar", {
+      storage: diskStorage({
+        destination: "./public/uploads/users",
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join("");
+          return cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    })
+  )
+  async uploadProfilePhoto(@Request() req, @UploadedFile() file) {
+    if (!file) {
+      throw new HttpException("No file uploaded", HttpStatus.BAD_REQUEST);
+    }
+    const photoPath = `uploads/users/${file.filename}`;
+    // We need updateProfilePhoto in service to save path to User entity
+    try {
+      await this.stagiaireService.updateProfilePhoto(req.user.id, photoPath);
+      return {
+        success: true,
+        image: photoPath,
+        image_url: `/${photoPath}`, // Placeholder for asset() equivalent
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }

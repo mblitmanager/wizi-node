@@ -8,6 +8,11 @@ import { Formation } from "../entities/formation.entity";
 import { Quiz } from "../entities/quiz.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { In } from "typeorm";
+import { RankingService } from "../ranking/ranking.service";
+import { User } from "../entities/user.entity";
+import * as bcrypt from "bcrypt";
+import { AgendaService } from "../agenda/agenda.service";
+import { MediaService } from "../media/media.service";
 
 @Injectable()
 export class StagiaireService {
@@ -23,7 +28,12 @@ export class StagiaireService {
     @InjectRepository(Quiz)
     private quizRepository: Repository<Quiz>,
     @InjectRepository(QuizParticipation)
-    private participationRepository: Repository<QuizParticipation>
+    private participationRepository: Repository<QuizParticipation>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    private rankingService: RankingService,
+    private agendaService: AgendaService,
+    private mediaService: MediaService
   ) {}
 
   async getProfile(userId: number) {
@@ -467,6 +477,120 @@ export class StagiaireService {
       logo: partenaire.logo,
       actif: Boolean(partenaire.actif ?? true),
       contacts: partenaire.contacts ?? [],
+    };
+  }
+
+  async getDetailedProfile(userId: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { user_id: userId },
+      relations: [
+        "user",
+        "formateurs",
+        "formateurs.user",
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+        "classements",
+        "classements.quiz",
+      ],
+    });
+
+    if (!stagiaire) {
+      throw new NotFoundException(`Stagiaire not found`);
+    }
+
+    const stats = await this.rankingService.getStagiaireProgress(userId);
+    const formations = await this.getFormationsByStagiaire(stagiaire.id);
+    const agenda = await this.agendaService.getStagiaireAgenda(userId);
+    const notifications =
+      await this.agendaService.getStagiaireNotifications(userId);
+    const media = await this.mediaService.getTutorials(userId);
+
+    return {
+      stagiaire: {
+        id: stagiaire.id,
+        civilite: stagiaire.civilite,
+        prenom: stagiaire.prenom,
+        telephone: stagiaire.telephone,
+        adresse: stagiaire.adresse,
+        ville: stagiaire.ville,
+        code_postal: stagiaire.code_postal,
+        date_naissance: stagiaire.date_naissance,
+        date_debut_formation: stagiaire.date_debut_formation,
+        date_inscription: stagiaire.date_inscription,
+        role: stagiaire.role,
+        statut: stagiaire.statut,
+        user_id: stagiaire.user_id,
+        onboarding_seen: stagiaire.onboarding_seen,
+        user: {
+          id: stagiaire.user?.id,
+          name: stagiaire.user?.name,
+          email: stagiaire.user?.email,
+          image: stagiaire.user?.image,
+        },
+      },
+      stats,
+      formations,
+      agenda,
+      notifications,
+      media: {
+        tutorials: media,
+      },
+    };
+  }
+
+  async updatePassword(userId: number, data: any) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException("User not found");
+
+    const isMatch = await bcrypt.compare(data.current_password, user.password);
+    if (!isMatch) {
+      throw new Error("Current password does not match");
+    }
+
+    user.password = await bcrypt.hash(data.new_password, 10);
+    await this.userRepository.save(user);
+    return true;
+  }
+
+  async updateProfilePhoto(userId: number, photoPath: string) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException("User not found");
+
+    user.image = photoPath;
+    await this.userRepository.save(user);
+    return true;
+  }
+
+  async setOnboardingSeen(userId: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { user_id: userId },
+    });
+    if (!stagiaire) throw new NotFoundException("Stagiaire not found");
+
+    stagiaire.onboarding_seen = true;
+    await this.stagiaireRepository.save(stagiaire);
+    return true;
+  }
+
+  async getOnlineUsers() {
+    // Current user and others who are online
+    const online = await this.userRepository.find({
+      where: { is_online: true },
+      select: ["id", "name", "image", "last_activity_at"],
+      order: { last_activity_at: "DESC" },
+    });
+
+    const recentlyOnline = await this.userRepository.find({
+      where: { is_online: false },
+      select: ["id", "name", "image", "last_activity_at"],
+      order: { last_activity_at: "DESC" },
+      take: 10,
+    });
+
+    return {
+      online_users: online,
+      recently_online: recentlyOnline,
+      all_users: [...online, ...recentlyOnline],
     };
   }
 }

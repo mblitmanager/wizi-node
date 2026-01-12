@@ -22,6 +22,7 @@ exports.AgendaModule = AgendaModule = __decorate([
         imports: [typeorm_1.TypeOrmModule.forFeature([agenda_entity_1.Agenda, stagiaire_entity_1.Stagiaire, notification_entity_1.Notification])],
         controllers: [agenda_controller_1.AgendaController],
         providers: [agenda_service_1.AgendaService],
+        exports: [agenda_service_1.AgendaService],
     })
 ], AgendaModule);
 //# sourceMappingURL=agenda.module.js.map

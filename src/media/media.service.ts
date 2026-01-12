@@ -21,12 +21,31 @@ export class MediaService {
   async findAll() {
     return this.mediaRepository.find();
   }
-
   async findByType(type: string) {
     return this.mediaRepository.find({
       where: { type },
       order: { created_at: "DESC" },
     });
+  }
+
+  async getTutorials(userId?: number) {
+    // Standard tutorials categorie in Laravel is 'tutoriel'
+    const query = this.mediaRepository
+      .createQueryBuilder("m")
+      .where("m.categorie = :categorie", { categorie: "tutoriel" })
+      .orderBy("m.id", "DESC");
+
+    if (userId) {
+      query.leftJoinAndSelect(
+        "m.mediaStagiaires",
+        "ms",
+        "ms.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
+        { userId }
+      );
+    }
+
+    const data = await query.getMany();
+    return data.map((media) => this.formatMedia(media));
   }
 
   async findByCategoriePaginated(

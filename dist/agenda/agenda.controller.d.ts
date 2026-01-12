@@ -10,4 +10,10 @@ export declare class AgendaController {
     }>;
     exportAgenda(req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     getNotifications(req: any): Promise<import("../entities/notification.entity").Notification[]>;
+    markAsRead(id: number): Promise<{
+        success: boolean;
+    }>;
+    markAllAsRead(req: any): Promise<{
+        success: boolean;
+    }>;
 }

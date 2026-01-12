@@ -36,6 +36,17 @@ let MediaService = class MediaService {
             order: { created_at: "DESC" },
         });
     }
+    async getTutorials(userId) {
+        const query = this.mediaRepository
+            .createQueryBuilder("m")
+            .where("m.categorie = :categorie", { categorie: "tutoriel" })
+            .orderBy("m.id", "DESC");
+        if (userId) {
+            query.leftJoinAndSelect("m.mediaStagiaires", "ms", "ms.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId });
+        }
+        const data = await query.getMany();
+        return data.map((media) => this.formatMedia(media));
+    }
     async findByCategoriePaginated(categorie, page = 1, perPage = 10, baseUrl = "https://localhost:3000/api/medias/astuces", userId) {
         const query = this.mediaRepository
             .createQueryBuilder("m")

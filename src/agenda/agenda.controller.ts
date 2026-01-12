@@ -7,6 +7,8 @@ import {
   HttpStatus,
   Header,
   Res,
+  Put,
+  Param,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AgendaService } from "./agenda.service";
@@ -50,6 +52,36 @@ export class AgendaController {
   async getNotifications(@Request() req) {
     try {
       return await this.agendaService.getStagiaireNotifications(req.user.id);
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Put("notifications/:id/read")
+  async markAsRead(@Param("id") id: number) {
+    try {
+      const success = await this.agendaService.markNotificationAsRead(id);
+      return { success };
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Put("notifications/read-all")
+  async markAllAsRead(@Request() req) {
+    try {
+      const success = await this.agendaService.markAllNotificationsAsRead(
+        req.user.id
+      );
+      return { success };
     } catch (error) {
       throw new HttpException(
         error.message || "Internal error",

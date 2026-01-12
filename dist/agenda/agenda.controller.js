@@ -47,6 +47,24 @@ let AgendaController = class AgendaController {
             throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async markAsRead(id) {
+        try {
+            const success = await this.agendaService.markNotificationAsRead(id);
+            return { success };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async markAllAsRead(req) {
+        try {
+            const success = await this.agendaService.markAllNotificationsAsRead(req.user.id);
+            return { success };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 };
 exports.AgendaController = AgendaController;
 __decorate([
@@ -74,6 +92,22 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AgendaController.prototype, "getNotifications", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Put)("notifications/:id/read"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AgendaController.prototype, "markAsRead", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Put)("notifications/read-all"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AgendaController.prototype, "markAllAsRead", null);
 exports.AgendaController = AgendaController = __decorate([
     (0, common_1.Controller)("stagiaire/agenda"),
     __metadata("design:paramtypes", [agenda_service_1.AgendaService])

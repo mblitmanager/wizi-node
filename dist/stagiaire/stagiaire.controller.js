@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StagiaireController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
 const stagiaire_service_1 = require("./stagiaire.service");
 const inscription_service_1 = require("../inscription/inscription.service");
 const ranking_service_1 = require("../ranking/ranking.service");
@@ -28,7 +31,12 @@ let StagiaireController = class StagiaireController {
         return this.rankingService.getMyRanking(req.user.id);
     }
     async getProfile(req) {
-        return this.stagiaireService.getProfile(req.user.id);
+        try {
+            return await this.stagiaireService.getDetailedProfile(req.user.id);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async testAuth() {
         return { message: "Public endpoint works" };
@@ -120,6 +128,49 @@ let StagiaireController = class StagiaireController {
             throw new common_1.HttpException(error.message || "Internal error", error instanceof common_1.NotFoundException
                 ? common_1.HttpStatus.NOT_FOUND
                 : common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async updatePassword(req, data) {
+        try {
+            const success = await this.stagiaireService.updatePassword(req.user.id, data);
+            return { success };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.BAD_REQUEST);
+        }
+    }
+    async setOnboardingSeen(req) {
+        try {
+            const success = await this.stagiaireService.setOnboardingSeen(req.user.id);
+            return { success };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async getOnlineUsers() {
+        try {
+            return await this.stagiaireService.getOnlineUsers();
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async uploadProfilePhoto(req, file) {
+        if (!file) {
+            throw new common_1.HttpException("No file uploaded", common_1.HttpStatus.BAD_REQUEST);
+        }
+        const photoPath = `uploads/users/${file.filename}`;
+        try {
+            await this.stagiaireService.updateProfilePhoto(req.user.id, photoPath);
+            return {
+                success: true,
+                image: photoPath,
+                image_url: `/${photoPath}`,
+            };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };
@@ -227,6 +278,51 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StagiaireController.prototype, "getMyPartner", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Post)("update-password"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "updatePassword", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Post)("onboarding-seen"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "setOnboardingSeen", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("online-users"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "getOnlineUsers", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Post)("profile-photo"),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)("avatar", {
+        storage: (0, multer_1.diskStorage)({
+            destination: "./public/uploads/users",
+            filename: (req, file, cb) => {
+                const randomName = Array(32)
+                    .fill(null)
+                    .map(() => Math.round(Math.random() * 16).toString(16))
+                    .join("");
+                return cb(null, `${randomName}${(0, path_1.extname)(file.originalname)}`);
+            },
+        }),
+    })),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "uploadProfilePhoto", null);
 exports.StagiaireController = StagiaireController = __decorate([
     (0, common_1.Controller)("stagiaire"),
     __metadata("design:paramtypes", [stagiaire_service_1.StagiaireService,

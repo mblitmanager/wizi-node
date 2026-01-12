@@ -50,6 +50,7 @@ import { MediaModule } from "./media/media.module";
 import { MailModule } from "./mail/mail.module";
 import { AgendaModule } from "./agenda/agenda.module";
 import { AnnouncementModule } from "./announcement/announcement.module";
+import { ChallengeModule } from "./challenge/challenge.module";
 
 @Module({
   imports: [
@@ -143,6 +144,7 @@ import { AnnouncementModule } from "./announcement/announcement.module";
     MediaModule,
     AgendaModule,
     AnnouncementModule,
+    ChallengeModule,
   ],
   controllers: [AppController],
   providers: [

@@ -86,6 +86,16 @@ let AgendaService = class AgendaService {
             order: { created_at: "DESC" },
         });
     }
+    async markNotificationAsRead(notificationId) {
+        const result = await this.notificationRepository.update(notificationId, {
+            read: true,
+        });
+        return (result.affected ?? 0) > 0;
+    }
+    async markAllNotificationsAsRead(userId) {
+        const result = await this.notificationRepository.update({ user_id: userId, read: false }, { read: true });
+        return (result.affected ?? 0) > 0;
+    }
     formatDateForICS(date) {
         if (!date)
             return "";

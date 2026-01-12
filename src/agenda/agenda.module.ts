@@ -10,5 +10,6 @@ import { Notification } from "../entities/notification.entity";
   imports: [TypeOrmModule.forFeature([Agenda, Stagiaire, Notification])],
   controllers: [AgendaController],
   providers: [AgendaService],
+  exports: [AgendaService],
 })
 export class AgendaModule {}

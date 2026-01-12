@@ -95,6 +95,21 @@ export class AgendaService {
     });
   }
 
+  async markNotificationAsRead(notificationId: number): Promise<boolean> {
+    const result = await this.notificationRepository.update(notificationId, {
+      read: true,
+    });
+    return (result.affected ?? 0) > 0;
+  }
+
+  async markAllNotificationsAsRead(userId: number): Promise<boolean> {
+    const result = await this.notificationRepository.update(
+      { user_id: userId, read: false },
+      { read: true }
+    );
+    return (result.affected ?? 0) > 0;
+  }
+
   private formatDateForICS(date: Date): string {
     if (!date) return "";
     return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";

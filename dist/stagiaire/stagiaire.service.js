@@ -23,14 +23,23 @@ const formation_entity_1 = require("../entities/formation.entity");
 const quiz_entity_1 = require("../entities/quiz.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
 const typeorm_3 = require("typeorm");
+const ranking_service_1 = require("../ranking/ranking.service");
+const user_entity_1 = require("../entities/user.entity");
+const bcrypt = require("bcrypt");
+const agenda_service_1 = require("../agenda/agenda.service");
+const media_service_1 = require("../media/media.service");
 let StagiaireService = class StagiaireService {
-    constructor(stagiaireRepository, classementRepository, catalogueRepository, formationRepository, quizRepository, participationRepository) {
+    constructor(stagiaireRepository, classementRepository, catalogueRepository, formationRepository, quizRepository, participationRepository, userRepository, rankingService, agendaService, mediaService) {
         this.stagiaireRepository = stagiaireRepository;
         this.classementRepository = classementRepository;
         this.catalogueRepository = catalogueRepository;
         this.formationRepository = formationRepository;
         this.quizRepository = quizRepository;
         this.participationRepository = participationRepository;
+        this.userRepository = userRepository;
+        this.rankingService = rankingService;
+        this.agendaService = agendaService;
+        this.mediaService = mediaService;
     }
     async getProfile(userId) {
         return this.stagiaireRepository.findOne({
@@ -392,6 +401,107 @@ let StagiaireService = class StagiaireService {
             contacts: partenaire.contacts ?? [],
         };
     }
+    async getDetailedProfile(userId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { user_id: userId },
+            relations: [
+                "user",
+                "formateurs",
+                "formateurs.user",
+                "stagiaire_catalogue_formations",
+                "stagiaire_catalogue_formations.catalogue_formation",
+                "classements",
+                "classements.quiz",
+            ],
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException(`Stagiaire not found`);
+        }
+        const stats = await this.rankingService.getStagiaireProgress(userId);
+        const formations = await this.getFormationsByStagiaire(stagiaire.id);
+        const agenda = await this.agendaService.getStagiaireAgenda(userId);
+        const notifications = await this.agendaService.getStagiaireNotifications(userId);
+        const media = await this.mediaService.getTutorials(userId);
+        return {
+            stagiaire: {
+                id: stagiaire.id,
+                civilite: stagiaire.civilite,
+                prenom: stagiaire.prenom,
+                telephone: stagiaire.telephone,
+                adresse: stagiaire.adresse,
+                ville: stagiaire.ville,
+                code_postal: stagiaire.code_postal,
+                date_naissance: stagiaire.date_naissance,
+                date_debut_formation: stagiaire.date_debut_formation,
+                date_inscription: stagiaire.date_inscription,
+                role: stagiaire.role,
+                statut: stagiaire.statut,
+                user_id: stagiaire.user_id,
+                onboarding_seen: stagiaire.onboarding_seen,
+                user: {
+                    id: stagiaire.user?.id,
+                    name: stagiaire.user?.name,
+                    email: stagiaire.user?.email,
+                    image: stagiaire.user?.image,
+                },
+            },
+            stats,
+            formations,
+            agenda,
+            notifications,
+            media: {
+                tutorials: media,
+            },
+        };
+    }
+    async updatePassword(userId, data) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user)
+            throw new common_1.NotFoundException("User not found");
+        const isMatch = await bcrypt.compare(data.current_password, user.password);
+        if (!isMatch) {
+            throw new Error("Current password does not match");
+        }
+        user.password = await bcrypt.hash(data.new_password, 10);
+        await this.userRepository.save(user);
+        return true;
+    }
+    async updateProfilePhoto(userId, photoPath) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user)
+            throw new common_1.NotFoundException("User not found");
+        user.image = photoPath;
+        await this.userRepository.save(user);
+        return true;
+    }
+    async setOnboardingSeen(userId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!stagiaire)
+            throw new common_1.NotFoundException("Stagiaire not found");
+        stagiaire.onboarding_seen = true;
+        await this.stagiaireRepository.save(stagiaire);
+        return true;
+    }
+    async getOnlineUsers() {
+        const online = await this.userRepository.find({
+            where: { is_online: true },
+            select: ["id", "name", "image", "last_activity_at"],
+            order: { last_activity_at: "DESC" },
+        });
+        const recentlyOnline = await this.userRepository.find({
+            where: { is_online: false },
+            select: ["id", "name", "image", "last_activity_at"],
+            order: { last_activity_at: "DESC" },
+            take: 10,
+        });
+        return {
+            online_users: online,
+            recently_online: recentlyOnline,
+            all_users: [...online, ...recentlyOnline],
+        };
+    }
 };
 exports.StagiaireService = StagiaireService;
 exports.StagiaireService = StagiaireService = __decorate([
@@ -402,11 +512,16 @@ exports.StagiaireService = StagiaireService = __decorate([
     __param(3, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
     __param(4, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),
     __param(5, (0, typeorm_1.InjectRepository)(quiz_participation_entity_1.QuizParticipation)),
+    __param(6, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        ranking_service_1.RankingService,
+        agenda_service_1.AgendaService,
+        media_service_1.MediaService])
 ], StagiaireService);
 //# sourceMappingURL=stagiaire.service.js.map
