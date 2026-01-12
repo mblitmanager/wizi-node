@@ -101,7 +101,7 @@ exports.AppModule = AppModule = __decorate([
                         parrainage_event_entity_1.ParrainageEvent,
                         stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
                     ],
-                    synchronize: true,
+                    synchronize: false,
                     logging: true,
                 }),
             }),

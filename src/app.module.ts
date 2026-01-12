@@ -80,7 +80,7 @@ import { MailModule } from "./mail/mail.module";
           ParrainageEvent,
           StagiaireCatalogueFormation,
         ],
-        synchronize: true,
+        synchronize: false,
         logging: true,
       }),
     }),

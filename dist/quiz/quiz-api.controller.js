@@ -77,7 +77,7 @@ let QuizApiController = class QuizApiController {
         });
     }
     async getById(id) {
-        const data = await this.quizService.getQuizDetails(id);
+        const data = await this.quizService.getQuestionsByQuiz(id);
         return this.apiResponse.success(data);
     }
     async submitResult(id, body, req) {
