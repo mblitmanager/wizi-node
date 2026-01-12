@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Param,
   Body,
+  NotFoundException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { StagiaireService } from "./stagiaire.service";
@@ -174,6 +175,22 @@ export class StagiaireController {
       throw new HttpException(
         error.message || "Internal error",
         HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get("partner")
+  async getMyPartner(@Request() req) {
+    try {
+      return await this.stagiaireService.getMyPartner(req.user.id);
+    } catch (error) {
+      console.error("Error in getMyPartner:", error);
+      throw new HttpException(
+        error.message || "Internal error",
+        error instanceof NotFoundException
+          ? HttpStatus.NOT_FOUND
+          : HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }

@@ -32,6 +32,13 @@ import { Parrainage } from "./entities/parrainage.entity";
 import { ParrainageToken } from "./entities/parrainage-token.entity";
 import { ParrainageEvent } from "./entities/parrainage-event.entity";
 import { StagiaireCatalogueFormation } from "./entities/stagiaire-catalogue-formation.entity";
+import { MediaStagiaire } from "./entities/media-stagiaire.entity";
+import { StagiaireAchievement } from "./entities/stagiaire-achievement.entity";
+import { CorrespondancePair } from "./entities/correspondance-pair.entity";
+import { Partenaire } from "./entities/partenaire.entity";
+import { Agenda } from "./entities/agenda.entity";
+import { Announcement } from "./entities/announcement.entity";
+import { Challenge } from "./entities/challenge.entity";
 import { RankingModule } from "./ranking/ranking.module";
 import { NotificationModule } from "./notification/notification.module";
 import { InscriptionModule } from "./inscription/inscription.module";
@@ -40,9 +47,9 @@ import { ParrainageModule } from "./parrainage/parrainage.module";
 import { CatalogueFormationModule } from "./catalogue-formation/catalogue-formation.module";
 import { AdminModule } from "./admin/admin.module";
 import { MediaModule } from "./media/media.module";
-import { MediaController } from "./media/media.controller";
-import { MediaService } from "./media/media.service";
 import { MailModule } from "./mail/mail.module";
+import { AgendaModule } from "./agenda/agenda.module";
+import { AnnouncementModule } from "./announcement/announcement.module";
 
 @Module({
   imports: [
@@ -79,6 +86,13 @@ import { MailModule } from "./mail/mail.module";
           ParrainageToken,
           ParrainageEvent,
           StagiaireCatalogueFormation,
+          MediaStagiaire,
+          StagiaireAchievement,
+          CorrespondancePair,
+          Partenaire,
+          Agenda,
+          Announcement,
+          Challenge,
         ],
         synchronize: false,
         logging: true,
@@ -107,6 +121,13 @@ import { MailModule } from "./mail/mail.module";
       ParrainageToken,
       ParrainageEvent,
       StagiaireCatalogueFormation,
+      MediaStagiaire,
+      StagiaireAchievement,
+      CorrespondancePair,
+      Partenaire,
+      Agenda,
+      Announcement,
+      Challenge,
     ]),
     AuthModule,
     StagiaireModule,
@@ -120,11 +141,12 @@ import { MailModule } from "./mail/mail.module";
     AdminModule,
     CatalogueFormationModule,
     MediaModule,
+    AgendaModule,
+    AnnouncementModule,
   ],
-  controllers: [AppController, MediaController],
+  controllers: [AppController],
   providers: [
     AppService,
-    MediaService,
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

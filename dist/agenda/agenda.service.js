@@ -1,0 +1,105 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AgendaService = void 0;
+const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const agenda_entity_1 = require("../entities/agenda.entity");
+const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const notification_entity_1 = require("../entities/notification.entity");
+let AgendaService = class AgendaService {
+    constructor(agendaRepository, stagiaireRepository, notificationRepository) {
+        this.agendaRepository = agendaRepository;
+        this.stagiaireRepository = stagiaireRepository;
+        this.notificationRepository = notificationRepository;
+    }
+    async getStagiaireAgenda(userId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { user_id: userId },
+            relations: [
+                "stagiaire_catalogue_formations",
+                "stagiaire_catalogue_formations.catalogue_formation",
+                "stagiaire_catalogue_formations.catalogue_formation.formation",
+            ],
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException(`Stagiaire avec l'utilisateur ID ${userId} introuvable`);
+        }
+        const formations = (stagiaire.stagiaire_catalogue_formations || [])
+            .map((scf) => scf.catalogue_formation?.formation)
+            .filter((f) => !!f);
+        const events = await this.agendaRepository.find({
+            where: { stagiaire_id: stagiaire.id },
+            order: { date_debut: "ASC" },
+        });
+        const now = new Date();
+        const upcoming_events = events.filter((e) => e.date_debut >= now);
+        return {
+            formations,
+            events,
+            upcoming_events,
+        };
+    }
+    async exportAgendaToICS(userId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException(`Stagiaire introuvable`);
+        }
+        const events = await this.agendaRepository.find({
+            where: { stagiaire_id: stagiaire.id },
+        });
+        let icsContent = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//WiziLearn//NONSGML v1.0//EN\r\n";
+        for (const event of events) {
+            icsContent += "BEGIN:VEVENT\r\n";
+            icsContent += `DTSTART:${this.formatDateForICS(event.date_debut)}\r\n`;
+            icsContent += `DTEND:${this.formatDateForICS(event.date_fin)}\r\n`;
+            icsContent += `SUMMARY:${event.titre}\r\n`;
+            icsContent += `DESCRIPTION:${event.description || ""}\r\n`;
+            icsContent += "END:VEVENT\r\n";
+        }
+        icsContent += "END:VCALENDAR";
+        return icsContent;
+    }
+    async getStagiaireNotifications(userId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException(`Stagiaire introuvable`);
+        }
+        return this.notificationRepository.find({
+            where: { user_id: userId },
+            order: { created_at: "DESC" },
+        });
+    }
+    formatDateForICS(date) {
+        if (!date)
+            return "";
+        return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    }
+};
+exports.AgendaService = AgendaService;
+exports.AgendaService = AgendaService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, typeorm_1.InjectRepository)(agenda_entity_1.Agenda)),
+    __param(1, (0, typeorm_1.InjectRepository)(stagiaire_entity_1.Stagiaire)),
+    __param(2, (0, typeorm_1.InjectRepository)(notification_entity_1.Notification)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
+], AgendaService);
+//# sourceMappingURL=agenda.service.js.map

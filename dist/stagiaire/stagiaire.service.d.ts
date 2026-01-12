@@ -181,4 +181,15 @@ export declare class StagiaireService {
             lastActivity: Date;
         };
     }>;
+    getMyPartner(userId: number): Promise<{
+        identifiant: string;
+        type: string;
+        adresse: string;
+        ville: string;
+        departement: string;
+        code_postal: string;
+        logo: string;
+        actif: boolean;
+        contacts: any;
+    }>;
 }

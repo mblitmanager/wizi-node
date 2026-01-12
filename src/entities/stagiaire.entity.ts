@@ -7,18 +7,19 @@ import {
   ManyToMany,
   JoinTable,
   OneToMany,
+  ManyToOne,
 } from "typeorm";
 import { User } from "./user.entity";
 import { Media } from "./media.entity";
+import { Achievement } from "./achievement.entity";
+import { Partenaire } from "./partenaire.entity";
+import { Agenda } from "./agenda.entity";
 import { Progression } from "./progression.entity";
+import { QuizParticipation } from "./quiz-participation.entity";
 import { StagiaireCatalogueFormation } from "./stagiaire-catalogue-formation.entity";
-// Removed to fix circular imports
-// import { CatalogueFormation } from "./catalogue-formation.entity";
-// import { Formateur } from "./formateur.entity";
 import { Commercial } from "./commercial.entity";
 import { PoleRelationClient } from "./pole-relation-client.entity";
 import { Classement } from "./classement.entity";
-import { Achievement } from "./achievement.entity";
 
 @Entity("stagiaires")
 export class Stagiaire {
@@ -66,9 +67,6 @@ export class Stagiaire {
 
   @Column({ default: false })
   onboarding_seen: boolean;
-
-  @Column({ nullable: true })
-  partenaire_id: number;
 
   @OneToOne(() => User)
   @JoinColumn({ name: "user_id" })
@@ -125,6 +123,24 @@ export class Stagiaire {
     inverseJoinColumn: { name: "achievement_id", referencedColumnName: "id" },
   })
   achievements: Achievement[];
+
+  @ManyToMany(() => Partenaire, (partenaire) => partenaire.stagiaires)
+  @JoinTable({
+    name: "partenaire_stagiaire",
+    joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "partenaire_id", referencedColumnName: "id" },
+  })
+  partenaires: Partenaire[];
+
+  @OneToMany(() => Agenda, (agenda) => agenda.stagiaire)
+  agendas: Agenda[];
+
+  @Column({ nullable: true })
+  partenaire_id: number;
+
+  @ManyToOne(() => Partenaire)
+  @JoinColumn({ name: "partenaire_id" })
+  partenaire: Partenaire;
 
   @Column({ type: "timestamp", nullable: true })
   last_login_at: Date;

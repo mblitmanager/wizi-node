@@ -363,6 +363,35 @@ let StagiaireService = class StagiaireService {
             },
         };
     }
+    async getMyPartner(userId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { user_id: userId },
+            relations: ["partenaire", "partenaires"],
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException(`Stagiaire with user_id ${userId} not found`);
+        }
+        let partenaire = stagiaire.partenaire;
+        if (!partenaire &&
+            stagiaire.partenaires &&
+            stagiaire.partenaires.length > 0) {
+            partenaire = stagiaire.partenaires[0];
+        }
+        if (!partenaire) {
+            throw new common_1.NotFoundException("Aucun partenaire associé");
+        }
+        return {
+            identifiant: partenaire.identifiant,
+            type: partenaire.type,
+            adresse: partenaire.adresse,
+            ville: partenaire.ville,
+            departement: partenaire.departement,
+            code_postal: partenaire.code_postal,
+            logo: partenaire.logo,
+            actif: Boolean(partenaire.actif ?? true),
+            contacts: partenaire.contacts ?? [],
+        };
+    }
 };
 exports.StagiaireService = StagiaireService;
 exports.StagiaireService = StagiaireService = __decorate([

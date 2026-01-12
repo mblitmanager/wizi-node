@@ -111,6 +111,17 @@ let StagiaireController = class StagiaireController {
             throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async getMyPartner(req) {
+        try {
+            return await this.stagiaireService.getMyPartner(req.user.id);
+        }
+        catch (error) {
+            console.error("Error in getMyPartner:", error);
+            throw new common_1.HttpException(error.message || "Internal error", error instanceof common_1.NotFoundException
+                ? common_1.HttpStatus.NOT_FOUND
+                : common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 };
 exports.StagiaireController = StagiaireController;
 __decorate([
@@ -208,6 +219,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, Number]),
     __metadata("design:returntype", Promise)
 ], StagiaireController.prototype, "inscrireAFormation", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)("partner"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], StagiaireController.prototype, "getMyPartner", null);
 exports.StagiaireController = StagiaireController = __decorate([
     (0, common_1.Controller)("stagiaire"),
     __metadata("design:paramtypes", [stagiaire_service_1.StagiaireService,

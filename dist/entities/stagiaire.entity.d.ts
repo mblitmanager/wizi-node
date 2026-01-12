@@ -1,11 +1,13 @@
 import { User } from "./user.entity";
 import { Media } from "./media.entity";
+import { Achievement } from "./achievement.entity";
+import { Partenaire } from "./partenaire.entity";
+import { Agenda } from "./agenda.entity";
 import { Progression } from "./progression.entity";
 import { StagiaireCatalogueFormation } from "./stagiaire-catalogue-formation.entity";
 import { Commercial } from "./commercial.entity";
 import { PoleRelationClient } from "./pole-relation-client.entity";
 import { Classement } from "./classement.entity";
-import { Achievement } from "./achievement.entity";
 export declare class Stagiaire {
     id: number;
     civilite: string;
@@ -22,7 +24,6 @@ export declare class Stagiaire {
     user_id: number;
     date_fin_formation: Date;
     onboarding_seen: boolean;
-    partenaire_id: number;
     user: User;
     stagiaire_catalogue_formations: StagiaireCatalogueFormation[];
     medias: Media[];
@@ -32,6 +33,10 @@ export declare class Stagiaire {
     poleRelationClients: PoleRelationClient[];
     classements: Classement[];
     achievements: Achievement[];
+    partenaires: Partenaire[];
+    agendas: Agenda[];
+    partenaire_id: number;
+    partenaire: Partenaire;
     last_login_at: Date;
     login_streak: number;
     created_at: Date;

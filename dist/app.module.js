@@ -44,6 +44,13 @@ const parrainage_entity_1 = require("./entities/parrainage.entity");
 const parrainage_token_entity_1 = require("./entities/parrainage-token.entity");
 const parrainage_event_entity_1 = require("./entities/parrainage-event.entity");
 const stagiaire_catalogue_formation_entity_1 = require("./entities/stagiaire-catalogue-formation.entity");
+const media_stagiaire_entity_1 = require("./entities/media-stagiaire.entity");
+const stagiaire_achievement_entity_1 = require("./entities/stagiaire-achievement.entity");
+const correspondance_pair_entity_1 = require("./entities/correspondance-pair.entity");
+const partenaire_entity_1 = require("./entities/partenaire.entity");
+const agenda_entity_1 = require("./entities/agenda.entity");
+const announcement_entity_1 = require("./entities/announcement.entity");
+const challenge_entity_1 = require("./entities/challenge.entity");
 const ranking_module_1 = require("./ranking/ranking.module");
 const notification_module_1 = require("./notification/notification.module");
 const inscription_module_1 = require("./inscription/inscription.module");
@@ -52,9 +59,9 @@ const parrainage_module_1 = require("./parrainage/parrainage.module");
 const catalogue_formation_module_1 = require("./catalogue-formation/catalogue-formation.module");
 const admin_module_1 = require("./admin/admin.module");
 const media_module_1 = require("./media/media.module");
-const media_controller_1 = require("./media/media.controller");
-const media_service_1 = require("./media/media.service");
 const mail_module_1 = require("./mail/mail.module");
+const agenda_module_1 = require("./agenda/agenda.module");
+const announcement_module_1 = require("./announcement/announcement.module");
 let AppModule = class AppModule {
     constructor() {
         console.log("AppModule loaded - MediaModule should be active");
@@ -100,6 +107,13 @@ exports.AppModule = AppModule = __decorate([
                         parrainage_token_entity_1.ParrainageToken,
                         parrainage_event_entity_1.ParrainageEvent,
                         stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
+                        media_stagiaire_entity_1.MediaStagiaire,
+                        stagiaire_achievement_entity_1.StagiaireAchievement,
+                        correspondance_pair_entity_1.CorrespondancePair,
+                        partenaire_entity_1.Partenaire,
+                        agenda_entity_1.Agenda,
+                        announcement_entity_1.Announcement,
+                        challenge_entity_1.Challenge,
                     ],
                     synchronize: false,
                     logging: true,
@@ -128,6 +142,13 @@ exports.AppModule = AppModule = __decorate([
                 parrainage_token_entity_1.ParrainageToken,
                 parrainage_event_entity_1.ParrainageEvent,
                 stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
+                media_stagiaire_entity_1.MediaStagiaire,
+                stagiaire_achievement_entity_1.StagiaireAchievement,
+                correspondance_pair_entity_1.CorrespondancePair,
+                partenaire_entity_1.Partenaire,
+                agenda_entity_1.Agenda,
+                announcement_entity_1.Announcement,
+                challenge_entity_1.Challenge,
             ]),
             auth_module_1.AuthModule,
             stagiaire_module_1.StagiaireModule,
@@ -141,11 +162,12 @@ exports.AppModule = AppModule = __decorate([
             admin_module_1.AdminModule,
             catalogue_formation_module_1.CatalogueFormationModule,
             media_module_1.MediaModule,
+            agenda_module_1.AgendaModule,
+            announcement_module_1.AnnouncementModule,
         ],
-        controllers: [app_controller_1.AppController, media_controller_1.MediaController],
+        controllers: [app_controller_1.AppController],
         providers: [
             app_service_1.AppService,
-            media_service_1.MediaService,
             {
                 provide: core_1.APP_GUARD,
                 useClass: roles_guard_1.RolesGuard,

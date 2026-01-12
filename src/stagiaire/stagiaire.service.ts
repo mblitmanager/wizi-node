@@ -91,7 +91,6 @@ export class StagiaireService {
       mapContact(c, "pole_relation_client")
     );
 
-    // 4. Get top 3 catalogue formations
     const catalogueFormations = await this.catalogueRepository.find({
       where: { statut: 1 },
       relations: ["formation"],
@@ -184,9 +183,7 @@ export class StagiaireService {
 
       const mappedQuizzes = quizzes.map((quiz) => {
         // Find participation for this quiz
-        const participation = participations.find(
-          (p) => p.quiz_id === quiz.id
-        );
+        const participation = participations.find((p) => p.quiz_id === quiz.id);
 
         return {
           id: quiz.id.toString(),
@@ -227,9 +224,7 @@ export class StagiaireService {
       return { data: mappedQuizzes };
     } catch (error) {
       console.error("Error in getStagiaireQuizzes:", error);
-      throw new Error(
-        `Failed to get stagiaire quizzes: ${error.message}`
-      );
+      throw new Error(`Failed to get stagiaire quizzes: ${error.message}`);
     }
   }
 
@@ -289,7 +284,8 @@ export class StagiaireService {
           objectifs: scf.catalogue_formation.objectifs,
           programme: scf.catalogue_formation.programme,
           modalites: scf.catalogue_formation.modalites,
-          modalites_accompagnement: scf.catalogue_formation.modalites_accompagnement,
+          modalites_accompagnement:
+            scf.catalogue_formation.modalites_accompagnement,
           moyens_pedagogiques: scf.catalogue_formation.moyens_pedagogiques,
           modalites_suivi: scf.catalogue_formation.modalites_suivi,
           evaluation: scf.catalogue_formation.evaluation,
@@ -432,6 +428,45 @@ export class StagiaireService {
         },
         lastActivity: lastRanking?.updated_at || null,
       },
+    };
+  }
+
+  async getMyPartner(userId: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { user_id: userId },
+      relations: ["partenaire", "partenaires"],
+    });
+
+    if (!stagiaire) {
+      throw new NotFoundException(`Stagiaire with user_id ${userId} not found`);
+    }
+
+    // Priority: direct relation partenaire_id
+    let partenaire = stagiaire.partenaire;
+
+    // Fallback: via ManyToMany relation (partenaires)
+    if (
+      !partenaire &&
+      stagiaire.partenaires &&
+      stagiaire.partenaires.length > 0
+    ) {
+      partenaire = stagiaire.partenaires[0];
+    }
+
+    if (!partenaire) {
+      throw new NotFoundException("Aucun partenaire associé");
+    }
+
+    return {
+      identifiant: partenaire.identifiant,
+      type: partenaire.type,
+      adresse: partenaire.adresse,
+      ville: partenaire.ville,
+      departement: partenaire.departement,
+      code_postal: partenaire.code_postal,
+      logo: partenaire.logo,
+      actif: Boolean(partenaire.actif ?? true),
+      contacts: partenaire.contacts ?? [],
     };
   }
 }

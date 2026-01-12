@@ -201,4 +201,15 @@ export declare class StagiaireController {
         message: string;
         demande: import("../entities/demande-inscription.entity").DemandeInscription;
     }>;
+    getMyPartner(req: any): Promise<{
+        identifiant: string;
+        type: string;
+        adresse: string;
+        ville: string;
+        departement: string;
+        code_postal: string;
+        logo: string;
+        actif: boolean;
+        contacts: any;
+    }>;
 }

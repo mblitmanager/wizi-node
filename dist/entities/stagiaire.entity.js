@@ -13,12 +13,14 @@ exports.Stagiaire = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 const media_entity_1 = require("./media.entity");
+const achievement_entity_1 = require("./achievement.entity");
+const partenaire_entity_1 = require("./partenaire.entity");
+const agenda_entity_1 = require("./agenda.entity");
 const progression_entity_1 = require("./progression.entity");
 const stagiaire_catalogue_formation_entity_1 = require("./stagiaire-catalogue-formation.entity");
 const commercial_entity_1 = require("./commercial.entity");
 const pole_relation_client_entity_1 = require("./pole-relation-client.entity");
 const classement_entity_1 = require("./classement.entity");
-const achievement_entity_1 = require("./achievement.entity");
 let Stagiaire = class Stagiaire {
 };
 exports.Stagiaire = Stagiaire;
@@ -82,10 +84,6 @@ __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], Stagiaire.prototype, "onboarding_seen", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Number)
-], Stagiaire.prototype, "partenaire_id", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => user_entity_1.User),
     (0, typeorm_1.JoinColumn)({ name: "user_id" }),
@@ -151,6 +149,28 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Stagiaire.prototype, "achievements", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => partenaire_entity_1.Partenaire, (partenaire) => partenaire.stagiaires),
+    (0, typeorm_1.JoinTable)({
+        name: "partenaire_stagiaire",
+        joinColumn: { name: "stagiaire_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "partenaire_id", referencedColumnName: "id" },
+    }),
+    __metadata("design:type", Array)
+], Stagiaire.prototype, "partenaires", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => agenda_entity_1.Agenda, (agenda) => agenda.stagiaire),
+    __metadata("design:type", Array)
+], Stagiaire.prototype, "agendas", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Stagiaire.prototype, "partenaire_id", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => partenaire_entity_1.Partenaire),
+    (0, typeorm_1.JoinColumn)({ name: "partenaire_id" }),
+    __metadata("design:type", partenaire_entity_1.Partenaire)
+], Stagiaire.prototype, "partenaire", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
     __metadata("design:type", Date)
