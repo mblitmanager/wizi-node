@@ -16,8 +16,6 @@ const typeorm_1 = require("@nestjs/typeorm");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const logger_middleware_1 = require("./common/middleware/logger.middleware");
-const core_1 = require("@nestjs/core");
-const roles_guard_1 = require("./common/guards/roles.guard");
 const user_entity_1 = require("./entities/user.entity");
 const stagiaire_entity_1 = require("./entities/stagiaire.entity");
 const formation_entity_1 = require("./entities/formation.entity");
@@ -168,13 +166,7 @@ exports.AppModule = AppModule = __decorate([
             challenge_module_1.ChallengeModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [
-            app_service_1.AppService,
-            {
-                provide: core_1.APP_GUARD,
-                useClass: roles_guard_1.RolesGuard,
-            },
-        ],
+        providers: [app_service_1.AppService],
     }),
     __metadata("design:paramtypes", [])
 ], AppModule);

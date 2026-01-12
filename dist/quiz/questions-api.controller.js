@@ -43,17 +43,8 @@ let QuestionsApiController = class QuestionsApiController {
             "@context": "/api/contexts/Question",
             "@id": "/api/questions",
             "@type": "Collection",
-            "hydra:member": members,
-            "hydra:totalItems": total,
-            "hydra:view": {
-                "@id": `/api/questions?page=${pageNum}&limit=${limitNum}`,
-                "@type": "PartialCollectionView",
-                "hydra:first": `/api/questions?page=1&limit=${limitNum}`,
-                "hydra:last": `/api/questions?page=${Math.ceil(total / limitNum)}&limit=${limitNum}`,
-                "hydra:next": pageNum < Math.ceil(total / limitNum)
-                    ? `/api/questions?page=${pageNum + 1}&limit=${limitNum}`
-                    : null,
-            },
+            member: members,
+            totalItems: total,
         };
     }
     async create(createQuestionDto) {

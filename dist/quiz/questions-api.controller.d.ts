@@ -13,7 +13,7 @@ export declare class QuestionsApiController {
         "@context": string;
         "@id": string;
         "@type": string;
-        "hydra:member": {
+        member: {
             "@context": string;
             "@id": string;
             "@type": string;
@@ -31,14 +31,7 @@ export declare class QuestionsApiController {
             created_at: Date;
             updated_at: Date;
         }[];
-        "hydra:totalItems": number;
-        "hydra:view": {
-            "@id": string;
-            "@type": string;
-            "hydra:first": string;
-            "hydra:last": string;
-            "hydra:next": string;
-        };
+        totalItems: number;
     }>;
     create(createQuestionDto: any): Promise<{
         "@context": string;

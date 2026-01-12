@@ -9,14 +9,7 @@ export declare class AgendasApiController {
         "@context": string;
         "@id": string;
         "@type": string;
-        "hydra:member": any[];
-        "hydra:totalItems": number;
-        "hydra:view"?: undefined;
-    } | {
-        "@context": string;
-        "@id": string;
-        "@type": string;
-        "hydra:member": {
+        member: {
             "@context": string;
             "@id": string;
             "@type": string;
@@ -31,14 +24,7 @@ export declare class AgendasApiController {
             created_at: string;
             updated_at: string;
         }[];
-        "hydra:totalItems": number;
-        "hydra:view": {
-            "@id": string;
-            "@type": string;
-            "hydra:first": string;
-            "hydra:last": string;
-            "hydra:next": string;
-        };
+        totalItems: number;
     }>;
     create(body: any): Promise<{
         "@context": string;

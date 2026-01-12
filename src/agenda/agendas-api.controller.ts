@@ -66,8 +66,8 @@ export class AgendasApiController {
           "@context": "/api/contexts/Agenda",
           "@id": "/api/agendas",
           "@type": "Collection",
-          "hydra:member": [],
-          "hydra:totalItems": 0,
+          member: [],
+          totalItems: 0,
         };
       }
     }
@@ -83,18 +83,8 @@ export class AgendasApiController {
       "@context": "/api/contexts/Agenda",
       "@id": "/api/agendas",
       "@type": "Collection",
-      "hydra:member": members,
-      "hydra:totalItems": total,
-      "hydra:view": {
-        "@id": `/api/agendas?page=${pageNum}&limit=${limitNum}`,
-        "@type": "PartialCollectionView",
-        "hydra:first": `/api/agendas?page=1&limit=${limitNum}`,
-        "hydra:last": `/api/agendas?page=${Math.ceil(total / limitNum)}&limit=${limitNum}`,
-        "hydra:next":
-          pageNum < Math.ceil(total / limitNum)
-            ? `/api/agendas?page=${pageNum + 1}&limit=${limitNum}`
-            : null,
-      },
+      member: members,
+      totalItems: total,
     };
   }
 

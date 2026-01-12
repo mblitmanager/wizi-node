@@ -27,8 +27,8 @@ let QuizzesApiController = class QuizzesApiController {
         this.quizRepository = quizRepository;
     }
     async getAll(page = 1, limit = 30) {
-        const pageNum = typeof page === 'string' ? parseInt(page, 10) : page || 1;
-        const limitNum = typeof limit === 'string' ? parseInt(limit, 10) : limit || 30;
+        const pageNum = typeof page === "string" ? parseInt(page, 10) : page || 1;
+        const limitNum = typeof limit === "string" ? parseInt(limit, 10) : limit || 30;
         const skip = (pageNum - 1) * limitNum;
         const [quizzes, total] = await this.quizRepository.findAndCount({
             skip,
@@ -41,17 +41,8 @@ let QuizzesApiController = class QuizzesApiController {
             "@context": "/api/contexts/Quiz",
             "@id": "/api/quizzes",
             "@type": "Collection",
-            "hydra:member": data,
-            "hydra:totalItems": total,
-            "hydra:view": {
-                "@id": `/api/quizzes?page=${pageNum}&limit=${limitNum}`,
-                "@type": "PartialCollectionView",
-                "hydra:first": `/api/quizzes?page=1&limit=${limitNum}`,
-                "hydra:last": `/api/quizzes?page=${Math.ceil(total / limitNum)}&limit=${limitNum}`,
-                "hydra:next": pageNum < Math.ceil(total / limitNum)
-                    ? `/api/quizzes?page=${pageNum + 1}&limit=${limitNum}`
-                    : null,
-            },
+            member: data,
+            totalItems: total,
         };
     }
     async create(createQuizDto) {

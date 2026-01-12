@@ -11,7 +11,7 @@ export declare class QuizzesApiController {
         "@context": string;
         "@id": string;
         "@type": string;
-        "hydra:member": {
+        member: {
             "@context": string;
             "@id": string;
             "@type": string;
@@ -28,14 +28,7 @@ export declare class QuizzesApiController {
             createdAt: string;
             updatedAt: string;
         }[];
-        "hydra:totalItems": number;
-        "hydra:view": {
-            "@id": string;
-            "@type": string;
-            "hydra:first": string;
-            "hydra:last": string;
-            "hydra:next": string;
-        };
+        totalItems: number;
     }>;
     create(createQuizDto: any): Promise<{
         "@context": string;
