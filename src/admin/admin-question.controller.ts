@@ -19,7 +19,7 @@ import { Repository } from "typeorm";
 import { Question } from "../entities/question.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/question")
+@Controller("admin/question")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminQuestionController {

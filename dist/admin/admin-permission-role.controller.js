@@ -88,7 +88,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminPermissionController.prototype, "toggleStatus", null);
 exports.AdminPermissionController = AdminPermissionController = __decorate([
-    (0, common_1.Controller)("administrateur/permissions"),
+    (0, common_1.Controller)("admin/permissions"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
@@ -163,7 +163,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminRoleController.prototype, "toggleStatus", null);
 exports.AdminRoleController = AdminRoleController = __decorate([
-    (0, common_1.Controller)("administrateur/roles"),
+    (0, common_1.Controller)("admin/roles"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])

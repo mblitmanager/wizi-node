@@ -13,7 +13,7 @@ import { Roles } from "../common/decorators/roles.decorator";
 import { Response } from "express";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/stats")
+@Controller("admin/stats")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminStatsController {
@@ -21,6 +21,21 @@ export class AdminStatsController {
 
   @Get("affluence")
   async affluence() {
+    return this.apiResponse.success({});
+  }
+
+  @Get("dashboard")
+  async dashboard() {
+    return this.apiResponse.success({});
+  }
+
+  @Get("dashboard-api")
+  async dashboardApi() {
+    return this.apiResponse.success({});
+  }
+
+  @Get("affluence-api")
+  async affluenceApi() {
     return this.apiResponse.success({});
   }
 
@@ -44,11 +59,23 @@ export class AdminStatsController {
     return this.apiResponse.success({});
   }
 
+  @Get("quiz-api")
+  async quizApi() {
+    return this.apiResponse.success({});
+  }
+
+  @Get("formation-api")
+  async formationApi() {
+    return this.apiResponse.success({});
+  }
+
+  @Get("online-users-api")
+  async onlineUsersApi() {
+    return this.apiResponse.success({});
+  }
+
   @Get("stagiaires")
-  async stagiaires(
-    @Query("page") page = 1,
-    @Query("limit") limit = 10
-  ) {
+  async stagiaires(@Query("page") page = 1, @Query("limit") limit = 10) {
     return this.apiResponse.paginated([], 0, page, limit);
   }
 
@@ -66,9 +93,19 @@ export class AdminStatsController {
     );
     res.send("XLSX export");
   }
+
+  @Post("export/excel")
+  async exportExcel(@Body() data: any) {
+    return this.apiResponse.success({ message: "Excel export starting" });
+  }
+
+  @Post("export/pdf")
+  async exportPdf(@Body() data: any) {
+    return this.apiResponse.success({ message: "PDF export starting" });
+  }
 }
 
-@Controller("administrateur/import")
+@Controller("admin/import")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminImportController {
@@ -130,7 +167,7 @@ export class AdminImportController {
   }
 }
 
-@Controller("administrateur")
+@Controller("admin")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminInactivityController {
@@ -147,10 +184,7 @@ export class AdminInactivityController {
   }
 
   @Get("user-app-usages")
-  async userAppUsages(
-    @Query("page") page = 1,
-    @Query("limit") limit = 10
-  ) {
+  async userAppUsages(@Query("page") page = 1, @Query("limit") limit = 10) {
     return this.apiResponse.paginated([], 0, page, limit);
   }
 

@@ -171,7 +171,7 @@ let AdminDashboardController = class AdminDashboardController {
 };
 exports.AdminDashboardController = AdminDashboardController;
 __decorate([
-    (0, common_1.Get)("stats/dashboard"),
+    (0, common_1.Get)("stats/dashboard-api"),
     __param(0, (0, common_1.Query)("period")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -185,7 +185,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminDashboardController.prototype, "getDashboardStats", null);
 exports.AdminDashboardController = AdminDashboardController = __decorate([
-    (0, common_1.Controller)("administrateur"),
+    (0, common_1.Controller)("admin"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(stagiaire_entity_1.Stagiaire)),

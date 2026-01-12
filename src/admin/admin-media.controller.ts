@@ -23,7 +23,7 @@ import { Media } from "../entities/media.entity";
 import { type Express } from "express";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/medias")
+@Controller("admin/medias")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminMediaController {

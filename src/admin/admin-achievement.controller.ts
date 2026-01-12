@@ -15,7 +15,7 @@ import { Repository } from "typeorm";
 import { Achievement } from "../entities/achievement.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/achievements")
+@Controller("admin/achievements")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminAchievementController {

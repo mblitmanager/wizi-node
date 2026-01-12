@@ -4,13 +4,21 @@ export declare class AdminStatsController {
     private apiResponse;
     constructor(apiResponse: ApiResponseService);
     affluence(): Promise<any>;
+    dashboard(): Promise<any>;
+    dashboardApi(): Promise<any>;
+    affluenceApi(): Promise<any>;
     classement(): Promise<any>;
     parCatalogue(): Promise<any>;
     parFormateur(): Promise<any>;
     parFormation(): Promise<any>;
+    quizApi(): Promise<any>;
+    formationApi(): Promise<any>;
+    onlineUsersApi(): Promise<any>;
     stagiaires(page?: number, limit?: number): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<any>>;
     stagiaireExport(res: Response): Promise<void>;
     stagiaireExportXlsx(res: Response): Promise<void>;
+    exportExcel(data: any): Promise<any>;
+    exportPdf(data: any): Promise<any>;
 }
 export declare class AdminImportController {
     private apiResponse;

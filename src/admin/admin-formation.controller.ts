@@ -19,7 +19,7 @@ import { Repository } from "typeorm";
 import { Formation } from "../entities/formation.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/formations")
+@Controller("admin/formations")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminFormationController {

@@ -131,13 +131,13 @@ export class AnnouncementsApiController {
     return this.apiResponse.success({});
   }
 
-  @Put(":announcement")
-  async update(@Param("announcement") id: number, @Body() data: any) {
+  @Put(":id")
+  async update(@Param("id") id: number, @Body() data: any) {
     return this.apiResponse.success(data);
   }
 
-  @Delete(":announcement")
-  async destroy(@Param("announcement") id: number) {
+  @Delete(":id")
+  async destroy(@Param("id") id: number) {
     return this.apiResponse.success({ message: "Announcement deleted" });
   }
 }

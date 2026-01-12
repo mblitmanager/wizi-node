@@ -96,7 +96,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminDemandeHistoriqueController.prototype, "exportXlsx", null);
 exports.AdminDemandeHistoriqueController = AdminDemandeHistoriqueController = __decorate([
-    (0, common_1.Controller)("administrateur"),
+    (0, common_1.Controller)("admin"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(demande_inscription_entity_1.DemandeInscription)),

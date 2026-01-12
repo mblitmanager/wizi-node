@@ -19,7 +19,7 @@ import { Repository } from "typeorm";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/catalogue_formation")
+@Controller("admin/catalogue_formation")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminCatalogueFormationController {
@@ -95,10 +95,7 @@ export class AdminCatalogueFormationController {
   }
 
   @Put(":catalogue_formation")
-  async update(
-    @Param("catalogue_formation") id: number,
-    @Body() data: any
-  ) {
+  async update(@Param("catalogue_formation") id: number, @Body() data: any) {
     const catalogue = await this.catalogueRepository.findOne({
       where: { id },
     });

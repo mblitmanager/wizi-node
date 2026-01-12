@@ -25,6 +25,15 @@ let AdminStatsController = class AdminStatsController {
     async affluence() {
         return this.apiResponse.success({});
     }
+    async dashboard() {
+        return this.apiResponse.success({});
+    }
+    async dashboardApi() {
+        return this.apiResponse.success({});
+    }
+    async affluenceApi() {
+        return this.apiResponse.success({});
+    }
     async classement() {
         return this.apiResponse.success({});
     }
@@ -35,6 +44,15 @@ let AdminStatsController = class AdminStatsController {
         return this.apiResponse.success({});
     }
     async parFormation() {
+        return this.apiResponse.success({});
+    }
+    async quizApi() {
+        return this.apiResponse.success({});
+    }
+    async formationApi() {
+        return this.apiResponse.success({});
+    }
+    async onlineUsersApi() {
         return this.apiResponse.success({});
     }
     async stagiaires(page = 1, limit = 10) {
@@ -48,6 +66,12 @@ let AdminStatsController = class AdminStatsController {
         res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         res.send("XLSX export");
     }
+    async exportExcel(data) {
+        return this.apiResponse.success({ message: "Excel export starting" });
+    }
+    async exportPdf(data) {
+        return this.apiResponse.success({ message: "PDF export starting" });
+    }
 };
 exports.AdminStatsController = AdminStatsController;
 __decorate([
@@ -56,6 +80,24 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AdminStatsController.prototype, "affluence", null);
+__decorate([
+    (0, common_1.Get)("dashboard"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminStatsController.prototype, "dashboard", null);
+__decorate([
+    (0, common_1.Get)("dashboard-api"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminStatsController.prototype, "dashboardApi", null);
+__decorate([
+    (0, common_1.Get)("affluence-api"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminStatsController.prototype, "affluenceApi", null);
 __decorate([
     (0, common_1.Get)("classement"),
     __metadata("design:type", Function),
@@ -81,6 +123,24 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminStatsController.prototype, "parFormation", null);
 __decorate([
+    (0, common_1.Get)("quiz-api"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminStatsController.prototype, "quizApi", null);
+__decorate([
+    (0, common_1.Get)("formation-api"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminStatsController.prototype, "formationApi", null);
+__decorate([
+    (0, common_1.Get)("online-users-api"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AdminStatsController.prototype, "onlineUsersApi", null);
+__decorate([
     (0, common_1.Get)("stagiaires"),
     __param(0, (0, common_1.Query)("page")),
     __param(1, (0, common_1.Query)("limit")),
@@ -102,8 +162,22 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AdminStatsController.prototype, "stagiaireExportXlsx", null);
+__decorate([
+    (0, common_1.Post)("export/excel"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdminStatsController.prototype, "exportExcel", null);
+__decorate([
+    (0, common_1.Post)("export/pdf"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdminStatsController.prototype, "exportPdf", null);
 exports.AdminStatsController = AdminStatsController = __decorate([
-    (0, common_1.Controller)("administrateur/stats"),
+    (0, common_1.Controller)("admin/stats"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
@@ -221,7 +295,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminImportController.prototype, "questionImport", null);
 exports.AdminImportController = AdminImportController = __decorate([
-    (0, common_1.Controller)("administrateur/import"),
+    (0, common_1.Controller)("admin/import"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
@@ -335,7 +409,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminInactivityController.prototype, "manual", null);
 exports.AdminInactivityController = AdminInactivityController = __decorate([
-    (0, common_1.Controller)("administrateur"),
+    (0, common_1.Controller)("admin"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])

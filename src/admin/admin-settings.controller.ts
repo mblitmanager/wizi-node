@@ -7,7 +7,7 @@ import { Repository } from "typeorm";
 import { Setting } from "../entities/setting.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/parametre")
+@Controller("admin/parametre")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminSettingsController {

@@ -191,7 +191,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminQuizController.prototype, "disable", null);
 exports.AdminQuizController = AdminQuizController = __decorate([
-    (0, common_1.Controller)("administrateur/quiz"),
+    (0, common_1.Controller)("admin/quiz"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),

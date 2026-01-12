@@ -20,7 +20,7 @@ import { Repository } from "typeorm";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/stagiaires")
+@Controller("admin/stagiaires")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminStagiaireController {

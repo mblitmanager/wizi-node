@@ -20,7 +20,7 @@ import { Repository } from "typeorm";
 import { Commercial } from "../entities/commercial.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/commercials")
+@Controller("admin/commercials")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminCommercialController {

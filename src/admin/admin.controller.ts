@@ -9,7 +9,7 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { Response as ExpressResponse } from "express";
 
-@Controller("administrateur")
+@Controller("admin")
 export class AdminController {
   @UseGuards(AuthGuard("jwt"))
   @Get("main")

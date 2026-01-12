@@ -17,7 +17,7 @@ import { Repository } from "typeorm";
 import { ApiResponseService } from "../common/services/api-response.service";
 
 // Placeholder entities pour permissions/roles
-@Controller("administrateur/permissions")
+@Controller("admin/permissions")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminPermissionController {
@@ -58,7 +58,7 @@ export class AdminPermissionController {
   }
 }
 
-@Controller("administrateur/roles")
+@Controller("admin/roles")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminRoleController {

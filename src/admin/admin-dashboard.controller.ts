@@ -18,7 +18,7 @@ import { Formation } from "../entities/formation.entity";
 import { Achievement } from "../entities/achievement.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur")
+@Controller("admin")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminDashboardController {
@@ -34,7 +34,7 @@ export class AdminDashboardController {
     private apiResponse: ApiResponseService
   ) {}
 
-  @Get("stats/dashboard")
+  @Get("stats/dashboard-api")
   async getStatsDashboard(@Query("period") period: string = "30d") {
     // Parse period (30d, 7d, 1m, 3m, etc.)
     let daysBack = 30;

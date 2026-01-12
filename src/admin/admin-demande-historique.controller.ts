@@ -8,7 +8,7 @@ import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 import { Response } from "express";
 
-@Controller("administrateur")
+@Controller("admin")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminDemandeHistoriqueController {

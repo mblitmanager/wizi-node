@@ -98,7 +98,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminParametreController.prototype, "updateImage", null);
 exports.AdminParametreController = AdminParametreController = __decorate([
-    (0, common_1.Controller)("administrateur/parametre"),
+    (0, common_1.Controller)("admin/parametre"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
@@ -119,7 +119,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminClassementController.prototype, "index", null);
 exports.AdminClassementController = AdminClassementController = __decorate([
-    (0, common_1.Controller)("administrateur/classements"),
+    (0, common_1.Controller)("admin/classements"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
@@ -150,7 +150,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminParrainageController.prototype, "show", null);
 exports.AdminParrainageController = AdminParrainageController = __decorate([
-    (0, common_1.Controller)("administrateur/parrainage"),
+    (0, common_1.Controller)("admin/parrainage"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
@@ -235,7 +235,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminPartenaireController.prototype, "classements", null);
 exports.AdminPartenaireController = AdminPartenaireController = __decorate([
-    (0, common_1.Controller)("administrateur/partenaires"),
+    (0, common_1.Controller)("admin/partenaires"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
@@ -300,7 +300,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminMediasController.prototype, "destroy", null);
 exports.AdminMediasController = AdminMediasController = __decorate([
-    (0, common_1.Controller)("administrateur/medias"),
+    (0, common_1.Controller)("admin/medias"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])

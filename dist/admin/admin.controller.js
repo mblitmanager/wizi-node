@@ -162,6 +162,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "parametres", null);
 exports.AdminController = AdminController = __decorate([
-    (0, common_1.Controller)("administrateur")
+    (0, common_1.Controller)("admin")
 ], AdminController);
 //# sourceMappingURL=admin.controller.js.map

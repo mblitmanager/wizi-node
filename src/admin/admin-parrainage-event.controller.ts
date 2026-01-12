@@ -18,7 +18,7 @@ import { Repository } from "typeorm";
 import { ParrainageEvent } from "../entities/parrainage-event.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/parrainage_events")
+@Controller("admin/parrainage_events")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminParrainageEventController {

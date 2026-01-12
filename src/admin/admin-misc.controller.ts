@@ -14,7 +14,7 @@ import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/parametre")
+@Controller("admin/parametre")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminParametreController {
@@ -60,7 +60,7 @@ export class AdminParametreController {
   }
 }
 
-@Controller("administrateur/classements")
+@Controller("admin/classements")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminClassementController {
@@ -72,7 +72,7 @@ export class AdminClassementController {
   }
 }
 
-@Controller("administrateur/parrainage")
+@Controller("admin/parrainage")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminParrainageController {
@@ -89,7 +89,7 @@ export class AdminParrainageController {
   }
 }
 
-@Controller("administrateur/partenaires")
+@Controller("admin/partenaires")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminPartenaireController {
@@ -135,7 +135,7 @@ export class AdminPartenaireController {
   }
 }
 
-@Controller("administrateur/medias")
+@Controller("admin/medias")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminMediasController {

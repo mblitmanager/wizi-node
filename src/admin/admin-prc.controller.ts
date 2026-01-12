@@ -19,7 +19,7 @@ import { Repository } from "typeorm";
 import { PoleRelationClient } from "../entities/pole-relation-client.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("administrateur/pole_relation_clients")
+@Controller("admin/pole_relation_clients")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminPoleRelationClientController {
@@ -76,10 +76,7 @@ export class AdminPoleRelationClientController {
   }
 
   @Put(":pole_relation_client")
-  async update(
-    @Param("pole_relation_client") id: number,
-    @Body() data: any
-  ) {
+  async update(@Param("pole_relation_client") id: number, @Body() data: any) {
     const prc = await this.prcRepository.findOne({ where: { id } });
 
     if (!prc) {

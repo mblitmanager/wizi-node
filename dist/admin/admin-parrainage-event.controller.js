@@ -127,7 +127,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminParrainageEventController.prototype, "edit", null);
 exports.AdminParrainageEventController = AdminParrainageEventController = __decorate([
-    (0, common_1.Controller)("administrateur/parrainage_events"),
+    (0, common_1.Controller)("admin/parrainage_events"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(parrainage_event_entity_1.ParrainageEvent)),
