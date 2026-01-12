@@ -1,10 +1,9 @@
 import { MediaService } from "./media.service";
-import { Request } from "express";
 export declare class MediaController {
     private readonly mediaService;
     constructor(mediaService: MediaService);
     findAll(): Promise<import("../entities/media.entity").Media[]>;
-    getTutoriels(page: string, req: Request): Promise<{
+    getTutoriels(page: string, req: any): Promise<{
         current_page: number;
         data: import("../entities/media.entity").Media[];
         first_page_url: string;
@@ -19,7 +18,7 @@ export declare class MediaController {
         to: number;
         total: number;
     }>;
-    getAstuces(page: string, req: Request): Promise<{
+    getAstuces(page: string, req: any): Promise<{
         current_page: number;
         data: import("../entities/media.entity").Media[];
         first_page_url: string;
@@ -34,4 +33,28 @@ export declare class MediaController {
         to: number;
         total: number;
     }>;
+    getTutorielsByFormation(formationId: number, req: any): Promise<{
+        id: number;
+        titre: string;
+        description: string;
+        url: string;
+        video_url: string;
+        categorie: string;
+        formation_id: number;
+        created_at: string;
+        updated_at: string;
+        stagiaires: import("../entities/stagiaire.entity").Stagiaire[];
+    }[]>;
+    getAstucesByFormation(formationId: number, req: any): Promise<{
+        id: number;
+        titre: string;
+        description: string;
+        url: string;
+        video_url: string;
+        categorie: string;
+        formation_id: number;
+        created_at: string;
+        updated_at: string;
+        stagiaires: import("../entities/stagiaire.entity").Stagiaire[];
+    }[]>;
 }

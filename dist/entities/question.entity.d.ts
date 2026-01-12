@@ -7,6 +7,8 @@ export declare class Question {
     explication: string;
     points: string;
     astuce: string;
+    flashcard_back: string;
+    audio_url: string;
     media_url: string;
     quiz_id: number;
     quiz: Quiz;

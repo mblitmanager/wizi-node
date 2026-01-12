@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Query, Req } from "@nestjs/common";
+import { Controller, Get, UseGuards, Query, Req, Param } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { MediaService } from "./media.service";
 import { Request } from "express";
@@ -14,20 +14,64 @@ export class MediaController {
   }
 
   @Get("tutoriels")
-  async getTutoriels(@Query("page") page: string = "1", @Req() req: Request) {
+  @Get("tutoriels")
+  async getTutoriels(@Query("page") page: string = "1", @Req() req: any) {
     const pageNum = parseInt(page) || 1;
     // Build full URL based on request
     const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/tutoriels`;
-    
-    return this.mediaService.findByCategoriePaginated("tutoriel", pageNum, 10, baseUrl);
+    const userId = req.user?.id;
+
+    return this.mediaService.findByCategoriePaginated(
+      "tutoriel",
+      pageNum,
+      10,
+      baseUrl,
+      userId
+    );
   }
 
   @Get("astuces")
-  async getAstuces(@Query("page") page: string = "1", @Req() req: Request) {
+  @Get("astuces")
+  async getAstuces(@Query("page") page: string = "1", @Req() req: any) {
     const pageNum = parseInt(page) || 1;
     // Build full URL based on request
     const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/astuces`;
-    
-    return this.mediaService.findByCategoriePaginated("astuce", pageNum, 10, baseUrl);
+    const userId = req.user?.id;
+
+    return this.mediaService.findByCategoriePaginated(
+      "astuce",
+      pageNum,
+      10,
+      baseUrl,
+      userId
+    );
+  }
+
+  @Get("formations/:formationId/tutoriels")
+  @UseGuards(AuthGuard("jwt"))
+  async getTutorielsByFormation(
+    @Param("formationId") formationId: number,
+    @Req() req: any
+  ) {
+    const userId = req.user?.id;
+    return this.mediaService.findByFormationAndCategorie(
+      formationId,
+      "tutoriel",
+      userId
+    );
+  }
+
+  @Get("formations/:formationId/astuces")
+  @UseGuards(AuthGuard("jwt"))
+  async getAstucesByFormation(
+    @Param("formationId") formationId: number,
+    @Req() req: any
+  ) {
+    const userId = req.user?.id;
+    return this.mediaService.findByFormationAndCategorie(
+      formationId,
+      "astuce",
+      userId
+    );
   }
 }

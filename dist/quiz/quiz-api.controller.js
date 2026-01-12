@@ -35,8 +35,13 @@ let QuizApiController = class QuizApiController {
         const data = await this.quizService.getCategories();
         return this.apiResponse.success(data);
     }
-    async byCategory() {
-        return this.apiResponse.success([]);
+    async byCategory(categoryId, req) {
+        const stagiaireId = req.user.stagiaire?.id;
+        if (!stagiaireId) {
+            return this.apiResponse.success([]);
+        }
+        const data = await this.quizService.getQuizzesByCategory(categoryId, stagiaireId);
+        return this.apiResponse.success(data);
     }
     async globalClassement(period = "all") {
         const data = await this.rankingService.getGlobalRanking(period);
@@ -75,8 +80,13 @@ let QuizApiController = class QuizApiController {
         const data = await this.quizService.getQuizDetails(id);
         return this.apiResponse.success(data);
     }
-    async submitResult(id, data) {
-        return this.apiResponse.success();
+    async submitResult(id, body, req) {
+        const stagiaireId = req.user.stagiaire?.id;
+        if (!stagiaireId) {
+            return this.apiResponse.error("Stagiaire not found", 404);
+        }
+        const data = await this.quizService.submitQuizResult(id, stagiaireId, body.answers || {}, body.timeSpent || 0);
+        return this.apiResponse.success(data);
     }
     async getQuestions(quizId) {
         const data = await this.quizService.getQuestionsByQuiz(quizId);
@@ -100,8 +110,13 @@ let QuizApiController = class QuizApiController {
     async complete(quizId) {
         return this.apiResponse.success();
     }
-    async getStatistics(quizId) {
-        return this.apiResponse.success({});
+    async getStatistics(quizId, req) {
+        const stagiaireId = req.user.stagiaire?.id;
+        if (!stagiaireId) {
+            return this.apiResponse.success({});
+        }
+        const data = await this.quizService.getQuizStatistics(quizId, stagiaireId);
+        return this.apiResponse.success(data);
     }
     async getUserParticipations(quizId) {
         return this.apiResponse.success([]);
@@ -128,8 +143,10 @@ __decorate([
 ], QuizApiController.prototype, "categories", null);
 __decorate([
     (0, common_1.Get)("category/:categoryId"),
+    __param(0, (0, common_1.Param)("categoryId")),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "byCategory", null);
 __decorate([
@@ -190,8 +207,9 @@ __decorate([
     (0, common_1.Post)(":id/result"),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, Object, Object]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "submitResult", null);
 __decorate([
@@ -248,8 +266,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(":quizId/statistics"),
     __param(0, (0, common_1.Param)("quizId")),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "getStatistics", null);
 __decorate([

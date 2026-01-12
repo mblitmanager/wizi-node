@@ -55,4 +55,48 @@ export declare class QuizService {
     getStatsProgress(userId: number): Promise<Classement[]>;
     getStatsTrends(userId: number): Promise<any[]>;
     getStatsPerformance(userId: number): Promise<any[]>;
+    getQuizzesByCategory(category: string, stagiaireId: number): Promise<{
+        id: string;
+        titre: string;
+        description: string;
+        categorie: string;
+        categorieId: string;
+        niveau: string;
+        questionCount: number;
+        questions: any[];
+        points: number;
+    }[]>;
+    getQuizStatistics(quizId: number, stagiaireId: number): Promise<{
+        total_attempts: number;
+        average_score: number;
+        best_score: number;
+        last_attempt: {
+            score: number;
+            date: string;
+            time_spent: number;
+        };
+        quiz: {
+            id: number;
+            title: string;
+            total_questions: number;
+            total_points: number;
+        };
+    }>;
+    submitQuizResult(quizId: number, stagiaireId: number, answers: Record<string, any>, timeSpent: number): Promise<{
+        success: boolean;
+        score: number;
+        correctAnswers: number;
+        totalQuestions: number;
+        timeSpent: number;
+        questions: any[];
+        quiz: {
+            id: number;
+            titre: string;
+            formation: {
+                id: number;
+                titre: string;
+                categorie: string;
+            };
+        };
+    }>;
 }

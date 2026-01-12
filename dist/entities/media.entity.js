@@ -14,8 +14,7 @@ const typeorm_1 = require("typeorm");
 const formation_entity_1 = require("./formation.entity");
 const stagiaire_entity_1 = require("./stagiaire.entity");
 let Media = class Media {
-    constructor(partial) {
-        Object.assign(this, partial);
+    computeUrls() {
         if (this.video_platform === "server" && this.url) {
             this.video_url = this.url;
         }
@@ -110,8 +109,13 @@ __decorate([
     (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
     __metadata("design:type", Date)
 ], Media.prototype, "updated_at", void 0);
+__decorate([
+    (0, typeorm_1.AfterLoad)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Media.prototype, "computeUrls", null);
 exports.Media = Media = __decorate([
-    (0, typeorm_1.Entity)("media"),
-    __metadata("design:paramtypes", [Object])
+    (0, typeorm_1.Entity)("media")
 ], Media);
 //# sourceMappingURL=media.entity.js.map

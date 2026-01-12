@@ -26,12 +26,22 @@ let MediaController = class MediaController {
     async getTutoriels(page = "1", req) {
         const pageNum = parseInt(page) || 1;
         const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/tutoriels`;
-        return this.mediaService.findByCategoriePaginated("tutoriel", pageNum, 10, baseUrl);
+        const userId = req.user?.id;
+        return this.mediaService.findByCategoriePaginated("tutoriel", pageNum, 10, baseUrl, userId);
     }
     async getAstuces(page = "1", req) {
         const pageNum = parseInt(page) || 1;
         const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/astuces`;
-        return this.mediaService.findByCategoriePaginated("astuce", pageNum, 10, baseUrl);
+        const userId = req.user?.id;
+        return this.mediaService.findByCategoriePaginated("astuce", pageNum, 10, baseUrl, userId);
+    }
+    async getTutorielsByFormation(formationId, req) {
+        const userId = req.user?.id;
+        return this.mediaService.findByFormationAndCategorie(formationId, "tutoriel", userId);
+    }
+    async getAstucesByFormation(formationId, req) {
+        const userId = req.user?.id;
+        return this.mediaService.findByFormationAndCategorie(formationId, "astuce", userId);
     }
 };
 exports.MediaController = MediaController;
@@ -44,6 +54,7 @@ __decorate([
 ], MediaController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)("tutoriels"),
+    (0, common_1.Get)("tutoriels"),
     __param(0, (0, common_1.Query)("page")),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -52,12 +63,31 @@ __decorate([
 ], MediaController.prototype, "getTutoriels", null);
 __decorate([
     (0, common_1.Get)("astuces"),
+    (0, common_1.Get)("astuces"),
     __param(0, (0, common_1.Query)("page")),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], MediaController.prototype, "getAstuces", null);
+__decorate([
+    (0, common_1.Get)("formations/:formationId/tutoriels"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    __param(0, (0, common_1.Param)("formationId")),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], MediaController.prototype, "getTutorielsByFormation", null);
+__decorate([
+    (0, common_1.Get)("formations/:formationId/astuces"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    __param(0, (0, common_1.Param)("formationId")),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], MediaController.prototype, "getAstucesByFormation", null);
 exports.MediaController = MediaController = __decorate([
     (0, common_1.Controller)("medias"),
     __metadata("design:paramtypes", [media_service_1.MediaService])

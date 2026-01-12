@@ -9,7 +9,7 @@ export declare class QuizApiController {
     getAll(): Promise<any>;
     byFormations(): Promise<any>;
     categories(): Promise<any>;
-    byCategory(): Promise<any>;
+    byCategory(categoryId: string, req: any): Promise<any>;
     globalClassement(period?: string): Promise<any>;
     history(req: any): Promise<any>;
     stats(req: any): Promise<any>;
@@ -18,7 +18,7 @@ export declare class QuizApiController {
     statsPerformance(): Promise<any>;
     statsTrends(): Promise<any>;
     getById(id: number): Promise<any>;
-    submitResult(id: number, data: any): Promise<any>;
+    submitResult(id: number, body: any, req: any): Promise<any>;
     getQuestions(quizId: number): Promise<any>;
     submit(quizId: number, data: any): Promise<any>;
     getParticipation(quizId: number): Promise<any>;
@@ -26,6 +26,6 @@ export declare class QuizApiController {
     saveProgress(quizId: number, data: any): Promise<any>;
     resumeParticipation(quizId: number): Promise<any>;
     complete(quizId: number): Promise<any>;
-    getStatistics(quizId: number): Promise<any>;
+    getStatistics(quizId: number, req: any): Promise<any>;
     getUserParticipations(quizId: number): Promise<any>;
 }

@@ -5,7 +5,7 @@ export declare class MediaService {
     constructor(mediaRepository: Repository<Media>);
     findAll(): Promise<Media[]>;
     findByType(type: string): Promise<Media[]>;
-    findByCategoriePaginated(categorie: string, page?: number, perPage?: number, baseUrl?: string): Promise<{
+    findByCategoriePaginated(categorie: string, page?: number, perPage?: number, baseUrl?: string, userId?: number): Promise<{
         current_page: number;
         data: Media[];
         first_page_url: string;
@@ -21,4 +21,16 @@ export declare class MediaService {
         total: number;
     }>;
     private generateLinks;
+    findByFormationAndCategorie(formationId: number, categorie: string, userId?: number): Promise<{
+        id: number;
+        titre: string;
+        description: string;
+        url: string;
+        video_url: string;
+        categorie: string;
+        formation_id: number;
+        created_at: string;
+        updated_at: string;
+        stagiaires: import("../entities/stagiaire.entity").Stagiaire[];
+    }[]>;
 }

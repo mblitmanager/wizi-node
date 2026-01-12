@@ -41,6 +41,12 @@ export class Question {
   @Column({ nullable: true })
   astuce: string;
 
+  @Column({ name: "flashcard_back", type: "text", nullable: true })
+  flashcard_back: string;
+
+  @Column({ nullable: true })
+  audio_url: string;
+
   @Column({ nullable: true })
   media_url: string;
 

@@ -23,5 +23,5 @@ export declare class Media {
     updated_at: Date;
     video_url?: string;
     subtitle_url?: string;
-    constructor(partial?: Partial<Media>);
+    computeUrls(): void;
 }

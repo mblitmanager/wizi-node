@@ -25,11 +25,22 @@ export class MediaService {
     categorie: string,
     page: number = 1,
     perPage: number = 10,
-    baseUrl: string = "https://localhost:3000/api/medias/astuces"
+    baseUrl: string = "https://localhost:3000/api/medias/astuces",
+    userId?: number
   ) {
-    const query = this.mediaRepository.createQueryBuilder("m")
+    const query = this.mediaRepository
+      .createQueryBuilder("m")
       .where("m.categorie = :categorie", { categorie })
       .orderBy("m.id", "DESC");
+
+    if (userId) {
+      query.leftJoinAndSelect(
+        "m.stagiaires",
+        "stagiaires",
+        "stagiaires.user_id = :userId",
+        { userId }
+      );
+    }
 
     const [data, total] = await query
       .skip((page - 1) * perPage)
@@ -55,7 +66,11 @@ export class MediaService {
     };
   }
 
-  private generateLinks(currentPage: number, lastPage: number, baseUrl: string) {
+  private generateLinks(
+    currentPage: number,
+    lastPage: number,
+    baseUrl: string
+  ) {
     const links: any[] = [];
 
     // Previous link
@@ -82,5 +97,41 @@ export class MediaService {
     });
 
     return links;
+  }
+
+  async findByFormationAndCategorie(
+    formationId: number,
+    categorie: string,
+    userId?: number
+  ) {
+    const query = this.mediaRepository
+      .createQueryBuilder("m")
+      .where("m.formation_id = :formationId", { formationId })
+      .andWhere("m.categorie = :categorie", { categorie })
+      .orderBy("m.id", "DESC");
+
+    if (userId) {
+      query.leftJoinAndSelect(
+        "m.stagiaires",
+        "stagiaires",
+        "stagiaires.user_id = :userId",
+        { userId }
+      );
+    }
+
+    const medias = await query.getMany();
+
+    return medias.map((media) => ({
+      id: media.id,
+      titre: media.titre,
+      description: media.description,
+      url: media.url,
+      video_url: media.video_url, // Computed by @AfterLoad
+      categorie: media.categorie,
+      formation_id: media.formation_id,
+      created_at: media.created_at?.toISOString(),
+      updated_at: media.updated_at?.toISOString(),
+      stagiaires: media.stagiaires || [],
+    }));
   }
 }

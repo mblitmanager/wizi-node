@@ -40,8 +40,19 @@ export class QuizApiController {
   }
 
   @Get("category/:categoryId")
-  async byCategory() {
-    return this.apiResponse.success([]);
+  async byCategory(
+    @Param("categoryId") categoryId: string,
+    @Request() req: any
+  ) {
+    const stagiaireId = req.user.stagiaire?.id;
+    if (!stagiaireId) {
+      return this.apiResponse.success([]);
+    }
+    const data = await this.quizService.getQuizzesByCategory(
+      categoryId,
+      stagiaireId
+    );
+    return this.apiResponse.success(data);
   }
 
   @Get("classement/global")
@@ -100,8 +111,22 @@ export class QuizApiController {
   }
 
   @Post(":id/result")
-  async submitResult(@Param("id") id: number, @Body() data: any) {
-    return this.apiResponse.success();
+  async submitResult(
+    @Param("id") id: number,
+    @Body() body: any,
+    @Request() req: any
+  ) {
+    const stagiaireId = req.user.stagiaire?.id;
+    if (!stagiaireId) {
+      return this.apiResponse.error("Stagiaire not found", 404);
+    }
+    const data = await this.quizService.submitQuizResult(
+      id,
+      stagiaireId,
+      body.answers || {},
+      body.timeSpent || 0
+    );
+    return this.apiResponse.success(data);
   }
 
   @Get(":quizId/questions")
@@ -141,8 +166,13 @@ export class QuizApiController {
   }
 
   @Get(":quizId/statistics")
-  async getStatistics(@Param("quizId") quizId: number) {
-    return this.apiResponse.success({});
+  async getStatistics(@Param("quizId") quizId: number, @Request() req: any) {
+    const stagiaireId = req.user.stagiaire?.id;
+    if (!stagiaireId) {
+      return this.apiResponse.success({});
+    }
+    const data = await this.quizService.getQuizStatistics(quizId, stagiaireId);
+    return this.apiResponse.success(data);
   }
 
   @Get(":quizId/user-participations")

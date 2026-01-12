@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
+  AfterLoad,
 } from "typeorm";
 import { Formation } from "./formation.entity";
 import { Stagiaire } from "./stagiaire.entity";
@@ -76,9 +77,8 @@ export class Media {
   video_url?: string;
   subtitle_url?: string;
 
-  constructor(partial?: Partial<Media>) {
-    Object.assign(this, partial);
-    
+  @AfterLoad()
+  computeUrls() {
     // Compute video_url
     if (this.video_platform === "server" && this.url) {
       this.video_url = this.url;

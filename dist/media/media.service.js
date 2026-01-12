@@ -30,10 +30,14 @@ let MediaService = class MediaService {
             order: { created_at: "DESC" },
         });
     }
-    async findByCategoriePaginated(categorie, page = 1, perPage = 10, baseUrl = "https://localhost:3000/api/medias/astuces") {
-        const query = this.mediaRepository.createQueryBuilder("m")
+    async findByCategoriePaginated(categorie, page = 1, perPage = 10, baseUrl = "https://localhost:3000/api/medias/astuces", userId) {
+        const query = this.mediaRepository
+            .createQueryBuilder("m")
             .where("m.categorie = :categorie", { categorie })
             .orderBy("m.id", "DESC");
+        if (userId) {
+            query.leftJoinAndSelect("m.stagiaires", "stagiaires", "stagiaires.user_id = :userId", { userId });
+        }
         const [data, total] = await query
             .skip((page - 1) * perPage)
             .take(perPage)
@@ -75,6 +79,29 @@ let MediaService = class MediaService {
             active: false,
         });
         return links;
+    }
+    async findByFormationAndCategorie(formationId, categorie, userId) {
+        const query = this.mediaRepository
+            .createQueryBuilder("m")
+            .where("m.formation_id = :formationId", { formationId })
+            .andWhere("m.categorie = :categorie", { categorie })
+            .orderBy("m.id", "DESC");
+        if (userId) {
+            query.leftJoinAndSelect("m.stagiaires", "stagiaires", "stagiaires.user_id = :userId", { userId });
+        }
+        const medias = await query.getMany();
+        return medias.map((media) => ({
+            id: media.id,
+            titre: media.titre,
+            description: media.description,
+            url: media.url,
+            video_url: media.video_url,
+            categorie: media.categorie,
+            formation_id: media.formation_id,
+            created_at: media.created_at?.toISOString(),
+            updated_at: media.updated_at?.toISOString(),
+            stagiaires: media.stagiaires || [],
+        }));
     }
 };
 exports.MediaService = MediaService;

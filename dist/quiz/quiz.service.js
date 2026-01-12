@@ -54,7 +54,7 @@ let QuizService = class QuizService {
                 .map((reponse) => ({
                 id: reponse.id.toString(),
                 text: reponse.text,
-                isCorrect: reponse.is_correct === 1 || reponse.is_correct === true,
+                isCorrect: reponse.isCorrect === true,
             }))
                 .sort((a, b) => a.id.localeCompare(b.id));
             switch (question.type) {
@@ -78,7 +78,7 @@ let QuizService = class QuizService {
                     questionData.wordbank = question.reponses.map((reponse) => ({
                         id: reponse.id.toString(),
                         text: reponse.text,
-                        isCorrect: reponse.is_correct === 1 || reponse.is_correct === true,
+                        isCorrect: reponse.isCorrect === true,
                         bankGroup: reponse.bank_group || null,
                     }));
                     break;
@@ -96,7 +96,8 @@ let QuizService = class QuizService {
                     }));
                     break;
                 case "question audio":
-                    questionData.audioUrl = question.audio_url || question.media_url || null;
+                    questionData.audioUrl =
+                        question.audio_url || question.media_url || null;
                     break;
             }
             return questionData;
@@ -226,6 +227,146 @@ let QuizService = class QuizService {
             .orderBy("classement.created_at", "DESC")
             .take(20)
             .getRawMany();
+    }
+    async getQuizzesByCategory(category, stagiaireId) {
+        const quizzes = await this.quizRepository
+            .createQueryBuilder("quiz")
+            .innerJoin("quiz.formation", "formation")
+            .innerJoin("formations", "f", "f.id = formation.id")
+            .innerJoin("catalogue_formations", "cf", "cf.formation_id = f.id")
+            .innerJoin("stagiaire_catalogue_formations", "scf", "scf.catalogue_formation_id = cf.id")
+            .where("formation.categorie = :category", { category })
+            .andWhere("scf.stagiaire_id = :stagiaireId", { stagiaireId })
+            .andWhere("quiz.status = :status", { status: "actif" })
+            .leftJoinAndSelect("quiz.formation", "quizFormation")
+            .getMany();
+        return quizzes.map((quiz) => ({
+            id: quiz.id.toString(),
+            titre: quiz.titre,
+            description: quiz.description?.substring(0, 150) || "",
+            categorie: quiz.formation?.categorie || "Non catégorisé",
+            categorieId: quiz.formation?.categorie || "non-categorise",
+            niveau: quiz.niveau || "débutant",
+            questionCount: 0,
+            questions: [],
+            points: parseInt(quiz.nb_points_total?.toString() || "0"),
+        }));
+    }
+    async getQuizStatistics(quizId, stagiaireId) {
+        const quiz = await this.quizRepository.findOne({
+            where: { id: quizId },
+            relations: ["questions"],
+        });
+        if (!quiz) {
+            throw new Error("Quiz not found");
+        }
+        const progressions = await this.classementRepository.find({
+            where: { quiz_id: quizId, stagiaire_id: stagiaireId },
+            order: { created_at: "DESC" },
+        });
+        const totalAttempts = progressions.length;
+        const scores = progressions.map((p) => p.points || 0);
+        const averageScore = totalAttempts > 0
+            ? Math.round((scores.reduce((a, b) => a + b, 0) / totalAttempts) * 100) / 100
+            : 0;
+        const bestScore = totalAttempts > 0 ? Math.max(...scores) : 0;
+        const lastAttempt = progressions[0] || null;
+        return {
+            total_attempts: totalAttempts,
+            average_score: averageScore,
+            best_score: bestScore,
+            last_attempt: lastAttempt
+                ? {
+                    score: lastAttempt.points,
+                    date: lastAttempt.created_at?.toISOString(),
+                    time_spent: 0,
+                }
+                : null,
+            quiz: {
+                id: quiz.id,
+                title: quiz.titre,
+                total_questions: quiz.questions?.length || 0,
+                total_points: parseInt(quiz.nb_points_total?.toString() || "0"),
+            },
+        };
+    }
+    async submitQuizResult(quizId, stagiaireId, answers, timeSpent) {
+        const quiz = await this.quizRepository.findOne({
+            where: { id: quizId },
+            relations: ["questions", "questions.reponses", "formation"],
+        });
+        if (!quiz) {
+            throw new Error("Quiz not found");
+        }
+        let correctCount = 0;
+        const questionsDetails = [];
+        for (const question of quiz.questions) {
+            const userAnswer = answers[question.id];
+            if (!userAnswer)
+                continue;
+            const correctReponses = question.reponses.filter((r) => r.isCorrect);
+            let isCorrect = false;
+            if (Array.isArray(userAnswer)) {
+                const correctIds = correctReponses.map((r) => r.id.toString());
+                isCorrect =
+                    userAnswer.length === correctIds.length &&
+                        userAnswer.every((id) => correctIds.includes(id.toString()));
+            }
+            else {
+                isCorrect = correctReponses.some((r) => r.id.toString() === userAnswer.toString());
+            }
+            if (isCorrect)
+                correctCount++;
+            questionsDetails.push({
+                id: question.id,
+                text: question.text,
+                type: question.type,
+                isCorrect,
+                selectedAnswers: userAnswer,
+                correctAnswers: correctReponses.map((r) => r.text),
+            });
+        }
+        const score = correctCount * 2;
+        const totalQuestions = quiz.questions.length;
+        let classement = await this.classementRepository.findOne({
+            where: { quiz_id: quizId, stagiaire_id: stagiaireId },
+        });
+        if (classement) {
+            if (score > (classement.points || 0)) {
+                classement.points = score;
+                classement.updated_at = new Date();
+                await this.classementRepository.save(classement);
+            }
+        }
+        else {
+            classement = this.classementRepository.create({
+                quiz_id: quizId,
+                stagiaire_id: stagiaireId,
+                points: score,
+                created_at: new Date(),
+                updated_at: new Date(),
+            });
+            await this.classementRepository.save(classement);
+        }
+        return {
+            success: true,
+            score,
+            correctAnswers: correctCount,
+            totalQuestions,
+            timeSpent,
+            questions: questionsDetails,
+            quiz: {
+                id: quiz.id,
+                titre: quiz.titre,
+                formation: quiz.formation
+                    ? {
+                        id: quiz.formation.id,
+                        titre: quiz.formation.titre,
+                        categorie: quiz.formation.categorie,
+                    }
+                    : null,
+            },
+        };
     }
 };
 exports.QuizService = QuizService;
