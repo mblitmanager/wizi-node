@@ -48,8 +48,6 @@ export declare class ApiGeneralController {
     private rankingService;
     private apiResponse;
     constructor(rankingService: RankingService, apiResponse: ApiResponseService);
-    getUser(req: any): Promise<any>;
-    getMe(req: any): Promise<any>;
     getUserSettings(req: any): Promise<any>;
     updateUserSettings(req: any, data: any): Promise<any>;
     reportUserAppUsage(req: any, data: any): Promise<any>;

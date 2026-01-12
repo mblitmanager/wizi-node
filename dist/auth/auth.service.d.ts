@@ -9,10 +9,47 @@ export declare class AuthService {
     constructor(userRepository: Repository<User>, jwtService: JwtService, mailService: MailService);
     validateUser(email: string, pass: string): Promise<any>;
     login(user: any): Promise<{
+        user: {
+            id: any;
+            name: any;
+            email: any;
+            email_verified_at: any;
+            role: any;
+            image: any;
+            created_at: string;
+            updated_at: string;
+            last_login_at: string;
+            last_activity_at: string;
+            last_login_ip: any;
+            is_online: number;
+            fcm_token: any;
+            last_client: any;
+            adresse: any;
+        };
+        stagiaire: any;
         token: string;
         refresh_token: string;
-        user: any;
     }>;
+    transformUser(user: any): {
+        user: {
+            id: any;
+            name: any;
+            email: any;
+            email_verified_at: any;
+            role: any;
+            image: any;
+            created_at: string;
+            updated_at: string;
+            last_login_at: string;
+            last_activity_at: string;
+            last_login_ip: any;
+            is_online: number;
+            fcm_token: any;
+            last_client: any;
+            adresse: any;
+        };
+        stagiaire: any;
+    };
     register(userData: any): Promise<any>;
     updateFcmToken(userId: number, token: string): Promise<void>;
     logout(userId: number): Promise<boolean>;

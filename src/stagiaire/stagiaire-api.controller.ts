@@ -198,16 +198,6 @@ export class ApiGeneralController {
     private apiResponse: ApiResponseService
   ) {}
 
-  @Get("user")
-  async getUser(@Request() req: any) {
-    return this.apiResponse.success(req.user);
-  }
-
-  @Get("me")
-  async getMe(@Request() req: any) {
-    return this.apiResponse.success(req.user);
-  }
-
   @Get("user/settings")
   async getUserSettings(@Request() req: any) {
     return this.apiResponse.success({});

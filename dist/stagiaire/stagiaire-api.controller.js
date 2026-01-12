@@ -347,12 +347,6 @@ let ApiGeneralController = class ApiGeneralController {
         this.rankingService = rankingService;
         this.apiResponse = apiResponse;
     }
-    async getUser(req) {
-        return this.apiResponse.success(req.user);
-    }
-    async getMe(req) {
-        return this.apiResponse.success(req.user);
-    }
     async getUserSettings(req) {
         return this.apiResponse.success({});
     }
@@ -374,20 +368,6 @@ let ApiGeneralController = class ApiGeneralController {
     }
 };
 exports.ApiGeneralController = ApiGeneralController;
-__decorate([
-    (0, common_1.Get)("user"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ApiGeneralController.prototype, "getUser", null);
-__decorate([
-    (0, common_1.Get)("me"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ApiGeneralController.prototype, "getMe", null);
 __decorate([
     (0, common_1.Get)("user/settings"),
     __param(0, (0, common_1.Request)()),

@@ -14,5 +14,4 @@ export declare class AuthController {
     getProfile(req: any): any;
     getMe(req: any): any;
     getUser(req: any): any;
-    private transformUser;
 }
