@@ -4,6 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { LoggerMiddleware } from "./common/middleware/logger.middleware";
+import { CommonModule } from "./common/common.module";
 import { APP_GUARD } from "@nestjs/core";
 import { RolesGuard } from "./common/guards/roles.guard";
 import { User } from "./entities/user.entity";
@@ -145,6 +146,7 @@ import { ChallengeModule } from "./challenge/challenge.module";
     AgendaModule,
     AnnouncementModule,
     ChallengeModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

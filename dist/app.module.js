@@ -16,6 +16,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const logger_middleware_1 = require("./common/middleware/logger.middleware");
+const common_module_1 = require("./common/common.module");
 const user_entity_1 = require("./entities/user.entity");
 const stagiaire_entity_1 = require("./entities/stagiaire.entity");
 const formation_entity_1 = require("./entities/formation.entity");
@@ -164,6 +165,7 @@ exports.AppModule = AppModule = __decorate([
             agenda_module_1.AgendaModule,
             announcement_module_1.AnnouncementModule,
             challenge_module_1.ChallengeModule,
+            common_module_1.CommonModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

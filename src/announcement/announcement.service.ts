@@ -28,7 +28,12 @@ export class AnnouncementService {
     private notificationService: NotificationService
   ) {}
 
-  async getAnnouncements(user: any, page: number = 1, limit: number = 10) {
+  async getAnnouncements(
+    user: any,
+    page: number = 1,
+    limit: number = 10,
+    baseUrl: string = ""
+  ) {
     const query = this.announcementRepository
       .createQueryBuilder("announcement")
       .leftJoinAndSelect("announcement.creator", "creator")
@@ -43,13 +48,43 @@ export class AnnouncementService {
       .take(limit)
       .getManyAndCount();
 
+    const lastPage = Math.ceil(total / limit);
+
+    const links = [];
+    links.push({
+      url: page > 1 ? `${baseUrl}?page=${page - 1}` : null,
+      label: "pagination.previous",
+      active: false,
+    });
+
+    for (let i = 1; i <= lastPage; i++) {
+      links.push({
+        url: `${baseUrl}?page=${i}`,
+        label: i.toString(),
+        active: i === page,
+      });
+    }
+
+    links.push({
+      url: page < lastPage ? `${baseUrl}?page=${page + 1}` : null,
+      label: "pagination.next",
+      active: false,
+    });
+
     return {
+      current_page: page,
       data: items,
-      meta: {
-        total,
-        page,
-        last_page: Math.ceil(total / limit),
-      },
+      first_page_url: `${baseUrl}?page=1`,
+      from: total > 0 ? (page - 1) * limit + 1 : null,
+      last_page: lastPage,
+      last_page_url: `${baseUrl}?page=${lastPage}`,
+      links,
+      next_page_url: page < lastPage ? `${baseUrl}?page=${page + 1}` : null,
+      path: baseUrl,
+      per_page: limit,
+      prev_page_url: page > 1 ? `${baseUrl}?page=${page - 1}` : null,
+      to: total > 0 ? Math.min(page * limit, total) : null,
+      total,
     };
   }
 

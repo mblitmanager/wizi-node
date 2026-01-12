@@ -13,13 +13,20 @@ export declare class AnnouncementService {
     private commercialRepository;
     private notificationService;
     constructor(announcementRepository: Repository<Announcement>, userRepository: Repository<User>, stagiaireRepository: Repository<Stagiaire>, formateurRepository: Repository<Formateur>, commercialRepository: Repository<Commercial>, notificationService: NotificationService);
-    getAnnouncements(user: any, page?: number, limit?: number): Promise<{
+    getAnnouncements(user: any, page?: number, limit?: number, baseUrl?: string): Promise<{
+        current_page: number;
         data: Announcement[];
-        meta: {
-            total: number;
-            page: number;
-            last_page: number;
-        };
+        first_page_url: string;
+        from: number;
+        last_page: number;
+        last_page_url: string;
+        links: any[];
+        next_page_url: string;
+        path: string;
+        per_page: number;
+        prev_page_url: string;
+        to: number;
+        total: number;
     }>;
     createAnnouncement(data: any, user: any): Promise<{
         message: string;

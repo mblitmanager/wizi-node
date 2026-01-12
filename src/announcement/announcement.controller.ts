@@ -23,14 +23,21 @@ export class AnnouncementController {
   @Get()
   async index(
     @Request() req,
-    @Query("page") page: number = 1,
-    @Query("limit") limit: number = 10
+    @Query("page") page: string = "1",
+    @Query("limit") limit: string = "10"
   ) {
     try {
+      const pageNum = parseInt(page);
+      const limitNum = parseInt(limit);
+      const protocol = req.protocol;
+      const host = req.get("host");
+      const baseUrl = `${protocol}://${host}${req.baseUrl}`;
+
       return await this.announcementService.getAnnouncements(
         req.user,
-        page,
-        limit
+        pageNum,
+        limitNum,
+        baseUrl
       );
     } catch (error) {
       throw new HttpException(

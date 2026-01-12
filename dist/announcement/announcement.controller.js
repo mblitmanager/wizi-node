@@ -20,9 +20,14 @@ let AnnouncementController = class AnnouncementController {
     constructor(announcementService) {
         this.announcementService = announcementService;
     }
-    async index(req, page = 1, limit = 10) {
+    async index(req, page = "1", limit = "10") {
         try {
-            return await this.announcementService.getAnnouncements(req.user, page, limit);
+            const pageNum = parseInt(page);
+            const limitNum = parseInt(limit);
+            const protocol = req.protocol;
+            const host = req.get("host");
+            const baseUrl = `${protocol}://${host}${req.baseUrl}`;
+            return await this.announcementService.getAnnouncements(req.user, pageNum, limitNum, baseUrl);
         }
         catch (error) {
             throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -77,7 +82,7 @@ __decorate([
     __param(1, (0, common_1.Query)("page")),
     __param(2, (0, common_1.Query)("limit")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Number, Number]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], AnnouncementController.prototype, "index", null);
 __decorate([

@@ -10,12 +10,14 @@ exports.CommonModule = void 0;
 const common_1 = require("@nestjs/common");
 const api_response_service_1 = require("./services/api-response.service");
 const all_exceptions_filter_1 = require("./filters/all-exceptions.filter");
+const docs_controller_1 = require("./docs.controller");
 let CommonModule = class CommonModule {
 };
 exports.CommonModule = CommonModule;
 exports.CommonModule = CommonModule = __decorate([
     (0, common_1.Module)({
         providers: [api_response_service_1.ApiResponseService, all_exceptions_filter_1.AllExceptionsFilter],
+        controllers: [docs_controller_1.DocsController, docs_controller_1.DocsLdController],
         exports: [api_response_service_1.ApiResponseService, all_exceptions_filter_1.AllExceptionsFilter],
     })
 ], CommonModule);
