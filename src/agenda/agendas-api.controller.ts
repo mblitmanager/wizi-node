@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Request,
   Query,
   NotFoundException,
 } from "@nestjs/common";
@@ -20,6 +21,14 @@ import { Roles } from "../common/decorators/roles.decorator";
 
 @Controller("agendas")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
+@Roles(
+  "administrateur",
+  "admin",
+  "formateur",
+  "formatrice",
+  "commercial",
+  "stagiaire"
+)
 export class AgendasApiController {
   constructor(
     @InjectRepository(Agenda)
@@ -29,16 +38,42 @@ export class AgendasApiController {
 
   @Get()
   async getAll(
+    @Request() req: any,
     @Query("page") page: number = 1,
     @Query("limit") limit: number = 30
   ) {
-    const skip = (page - 1) * limit;
+    const pageNum = typeof page === "string" ? parseInt(page, 10) : page || 1;
+    const limitNum =
+      typeof limit === "string" ? parseInt(limit, 10) : limit || 30;
+    const skip = (pageNum - 1) * limitNum;
 
-    const [data, total] = await this.agendaRepository.findAndCount({
+    const queryOptions: any = {
       skip,
-      take: limit,
+      take: limitNum,
       order: { date_debut: "DESC" },
-    });
+      relations: ["stagiaire"],
+    };
+
+    // If user is a stagiaire, they only see their own agenda
+    if (req.user.role === "stagiaire") {
+      // Find the stagiaire record first if not already available in user object
+      const stagiaireId = req.user.stagiaire?.id;
+      if (stagiaireId) {
+        queryOptions.where = { stagiaire_id: stagiaireId };
+      } else {
+        // Fallback: if we can't find stagiaire ID, return empty as they shouldn't see others
+        return {
+          "@context": "/api/contexts/Agenda",
+          "@id": "/api/agendas",
+          "@type": "Collection",
+          "hydra:member": [],
+          "hydra:totalItems": 0,
+        };
+      }
+    }
+
+    const [data, total] =
+      await this.agendaRepository.findAndCount(queryOptions);
 
     const members = data.map((item) =>
       this.agendaService.formatAgendaJsonLd(item)
@@ -51,13 +86,13 @@ export class AgendasApiController {
       "hydra:member": members,
       "hydra:totalItems": total,
       "hydra:view": {
-        "@id": `/api/agendas?page=${page}&limit=${limit}`,
+        "@id": `/api/agendas?page=${pageNum}&limit=${limitNum}`,
         "@type": "PartialCollectionView",
-        "hydra:first": `/api/agendas?page=1&limit=${limit}`,
-        "hydra:last": `/api/agendas?page=${Math.ceil(total / limit)}&limit=${limit}`,
+        "hydra:first": `/api/agendas?page=1&limit=${limitNum}`,
+        "hydra:last": `/api/agendas?page=${Math.ceil(total / limitNum)}&limit=${limitNum}`,
         "hydra:next":
-          page < Math.ceil(total / limit)
-            ? `/api/agendas?page=${page + 1}&limit=${limit}`
+          pageNum < Math.ceil(total / limitNum)
+            ? `/api/agendas?page=${pageNum + 1}&limit=${limitNum}`
             : null,
       },
     };

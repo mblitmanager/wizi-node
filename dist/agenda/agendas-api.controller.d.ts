@@ -5,7 +5,14 @@ export declare class AgendasApiController {
     private agendaRepository;
     private agendaService;
     constructor(agendaRepository: Repository<Agenda>, agendaService: AgendaService);
-    getAll(page?: number, limit?: number): Promise<{
+    getAll(req: any, page?: number, limit?: number): Promise<{
+        "@context": string;
+        "@id": string;
+        "@type": string;
+        "hydra:member": any[];
+        "hydra:totalItems": number;
+        "hydra:view"?: undefined;
+    } | {
         "@context": string;
         "@id": string;
         "@type": string;

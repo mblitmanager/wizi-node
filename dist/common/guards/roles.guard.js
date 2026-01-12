@@ -24,8 +24,10 @@ let RolesGuard = class RolesGuard {
         }
         const { user } = context.switchToHttp().getRequest();
         if (!user) {
-            console.log("RolesGuard: No user found in request");
-            return false;
+            throw new common_1.ForbiddenException({
+                error: "Non authentifié",
+                message: "L'utilisateur n'a pas pu être identifié par le RolesGuard. Vérifiez que l'AuthGuard est bien placé avant.",
+            });
         }
         const hasRole = requiredRoles.some((role) => user.role?.includes(role));
         if (!hasRole) {

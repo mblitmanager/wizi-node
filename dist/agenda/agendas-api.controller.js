@@ -26,13 +26,32 @@ let AgendasApiController = class AgendasApiController {
         this.agendaRepository = agendaRepository;
         this.agendaService = agendaService;
     }
-    async getAll(page = 1, limit = 30) {
-        const skip = (page - 1) * limit;
-        const [data, total] = await this.agendaRepository.findAndCount({
+    async getAll(req, page = 1, limit = 30) {
+        const pageNum = typeof page === "string" ? parseInt(page, 10) : page || 1;
+        const limitNum = typeof limit === "string" ? parseInt(limit, 10) : limit || 30;
+        const skip = (pageNum - 1) * limitNum;
+        const queryOptions = {
             skip,
-            take: limit,
+            take: limitNum,
             order: { date_debut: "DESC" },
-        });
+            relations: ["stagiaire"],
+        };
+        if (req.user.role === "stagiaire") {
+            const stagiaireId = req.user.stagiaire?.id;
+            if (stagiaireId) {
+                queryOptions.where = { stagiaire_id: stagiaireId };
+            }
+            else {
+                return {
+                    "@context": "/api/contexts/Agenda",
+                    "@id": "/api/agendas",
+                    "@type": "Collection",
+                    "hydra:member": [],
+                    "hydra:totalItems": 0,
+                };
+            }
+        }
+        const [data, total] = await this.agendaRepository.findAndCount(queryOptions);
         const members = data.map((item) => this.agendaService.formatAgendaJsonLd(item));
         return {
             "@context": "/api/contexts/Agenda",
@@ -41,12 +60,12 @@ let AgendasApiController = class AgendasApiController {
             "hydra:member": members,
             "hydra:totalItems": total,
             "hydra:view": {
-                "@id": `/api/agendas?page=${page}&limit=${limit}`,
+                "@id": `/api/agendas?page=${pageNum}&limit=${limitNum}`,
                 "@type": "PartialCollectionView",
-                "hydra:first": `/api/agendas?page=1&limit=${limit}`,
-                "hydra:last": `/api/agendas?page=${Math.ceil(total / limit)}&limit=${limit}`,
-                "hydra:next": page < Math.ceil(total / limit)
-                    ? `/api/agendas?page=${page + 1}&limit=${limit}`
+                "hydra:first": `/api/agendas?page=1&limit=${limitNum}`,
+                "hydra:last": `/api/agendas?page=${Math.ceil(total / limitNum)}&limit=${limitNum}`,
+                "hydra:next": pageNum < Math.ceil(total / limitNum)
+                    ? `/api/agendas?page=${pageNum + 1}&limit=${limitNum}`
                     : null,
             },
         };
@@ -108,10 +127,11 @@ let AgendasApiController = class AgendasApiController {
 exports.AgendasApiController = AgendasApiController;
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)("page")),
-    __param(1, (0, common_1.Query)("limit")),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("page")),
+    __param(2, (0, common_1.Query)("limit")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:paramtypes", [Object, Number, Number]),
     __metadata("design:returntype", Promise)
 ], AgendasApiController.prototype, "getAll", null);
 __decorate([
@@ -149,6 +169,7 @@ __decorate([
 exports.AgendasApiController = AgendasApiController = __decorate([
     (0, common_1.Controller)("agendas"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)("administrateur", "admin", "formateur", "formatrice", "commercial", "stagiaire"),
     __param(0, (0, typeorm_1.InjectRepository)(agenda_entity_1.Agenda)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         agenda_service_1.AgendaService])
