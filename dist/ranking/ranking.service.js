@@ -31,6 +31,14 @@ let RankingService = class RankingService {
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
     }
+    async findAllPaginated(page = 1, limit = 10) {
+        const [items, total] = await this.classementRepository.findAndCount({
+            take: limit,
+            skip: (page - 1) * limit,
+            order: { id: "ASC" },
+        });
+        return { items, total };
+    }
     async getGlobalRanking(period = "all") {
         let query = this.classementRepository
             .createQueryBuilder("c")

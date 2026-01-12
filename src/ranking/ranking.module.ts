@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RankingService } from "./ranking.service";
 import { RankingController } from "./ranking.controller";
+import { ClassementsApiController } from "./classements-api.controller";
 import { Classement } from "../entities/classement.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
@@ -21,7 +22,7 @@ import { User } from "../entities/user.entity";
     ]),
   ],
   providers: [RankingService],
-  controllers: [RankingController],
+  controllers: [RankingController, ClassementsApiController],
   exports: [RankingService],
 })
 export class RankingModule {}

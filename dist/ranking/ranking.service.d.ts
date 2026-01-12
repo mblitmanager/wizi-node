@@ -13,6 +13,10 @@ export declare class RankingService {
     private quizRepository;
     private userRepository;
     constructor(classementRepository: Repository<Classement>, stagiaireRepository: Repository<Stagiaire>, participationRepository: Repository<QuizParticipation>, progressionRepository: Repository<Progression>, quizRepository: Repository<Quiz>, userRepository: Repository<User>);
+    findAllPaginated(page?: number, limit?: number): Promise<{
+        items: Classement[];
+        total: number;
+    }>;
     getGlobalRanking(period?: string): Promise<{
         rang: number;
         level: string;

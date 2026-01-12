@@ -43,9 +43,11 @@ export class CatalogueFormationController {
   }
 
   @Get("formations/:id")
-  async getOne(@Param("id") id: number) {
-    const result = await this.catalogueService.findOne(id);
-    // Laravel show returns the object directly
+  async getOne(@Param("id") id: number, @Request() req: any) {
+    const protocol = req.protocol;
+    const host = req.get("host");
+    const baseUrl = `${protocol}://${host}`;
+    const result = await this.catalogueService.findOne(id, baseUrl);
     return result;
   }
 

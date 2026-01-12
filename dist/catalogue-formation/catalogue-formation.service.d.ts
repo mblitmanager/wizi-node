@@ -5,8 +5,9 @@ export declare class CatalogueFormationService {
     private readonly catalogueRepository;
     private readonly stagiaireRepository;
     constructor(catalogueRepository: Repository<CatalogueFormation>, stagiaireRepository: Repository<Stagiaire>);
-    findAll(): Promise<CatalogueFormation[]>;
-    findOne(id: number): Promise<CatalogueFormation>;
+    findAll(): Promise<any[]>;
+    findOne(id: number, baseUrl?: string): Promise<any>;
+    private formatCatalogueJson;
     getCataloguesWithFormations(query: {
         per_page?: number;
         category?: string;

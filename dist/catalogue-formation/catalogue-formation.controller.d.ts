@@ -4,8 +4,8 @@ export declare class CatalogueFormationController {
     private readonly catalogueService;
     private readonly apiResponse;
     constructor(catalogueService: CatalogueFormationService, apiResponse: ApiResponseService);
-    getAll(): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation[]>;
-    getAllFormations(): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation[]>;
+    getAll(): Promise<any[]>;
+    getAllFormations(): Promise<any[]>;
     getWithFormations(req: any): Promise<{
         data: {
             id: number;
@@ -39,11 +39,11 @@ export declare class CatalogueFormationController {
     }>;
     getMyStagiaireCatalogues(req: any): Promise<any>;
     getStagiaireCatalogues(id: number): Promise<any>;
-    getOne(id: number): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation>;
-    getAllForParrainage(): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation[]>;
+    getOne(id: number, req: any): Promise<any>;
+    getAllForParrainage(): Promise<any[]>;
 }
 export declare class FormationParrainageController {
     private readonly catalogueService;
     constructor(catalogueService: CatalogueFormationService);
-    formations(): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation[]>;
+    formations(): Promise<any[]>;
 }

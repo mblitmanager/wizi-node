@@ -24,19 +24,25 @@ let CatalogueFormationService = class CatalogueFormationService {
         this.stagiaireRepository = stagiaireRepository;
     }
     async findAll() {
-        return this.catalogueRepository.find({
+        const catalogues = await this.catalogueRepository.find({
             where: {
                 statut: 1,
             },
-            relations: ["formation"],
+            relations: [
+                "formation",
+                "formateurs",
+                "stagiaire_catalogue_formations",
+                "stagiaire_catalogue_formations.stagiaire",
+            ],
             order: {
                 created_at: "DESC",
             },
         });
+        return catalogues.map((item) => this.formatCatalogueJson(item));
     }
-    async findOne(id) {
+    async findOne(id, baseUrl) {
         try {
-            const formation = await this.catalogueRepository.findOne({
+            const item = await this.catalogueRepository.findOne({
                 where: { id },
                 relations: [
                     "formation",
@@ -45,15 +51,117 @@ let CatalogueFormationService = class CatalogueFormationService {
                     "stagiaire_catalogue_formations.stagiaire",
                 ],
             });
-            if (!formation) {
+            if (!item) {
                 throw new common_1.NotFoundException("Catalogue formation not found");
             }
-            return formation;
+            const formatted = this.formatCatalogueJson(item);
+            const storageUrl = baseUrl
+                ? `${baseUrl}/storage/`
+                : "http://localhost:3000/storage/";
+            return {
+                catalogueFormation: formatted,
+                formationId: item.formation_id,
+                cursusPdfUrl: item.cursus_pdf
+                    ? `${storageUrl}${item.cursus_pdf}`
+                    : null,
+            };
         }
         catch (error) {
             console.error("Detailed Error in CatalogueFormationService.findOne:", error);
             throw error;
         }
+    }
+    formatCatalogueJson(item) {
+        return {
+            id: item.id,
+            titre: item.titre,
+            description: item.description,
+            prerequis: item.prerequis,
+            image_url: item.image_url,
+            cursus_pdf: item.cursus_pdf,
+            tarif: item.tarif,
+            certification: item.certification,
+            statut: item.statut,
+            duree: item.duree,
+            formation_id: item.formation_id,
+            deleted_at: item.deleted_at || null,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            objectifs: item.objectifs,
+            programme: item.programme,
+            modalites: item.modalites,
+            modalites_accompagnement: item.modalites_accompagnement,
+            moyens_pedagogiques: item.moyens_pedagogiques,
+            modalites_suivi: item.modalites_suivi,
+            evaluation: item.evaluation,
+            lieu: item.lieu,
+            niveau: item.niveau,
+            public_cible: item.public_cible,
+            nombre_participants: item.nombre_participants,
+            formation: item.formation
+                ? {
+                    id: item.formation.id,
+                    titre: item.formation.titre,
+                    slug: item.formation.slug || null,
+                    description: item.formation.description,
+                    statut: item.formation.statut,
+                    duree: item.formation.duree,
+                    categorie: item.formation.categorie,
+                    image: item.formation.image || null,
+                    icon: item.formation.icon || null,
+                    created_at: item.formation.created_at,
+                    updated_at: item.formation.updated_at,
+                }
+                : null,
+            formateurs: (item.formateurs || []).map((f) => ({
+                id: f.id,
+                role: f.role || "formateur",
+                prenom: f.prenom,
+                civilite: f.civilite,
+                user_id: f.user_id,
+                telephone: f.telephone,
+                deleted_at: f.deleted_at || null,
+                created_at: f.created_at,
+                updated_at: f.updated_at,
+                pivot: {
+                    catalogue_formation_id: item.id,
+                    formateur_id: f.id,
+                },
+            })),
+            stagiaires: (item.stagiaire_catalogue_formations || []).map((scf) => ({
+                id: scf.stagiaire?.id,
+                prenom: scf.stagiaire?.prenom,
+                civilite: scf.stagiaire?.civilite,
+                telephone: scf.stagiaire?.telephone,
+                adresse: scf.stagiaire?.adresse,
+                date_naissance: scf.stagiaire?.date_naissance,
+                ville: scf.stagiaire?.ville,
+                code_postal: scf.stagiaire?.code_postal,
+                date_debut_formation: scf.stagiaire?.date_debut_formation,
+                date_inscription: scf.stagiaire?.date_inscription,
+                role: scf.stagiaire?.role || "stagiaire",
+                statut: scf.stagiaire?.statut,
+                user_id: scf.stagiaire?.user_id,
+                deleted_at: scf.stagiaire?.deleted_at || null,
+                created_at: scf.stagiaire?.created_at,
+                updated_at: scf.stagiaire?.updated_at,
+                date_fin_formation: scf.stagiaire?.date_fin_formation,
+                login_streak: scf.stagiaire?.login_streak || 0,
+                last_login_at: scf.stagiaire?.last_login_at || null,
+                onboarding_seen: scf.stagiaire?.onboarding_seen || 0,
+                partenaire_id: scf.stagiaire?.partenaire_id || null,
+                pivot: {
+                    catalogue_formation_id: item.id,
+                    stagiaire_id: scf.stagiaire_id,
+                    date_debut: scf.date_debut,
+                    date_inscription: scf.date_inscription,
+                    date_fin: scf.date_fin,
+                    formateur_id: scf.formateur_id,
+                    created_at: scf.created_at,
+                    updated_at: scf.updated_at,
+                },
+            })),
+        };
     }
     async getCataloguesWithFormations(query) {
         const perPage = Number(query.per_page) || 9;
@@ -116,6 +224,7 @@ let CatalogueFormationService = class CatalogueFormationService {
         const stagiaire = await this.stagiaireRepository.findOne({
             where: { id: stagiaireId },
             relations: [
+                "user",
                 "stagiaire_catalogue_formations",
                 "stagiaire_catalogue_formations.catalogue_formation",
                 "stagiaire_catalogue_formations.catalogue_formation.formation",
@@ -124,30 +233,102 @@ let CatalogueFormationService = class CatalogueFormationService {
         if (!stagiaire) {
             throw new common_1.NotFoundException("Stagiaire introuvable");
         }
-        const result = stagiaire.stagiaire_catalogue_formations.map((scf) => {
+        const formattedCatalogues = stagiaire.stagiaire_catalogue_formations
+            .map((scf) => {
             const catalogue = scf.catalogue_formation;
+            if (!catalogue)
+                return null;
             const formation = catalogue.formation;
-            return {
-                pivot: {
-                    stagiaire_id: scf.stagiaire_id,
-                    catalogue_formation_id: scf.catalogue_formation_id,
-                    date_debut: scf.date_debut,
-                    date_inscription: scf.date_inscription,
-                    date_fin: scf.date_fin,
-                    formateur_id: scf.formateur_id,
-                    created_at: scf.created_at,
-                    updated_at: scf.updated_at,
-                },
-                catalogue: {
-                    ...catalogue,
-                    formation: formation,
-                },
-                formation: formation,
+            const pivot = {
+                stagiaire_id: scf.stagiaire_id,
+                catalogue_formation_id: scf.catalogue_formation_id,
+                date_debut: scf.date_debut,
+                date_inscription: scf.date_inscription,
+                date_fin: scf.date_fin,
+                formateur_id: scf.formateur_id,
+                created_at: scf.created_at,
+                updated_at: scf.updated_at,
             };
-        });
+            const catalogueData = {
+                id: catalogue.id,
+                titre: catalogue.titre,
+                description: catalogue.description,
+                prerequis: catalogue.prerequis,
+                image_url: catalogue.image_url,
+                cursus_pdf: catalogue.cursus_pdf,
+                tarif: catalogue.tarif,
+                certification: catalogue.certification,
+                statut: catalogue.statut,
+                duree: catalogue.duree,
+                formation_id: catalogue.formation_id,
+                deleted_at: catalogue.deleted_at || null,
+                created_at: catalogue.created_at,
+                updated_at: catalogue.updated_at,
+                objectifs: catalogue.objectifs,
+                programme: catalogue.programme,
+                modalites: catalogue.modalites,
+                modalites_accompagnement: catalogue.modalites_accompagnement,
+                moyens_pedagogiques: catalogue.moyens_pedagogiques,
+                modalites_suivi: catalogue.modalites_suivi,
+                evaluation: catalogue.evaluation,
+                lieu: catalogue.lieu,
+                niveau: catalogue.niveau,
+                public_cible: catalogue.public_cible,
+                nombre_participants: catalogue.nombre_participants,
+                pivot: pivot,
+                formation: formation
+                    ? {
+                        id: formation.id,
+                        titre: formation.titre,
+                        slug: formation.slug || null,
+                        description: formation.description,
+                        statut: formation.statut,
+                        duree: formation.duree,
+                        categorie: formation.categorie,
+                        image: formation.image || null,
+                        icon: formation.icon || null,
+                        created_at: formation.created_at,
+                        updated_at: formation.updated_at,
+                    }
+                    : null,
+            };
+            return {
+                pivot: pivot,
+                catalogue: catalogueData,
+                formation: catalogueData.formation,
+            };
+        })
+            .filter((item) => item !== null);
+        const stagiaireData = {
+            id: stagiaire.id,
+            prenom: stagiaire.prenom,
+            civilite: stagiaire.civilite,
+            telephone: stagiaire.telephone,
+            adresse: stagiaire.adresse,
+            date_naissance: stagiaire.date_naissance,
+            ville: stagiaire.ville,
+            code_postal: stagiaire.code_postal,
+            date_debut_formation: stagiaire.date_debut_formation,
+            date_inscription: stagiaire.date_inscription,
+            role: stagiaire.role || "stagiaire",
+            statut: stagiaire.statut,
+            user_id: stagiaire.user_id,
+            deleted_at: stagiaire.deleted_at || null,
+            created_at: stagiaire.created_at,
+            updated_at: stagiaire.updated_at,
+            date_fin_formation: stagiaire.date_fin_formation,
+            login_streak: stagiaire.login_streak || 0,
+            last_login_at: stagiaire.last_login_at
+                ?.toISOString()
+                .replace("T", " ")
+                .substring(0, 19) || null,
+            onboarding_seen: stagiaire.onboarding_seen ? 1 : 0,
+            partenaire_id: stagiaire.partenaire_id || null,
+            catalogue_formations: formattedCatalogues.map((item) => item.catalogue),
+        };
         return {
-            stagiaire: stagiaire,
-            catalogues: result,
+            stagiaire: stagiaireData,
+            catalogues: formattedCatalogues,
         };
     }
 };

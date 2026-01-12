@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const ranking_service_1 = require("./ranking.service");
 const ranking_controller_1 = require("./ranking.controller");
+const classements_api_controller_1 = require("./classements-api.controller");
 const classement_entity_1 = require("../entities/classement.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
@@ -33,7 +34,7 @@ exports.RankingModule = RankingModule = __decorate([
             ]),
         ],
         providers: [ranking_service_1.RankingService],
-        controllers: [ranking_controller_1.RankingController],
+        controllers: [ranking_controller_1.RankingController, classements_api_controller_1.ClassementsApiController],
         exports: [ranking_service_1.RankingService],
     })
 ], RankingModule);

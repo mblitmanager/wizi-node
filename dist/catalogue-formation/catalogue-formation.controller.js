@@ -41,8 +41,11 @@ let CatalogueFormationController = class CatalogueFormationController {
     async getStagiaireCatalogues(id) {
         return await this.catalogueService.getFormationsAndCatalogues(id);
     }
-    async getOne(id) {
-        const result = await this.catalogueService.findOne(id);
+    async getOne(id, req) {
+        const protocol = req.protocol;
+        const host = req.get("host");
+        const baseUrl = `${protocol}://${host}`;
+        const result = await this.catalogueService.findOne(id, baseUrl);
         return result;
     }
     async getAllForParrainage() {
@@ -86,8 +89,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)("formations/:id"),
     __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], CatalogueFormationController.prototype, "getOne", null);
 __decorate([
