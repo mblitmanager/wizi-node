@@ -21,50 +21,59 @@ import {
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
 
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const request = ctx.getRequest();
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = "Internal server error";
-    let error = null;
-
-    // Gérer les HttpExceptions de NestJS
-    if (exception instanceof HttpException) {
-      status = exception.getStatus();
-      const exceptionResponse = exception.getResponse();
-
-      // Extraire le message
-      if (typeof exceptionResponse === "string") {
-        message = exceptionResponse;
-      } else if (typeof exceptionResponse === "object") {
-        message =
-          (exceptionResponse as any).message ||
-          (exceptionResponse as any).error ||
-          "An error occurred";
-        error = (exceptionResponse as any).error;
-      }
-    } else if (exception instanceof Error) {
-      // Gérer les erreurs JavaScript standard
-      message = exception.message;
-      this.logger.error(exception.stack);
-    } else {
-      // Fallback pour les exceptions inattendues
-      message = String(exception);
-      this.logger.error(exception);
-    }
-
-    // Format de réponse standardisé (compatible Laravel)
-    const errorResponse = {
+    let status =
+      exception.status ||
+      exception.statusCode ||
+      HttpStatus.INTERNAL_SERVER_ERROR;
+    let errorResponse: any = {
       success: false,
-      error: message,
-      status,
       timestamp: new Date().toISOString(),
       path: request.url,
     };
 
-    // Log l'erreur (on évite de log les 404 bruyants comme favicon.ico)
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      const exceptionResponse: any = exception.getResponse();
+
+      if (typeof exceptionResponse === "string") {
+        errorResponse.error = exceptionResponse;
+      } else {
+        // If it's already an object (like our ForbiddenException payload)
+        // merge it into errorResponse or replace it
+        errorResponse = {
+          ...errorResponse,
+          ...exceptionResponse,
+        };
+      }
+    } else if (exception instanceof Error) {
+      errorResponse.error = exception.message;
+      if (process.env.NODE_ENV !== "production") {
+        errorResponse.stack = exception.stack;
+      }
+      this.logger.error(exception.stack);
+    } else {
+      errorResponse.error = String(exception);
+      this.logger.error(exception);
+    }
+
+    // Special case for Laravel standard "Unauthenticated" instead of Nest "Unauthorized"
+    if (
+      status === HttpStatus.UNAUTHORIZED &&
+      errorResponse.error === "Unauthorized"
+    ) {
+      errorResponse.error = "Unauthenticated";
+      errorResponse.message = "You are not authenticated.";
+    }
+
+    // Ensure status is always correct in the response root if success is present
+    errorResponse.status = status;
+
+    // Log the error
     const isNoisy404 =
       status === HttpStatus.NOT_FOUND &&
       (request.url.includes("favicon.ico") ||
@@ -72,11 +81,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if (!isNoisy404) {
       this.logger.error(
-        `[${request.method}] ${request.url} - ${status} - ${message}`
+        `[${request.method}] ${request.url} - ${status} - ${errorResponse.error || errorResponse.message || "Unknown Error"}`
       );
     }
 
-    // Retourner la réponse
     response.status(status).json(errorResponse);
   }
 }

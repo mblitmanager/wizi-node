@@ -8,6 +8,7 @@ import { Classement } from "../entities/classement.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { QuizParticipationAnswer } from "../entities/quiz-participation-answer.entity";
 import { CorrespondancePair } from "../entities/correspondance-pair.entity";
+import { Reponse } from "../entities/reponse.entity";
 import { Progression } from "../entities/progression.entity";
 
 @Injectable()
@@ -159,29 +160,78 @@ export class QuizService {
         throw new Error("Quiz not found");
       }
 
-      return {
-        "@context": "/api/contexts/Quiz",
-        "@id": `/api/quizzes/${quiz.id}`,
-        "@type": "Quiz",
-        id: quiz.id,
-        titre: quiz.titre || "",
-        description: quiz.description || "",
-        duree: quiz.duree?.toString() || "30",
-        formation: quiz.formation
-          ? `/api/formations/${quiz.formation.id}`
-          : null,
-        nbPointsTotal: quiz.nb_points_total?.toString() || "0",
-        niveau: quiz.niveau || "débutant",
-        questions: (quiz.questions || []).map((q) => `/api/questions/${q.id}`),
-        participations: [],
-        status: quiz.status || "actif",
-        createdAt: quiz.created_at?.toISOString() || new Date().toISOString(),
-        updatedAt: quiz.updated_at?.toISOString() || new Date().toISOString(),
-      };
+      return this.formatQuizJsonLd(quiz);
     } catch (error) {
       console.error("Error in getQuizJsonLd:", error);
       throw new Error(`Failed to get quiz JSON-LD: ${error.message}`);
     }
+  }
+
+  formatQuizJsonLd(quiz: Quiz) {
+    return {
+      "@context": "/api/contexts/Quiz",
+      "@id": `/api/quizzes/${quiz.id}`,
+      "@type": "Quiz",
+      id: quiz.id,
+      titre: quiz.titre || "",
+      description: quiz.description || "",
+      duree: quiz.duree?.toString() || "30",
+      formation: quiz.formation ? `/api/formations/${quiz.formation.id}` : null,
+      nbPointsTotal: quiz.nb_points_total?.toString() || "0",
+      niveau: quiz.niveau || "débutant",
+      questions: (quiz.questions || []).map((q) => `/api/questions/${q.id}`),
+      participations: [],
+      status: quiz.status || "actif",
+      createdAt: quiz.created_at?.toISOString() || new Date().toISOString(),
+      updatedAt: quiz.updated_at?.toISOString() || new Date().toISOString(),
+    };
+  }
+
+  formatQuestionJsonLd(question: Question) {
+    return {
+      "@context": "/api/contexts/Question",
+      "@id": `/api/questions/${question.id}`,
+      "@type": "Question",
+      id: question.id,
+      texte: question.text,
+      type: question.type || "choix multiples",
+      points: question.points?.toString() || "1",
+      astuce: question.astuce,
+      explication: question.explication,
+      audio_url: question.audio_url,
+      media_url: question.media_url,
+      flashcard_back: question.flashcard_back,
+      quiz: question.quiz_id
+        ? `/api/quizzes/${question.quiz_id}`
+        : question.quiz
+          ? `/api/quizzes/${question.quiz.id}`
+          : null,
+      reponses: (question.reponses || []).map((r) => `/api/reponses/${r.id}`),
+      created_at: question.created_at,
+      updated_at: question.updated_at,
+    };
+  }
+
+  formatReponseJsonLd(reponse: Reponse) {
+    return {
+      "@context": "/api/contexts/Reponse",
+      "@id": `/api/reponses/${reponse.id}`,
+      "@type": "Reponse",
+      id: reponse.id,
+      texte: reponse.text,
+      correct: reponse.isCorrect || false,
+      position: reponse.position,
+      explanation: reponse.flashcardBack,
+      match_pair: reponse.match_pair,
+      bank_group: reponse.bank_group,
+      question: reponse.question_id
+        ? `/api/questions/${reponse.question_id}`
+        : reponse.question
+          ? `/api/questions/${reponse.question.id}`
+          : null,
+      created_at: reponse.created_at,
+      updated_at: reponse.updated_at,
+    };
   }
 
   async getCategories() {

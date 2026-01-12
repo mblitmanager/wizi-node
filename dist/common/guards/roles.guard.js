@@ -27,11 +27,16 @@ let RolesGuard = class RolesGuard {
             console.log("RolesGuard: No user found in request");
             return false;
         }
-        console.log("RolesGuard: User role:", user.role);
-        console.log("RolesGuard: Required roles:", requiredRoles);
         const hasRole = requiredRoles.some((role) => user.role?.includes(role));
-        console.log("RolesGuard: Has access:", hasRole);
-        return hasRole;
+        if (!hasRole) {
+            throw new common_1.ForbiddenException({
+                error: "Accès refusé",
+                message: "Vous n'avez pas les permissions nécessaires pour accéder à cette ressource.",
+                required_roles: requiredRoles,
+                your_role: user.role,
+            });
+        }
+        return true;
     }
 };
 exports.RolesGuard = RolesGuard;

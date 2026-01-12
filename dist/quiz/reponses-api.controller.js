@@ -18,31 +18,43 @@ const passport_1 = require("@nestjs/passport");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const api_response_service_1 = require("../common/services/api-response.service");
+const quiz_service_1 = require("./quiz.service");
 const reponse_entity_1 = require("../entities/reponse.entity");
 const question_entity_1 = require("../entities/question.entity");
 let ReponseApiController = class ReponseApiController {
-    constructor(apiResponse, reponseRepository, questionRepository) {
+    constructor(quizService, apiResponse, reponseRepository, questionRepository) {
+        this.quizService = quizService;
         this.apiResponse = apiResponse;
         this.reponseRepository = reponseRepository;
         this.questionRepository = questionRepository;
     }
     async getAll(page = 1, limit = 30) {
-        const skip = (page - 1) * limit;
+        const pageNum = typeof page === "string" ? parseInt(page, 10) : page || 1;
+        const limitNum = typeof limit === "string" ? parseInt(limit, 10) : limit || 30;
+        const skip = (pageNum - 1) * limitNum;
         const [data, total] = await this.reponseRepository.findAndCount({
             skip,
-            take: limit,
+            take: limitNum,
             relations: ["question"],
             order: { id: "DESC" },
         });
-        return this.apiResponse.success({
-            data: data.map(r => this.formatReponse(r)),
-            pagination: {
-                current_page: page,
-                per_page: limit,
-                total,
-                last_page: Math.ceil(total / limit),
+        const members = data.map((r) => this.quizService.formatReponseJsonLd(r));
+        return {
+            "@context": "/api/contexts/Reponse",
+            "@id": "/api/reponses",
+            "@type": "Collection",
+            "hydra:member": members,
+            "hydra:totalItems": total,
+            "hydra:view": {
+                "@id": `/api/reponses?page=${pageNum}&limit=${limitNum}`,
+                "@type": "PartialCollectionView",
+                "hydra:first": `/api/reponses?page=1&limit=${limitNum}`,
+                "hydra:last": `/api/reponses?page=${Math.ceil(total / limitNum)}&limit=${limitNum}`,
+                "hydra:next": pageNum < Math.ceil(total / limitNum)
+                    ? `/api/reponses?page=${pageNum + 1}&limit=${limitNum}`
+                    : null,
             },
-        });
+        };
     }
     async create(createReponseDto) {
         const question = await this.questionRepository.findOne({
@@ -65,7 +77,7 @@ let ReponseApiController = class ReponseApiController {
             where: { id: saved.id },
             relations: ["question"],
         });
-        return this.apiResponse.success(this.formatReponse(result), "Réponse créée avec succès", 201);
+        return this.quizService.formatReponseJsonLd(result);
     }
     async getById(id) {
         const reponse = await this.reponseRepository.findOne({
@@ -75,7 +87,7 @@ let ReponseApiController = class ReponseApiController {
         if (!reponse) {
             throw new common_1.NotFoundException("Réponse non trouvée");
         }
-        return this.apiResponse.success(this.formatReponse(reponse));
+        return this.quizService.formatReponseJsonLd(reponse);
     }
     async update(id, updateReponseDto) {
         const reponse = await this.reponseRepository.findOne({
@@ -87,9 +99,13 @@ let ReponseApiController = class ReponseApiController {
         }
         Object.assign(reponse, {
             text: updateReponseDto.texte ?? updateReponseDto.text ?? reponse.text,
-            isCorrect: updateReponseDto.correct ?? updateReponseDto.is_correct ?? reponse.isCorrect,
+            isCorrect: updateReponseDto.correct ??
+                updateReponseDto.is_correct ??
+                reponse.isCorrect,
             position: updateReponseDto.position ?? updateReponseDto.ordre ?? reponse.position,
-            flashcardBack: updateReponseDto.flashcard_back ?? updateReponseDto.explanation ?? reponse.flashcardBack,
+            flashcardBack: updateReponseDto.flashcard_back ??
+                updateReponseDto.explanation ??
+                reponse.flashcardBack,
             match_pair: updateReponseDto.match_pair ?? reponse.match_pair,
             bank_group: updateReponseDto.bank_group ?? reponse.bank_group,
         });
@@ -98,7 +114,7 @@ let ReponseApiController = class ReponseApiController {
             where: { id },
             relations: ["question"],
         });
-        return this.apiResponse.success(this.formatReponse(updated), "Réponse mise à jour");
+        return this.quizService.formatReponseJsonLd(updated);
     }
     async delete(id) {
         const reponse = await this.reponseRepository.findOne({
@@ -108,24 +124,7 @@ let ReponseApiController = class ReponseApiController {
             throw new common_1.NotFoundException("Réponse non trouvée");
         }
         await this.reponseRepository.remove(reponse);
-        return this.apiResponse.success({ id }, "Réponse supprimée avec succès");
-    }
-    formatReponse(reponse) {
-        return {
-            "@context": "/api/contexts/Reponse",
-            "@id": `/api/reponses/${reponse.id}`,
-            "@type": "Reponse",
-            id: reponse.id,
-            texte: reponse.text,
-            correct: reponse.isCorrect || false,
-            position: reponse.position,
-            explanation: reponse.flashcardBack,
-            match_pair: reponse.match_pair,
-            bank_group: reponse.bank_group,
-            question: reponse.question ? `/api/questions/${reponse.question.id}` : null,
-            created_at: reponse.created_at,
-            updated_at: reponse.updated_at,
-        };
+        return { id, message: "Réponse supprimée avec succès" };
     }
 };
 exports.ReponseApiController = ReponseApiController;
@@ -169,9 +168,10 @@ __decorate([
 exports.ReponseApiController = ReponseApiController = __decorate([
     (0, common_1.Controller)("reponses"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __param(1, (0, typeorm_1.InjectRepository)(reponse_entity_1.Reponse)),
-    __param(2, (0, typeorm_1.InjectRepository)(question_entity_1.Question)),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService,
+    __param(2, (0, typeorm_1.InjectRepository)(reponse_entity_1.Reponse)),
+    __param(3, (0, typeorm_1.InjectRepository)(question_entity_1.Question)),
+    __metadata("design:paramtypes", [quiz_service_1.QuizService,
+        api_response_service_1.ApiResponseService,
         typeorm_2.Repository,
         typeorm_2.Repository])
 ], ReponseApiController);

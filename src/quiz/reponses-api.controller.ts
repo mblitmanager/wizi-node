@@ -14,6 +14,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ApiResponseService } from "../common/services/api-response.service";
+import { QuizService } from "./quiz.service";
 import { Reponse } from "../entities/reponse.entity";
 import { Question } from "../entities/question.entity";
 
@@ -21,6 +22,7 @@ import { Question } from "../entities/question.entity";
 @UseGuards(AuthGuard("jwt"))
 export class ReponseApiController {
   constructor(
+    private quizService: QuizService,
     private apiResponse: ApiResponseService,
     @InjectRepository(Reponse)
     private reponseRepository: Repository<Reponse>,
@@ -30,28 +32,44 @@ export class ReponseApiController {
 
   /**
    * GET /api/reponses
-   * Récupérer toutes les réponses avec pagination optionnelle
+   * Récupérer toutes les réponses en format JSON-LD (collection)
    */
   @Get()
-  async getAll(@Query("page") page: number = 1, @Query("limit") limit: number = 30) {
-    const skip = (page - 1) * limit;
+  async getAll(
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 30
+  ) {
+    const pageNum = typeof page === "string" ? parseInt(page, 10) : page || 1;
+    const limitNum =
+      typeof limit === "string" ? parseInt(limit, 10) : limit || 30;
+    const skip = (pageNum - 1) * limitNum;
 
     const [data, total] = await this.reponseRepository.findAndCount({
       skip,
-      take: limit,
+      take: limitNum,
       relations: ["question"],
       order: { id: "DESC" },
     });
 
-    return this.apiResponse.success({
-      data: data.map(r => this.formatReponse(r)),
-      pagination: {
-        current_page: page,
-        per_page: limit,
-        total,
-        last_page: Math.ceil(total / limit),
+    const members = data.map((r) => this.quizService.formatReponseJsonLd(r));
+
+    return {
+      "@context": "/api/contexts/Reponse",
+      "@id": "/api/reponses",
+      "@type": "Collection",
+      "hydra:member": members,
+      "hydra:totalItems": total,
+      "hydra:view": {
+        "@id": `/api/reponses?page=${pageNum}&limit=${limitNum}`,
+        "@type": "PartialCollectionView",
+        "hydra:first": `/api/reponses?page=1&limit=${limitNum}`,
+        "hydra:last": `/api/reponses?page=${Math.ceil(total / limitNum)}&limit=${limitNum}`,
+        "hydra:next":
+          pageNum < Math.ceil(total / limitNum)
+            ? `/api/reponses?page=${pageNum + 1}&limit=${limitNum}`
+            : null,
       },
-    });
+    };
   }
 
   /**
@@ -71,9 +89,11 @@ export class ReponseApiController {
 
     const reponse = this.reponseRepository.create({
       text: createReponseDto.texte || createReponseDto.text,
-      isCorrect: createReponseDto.correct || createReponseDto.is_correct || false,
+      isCorrect:
+        createReponseDto.correct || createReponseDto.is_correct || false,
       position: createReponseDto.position || createReponseDto.ordre,
-      flashcardBack: createReponseDto.flashcard_back || createReponseDto.explanation,
+      flashcardBack:
+        createReponseDto.flashcard_back || createReponseDto.explanation,
       question_id: createReponseDto.question_id,
       match_pair: createReponseDto.match_pair,
       bank_group: createReponseDto.bank_group,
@@ -85,16 +105,12 @@ export class ReponseApiController {
       relations: ["question"],
     });
 
-    return this.apiResponse.success(
-      this.formatReponse(result),
-      "Réponse créée avec succès",
-      201
-    );
+    return this.quizService.formatReponseJsonLd(result);
   }
 
   /**
    * GET /api/reponses/{id}
-   * Récupérer les détails d'une réponse
+   * Récupérer les détails d'une réponse en JSON-LD
    */
   @Get(":id")
   async getById(@Param("id") id: number) {
@@ -107,7 +123,7 @@ export class ReponseApiController {
       throw new NotFoundException("Réponse non trouvée");
     }
 
-    return this.apiResponse.success(this.formatReponse(reponse));
+    return this.quizService.formatReponseJsonLd(reponse);
   }
 
   /**
@@ -127,9 +143,16 @@ export class ReponseApiController {
 
     Object.assign(reponse, {
       text: updateReponseDto.texte ?? updateReponseDto.text ?? reponse.text,
-      isCorrect: updateReponseDto.correct ?? updateReponseDto.is_correct ?? reponse.isCorrect,
-      position: updateReponseDto.position ?? updateReponseDto.ordre ?? reponse.position,
-      flashcardBack: updateReponseDto.flashcard_back ?? updateReponseDto.explanation ?? reponse.flashcardBack,
+      isCorrect:
+        updateReponseDto.correct ??
+        updateReponseDto.is_correct ??
+        reponse.isCorrect,
+      position:
+        updateReponseDto.position ?? updateReponseDto.ordre ?? reponse.position,
+      flashcardBack:
+        updateReponseDto.flashcard_back ??
+        updateReponseDto.explanation ??
+        reponse.flashcardBack,
       match_pair: updateReponseDto.match_pair ?? reponse.match_pair,
       bank_group: updateReponseDto.bank_group ?? reponse.bank_group,
     });
@@ -140,10 +163,7 @@ export class ReponseApiController {
       relations: ["question"],
     });
 
-    return this.apiResponse.success(
-      this.formatReponse(updated),
-      "Réponse mise à jour"
-    );
+    return this.quizService.formatReponseJsonLd(updated);
   }
 
   /**
@@ -162,30 +182,6 @@ export class ReponseApiController {
 
     await this.reponseRepository.remove(reponse);
 
-    return this.apiResponse.success(
-      { id },
-      "Réponse supprimée avec succès"
-    );
-  }
-
-  /**
-   * Formatter une réponse au format ApiPlatform JSON-LD
-   */
-  private formatReponse(reponse: Reponse) {
-    return {
-      "@context": "/api/contexts/Reponse",
-      "@id": `/api/reponses/${reponse.id}`,
-      "@type": "Reponse",
-      id: reponse.id,
-      texte: reponse.text,
-      correct: reponse.isCorrect || false,
-      position: reponse.position,
-      explanation: reponse.flashcardBack,
-      match_pair: reponse.match_pair,
-      bank_group: reponse.bank_group,
-      question: reponse.question ? `/api/questions/${reponse.question.id}` : null,
-      created_at: reponse.created_at,
-      updated_at: reponse.updated_at,
-    };
+    return { id, message: "Réponse supprimée avec succès" };
   }
 }

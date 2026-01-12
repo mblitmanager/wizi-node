@@ -17,43 +17,49 @@ let AllExceptionsFilter = AllExceptionsFilter_1 = class AllExceptionsFilter {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
         const request = ctx.getRequest();
-        let status = common_1.HttpStatus.INTERNAL_SERVER_ERROR;
-        let message = "Internal server error";
-        let error = null;
+        let status = exception.status ||
+            exception.statusCode ||
+            common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+        let errorResponse = {
+            success: false,
+            timestamp: new Date().toISOString(),
+            path: request.url,
+        };
         if (exception instanceof common_1.HttpException) {
             status = exception.getStatus();
             const exceptionResponse = exception.getResponse();
             if (typeof exceptionResponse === "string") {
-                message = exceptionResponse;
+                errorResponse.error = exceptionResponse;
             }
-            else if (typeof exceptionResponse === "object") {
-                message =
-                    exceptionResponse.message ||
-                        exceptionResponse.error ||
-                        "An error occurred";
-                error = exceptionResponse.error;
+            else {
+                errorResponse = {
+                    ...errorResponse,
+                    ...exceptionResponse,
+                };
             }
         }
         else if (exception instanceof Error) {
-            message = exception.message;
+            errorResponse.error = exception.message;
+            if (process.env.NODE_ENV !== "production") {
+                errorResponse.stack = exception.stack;
+            }
             this.logger.error(exception.stack);
         }
         else {
-            message = String(exception);
+            errorResponse.error = String(exception);
             this.logger.error(exception);
         }
-        const errorResponse = {
-            success: false,
-            error: message,
-            status,
-            timestamp: new Date().toISOString(),
-            path: request.url,
-        };
+        if (status === common_1.HttpStatus.UNAUTHORIZED &&
+            errorResponse.error === "Unauthorized") {
+            errorResponse.error = "Unauthenticated";
+            errorResponse.message = "You are not authenticated.";
+        }
+        errorResponse.status = status;
         const isNoisy404 = status === common_1.HttpStatus.NOT_FOUND &&
             (request.url.includes("favicon.ico") ||
                 request.url.includes("robots.txt"));
         if (!isNoisy404) {
-            this.logger.error(`[${request.method}] ${request.url} - ${status} - ${message}`);
+            this.logger.error(`[${request.method}] ${request.url} - ${status} - ${errorResponse.error || errorResponse.message || "Unknown Error"}`);
         }
         response.status(status).json(errorResponse);
     }

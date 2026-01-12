@@ -6,6 +6,7 @@ import { Classement } from "../entities/classement.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { QuizParticipationAnswer } from "../entities/quiz-participation-answer.entity";
 import { CorrespondancePair } from "../entities/correspondance-pair.entity";
+import { Reponse } from "../entities/reponse.entity";
 import { Progression } from "../entities/progression.entity";
 export declare class QuizService {
     private quizRepository;
@@ -78,6 +79,56 @@ export declare class QuizService {
         createdAt: string;
         updatedAt: string;
     }>;
+    formatQuizJsonLd(quiz: Quiz): {
+        "@context": string;
+        "@id": string;
+        "@type": string;
+        id: number;
+        titre: string;
+        description: string;
+        duree: string;
+        formation: string;
+        nbPointsTotal: string;
+        niveau: string;
+        questions: string[];
+        participations: any[];
+        status: string;
+        createdAt: string;
+        updatedAt: string;
+    };
+    formatQuestionJsonLd(question: Question): {
+        "@context": string;
+        "@id": string;
+        "@type": string;
+        id: number;
+        texte: string;
+        type: string;
+        points: string;
+        astuce: string;
+        explication: string;
+        audio_url: string;
+        media_url: string;
+        flashcard_back: string;
+        quiz: string;
+        reponses: string[];
+        created_at: Date;
+        updated_at: Date;
+    };
+    formatReponseJsonLd(reponse: Reponse): {
+        "@context": string;
+        "@id": string;
+        "@type": string;
+        id: number;
+        texte: string;
+        correct: boolean;
+        position: number;
+        explanation: string;
+        match_pair: string;
+        bank_group: string;
+        question: string;
+        created_at: Date;
+        updated_at: Date;
+    };
     getCategories(): Promise<{
         id: string;
         name: string;
