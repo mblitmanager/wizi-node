@@ -16,7 +16,7 @@ exports.AdminController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 let AdminController = class AdminController {
-    async dashboard(req) {
+    async main(req) {
         if (req.user?.role !== "admin") {
             throw new Error("Unauthorized");
         }
@@ -83,12 +83,12 @@ let AdminController = class AdminController {
 exports.AdminController = AdminController;
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    (0, common_1.Get)("dashboard"),
+    (0, common_1.Get)("main"),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], AdminController.prototype, "dashboard", null);
+], AdminController.prototype, "main", null);
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     (0, common_1.Get)("stagiaires"),
@@ -162,6 +162,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "parametres", null);
 exports.AdminController = AdminController = __decorate([
-    (0, common_1.Controller)("admin")
+    (0, common_1.Controller)("administrateur")
 ], AdminController);
 //# sourceMappingURL=admin.controller.js.map

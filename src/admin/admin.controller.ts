@@ -9,11 +9,11 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { Response as ExpressResponse } from "express";
 
-@Controller("admin")
+@Controller("administrateur")
 export class AdminController {
   @UseGuards(AuthGuard("jwt"))
-  @Get("dashboard")
-  async dashboard(@Request() req: any) {
+  @Get("main")
+  async main(@Request() req: any) {
     // Vérifier que l'utilisateur est admin
     if (req.user?.role !== "admin") {
       throw new Error("Unauthorized");

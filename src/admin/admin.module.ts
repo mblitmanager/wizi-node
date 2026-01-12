@@ -18,6 +18,8 @@ import { AdminSettingsController } from "./admin-settings.controller";
 import { AdminMediaController } from "./admin-media.controller";
 import { AdminQuestionController } from "./admin-question.controller";
 // New imports
+import { AdminDemandeHistoriqueController } from "./admin-demande-historique.controller";
+import { AdminParrainageEventController } from "./admin-parrainage-event.controller";
 import { AdminCatalogueFormationController } from "./admin-catalogue-formation.controller";
 import { AdminCommercialController } from "./admin-commercial.controller";
 import { AdminPoleRelationClientController } from "./admin-prc.controller";
@@ -60,6 +62,8 @@ import { Formation } from "../entities/formation.entity";
 import { Commercial } from "../entities/commercial.entity";
 import { PoleRelationClient } from "../entities/pole-relation-client.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
+import { DemandeInscription } from "../entities/demande-inscription.entity";
+import { ParrainageEvent } from "../entities/parrainage-event.entity";
 
 @Module({
   imports: [
@@ -80,6 +84,8 @@ import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-for
       Commercial,
       PoleRelationClient,
       StagiaireCatalogueFormation,
+      DemandeInscription,
+      ParrainageEvent,
     ]),
   ],
   providers: [AdminService, ApiResponseService],
@@ -112,6 +118,8 @@ import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-for
     AdminStatsController,
     AdminImportController,
     AdminInactivityController,
+    AdminDemandeHistoriqueController,
+    AdminParrainageEventController,
     // Web Controllers
     FormateurWebController,
     CommercialWebController,

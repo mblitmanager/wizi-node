@@ -97,6 +97,18 @@ let AdminStagiaireController = class AdminStagiaireController {
         await this.stagiaireRepository.delete(id);
         return this.apiResponse.success();
     }
+    async active(id) {
+        const stagiaire = await this.stagiaireRepository.findOne({ where: { id } });
+        if (!stagiaire)
+            throw new common_1.NotFoundException("Stagiaire non trouvé");
+        return this.apiResponse.success({ status: "actif" });
+    }
+    async desactive(id) {
+        const stagiaire = await this.stagiaireRepository.findOne({ where: { id } });
+        if (!stagiaire)
+            throw new common_1.NotFoundException("Stagiaire non trouvé");
+        return this.apiResponse.success({ status: "inactif" });
+    }
 };
 exports.AdminStagiaireController = AdminStagiaireController;
 __decorate([
@@ -137,6 +149,20 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], AdminStagiaireController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Patch)(":id/active"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AdminStagiaireController.prototype, "active", null);
+__decorate([
+    (0, common_1.Patch)(":id/desactive"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AdminStagiaireController.prototype, "desactive", null);
 exports.AdminStagiaireController = AdminStagiaireController = __decorate([
     (0, common_1.Controller)("administrateur/stagiaires"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),

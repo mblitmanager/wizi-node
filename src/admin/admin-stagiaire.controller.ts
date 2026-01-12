@@ -10,6 +10,7 @@ import {
   Query,
   NotFoundException,
   BadRequestException,
+  Patch,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -128,5 +129,20 @@ export class AdminStagiaireController {
     await this.stagiaireRepository.delete(id);
 
     return this.apiResponse.success();
+  }
+
+  @Patch(":id/active")
+  async active(@Param("id") id: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({ where: { id } });
+    if (!stagiaire) throw new NotFoundException("Stagiaire non trouvé");
+    // Implementation of activation (e.g. status = 'actif' or update user)
+    return this.apiResponse.success({ status: "actif" });
+  }
+
+  @Patch(":id/desactive")
+  async desactive(@Param("id") id: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({ where: { id } });
+    if (!stagiaire) throw new NotFoundException("Stagiaire non trouvé");
+    return this.apiResponse.success({ status: "inactif" });
   }
 }

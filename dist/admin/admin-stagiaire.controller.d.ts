@@ -10,4 +10,6 @@ export declare class AdminStagiaireController {
     create(data: any): Promise<any>;
     update(id: number, data: any): Promise<any>;
     remove(id: number): Promise<any>;
+    active(id: number): Promise<any>;
+    desactive(id: number): Promise<any>;
 }

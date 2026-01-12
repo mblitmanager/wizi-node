@@ -26,6 +26,8 @@ const admin_achievement_controller_1 = require("./admin-achievement.controller")
 const admin_settings_controller_1 = require("./admin-settings.controller");
 const admin_media_controller_1 = require("./admin-media.controller");
 const admin_question_controller_1 = require("./admin-question.controller");
+const admin_demande_historique_controller_1 = require("./admin-demande-historique.controller");
+const admin_parrainage_event_controller_1 = require("./admin-parrainage-event.controller");
 const admin_catalogue_formation_controller_1 = require("./admin-catalogue-formation.controller");
 const admin_commercial_controller_1 = require("./admin-commercial.controller");
 const admin_prc_controller_1 = require("./admin-prc.controller");
@@ -48,6 +50,8 @@ const formation_entity_1 = require("../entities/formation.entity");
 const commercial_entity_1 = require("../entities/commercial.entity");
 const pole_relation_client_entity_1 = require("../entities/pole-relation-client.entity");
 const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
+const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
+const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -71,6 +75,8 @@ exports.AdminModule = AdminModule = __decorate([
                 commercial_entity_1.Commercial,
                 pole_relation_client_entity_1.PoleRelationClient,
                 stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
+                demande_inscription_entity_1.DemandeInscription,
+                parrainage_event_entity_1.ParrainageEvent,
             ]),
         ],
         providers: [admin_service_1.AdminService, api_response_service_1.ApiResponseService],
@@ -101,6 +107,8 @@ exports.AdminModule = AdminModule = __decorate([
             admin_stats_import_controller_1.AdminStatsController,
             admin_stats_import_controller_1.AdminImportController,
             admin_stats_import_controller_1.AdminInactivityController,
+            admin_demande_historique_controller_1.AdminDemandeHistoriqueController,
+            admin_parrainage_event_controller_1.AdminParrainageEventController,
             formateur_commercial_web_controller_1.FormateurWebController,
             formateur_commercial_web_controller_1.CommercialWebController,
             formateur_commercial_api_controller_1.FormateurApiController,

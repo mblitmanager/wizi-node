@@ -18,7 +18,7 @@ import { Formation } from "../entities/formation.entity";
 import { Achievement } from "../entities/achievement.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("admin")
+@Controller("administrateur")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminDashboardController {

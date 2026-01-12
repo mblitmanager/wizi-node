@@ -1,5 +1,5 @@
 export declare class AdminController {
-    dashboard(req: any): Promise<{
+    main(req: any): Promise<{
         message: string;
         user: any;
     }>;
