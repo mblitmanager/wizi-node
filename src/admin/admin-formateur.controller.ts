@@ -19,7 +19,7 @@ import { Repository } from "typeorm";
 import { Formateur } from "../entities/formateur.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("admin/formateurs")
+@Controller("administrateur/formateur")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminFormateurController {
@@ -35,7 +35,8 @@ export class AdminFormateurController {
     @Query("limit") limit = 10,
     @Query("search") search = ""
   ) {
-    const query = this.formateurRepository.createQueryBuilder("f")
+    const query = this.formateurRepository
+      .createQueryBuilder("f")
       .leftJoinAndSelect("f.user", "user")
       .leftJoinAndSelect("f.stagiaires", "stagiaires")
       .leftJoinAndSelect("f.formations", "formations");

@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  UseGuards,
-  Body,
-} from "@nestjs/common";
+import { Controller, Get, Post, UseGuards, Body } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
@@ -13,7 +7,7 @@ import { Repository } from "typeorm";
 import { Setting } from "../entities/setting.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("admin/settings")
+@Controller("administrateur/parametre")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminSettingsController {
@@ -26,7 +20,7 @@ export class AdminSettingsController {
   @Get()
   async getSettings() {
     const settings = await this.settingRepository.find();
-    
+
     // Convert array of settings to object
     const settingsObject: any = {};
     settings.forEach((setting) => {
@@ -34,8 +28,8 @@ export class AdminSettingsController {
         ? setting.value === "true"
           ? true
           : setting.value === "false"
-          ? false
-          : setting.value
+            ? false
+            : setting.value
         : Number(setting.value);
     });
 

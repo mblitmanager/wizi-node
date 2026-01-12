@@ -20,7 +20,7 @@ import { Repository } from "typeorm";
 import { Quiz } from "../entities/quiz.entity";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("admin/quiz")
+@Controller("administrateur/quiz")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("administrateur", "admin")
 export class AdminQuizController {
@@ -36,7 +36,8 @@ export class AdminQuizController {
     @Query("limit") limit: number = 10,
     @Query("search") search: string = ""
   ) {
-    const query = this.quizRepository.createQueryBuilder("q")
+    const query = this.quizRepository
+      .createQueryBuilder("q")
       .leftJoinAndSelect("q.questions", "questions")
       .leftJoinAndSelect("q.formations", "formations");
 

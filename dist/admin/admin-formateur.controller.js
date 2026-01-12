@@ -27,7 +27,8 @@ let AdminFormateurController = class AdminFormateurController {
         this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
-        const query = this.formateurRepository.createQueryBuilder("f")
+        const query = this.formateurRepository
+            .createQueryBuilder("f")
             .leftJoinAndSelect("f.user", "user")
             .leftJoinAndSelect("f.stagiaires", "stagiaires")
             .leftJoinAndSelect("f.formations", "formations");
@@ -126,7 +127,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminFormateurController.prototype, "remove", null);
 exports.AdminFormateurController = AdminFormateurController = __decorate([
-    (0, common_1.Controller)("admin/formateurs"),
+    (0, common_1.Controller)("administrateur/formateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(formateur_entity_1.Formateur)),
