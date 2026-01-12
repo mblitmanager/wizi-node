@@ -2,9 +2,14 @@ import { Controller, Get, UseGuards, Request, Param } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RankingService } from "./ranking.service";
 
-@Controller(["classement", "quiz/classement"])
+@Controller(["classement", "quiz/classement", "formations/classement"])
 export class RankingController {
   constructor(private readonly rankingService: RankingService) {}
+
+  @Get("summary")
+  async getFormationsRankingSummary() {
+    return this.rankingService.getFormationsRankingSummary();
+  }
 
   @Get("global")
   async getGlobalRanking() {

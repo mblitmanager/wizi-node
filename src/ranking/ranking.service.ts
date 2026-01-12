@@ -7,6 +7,7 @@ import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { Progression } from "../entities/progression.entity";
 import { Quiz } from "../entities/quiz.entity";
 import { User } from "../entities/user.entity";
+import { Formation } from "../entities/formation.entity";
 
 @Injectable()
 export class RankingService {
@@ -22,8 +23,60 @@ export class RankingService {
     @InjectRepository(Quiz)
     private quizRepository: Repository<Quiz>,
     @InjectRepository(User)
-    private userRepository: Repository<User>
+    private userRepository: Repository<User>,
+    @InjectRepository(Formation)
+    private formationRepository: Repository<Formation>
   ) {}
+
+  async getFormationsRankingSummary() {
+    const formations = await this.formationRepository.find({
+      order: { id: "ASC" },
+    });
+
+    const summary = [];
+
+    for (const formation of formations) {
+      // Find all classements for quizzes in this formation
+      const classements = await this.classementRepository.find({
+        where: { quiz: { formation_id: formation.id } },
+        relations: ["stagiaire", "stagiaire.user"],
+      });
+
+      const grouped: {
+        [key: number]: { nom_complet: string; total_points: number };
+      } = {};
+
+      classements.forEach((c) => {
+        const sid = c.stagiaire_id;
+        if (!grouped[sid]) {
+          grouped[sid] = {
+            nom_complet:
+              `${c.stagiaire.prenom || ""} ${c.stagiaire.user?.name || ""}`.trim() ||
+              " ",
+            total_points: 0,
+          };
+        }
+        grouped[sid].total_points += c.points || 0;
+      });
+
+      const top_3 = Object.values(grouped)
+        .sort((a, b) => b.total_points - a.total_points)
+        .slice(0, 3)
+        .map((item, index) => ({
+          rang: index + 1,
+          ...item,
+        }));
+
+      summary.push({
+        id: formation.id,
+        titre: formation.titre,
+        has_ranking: top_3.length > 0,
+        top_3,
+      });
+    }
+
+    return { formations: summary };
+  }
 
   async findAllPaginated(page: number = 1, limit: number = 10) {
     const [items, total] = await this.classementRepository.findAndCount({

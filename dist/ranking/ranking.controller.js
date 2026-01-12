@@ -20,6 +20,9 @@ let RankingController = class RankingController {
     constructor(rankingService) {
         this.rankingService = rankingService;
     }
+    async getFormationsRankingSummary() {
+        return this.rankingService.getFormationsRankingSummary();
+    }
     async getGlobalRanking() {
         const data = await this.rankingService.getGlobalRanking();
         return data.map(({ level, ...item }) => item);
@@ -45,6 +48,12 @@ let RankingController = class RankingController {
     }
 };
 exports.RankingController = RankingController;
+__decorate([
+    (0, common_1.Get)("summary"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RankingController.prototype, "getFormationsRankingSummary", null);
 __decorate([
     (0, common_1.Get)("global"),
     __metadata("design:type", Function),
@@ -100,7 +109,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RankingController.prototype, "getStagiaireDetails", null);
 exports.RankingController = RankingController = __decorate([
-    (0, common_1.Controller)(["classement", "quiz/classement"]),
+    (0, common_1.Controller)(["classement", "quiz/classement", "formations/classement"]),
     __metadata("design:paramtypes", [ranking_service_1.RankingService])
 ], RankingController);
 //# sourceMappingURL=ranking.controller.js.map

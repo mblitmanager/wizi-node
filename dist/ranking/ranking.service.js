@@ -22,14 +22,54 @@ const quiz_participation_entity_1 = require("../entities/quiz-participation.enti
 const progression_entity_1 = require("../entities/progression.entity");
 const quiz_entity_1 = require("../entities/quiz.entity");
 const user_entity_1 = require("../entities/user.entity");
+const formation_entity_1 = require("../entities/formation.entity");
 let RankingService = class RankingService {
-    constructor(classementRepository, stagiaireRepository, participationRepository, progressionRepository, quizRepository, userRepository) {
+    constructor(classementRepository, stagiaireRepository, participationRepository, progressionRepository, quizRepository, userRepository, formationRepository) {
         this.classementRepository = classementRepository;
         this.stagiaireRepository = stagiaireRepository;
         this.participationRepository = participationRepository;
         this.progressionRepository = progressionRepository;
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
+        this.formationRepository = formationRepository;
+    }
+    async getFormationsRankingSummary() {
+        const formations = await this.formationRepository.find({
+            order: { id: "ASC" },
+        });
+        const summary = [];
+        for (const formation of formations) {
+            const classements = await this.classementRepository.find({
+                where: { quiz: { formation_id: formation.id } },
+                relations: ["stagiaire", "stagiaire.user"],
+            });
+            const grouped = {};
+            classements.forEach((c) => {
+                const sid = c.stagiaire_id;
+                if (!grouped[sid]) {
+                    grouped[sid] = {
+                        nom_complet: `${c.stagiaire.prenom || ""} ${c.stagiaire.user?.name || ""}`.trim() ||
+                            " ",
+                        total_points: 0,
+                    };
+                }
+                grouped[sid].total_points += c.points || 0;
+            });
+            const top_3 = Object.values(grouped)
+                .sort((a, b) => b.total_points - a.total_points)
+                .slice(0, 3)
+                .map((item, index) => ({
+                rang: index + 1,
+                ...item,
+            }));
+            summary.push({
+                id: formation.id,
+                titre: formation.titre,
+                has_ranking: top_3.length > 0,
+                top_3,
+            });
+        }
+        return { formations: summary };
     }
     async findAllPaginated(page = 1, limit = 10) {
         const [items, total] = await this.classementRepository.findAndCount({
@@ -520,7 +560,9 @@ exports.RankingService = RankingService = __decorate([
     __param(3, (0, typeorm_1.InjectRepository)(progression_entity_1.Progression)),
     __param(4, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),
     __param(5, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(6, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

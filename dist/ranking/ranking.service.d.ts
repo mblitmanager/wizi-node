@@ -5,6 +5,7 @@ import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { Progression } from "../entities/progression.entity";
 import { Quiz } from "../entities/quiz.entity";
 import { User } from "../entities/user.entity";
+import { Formation } from "../entities/formation.entity";
 export declare class RankingService {
     private classementRepository;
     private stagiaireRepository;
@@ -12,7 +13,11 @@ export declare class RankingService {
     private progressionRepository;
     private quizRepository;
     private userRepository;
-    constructor(classementRepository: Repository<Classement>, stagiaireRepository: Repository<Stagiaire>, participationRepository: Repository<QuizParticipation>, progressionRepository: Repository<Progression>, quizRepository: Repository<Quiz>, userRepository: Repository<User>);
+    private formationRepository;
+    constructor(classementRepository: Repository<Classement>, stagiaireRepository: Repository<Stagiaire>, participationRepository: Repository<QuizParticipation>, progressionRepository: Repository<Progression>, quizRepository: Repository<Quiz>, userRepository: Repository<User>, formationRepository: Repository<Formation>);
+    getFormationsRankingSummary(): Promise<{
+        formations: any[];
+    }>;
     findAllPaginated(page?: number, limit?: number): Promise<{
         items: Classement[];
         total: number;
