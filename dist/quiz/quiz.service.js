@@ -37,18 +37,122 @@ let QuizService = class QuizService {
         });
     }
     async getQuestionsByQuiz(quizId) {
-        return this.questionRepository.find({
-            where: { quiz_id: quizId },
-            relations: ["reponses"],
+        const quiz = await this.quizRepository.findOne({
+            where: { id: quizId },
+            relations: ["questions", "questions.reponses", "formation"],
         });
+        if (!quiz) {
+            throw new Error("Quiz not found");
+        }
+        const questions = quiz.questions.map((question) => {
+            const questionData = {
+                id: question.id.toString(),
+                text: question.text,
+                type: question.type || "choix multiples",
+            };
+            questionData.answers = question.reponses
+                .map((reponse) => ({
+                id: reponse.id.toString(),
+                text: reponse.text,
+                isCorrect: reponse.is_correct === 1 || reponse.is_correct === true,
+            }))
+                .sort((a, b) => a.id.localeCompare(b.id));
+            switch (question.type) {
+                case "rearrangement":
+                    questionData.answers = question.reponses
+                        .map((reponse) => ({
+                        id: reponse.id.toString(),
+                        text: reponse.text,
+                        position: reponse.position || 0,
+                    }))
+                        .sort((a, b) => (a.position || 0) - (b.position || 0));
+                    break;
+                case "remplir le champ vide":
+                    questionData.blanks = question.reponses.map((reponse) => ({
+                        id: reponse.id.toString(),
+                        text: reponse.text,
+                        bankGroup: reponse.bank_group || null,
+                    }));
+                    break;
+                case "banque de mots":
+                    questionData.wordbank = question.reponses.map((reponse) => ({
+                        id: reponse.id.toString(),
+                        text: reponse.text,
+                        isCorrect: reponse.is_correct === 1 || reponse.is_correct === true,
+                        bankGroup: reponse.bank_group || null,
+                    }));
+                    break;
+                case "carte flash":
+                    questionData.flashcard = {
+                        front: question.text,
+                        back: question.flashcard_back || "",
+                    };
+                    break;
+                case "correspondance":
+                    questionData.matching = question.reponses.map((reponse) => ({
+                        id: reponse.id.toString(),
+                        text: reponse.text,
+                        matchPair: reponse.match_pair || null,
+                    }));
+                    break;
+                case "question audio":
+                    questionData.audioUrl = question.audio_url || question.media_url || null;
+                    break;
+            }
+            return questionData;
+        });
+        return {
+            id: quiz.id.toString(),
+            titre: quiz.titre,
+            description: quiz.description,
+            categorie: quiz.formation?.categorie || "Non catégorisé",
+            categorieId: quiz.formation?.categorie || "non-categorise",
+            niveau: quiz.niveau || "débutant",
+            questions,
+            points: parseInt(quiz.nb_points_total?.toString() || "0"),
+        };
     }
     async getCategories() {
-        const categoriesRaw = await this.formationRepository
-            .createQueryBuilder("formation")
-            .select("DISTINCT formation.categorie", "categorie")
-            .where("formation.statut = :statut", { statut: "1" })
-            .getRawMany();
-        return categoriesRaw.map((c) => c.categorie);
+        const formations = await this.formationRepository.find({
+            where: { statut: 1 },
+            relations: ["quizzes"],
+        });
+        const categoriesMap = {};
+        formations.forEach((f) => {
+            const cat = f.categorie || "Général";
+            if (!categoriesMap[cat]) {
+                categoriesMap[cat] = {
+                    name: cat,
+                    icon: f.icon || "help-circle",
+                    description: f.description || `Explorez les quizzes de la catégorie ${cat}`,
+                    quizCount: 0,
+                };
+            }
+            categoriesMap[cat].quizCount += (f.quizzes || []).length;
+        });
+        const categoryColors = {
+            Création: "#9392BE",
+            Bureautique: "#3D9BE9",
+            Développement: "#4CAF50",
+            Marketing: "#FF9800",
+            Management: "#F44336",
+        };
+        return Object.keys(categoriesMap).map((catName) => {
+            const cat = categoriesMap[catName];
+            const color = categoryColors[catName] || "#888888";
+            return {
+                id: catName,
+                name: catName,
+                color: color,
+                icon: cat.icon,
+                description: cat.description,
+                quizCount: cat.quizCount,
+                colorClass: `category-${catName
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")}`,
+            };
+        });
     }
     async getHistoryByStagiaire(stagiaireId) {
         return this.classementRepository.find({

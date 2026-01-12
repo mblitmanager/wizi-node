@@ -148,7 +148,10 @@ export declare class StagiaireService {
             };
         }[];
     }>;
-    getFormationsByStagiaire(stagiaireId: number): Promise<CatalogueFormation[]>;
+    getFormationsByStagiaire(stagiaireId: number): Promise<{
+        success: boolean;
+        data: any[];
+    }>;
     getStagiaireById(id: number): Promise<{
         id: number;
         firstname: string;

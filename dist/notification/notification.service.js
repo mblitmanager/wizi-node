@@ -49,10 +49,22 @@ let NotificationService = class NotificationService {
         return savedNotification;
     }
     async getNotifications(userId) {
-        return this.notificationRepository.find({
+        const notifications = await this.notificationRepository.find({
             where: { user_id: userId },
             order: { created_at: "DESC" },
         });
+        const formattedNotifications = notifications.map((notification) => ({
+            id: notification.id,
+            message: notification.message,
+            data: notification.data || [],
+            type: notification.type,
+            title: notification.title,
+            read: notification.read,
+            user_id: notification.user_id,
+            created_at: notification.created_at?.toISOString(),
+            updated_at: notification.updated_at?.toISOString(),
+        }));
+        return { data: formattedNotifications };
     }
     async markAsRead(notificationId) {
         return this.notificationRepository.update(notificationId, { read: true });
@@ -64,6 +76,9 @@ let NotificationService = class NotificationService {
     }
     async markAllAsRead(userId) {
         return this.notificationRepository.update({ user_id: userId }, { read: true });
+    }
+    async deleteNotification(notificationId) {
+        return this.notificationRepository.delete(notificationId);
     }
     async getParrainageEvents() {
         const events = await this.parrainageEventRepository.find({

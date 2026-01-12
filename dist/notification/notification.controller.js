@@ -32,6 +32,9 @@ let NotificationController = class NotificationController {
     async markAllAsRead(req) {
         return this.notificationService.markAllAsRead(req.user.id);
     }
+    async deleteNotification(id) {
+        return this.notificationService.deleteNotification(id);
+    }
 };
 exports.NotificationController = NotificationController;
 __decorate([
@@ -56,12 +59,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NotificationController.prototype, "markAsRead", null);
 __decorate([
-    (0, common_1.Post)("read-all"),
+    (0, common_1.Post)("mark-all-read"),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], NotificationController.prototype, "markAllAsRead", null);
+__decorate([
+    (0, common_1.Delete)(":id"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], NotificationController.prototype, "deleteNotification", null);
 exports.NotificationController = NotificationController = __decorate([
     (0, common_1.Controller)("notifications"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),

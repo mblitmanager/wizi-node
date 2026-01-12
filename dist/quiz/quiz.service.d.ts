@@ -11,8 +11,25 @@ export declare class QuizService {
     constructor(quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, formationRepository: Repository<Formation>, classementRepository: Repository<Classement>);
     getAllQuizzes(): Promise<Quiz[]>;
     getQuizDetails(id: number): Promise<Quiz>;
-    getQuestionsByQuiz(quizId: number): Promise<Question[]>;
-    getCategories(): Promise<any[]>;
+    getQuestionsByQuiz(quizId: number): Promise<{
+        id: string;
+        titre: string;
+        description: string;
+        categorie: string;
+        categorieId: string;
+        niveau: string;
+        questions: any[];
+        points: number;
+    }>;
+    getCategories(): Promise<{
+        id: string;
+        name: string;
+        color: string;
+        icon: string;
+        description: string;
+        quizCount: number;
+        colorClass: string;
+    }[]>;
     getHistoryByStagiaire(stagiaireId: number): Promise<Classement[]>;
     getStats(userId: number): Promise<{
         totalQuizzes: number;

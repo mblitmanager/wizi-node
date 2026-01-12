@@ -10,10 +10,23 @@ export declare class NotificationService {
     private fcmService;
     constructor(notificationRepository: Repository<Notification>, userRepository: Repository<User>, parrainageEventRepository: Repository<ParrainageEvent>, fcmService: FcmService);
     createNotification(userId: number, type: string, message: string, data?: any, title?: string): Promise<Notification>;
-    getNotifications(userId: number): Promise<Notification[]>;
+    getNotifications(userId: number): Promise<{
+        data: {
+            id: number;
+            message: string;
+            data: any;
+            type: string;
+            title: string;
+            read: boolean;
+            user_id: number;
+            created_at: string;
+            updated_at: string;
+        }[];
+    }>;
     markAsRead(notificationId: number): Promise<import("typeorm").UpdateResult>;
     getUnreadCount(userId: number): Promise<number>;
     markAllAsRead(userId: number): Promise<import("typeorm").UpdateResult>;
+    deleteNotification(notificationId: number): Promise<import("typeorm").DeleteResult>;
     getParrainageEvents(): Promise<{
         id: number;
         titre: string;

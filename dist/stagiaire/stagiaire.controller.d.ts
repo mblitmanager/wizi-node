@@ -202,7 +202,10 @@ export declare class StagiaireController {
             };
         }[];
     }>;
-    getStagiaireFormations(id: number): Promise<import("../entities/catalogue-formation.entity").CatalogueFormation[]>;
+    getStagiaireFormations(id: number): Promise<{
+        success: boolean;
+        data: any[];
+    }>;
     inscrireAFormation(req: any, catalogueFormationId: number): Promise<{
         success: boolean;
         message: string;

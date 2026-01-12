@@ -55,10 +55,25 @@ export class NotificationService {
   }
 
   async getNotifications(userId: number) {
-    return this.notificationRepository.find({
+    const notifications = await this.notificationRepository.find({
       where: { user_id: userId },
       order: { created_at: "DESC" },
     });
+
+    // Ensure data field is properly formatted as object or empty array
+    const formattedNotifications = notifications.map((notification) => ({
+      id: notification.id,
+      message: notification.message,
+      data: notification.data || [],
+      type: notification.type,
+      title: notification.title,
+      read: notification.read,
+      user_id: notification.user_id,
+      created_at: notification.created_at?.toISOString(),
+      updated_at: notification.updated_at?.toISOString(),
+    }));
+
+    return { data: formattedNotifications };
   }
 
   async markAsRead(notificationId: number) {
@@ -76,6 +91,10 @@ export class NotificationService {
       { user_id: userId },
       { read: true }
     );
+  }
+
+  async deleteNotification(notificationId: number) {
+    return this.notificationRepository.delete(notificationId);
   }
 
   async getParrainageEvents() {

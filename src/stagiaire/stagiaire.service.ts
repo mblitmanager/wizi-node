@@ -236,6 +236,7 @@ export class StagiaireService {
         "stagiaire_catalogue_formations",
         "stagiaire_catalogue_formations.catalogue_formation",
         "stagiaire_catalogue_formations.catalogue_formation.formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation.medias",
       ],
     });
 
@@ -243,11 +244,63 @@ export class StagiaireService {
       throw new NotFoundException("Stagiaire not found");
     }
 
-    return (
-      stagiaire.stagiaire_catalogue_formations?.map(
-        (scf) => scf.catalogue_formation
-      ) || []
-    );
+    // Group formations by formation_id and build the expected structure
+    const formationMap = new Map();
+
+    stagiaire.stagiaire_catalogue_formations?.forEach((scf) => {
+      const formation = scf.catalogue_formation.formation;
+      if (formation) {
+        if (!formationMap.has(formation.id)) {
+          formationMap.set(formation.id, {
+            id: formation.id,
+            titre: formation.titre,
+            slug: formation.slug,
+            description: formation.description,
+            statut: formation.statut,
+            duree: formation.duree,
+            categorie: formation.categorie,
+            image: formation.image,
+            icon: formation.icon,
+            created_at: formation.created_at,
+            updated_at: formation.updated_at,
+            medias: formation.medias || [],
+            catalogue_formation: [],
+          });
+        }
+        // Add catalogue_formation to the array
+        formationMap.get(formation.id).catalogue_formation.push({
+          id: scf.catalogue_formation.id,
+          titre: scf.catalogue_formation.titre,
+          description: scf.catalogue_formation.description,
+          prerequis: scf.catalogue_formation.prerequis,
+          image_url: scf.catalogue_formation.image_url,
+          cursus_pdf: scf.catalogue_formation.cursus_pdf,
+          tarif: scf.catalogue_formation.tarif,
+          certification: scf.catalogue_formation.certification,
+          statut: scf.catalogue_formation.statut,
+          duree: scf.catalogue_formation.duree,
+          formation_id: scf.catalogue_formation.formation_id,
+          created_at: scf.catalogue_formation.created_at,
+          updated_at: scf.catalogue_formation.updated_at,
+          objectifs: scf.catalogue_formation.objectifs,
+          programme: scf.catalogue_formation.programme,
+          modalites: scf.catalogue_formation.modalites,
+          modalites_accompagnement: scf.catalogue_formation.modalites_accompagnement,
+          moyens_pedagogiques: scf.catalogue_formation.moyens_pedagogiques,
+          modalites_suivi: scf.catalogue_formation.modalites_suivi,
+          evaluation: scf.catalogue_formation.evaluation,
+          lieu: scf.catalogue_formation.lieu,
+          niveau: scf.catalogue_formation.niveau,
+          public_cible: scf.catalogue_formation.public_cible,
+          nombre_participants: scf.catalogue_formation.nombre_participants,
+        });
+      }
+    });
+
+    return {
+      success: true,
+      data: Array.from(formationMap.values()),
+    };
   }
 
   async getStagiaireById(id: number) {
