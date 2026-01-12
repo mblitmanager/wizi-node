@@ -60,13 +60,15 @@ export class QuizApiController {
   @Get("classement/global")
   async globalClassement(@Query("period") period: string = "all") {
     const data = await this.rankingService.getGlobalRanking(period);
-    return this.apiResponse.success(data);
+    // Note: Returning raw list without success() wrapper for parity
+    return data.map(({ level, ...item }) => item);
   }
 
   @Get("history")
   async history(@Request() req: any) {
     const data = await this.rankingService.getQuizHistory(req.user.id);
-    return this.apiResponse.success(data);
+    // Note: Returning raw list without success() wrapper for parity
+    return data;
   }
 
   @Get("stats")

@@ -92,72 +92,82 @@ let QuizService = class QuizService {
                     id: question.id.toString(),
                     text: question.text,
                     type: question.type || "choix multiples",
+                    explication: question.explication,
+                    points: question.points?.toString() || "1",
+                    astuce: question.astuce,
+                    quizId: id,
+                    mediaUrl: question.media_url || null,
                 };
                 questionData.answers = (question.reponses || [])
                     .map((reponse) => ({
                     id: reponse.id.toString(),
                     text: reponse.text || "",
-                    isCorrect: Boolean(reponse.isCorrect),
+                    isCorrect: reponse.isCorrect ? 1 : 0,
+                    position: reponse.position,
+                    matchPair: reponse.match_pair,
+                    bankGroup: reponse.bank_group,
+                    flashcardBack: reponse.flashcardBack,
                 }))
                     .sort((a, b) => a.id.localeCompare(b.id));
-                switch (question.type) {
-                    case "rearrangement":
-                        questionData.answers = (question.reponses || [])
-                            .map((reponse) => ({
-                            id: reponse.id.toString(),
-                            text: reponse.text || "",
-                            position: reponse.position || 0,
-                        }))
-                            .sort((a, b) => (a.position || 0) - (b.position || 0));
-                        break;
-                    case "remplir le champ vide":
-                        questionData.blanks = (question.reponses || []).map((reponse) => ({
-                            id: reponse.id.toString(),
-                            text: reponse.text || "",
-                            bankGroup: reponse.bank_group || null,
-                        }));
-                        break;
-                    case "banque de mots":
-                        questionData.wordbank = (question.reponses || []).map((reponse) => ({
-                            id: reponse.id.toString(),
-                            text: reponse.text || "",
-                            isCorrect: Boolean(reponse.isCorrect),
-                            bankGroup: reponse.bank_group || null,
-                        }));
-                        break;
-                    case "carte flash":
-                        questionData.flashcard = {
-                            front: question.text || "",
-                            back: question.flashcard_back || "",
-                        };
-                        break;
-                    case "correspondance":
-                        questionData.matching = (question.reponses || []).map((reponse) => ({
-                            id: reponse.id.toString(),
-                            text: reponse.text || "",
-                            matchPair: reponse.match_pair || null,
-                        }));
-                        break;
-                    case "question audio":
-                        questionData.audioUrl = question.media_url || null;
-                        break;
-                }
                 return questionData;
             });
             return {
-                id: quiz.id.toString(),
+                id: quiz.id,
                 titre: quiz.titre,
                 description: quiz.description,
-                categorie: quiz.formation?.categorie || "Non catégorisé",
-                categorieId: quiz.formation?.categorie || "non-categorise",
+                duree: quiz.duree?.toString() || "30",
                 niveau: quiz.niveau || "débutant",
+                status: quiz.status || "actif",
+                nb_points_total: quiz.nb_points_total?.toString() || "0",
+                formation: quiz.formation
+                    ? {
+                        id: quiz.formation.id,
+                        titre: quiz.formation.titre,
+                        description: quiz.formation.description,
+                        duree: quiz.formation.duree?.toString() || "30",
+                        categorie: quiz.formation.categorie || "Général",
+                    }
+                    : null,
                 questions,
-                points: parseInt(quiz.nb_points_total?.toString() || "0"),
             };
         }
         catch (error) {
             console.error("Error in getQuizDetails:", error);
             throw new Error(`Failed to get quiz details: ${error.message}`);
+        }
+    }
+    async getQuizJsonLd(id) {
+        try {
+            const quiz = await this.quizRepository.findOne({
+                where: { id },
+                relations: ["questions", "formation"],
+            });
+            if (!quiz) {
+                throw new Error("Quiz not found");
+            }
+            return {
+                "@context": "/api/contexts/Quiz",
+                "@id": `/api/quizzes/${quiz.id}`,
+                "@type": "Quiz",
+                id: quiz.id,
+                titre: quiz.titre || "",
+                description: quiz.description || "",
+                duree: quiz.duree?.toString() || "30",
+                formation: quiz.formation
+                    ? `/api/formations/${quiz.formation.id}`
+                    : null,
+                nbPointsTotal: quiz.nb_points_total?.toString() || "0",
+                niveau: quiz.niveau || "débutant",
+                questions: (quiz.questions || []).map((q) => `/api/questions/${q.id}`),
+                participations: [],
+                status: quiz.status || "actif",
+                createdAt: quiz.created_at?.toISOString() || new Date().toISOString(),
+                updatedAt: quiz.updated_at?.toISOString() || new Date().toISOString(),
+            };
+        }
+        catch (error) {
+            console.error("Error in getQuizJsonLd:", error);
+            throw new Error(`Failed to get quiz JSON-LD: ${error.message}`);
         }
     }
     async getCategories() {

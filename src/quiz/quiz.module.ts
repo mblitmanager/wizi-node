@@ -13,6 +13,8 @@ import { CorrespondancePair } from "../entities/correspondance-pair.entity";
 import { QuizService } from "./quiz.service";
 import { QuizApiController } from "./quiz-api.controller";
 import { QuizzesApiController } from "./quizzes-api.controller";
+import { QuestionsApiController } from "./questions-api.controller";
+import { ReponseApiController } from "./reponses-api.controller";
 import { RankingModule } from "../ranking/ranking.module";
 import { AchievementModule } from "../achievement/achievement.module";
 import { Progression } from "../entities/progression.entity";
@@ -35,7 +37,7 @@ import { Progression } from "../entities/progression.entity";
     RankingModule,
     AchievementModule,
   ],
-  controllers: [QuizApiController, QuizzesApiController],
+  controllers: [QuizApiController, QuizzesApiController, QuestionsApiController, ReponseApiController],
   providers: [QuizService, ApiResponseService],
   exports: [QuizService],
 })

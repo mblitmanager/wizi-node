@@ -22,6 +22,8 @@ const correspondance_pair_entity_1 = require("../entities/correspondance-pair.en
 const quiz_service_1 = require("./quiz.service");
 const quiz_api_controller_1 = require("./quiz-api.controller");
 const quizzes_api_controller_1 = require("./quizzes-api.controller");
+const questions_api_controller_1 = require("./questions-api.controller");
+const reponses_api_controller_1 = require("./reponses-api.controller");
 const ranking_module_1 = require("../ranking/ranking.module");
 const achievement_module_1 = require("../achievement/achievement.module");
 const progression_entity_1 = require("../entities/progression.entity");
@@ -47,7 +49,7 @@ exports.QuizModule = QuizModule = __decorate([
             ranking_module_1.RankingModule,
             achievement_module_1.AchievementModule,
         ],
-        controllers: [quiz_api_controller_1.QuizApiController, quizzes_api_controller_1.QuizzesApiController],
+        controllers: [quiz_api_controller_1.QuizApiController, quizzes_api_controller_1.QuizzesApiController, questions_api_controller_1.QuestionsApiController, reponses_api_controller_1.ReponseApiController],
         providers: [quiz_service_1.QuizService, api_response_service_1.ApiResponseService],
         exports: [quiz_service_1.QuizService],
     })

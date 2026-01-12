@@ -50,7 +50,6 @@ export declare class RankingService {
         quizCount: number;
         averageScore: number;
         rang: number;
-        level: string;
     }>;
     getFormationRanking(formationId: number): Promise<{
         id: number;
@@ -117,6 +116,7 @@ export declare class RankingService {
             totalCompleted: number;
             totalQuiz: number;
             pourcentageReussite: number;
+            level: string;
             byLevel: {
                 débutant: {
                     completed: number;
@@ -151,9 +151,29 @@ export declare class RankingService {
             formation: {
                 id: number;
                 titre: string;
+                description: string;
+                duree: string;
                 categorie: string;
             };
-            questions: any[];
+            questions: {
+                id: string;
+                quizId: number;
+                text: string;
+                type: string;
+                explication: string;
+                points: string;
+                astuce: string;
+                mediaUrl: string;
+                answers: {
+                    id: string;
+                    text: string;
+                    isCorrect: number;
+                    position: number;
+                    matchPair: string;
+                    bankGroup: string;
+                    flashcardBack: string;
+                }[];
+            }[];
         };
         score: number;
         completedAt: string;

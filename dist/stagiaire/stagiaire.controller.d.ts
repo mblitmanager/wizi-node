@@ -29,7 +29,6 @@ export declare class StagiaireController {
         quizCount: number;
         averageScore: number;
         rang: number;
-        level: string;
     }>;
     getProfile(req: any): Promise<{
         id: number;

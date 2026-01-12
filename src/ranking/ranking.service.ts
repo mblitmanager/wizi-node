@@ -163,7 +163,6 @@ export class RankingService {
         quizCount: 0,
         averageScore: 0,
         rang: globalRanking.length + 1,
-        level: "1",
       };
     }
 
@@ -321,6 +320,7 @@ export class RankingService {
         totalCompleted: stagiaire.classements.length,
         totalQuiz: stagiaire.classements.length,
         pourcentageReussite: successPercentage,
+        level: this.calculateLevel(totalPoints),
         byLevel: quizStats.levelProgress,
         lastActivity: stagiaire.updated_at,
       },
@@ -351,6 +351,7 @@ export class RankingService {
       accessibleLevels,
     };
   }
+
   async getQuizHistory(userId: number) {
     // Progression table uses stagiaire_id, not user_id directly
     const stagiaire = await this.stagiaireRepository.findOne({
@@ -361,7 +362,12 @@ export class RankingService {
 
     const progressions = await this.progressionRepository.find({
       where: { stagiaire_id: stagiaire.id },
-      relations: ["quiz", "quiz.formation"],
+      relations: [
+        "quiz",
+        "quiz.formation",
+        "quiz.questions",
+        "quiz.questions.reponses",
+      ],
       order: { created_at: "DESC" },
     });
 
@@ -369,7 +375,6 @@ export class RankingService {
       .filter((p) => p.quiz) // Filter out null quiz (deleted quizzes)
       .map((progression) => {
         const quiz = progression.quiz;
-        const niveau = quiz.niveau || "débutant";
         const totalQuestions =
           progression.total_questions ||
           parseInt(quiz.nb_points_total || "0") ||
@@ -378,21 +383,39 @@ export class RankingService {
         const quizData = {
           id: quiz.id,
           titre: quiz.titre,
-          description: quiz.description
-            ? quiz.description.substring(0, 100)
-            : "",
-          duree: quiz.duree,
-          niveau: quiz.niveau,
-          status: quiz.status,
-          nb_points_total: quiz.nb_points_total,
+          description: quiz.description || "",
+          duree: quiz.duree?.toString() || "30",
+          niveau: quiz.niveau || "débutant",
+          status: quiz.status || "actif",
+          nb_points_total: quiz.nb_points_total?.toString() || "0",
           formation: quiz.formation
             ? {
                 id: quiz.formation.id,
                 titre: quiz.formation.titre,
-                categorie: quiz.formation.categorie,
+                description: quiz.formation.description || "",
+                duree: quiz.formation.duree?.toString() || "30",
+                categorie: quiz.formation.categorie || "Général",
               }
             : null,
-          questions: [], // Empty for performance, like Laravel
+          questions: (quiz.questions || []).map((question) => ({
+            id: question.id.toString(),
+            quizId: quiz.id,
+            text: question.text,
+            type: question.type || "choix multiples",
+            explication: question.explication,
+            points: question.points?.toString() || "1",
+            astuce: question.astuce,
+            mediaUrl: question.media_url || null,
+            answers: (question.reponses || []).map((reponse) => ({
+              id: reponse.id.toString(),
+              text: reponse.text || "",
+              isCorrect: reponse.isCorrect ? 1 : 0,
+              position: reponse.position,
+              matchPair: reponse.match_pair,
+              bankGroup: reponse.bank_group,
+              flashcardBack: reponse.flashcardBack,
+            })),
+          })),
         };
 
         return {

@@ -8,7 +8,8 @@ export class RankingController {
 
   @Get("global")
   async getGlobalRanking() {
-    return this.rankingService.getGlobalRanking();
+    const data = await this.rankingService.getGlobalRanking();
+    return data.map(({ level, ...item }) => item);
   }
 
   @UseGuards(AuthGuard("jwt"))

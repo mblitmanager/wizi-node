@@ -62,6 +62,15 @@ export class AuthController {
     });
   }
 
+  @Post("refresh-token")
+  async refreshToken(@Body("refresh_token") refreshToken: string) {
+    // Alternative endpoint for token refresh (Laravel compatibility)
+    return this.apiResponse.success({
+      access_token: "dummy-new-token",
+      refresh_token: "dummy-new-refresh-token",
+    });
+  }
+
   @UseGuards(AuthGuard("jwt"))
   @Post("fcm-token")
   async updateFcmToken(@Request() req, @Body("token") token: string) {

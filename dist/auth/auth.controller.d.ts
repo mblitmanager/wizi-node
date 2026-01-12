@@ -9,6 +9,7 @@ export declare class AuthController {
     logout(req: any): Promise<any>;
     logoutAll(req: any): Promise<any>;
     refresh(refreshToken: string): Promise<any>;
+    refreshToken(refreshToken: string): Promise<any>;
     updateFcmToken(req: any, token: string): Promise<any>;
     getProfile(req: any): any;
     getMe(req: any): any;

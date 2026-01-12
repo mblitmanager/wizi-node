@@ -45,14 +45,38 @@ export declare class QuizService {
         }[];
     }>;
     getQuizDetails(id: number): Promise<{
-        id: string;
+        id: number;
         titre: string;
         description: string;
-        categorie: string;
-        categorieId: string;
+        duree: string;
         niveau: string;
+        status: string;
+        nb_points_total: string;
+        formation: {
+            id: number;
+            titre: string;
+            description: string;
+            duree: string;
+            categorie: string;
+        };
         questions: any[];
-        points: number;
+    }>;
+    getQuizJsonLd(id: number): Promise<{
+        "@context": string;
+        "@id": string;
+        "@type": string;
+        id: number;
+        titre: string;
+        description: string;
+        duree: string;
+        formation: string;
+        nbPointsTotal: string;
+        niveau: string;
+        questions: string[];
+        participations: any[];
+        status: string;
+        createdAt: string;
+        updatedAt: string;
     }>;
     getCategories(): Promise<{
         id: string;

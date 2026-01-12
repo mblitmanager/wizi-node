@@ -12,8 +12,62 @@ export declare class QuizApiController {
     byFormations(): Promise<any>;
     categories(): Promise<any>;
     byCategory(categoryId: string, req: any): Promise<any>;
-    globalClassement(period?: string): Promise<any>;
-    history(req: any): Promise<any>;
+    globalClassement(period?: string): Promise<{
+        rang: number;
+        stagiaire: {
+            id: any;
+            prenom: any;
+            nom: any;
+            image: any;
+        };
+        formateurs: any;
+        totalPoints: any;
+        quizCount: any;
+        averageScore: number;
+    }[]>;
+    history(req: any): Promise<{
+        id: string;
+        quiz: {
+            id: number;
+            titre: string;
+            description: string;
+            duree: string;
+            niveau: string;
+            status: string;
+            nb_points_total: string;
+            formation: {
+                id: number;
+                titre: string;
+                description: string;
+                duree: string;
+                categorie: string;
+            };
+            questions: {
+                id: string;
+                quizId: number;
+                text: string;
+                type: string;
+                explication: string;
+                points: string;
+                astuce: string;
+                mediaUrl: string;
+                answers: {
+                    id: string;
+                    text: string;
+                    isCorrect: number;
+                    position: number;
+                    matchPair: string;
+                    bankGroup: string;
+                    flashcardBack: string;
+                }[];
+            }[];
+        };
+        score: number;
+        completedAt: string;
+        timeSpent: number;
+        totalQuestions: number;
+        correctAnswers: number;
+    }[]>;
     stats(req: any): Promise<any>;
     statsCategories(req: any): Promise<any>;
     statsProgress(req: any): Promise<any>;

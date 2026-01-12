@@ -23,8 +23,7 @@ let QuizzesApiController = class QuizzesApiController {
         this.apiResponse = apiResponse;
     }
     async getById(id) {
-        const data = await this.quizService.getQuizDetails(id);
-        return this.apiResponse.success(data);
+        return this.quizService.getQuizJsonLd(id);
     }
     async submit(quizId, data) {
         return this.apiResponse.success();

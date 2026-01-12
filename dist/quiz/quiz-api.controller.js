@@ -47,11 +47,11 @@ let QuizApiController = class QuizApiController {
     }
     async globalClassement(period = "all") {
         const data = await this.rankingService.getGlobalRanking(period);
-        return this.apiResponse.success(data);
+        return data.map(({ level, ...item }) => item);
     }
     async history(req) {
         const data = await this.rankingService.getQuizHistory(req.user.id);
-        return this.apiResponse.success(data);
+        return data;
     }
     async stats(req) {
         const data = await this.rankingService.getQuizStats(req.user.id);

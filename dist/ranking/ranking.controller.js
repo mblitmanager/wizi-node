@@ -21,7 +21,8 @@ let RankingController = class RankingController {
         this.rankingService = rankingService;
     }
     async getGlobalRanking() {
-        return this.rankingService.getGlobalRanking();
+        const data = await this.rankingService.getGlobalRanking();
+        return data.map(({ level, ...item }) => item);
     }
     async getMyRanking(req) {
         return this.rankingService.getMyRanking(req.user.id);

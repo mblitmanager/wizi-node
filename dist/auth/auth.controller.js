@@ -51,6 +51,12 @@ let AuthController = class AuthController {
             refresh_token: "dummy-new-refresh-token",
         });
     }
+    async refreshToken(refreshToken) {
+        return this.apiResponse.success({
+            access_token: "dummy-new-token",
+            refresh_token: "dummy-new-refresh-token",
+        });
+    }
     async updateFcmToken(req, token) {
         await this.authService.updateFcmToken(req.user.id, token);
         return this.apiResponse.success({ message: "Token enregistré" });
@@ -117,6 +123,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "refresh", null);
+__decorate([
+    (0, common_1.Post)("refresh-token"),
+    __param(0, (0, common_1.Body)("refresh_token")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refreshToken", null);
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     (0, common_1.Post)("fcm-token"),

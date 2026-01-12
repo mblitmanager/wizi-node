@@ -21,8 +21,8 @@ export class QuizzesApiController {
 
   @Get(":id")
   async getById(@Param("id") id: number) {
-    const data = await this.quizService.getQuizDetails(id);
-    return this.apiResponse.success(data);
+    // Note: Returning raw JSON-LD object without success() wrapper for this specific endpoint
+    return this.quizService.getQuizJsonLd(id);
   }
 
   @Post(":quizId/submit")
