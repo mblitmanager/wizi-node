@@ -12,12 +12,13 @@ const typeorm_1 = require("@nestjs/typeorm");
 const media_service_1 = require("./media.service");
 const media_controller_1 = require("./media.controller");
 const media_entity_1 = require("../entities/media.entity");
+const media_stagiaire_entity_1 = require("../entities/media-stagiaire.entity");
 let MediaModule = class MediaModule {
 };
 exports.MediaModule = MediaModule;
 exports.MediaModule = MediaModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([media_entity_1.Media])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([media_entity_1.Media, media_stagiaire_entity_1.MediaStagiaire])],
         controllers: [media_controller_1.MediaController],
         providers: [media_service_1.MediaService],
         exports: [media_service_1.MediaService],

@@ -9,6 +9,7 @@ import { Formation } from "../entities/formation.entity";
 import { Classement } from "../entities/classement.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { QuizParticipationAnswer } from "../entities/quiz-participation-answer.entity";
+import { CorrespondancePair } from "../entities/correspondance-pair.entity";
 import { QuizService } from "./quiz.service";
 import { QuizApiController } from "./quiz-api.controller";
 import { QuizzesApiController } from "./quizzes-api.controller";
@@ -23,8 +24,10 @@ import { RankingModule } from "../ranking/ranking.module";
       Reponse,
       Formation,
       Classement,
+      Classement,
       QuizParticipation,
       QuizParticipationAnswer,
+      CorrespondancePair,
     ]),
     RankingModule,
   ],
