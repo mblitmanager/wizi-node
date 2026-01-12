@@ -17,15 +17,18 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const inscription_service_1 = require("../inscription/inscription.service");
 const ranking_service_1 = require("../ranking/ranking.service");
+const stagiaire_service_1 = require("./stagiaire.service");
 const api_response_service_1 = require("../common/services/api-response.service");
 let StagiaireApiController = class StagiaireApiController {
-    constructor(inscriptionService, rankingService, apiResponse) {
+    constructor(inscriptionService, rankingService, stagiaireService, apiResponse) {
         this.inscriptionService = inscriptionService;
         this.rankingService = rankingService;
+        this.stagiaireService = stagiaireService;
         this.apiResponse = apiResponse;
     }
     async profile(req) {
-        return this.apiResponse.success(req.user);
+        const data = await this.stagiaireService.getDetailedProfile(req.user.id);
+        return this.apiResponse.success(data);
     }
     async updateProfile(req, data) {
         return this.apiResponse.success(req.user);
@@ -336,6 +339,7 @@ exports.StagiaireApiController = StagiaireApiController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [inscription_service_1.InscriptionService,
         ranking_service_1.RankingService,
+        stagiaire_service_1.StagiaireService,
         api_response_service_1.ApiResponseService])
 ], StagiaireApiController);
 let ApiGeneralController = class ApiGeneralController {

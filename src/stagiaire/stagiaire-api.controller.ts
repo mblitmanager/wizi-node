@@ -12,6 +12,7 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { InscriptionService } from "../inscription/inscription.service";
 import { RankingService } from "../ranking/ranking.service";
+import { StagiaireService } from "./stagiaire.service";
 import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("stagiaire")
@@ -20,12 +21,14 @@ export class StagiaireApiController {
   constructor(
     private inscriptionService: InscriptionService,
     private rankingService: RankingService,
+    private stagiaireService: StagiaireService,
     private apiResponse: ApiResponseService
   ) {}
 
   @Get("profile")
   async profile(@Request() req: any) {
-    return this.apiResponse.success(req.user);
+    const data = await this.stagiaireService.getDetailedProfile(req.user.id);
+    return this.apiResponse.success(data);
   }
 
   @Put("profile")

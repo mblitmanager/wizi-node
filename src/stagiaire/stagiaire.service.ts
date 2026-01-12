@@ -483,58 +483,23 @@ export class StagiaireService {
   async getDetailedProfile(userId: number) {
     const stagiaire = await this.stagiaireRepository.findOne({
       where: { user_id: userId },
-      relations: [
-        "user",
-        "formateurs",
-        "formateurs.user",
-        "stagiaire_catalogue_formations",
-        "stagiaire_catalogue_formations.catalogue_formation",
-        "classements",
-        "classements.quiz",
-      ],
+      relations: ["user"],
     });
 
     if (!stagiaire) {
       throw new NotFoundException(`Stagiaire not found`);
     }
 
-    const stats = await this.rankingService.getStagiaireProgress(userId);
-    const formations = await this.getFormationsByStagiaire(stagiaire.id);
-    const agenda = await this.agendaService.getStagiaireAgenda(userId);
-    const notifications =
-      await this.agendaService.getStagiaireNotifications(userId);
-    const media = await this.mediaService.getTutorials(userId);
-
     return {
-      stagiaire: {
-        id: stagiaire.id,
-        civilite: stagiaire.civilite,
-        prenom: stagiaire.prenom,
-        telephone: stagiaire.telephone,
-        adresse: stagiaire.adresse,
-        ville: stagiaire.ville,
-        code_postal: stagiaire.code_postal,
-        date_naissance: stagiaire.date_naissance,
-        date_debut_formation: stagiaire.date_debut_formation,
-        date_inscription: stagiaire.date_inscription,
-        role: stagiaire.role,
-        statut: stagiaire.statut,
-        user_id: stagiaire.user_id,
-        onboarding_seen: stagiaire.onboarding_seen,
-        user: {
-          id: stagiaire.user?.id,
-          name: stagiaire.user?.name,
-          email: stagiaire.user?.email,
-          image: stagiaire.user?.image,
-        },
-      },
-      stats,
-      formations,
-      agenda,
-      notifications,
-      media: {
-        tutorials: media,
-      },
+      id: stagiaire.id,
+      prenom: stagiaire.prenom,
+      nom: stagiaire.user?.name || "",
+      telephone: stagiaire.telephone,
+      ville: stagiaire.ville,
+      code_postal: stagiaire.code_postal,
+      adresse: stagiaire.adresse,
+      email: stagiaire.user?.email,
+      image: stagiaire.user?.image,
     };
   }
 

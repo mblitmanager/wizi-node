@@ -1,11 +1,13 @@
 import { InscriptionService } from "../inscription/inscription.service";
 import { RankingService } from "../ranking/ranking.service";
+import { StagiaireService } from "./stagiaire.service";
 import { ApiResponseService } from "../common/services/api-response.service";
 export declare class StagiaireApiController {
     private inscriptionService;
     private rankingService;
+    private stagiaireService;
     private apiResponse;
-    constructor(inscriptionService: InscriptionService, rankingService: RankingService, apiResponse: ApiResponseService);
+    constructor(inscriptionService: InscriptionService, rankingService: RankingService, stagiaireService: StagiaireService, apiResponse: ApiResponseService);
     profile(req: any): Promise<any>;
     updateProfile(req: any, data: any): Promise<any>;
     patchProfile(req: any, data: any): Promise<any>;
