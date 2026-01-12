@@ -37,81 +37,86 @@ let QuizService = class QuizService {
         });
     }
     async getQuestionsByQuiz(quizId) {
-        const quiz = await this.quizRepository.findOne({
-            where: { id: quizId },
-            relations: ["questions", "questions.reponses", "formation"],
-        });
-        if (!quiz) {
-            throw new Error("Quiz not found");
-        }
-        const questions = quiz.questions.map((question) => {
-            const questionData = {
-                id: question.id.toString(),
-                text: question.text,
-                type: question.type || "choix multiples",
-            };
-            questionData.answers = question.reponses
-                .map((reponse) => ({
-                id: reponse.id.toString(),
-                text: reponse.text,
-                isCorrect: reponse.isCorrect === true,
-            }))
-                .sort((a, b) => a.id.localeCompare(b.id));
-            switch (question.type) {
-                case "rearrangement":
-                    questionData.answers = question.reponses
-                        .map((reponse) => ({
-                        id: reponse.id.toString(),
-                        text: reponse.text,
-                        position: reponse.position || 0,
-                    }))
-                        .sort((a, b) => (a.position || 0) - (b.position || 0));
-                    break;
-                case "remplir le champ vide":
-                    questionData.blanks = question.reponses.map((reponse) => ({
-                        id: reponse.id.toString(),
-                        text: reponse.text,
-                        bankGroup: reponse.bank_group || null,
-                    }));
-                    break;
-                case "banque de mots":
-                    questionData.wordbank = question.reponses.map((reponse) => ({
-                        id: reponse.id.toString(),
-                        text: reponse.text,
-                        isCorrect: reponse.isCorrect === true,
-                        bankGroup: reponse.bank_group || null,
-                    }));
-                    break;
-                case "carte flash":
-                    questionData.flashcard = {
-                        front: question.text,
-                        back: question.flashcard_back || "",
-                    };
-                    break;
-                case "correspondance":
-                    questionData.matching = question.reponses.map((reponse) => ({
-                        id: reponse.id.toString(),
-                        text: reponse.text,
-                        matchPair: reponse.match_pair || null,
-                    }));
-                    break;
-                case "question audio":
-                    questionData.audioUrl =
-                        question.audio_url || question.media_url || null;
-                    break;
+        try {
+            const quiz = await this.quizRepository.findOne({
+                where: { id: quizId },
+                relations: ["questions", "questions.reponses", "formation"],
+            });
+            if (!quiz) {
+                throw new Error("Quiz not found");
             }
-            return questionData;
-        });
-        return {
-            id: quiz.id.toString(),
-            titre: quiz.titre,
-            description: quiz.description,
-            categorie: quiz.formation?.categorie || "Non catégorisé",
-            categorieId: quiz.formation?.categorie || "non-categorise",
-            niveau: quiz.niveau || "débutant",
-            questions,
-            points: parseInt(quiz.nb_points_total?.toString() || "0"),
-        };
+            const questions = quiz.questions.map((question) => {
+                const questionData = {
+                    id: question.id.toString(),
+                    text: question.text,
+                    type: question.type || "choix multiples",
+                };
+                questionData.answers = (question.reponses || [])
+                    .map((reponse) => ({
+                    id: reponse.id.toString(),
+                    text: reponse.text || "",
+                    isCorrect: Boolean(reponse.isCorrect),
+                }))
+                    .sort((a, b) => a.id.localeCompare(b.id));
+                switch (question.type) {
+                    case "rearrangement":
+                        questionData.answers = (question.reponses || [])
+                            .map((reponse) => ({
+                            id: reponse.id.toString(),
+                            text: reponse.text || "",
+                            position: reponse.position || 0,
+                        }))
+                            .sort((a, b) => (a.position || 0) - (b.position || 0));
+                        break;
+                    case "remplir le champ vide":
+                        questionData.blanks = (question.reponses || []).map((reponse) => ({
+                            id: reponse.id.toString(),
+                            text: reponse.text || "",
+                            bankGroup: reponse.bank_group || null,
+                        }));
+                        break;
+                    case "banque de mots":
+                        questionData.wordbank = (question.reponses || []).map((reponse) => ({
+                            id: reponse.id.toString(),
+                            text: reponse.text || "",
+                            isCorrect: Boolean(reponse.isCorrect),
+                            bankGroup: reponse.bank_group || null,
+                        }));
+                        break;
+                    case "carte flash":
+                        questionData.flashcard = {
+                            front: question.text || "",
+                            back: question.flashcard_back || "",
+                        };
+                        break;
+                    case "correspondance":
+                        questionData.matching = (question.reponses || []).map((reponse) => ({
+                            id: reponse.id.toString(),
+                            text: reponse.text || "",
+                            matchPair: reponse.match_pair || null,
+                        }));
+                        break;
+                    case "question audio":
+                        questionData.audioUrl = question.media_url || null;
+                        break;
+                }
+                return questionData;
+            });
+            return {
+                id: quiz.id.toString(),
+                titre: quiz.titre,
+                description: quiz.description,
+                categorie: quiz.formation?.categorie || "Non catégorisé",
+                categorieId: quiz.formation?.categorie || "non-categorise",
+                niveau: quiz.niveau || "débutant",
+                questions,
+                points: parseInt(quiz.nb_points_total?.toString() || "0"),
+            };
+        }
+        catch (error) {
+            console.error("Error in getQuestionsByQuiz:", error);
+            throw new Error(`Failed to get quiz questions: ${error.message}`);
+        }
     }
     async getCategories() {
         const formations = await this.formationRepository.find({

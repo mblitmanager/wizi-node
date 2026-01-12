@@ -35,13 +35,17 @@ let MediaController = class MediaController {
         const userId = req.user?.id;
         return this.mediaService.findByCategoriePaginated("astuce", pageNum, 10, baseUrl, userId);
     }
-    async getTutorielsByFormation(formationId, req) {
+    async getTutorielsByFormation(formationId, req, page = "1") {
+        const pageNum = parseInt(page) || 1;
         const userId = req.user?.id;
-        return this.mediaService.findByFormationAndCategorie(formationId, "tutoriel", userId);
+        const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/formations/${formationId}/tutoriels`;
+        return this.mediaService.findByFormationAndCategorie(formationId, "tutoriel", pageNum, 10, baseUrl, userId);
     }
-    async getAstucesByFormation(formationId, req) {
+    async getAstucesByFormation(formationId, req, page = "1") {
+        const pageNum = parseInt(page) || 1;
         const userId = req.user?.id;
-        return this.mediaService.findByFormationAndCategorie(formationId, "astuce", userId);
+        const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/formations/${formationId}/astuces`;
+        return this.mediaService.findByFormationAndCategorie(formationId, "astuce", pageNum, 10, baseUrl, userId);
     }
 };
 exports.MediaController = MediaController;
@@ -73,8 +77,9 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __param(0, (0, common_1.Param)("formationId")),
     __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Query)("page")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, Object, String]),
     __metadata("design:returntype", Promise)
 ], MediaController.prototype, "getTutorielsByFormation", null);
 __decorate([
@@ -82,8 +87,9 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __param(0, (0, common_1.Param)("formationId")),
     __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Query)("page")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, Object, String]),
     __metadata("design:returntype", Promise)
 ], MediaController.prototype, "getAstucesByFormation", null);
 exports.MediaController = MediaController = __decorate([

@@ -126,17 +126,7 @@ export declare class StagiaireService {
                 titre: string;
                 categorie: string;
             };
-            questions: {
-                id: string;
-                text: string;
-                type: string;
-                points: number;
-                answers: {
-                    id: string;
-                    text: string;
-                    isCorrect: boolean;
-                }[];
-            }[];
+            questions: any[];
             userParticipation: {
                 id: number;
                 status: string;

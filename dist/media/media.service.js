@@ -43,9 +43,10 @@ let MediaService = class MediaService {
             .take(perPage)
             .getManyAndCount();
         const lastPage = Math.ceil(total / perPage);
+        const formattedData = data.map((media) => this.formatMedia(media));
         return {
             current_page: page,
-            data,
+            data: formattedData,
             first_page_url: `${baseUrl}?page=1`,
             from: (page - 1) * perPage + 1,
             last_page: lastPage,
@@ -80,7 +81,7 @@ let MediaService = class MediaService {
         });
         return links;
     }
-    async findByFormationAndCategorie(formationId, categorie, userId) {
+    async findByFormationAndCategorie(formationId, categorie, page = 1, perPage = 10, baseUrl = "", userId) {
         const query = this.mediaRepository
             .createQueryBuilder("m")
             .where("m.formation_id = :formationId", { formationId })
@@ -89,19 +90,66 @@ let MediaService = class MediaService {
         if (userId) {
             query.leftJoinAndSelect("m.stagiaires", "stagiaires", "stagiaires.user_id = :userId", { userId });
         }
-        const medias = await query.getMany();
-        return medias.map((media) => ({
+        const [data, total] = await query
+            .skip((page - 1) * perPage)
+            .take(perPage)
+            .getManyAndCount();
+        const lastPage = Math.ceil(total / perPage);
+        const formattedData = data.map((media) => this.formatMedia(media));
+        if (!baseUrl) {
+        }
+        return {
+            current_page: page,
+            data: formattedData,
+            first_page_url: `${baseUrl}?page=1`,
+            from: (page - 1) * perPage + 1,
+            last_page: lastPage,
+            last_page_url: `${baseUrl}?page=${lastPage}`,
+            links: this.generateLinks(page, lastPage, baseUrl),
+            next_page_url: page < lastPage ? `${baseUrl}?page=${page + 1}` : null,
+            path: baseUrl,
+            per_page: perPage,
+            prev_page_url: page > 1 ? `${baseUrl}?page=${page - 1}` : null,
+            to: Math.min(page * perPage, total),
+            total,
+        };
+    }
+    formatMedia(media) {
+        return {
             id: media.id,
             titre: media.titre,
             description: media.description,
             url: media.url,
-            video_url: media.video_url,
+            size: media.size,
+            mime: media.mime,
+            uploaded_by: media.uploaded_by,
+            video_platform: media.video_platform || "server",
+            video_file_path: media.video_file_path,
+            subtitle_file_path: media.subtitle_file_path,
+            subtitle_language: media.subtitle_language || "fr",
+            type: media.type || "video",
             categorie: media.categorie,
+            duree: media.duree,
+            ordre: media.ordre,
             formation_id: media.formation_id,
             created_at: media.created_at?.toISOString(),
             updated_at: media.updated_at?.toISOString(),
-            stagiaires: media.stagiaires || [],
-        }));
+            video_url: media.video_url,
+            subtitle_url: media.subtitle_url,
+            stagiaires: (media.stagiaires || []).map((stagiaire) => ({
+                id: stagiaire.id,
+                is_watched: 1,
+                watched_at: null,
+                pivot: {
+                    media_id: media.id,
+                    stagiaire_id: stagiaire.id,
+                    is_watched: 1,
+                    watched_at: null,
+                    created_at: null,
+                    updated_at: null,
+                },
+            })),
+        };
     }
 };
 exports.MediaService = MediaService;

@@ -150,83 +150,87 @@ export class StagiaireService {
   }
 
   async getStagiaireQuizzes(userId: number) {
-    const stagiaire = await this.stagiaireRepository.findOne({
-      where: { user_id: userId },
-      relations: ["stagiaire_catalogue_formations"],
-    });
+    try {
+      const stagiaire = await this.stagiaireRepository.findOne({
+        where: { user_id: userId },
+        relations: [
+          "stagiaire_catalogue_formations",
+          "stagiaire_catalogue_formations.catalogue_formation",
+          "stagiaire_catalogue_formations.catalogue_formation.formation",
+        ],
+      });
 
-    if (!stagiaire) return { data: [] };
+      if (!stagiaire) return { data: [] };
 
-    const formationIds = (stagiaire.stagiaire_catalogue_formations || [])
-      .map((scf) => scf.catalogue_formation_id)
-      .filter((id) => id !== null);
+      // Get all unique formation_ids from catalogue_formations
+      const formationIds = (stagiaire.stagiaire_catalogue_formations || [])
+        .map((scf) => scf.catalogue_formation?.formation_id)
+        .filter((id) => id !== null && id !== undefined);
 
-    if (formationIds.length === 0) return { data: [] };
+      if (formationIds.length === 0) return { data: [] };
 
-    const quizzes = await this.quizRepository.find({
-      where: {
-        status: "actif",
-        formation_id: In(formationIds),
-      },
-      relations: ["formation", "questions", "questions.reponses"],
-    });
+      // Get quizzes for these formations (without heavy relations for now)
+      const quizzes = await this.quizRepository.find({
+        where: {
+          formation_id: In(formationIds),
+        },
+        relations: ["formation"],
+      });
 
-    const participations = await this.participationRepository.find({
-      where: { user_id: userId },
-      order: { created_at: "DESC" }, // Force DESC order to match Laravel's last participation logic
-    });
+      // Get participation data separately
+      const participations = await this.participationRepository.find({
+        where: { user_id: userId },
+      });
 
-    const mappedQuizzes = quizzes.map((quiz) => {
-      // Find the most recent participation for this quiz
-      const participation = participations.find((p) => p.quiz_id === quiz.id);
+      const mappedQuizzes = quizzes.map((quiz) => {
+        // Find participation for this quiz
+        const participation = participations.find(
+          (p) => p.quiz_id === quiz.id
+        );
 
-      return {
-        id: quiz.id.toString(),
-        titre: quiz.titre,
-        description: quiz.description,
-        duree: quiz.duree || null,
-        niveau: quiz.niveau || "débutant",
-        status: quiz.status || "actif",
-        nb_points_total: Number(quiz.nb_points_total) || 0, // Convert to Number for parity
-        formationId: quiz.formation_id?.toString(),
-        categorie: quiz.formation?.categorie || null,
-        formation: quiz.formation
-          ? {
-              id: quiz.formation.id,
-              titre: quiz.formation.titre || null,
-              categorie: quiz.formation.categorie || null,
-            }
-          : null,
-        questions: (quiz.questions || []).map((q) => ({
-          id: q.id.toString(),
-          text: q.text || null,
-          type: q.type || null,
-          points: Number(q.points) || 0, // Convert to Number for parity
-          answers: (q.reponses || []).map((r) => ({
-            id: r.id.toString(),
-            text: r.text,
-            isCorrect: Boolean(r.isCorrect),
-          })),
-        })),
-        userParticipation: participation
-          ? {
-              id: participation.id,
-              status: participation.status,
-              score: participation.score,
-              correct_answers: participation.correct_answers,
-              time_spent: participation.time_spent,
-              started_at: participation.started_at
-                ? participation.started_at.toISOString()
-                : null,
-              completed_at: participation.completed_at
-                ? participation.completed_at.toISOString()
-                : null,
-            }
-          : null,
-      };
-    });
+        return {
+          id: quiz.id.toString(),
+          titre: quiz.titre,
+          description: quiz.description,
+          duree: quiz.duree || null,
+          niveau: quiz.niveau || "débutant",
+          status: quiz.status || "actif",
+          nb_points_total: Number(quiz.nb_points_total) || 0,
+          formationId: quiz.formation_id?.toString(),
+          categorie: quiz.formation?.categorie || null,
+          formation: quiz.formation
+            ? {
+                id: quiz.formation.id,
+                titre: quiz.formation.titre || null,
+                categorie: quiz.formation.categorie || null,
+              }
+            : null,
+          questions: [],
+          userParticipation: participation
+            ? {
+                id: participation.id,
+                status: participation.status,
+                score: participation.score,
+                correct_answers: participation.correct_answers,
+                time_spent: participation.time_spent,
+                started_at: participation.started_at
+                  ? participation.started_at.toISOString()
+                  : null,
+                completed_at: participation.completed_at
+                  ? participation.completed_at.toISOString()
+                  : null,
+              }
+            : null,
+        };
+      });
 
-    return { data: mappedQuizzes };
+      return { data: mappedQuizzes };
+    } catch (error) {
+      console.error("Error in getStagiaireQuizzes:", error);
+      throw new Error(
+        `Failed to get stagiaire quizzes: ${error.message}`
+      );
+    }
   }
 
   async getFormationsByStagiaire(stagiaireId: number) {

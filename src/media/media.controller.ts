@@ -49,12 +49,19 @@ export class MediaController {
   @UseGuards(AuthGuard("jwt"))
   async getTutorielsByFormation(
     @Param("formationId") formationId: number,
-    @Req() req: any
+    @Req() req: any,
+    @Query("page") page: string = "1"
   ) {
+    const pageNum = parseInt(page) || 1;
     const userId = req.user?.id;
+    const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/formations/${formationId}/tutoriels`;
+
     return this.mediaService.findByFormationAndCategorie(
       formationId,
       "tutoriel",
+      pageNum,
+      10,
+      baseUrl,
       userId
     );
   }
@@ -63,12 +70,19 @@ export class MediaController {
   @UseGuards(AuthGuard("jwt"))
   async getAstucesByFormation(
     @Param("formationId") formationId: number,
-    @Req() req: any
+    @Req() req: any,
+    @Query("page") page: string = "1"
   ) {
+    const pageNum = parseInt(page) || 1;
     const userId = req.user?.id;
+    const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/formations/${formationId}/astuces`;
+
     return this.mediaService.findByFormationAndCategorie(
       formationId,
       "astuce",
+      pageNum,
+      10,
+      baseUrl,
       userId
     );
   }
