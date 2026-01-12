@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const media_entity_1 = require("./media.entity");
 const quiz_entity_1 = require("./quiz.entity");
 const progression_entity_1 = require("./progression.entity");
+const catalogue_formation_entity_1 = require("./catalogue-formation.entity");
 let Formation = class Formation {
 };
 exports.Formation = Formation;
@@ -73,6 +74,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => progression_entity_1.Progression, (progression) => progression.formation),
     __metadata("design:type", Array)
 ], Formation.prototype, "progressions", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => catalogue_formation_entity_1.CatalogueFormation, (catalogue) => catalogue.formation),
+    __metadata("design:type", Array)
+], Formation.prototype, "catalogue_formations", void 0);
 exports.Formation = Formation = __decorate([
     (0, typeorm_1.Entity)("formations")
 ], Formation);

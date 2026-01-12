@@ -242,9 +242,32 @@ let ParrainageService = class ParrainageService {
         const events = await this.parrainageEventRepository.find({
             order: { date_debut: "ASC" },
         });
+        const formatIso = (date) => {
+            if (!date)
+                return null;
+            const d = new Date(date);
+            if (isNaN(d.getTime()))
+                return null;
+            return d.toISOString().replace(".000Z", ".000000Z");
+        };
         return {
             success: true,
-            data: events,
+            data: events.map((event) => ({
+                id: event.id,
+                titre: event.titre,
+                prix: event.prix
+                    ? parseFloat(event.prix.toString()).toFixed(2)
+                    : "0.00",
+                date_debut: event.date_debut
+                    ? new Date(event.date_debut).toISOString().split("T")[0]
+                    : null,
+                date_fin: event.date_fin
+                    ? new Date(event.date_fin).toISOString().split("T")[0]
+                    : null,
+                created_at: formatIso(event.created_at),
+                updated_at: formatIso(event.updated_at),
+                status: event.status,
+            })),
         };
     }
     async getFilleuls(parrainId) {

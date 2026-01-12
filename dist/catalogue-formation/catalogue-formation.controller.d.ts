@@ -22,13 +22,13 @@ export declare class CatalogueFormationController {
             updated_at: Date;
             cursusPdfUrl: string;
             formation: {
-                id: any;
-                titre: any;
-                description: any;
-                categorie: any;
-                duree: any;
-                image_url: any;
-                statut: any;
+                id: number;
+                titre: string;
+                description: string;
+                categorie: string;
+                duree: string;
+                image_url: string;
+                statut: number;
             };
             stagiaires_count: any;
         }[];

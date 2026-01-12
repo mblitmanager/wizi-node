@@ -8,7 +8,7 @@ export declare class AgendaService {
     private notificationRepository;
     constructor(agendaRepository: Repository<Agenda>, stagiaireRepository: Repository<Stagiaire>, notificationRepository: Repository<Notification>);
     getStagiaireAgenda(userId: number): Promise<{
-        formations: any[];
+        formations: import("../entities/formation.entity").Formation[];
         events: Agenda[];
         upcoming_events: Agenda[];
     }>;

@@ -9,10 +9,19 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ParrainageService } from "./parrainage.service";
+import { FormationService } from "../formation/formation.service";
 
 @Controller()
 export class ParrainageController {
-  constructor(private parrainageService: ParrainageService) {}
+  constructor(
+    private parrainageService: ParrainageService,
+    private formationService: FormationService
+  ) {}
+
+  @Get("formationParrainage")
+  async getFormationParrainage() {
+    return this.formationService.getFormationParrainage();
+  }
 
   @Get("parrainage-events")
   async getEvents() {

@@ -19,6 +19,7 @@ const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const mail_module_1 = require("../mail/mail.module");
+const formation_module_1 = require("../formation/formation.module");
 let ParrainageModule = class ParrainageModule {
 };
 exports.ParrainageModule = ParrainageModule;
@@ -26,6 +27,7 @@ exports.ParrainageModule = ParrainageModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mail_module_1.MailModule,
+            formation_module_1.FormationModule,
             typeorm_1.TypeOrmModule.forFeature([
                 parrainage_entity_1.Parrainage,
                 parrainage_token_entity_1.ParrainageToken,

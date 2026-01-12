@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CatalogueFormation = void 0;
 const typeorm_1 = require("typeorm");
 const stagiaire_catalogue_formation_entity_1 = require("./stagiaire-catalogue-formation.entity");
+const formation_entity_1 = require("./formation.entity");
 let CatalogueFormation = class CatalogueFormation {
 };
 exports.CatalogueFormation = CatalogueFormation;
@@ -56,9 +57,9 @@ __decorate([
     __metadata("design:type", Number)
 ], CatalogueFormation.prototype, "formation_id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)("Formation"),
+    (0, typeorm_1.ManyToOne)(() => formation_entity_1.Formation, (formation) => formation.catalogue_formations),
     (0, typeorm_1.JoinColumn)({ name: "formation_id" }),
-    __metadata("design:type", Object)
+    __metadata("design:type", formation_entity_1.Formation)
 ], CatalogueFormation.prototype, "formation", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),

@@ -49,7 +49,16 @@ export declare class ParrainageService {
     }>;
     getEvents(): Promise<{
         success: boolean;
-        data: ParrainageEvent[];
+        data: {
+            id: number;
+            titre: string;
+            prix: string;
+            date_debut: string;
+            date_fin: string;
+            created_at: string;
+            updated_at: string;
+            status: string;
+        }[];
     }>;
     getFilleuls(parrainId: number): Promise<{
         success: boolean;

@@ -1,6 +1,7 @@
 import { Media } from "./media.entity";
 import { Quiz } from "./quiz.entity";
 import { Progression } from "./progression.entity";
+import { CatalogueFormation } from "./catalogue-formation.entity";
 export declare class Formation {
     id: number;
     titre: string;
@@ -16,4 +17,5 @@ export declare class Formation {
     medias: Media[];
     quizzes: Quiz[];
     progressions: Progression[];
+    catalogue_formations: CatalogueFormation[];
 }

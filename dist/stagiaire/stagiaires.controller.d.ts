@@ -12,7 +12,7 @@ export declare class StagiairesController {
         totalPoints: number;
         formations: {
             id: number;
-            titre: any;
+            titre: string;
         }[];
         formateurs: {
             id: any;

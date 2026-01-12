@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Media } from "./media.entity";
 import { Quiz } from "./quiz.entity";
 import { Progression } from "./progression.entity";
+import { CatalogueFormation } from "./catalogue-formation.entity";
 
 @Entity("formations")
 export class Formation {
@@ -46,4 +47,7 @@ export class Formation {
 
   @OneToMany(() => Progression, (progression) => progression.formation)
   progressions: Progression[];
+
+  @OneToMany(() => CatalogueFormation, (catalogue) => catalogue.formation)
+  catalogue_formations: CatalogueFormation[];
 }

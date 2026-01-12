@@ -9,6 +9,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { StagiaireCatalogueFormation } from "./stagiaire-catalogue-formation.entity";
+import { Formation } from "./formation.entity";
 
 @Entity("catalogue_formations")
 export class CatalogueFormation {
@@ -42,9 +43,9 @@ export class CatalogueFormation {
   @Column({ nullable: true })
   formation_id: number;
 
-  @ManyToOne("Formation")
+  @ManyToOne(() => Formation, (formation) => formation.catalogue_formations)
   @JoinColumn({ name: "formation_id" })
-  formation: any;
+  formation: Formation;
 
   @Column({ nullable: true })
   cursus_pdf: string;

@@ -160,7 +160,7 @@ export declare class StagiaireService {
         totalPoints: number;
         formations: {
             id: number;
-            titre: any;
+            titre: string;
         }[];
         formateurs: {
             id: any;

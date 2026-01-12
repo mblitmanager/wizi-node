@@ -4,7 +4,7 @@ export declare class AgendaController {
     private agendaService;
     constructor(agendaService: AgendaService);
     getAgenda(req: any): Promise<{
-        formations: any[];
+        formations: import("../entities/formation.entity").Formation[];
         events: import("../entities/agenda.entity").Agenda[];
         upcoming_events: import("../entities/agenda.entity").Agenda[];
     }>;

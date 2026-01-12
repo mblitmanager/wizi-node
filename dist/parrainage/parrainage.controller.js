@@ -16,9 +16,14 @@ exports.ParrainageController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const parrainage_service_1 = require("./parrainage.service");
+const formation_service_1 = require("../formation/formation.service");
 let ParrainageController = class ParrainageController {
-    constructor(parrainageService) {
+    constructor(parrainageService, formationService) {
         this.parrainageService = parrainageService;
+        this.formationService = formationService;
+    }
+    async getFormationParrainage() {
+        return this.formationService.getFormationParrainage();
     }
     async getEvents() {
         return this.parrainageService.getEvents();
@@ -49,6 +54,12 @@ let ParrainageController = class ParrainageController {
     }
 };
 exports.ParrainageController = ParrainageController;
+__decorate([
+    (0, common_1.Get)("formationParrainage"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ParrainageController.prototype, "getFormationParrainage", null);
 __decorate([
     (0, common_1.Get)("parrainage-events"),
     __metadata("design:type", Function),
@@ -119,6 +130,7 @@ __decorate([
 ], ParrainageController.prototype, "getHistory", null);
 exports.ParrainageController = ParrainageController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [parrainage_service_1.ParrainageService])
+    __metadata("design:paramtypes", [parrainage_service_1.ParrainageService,
+        formation_service_1.FormationService])
 ], ParrainageController);
 //# sourceMappingURL=parrainage.controller.js.map

@@ -1,4 +1,5 @@
 import { StagiaireCatalogueFormation } from "./stagiaire-catalogue-formation.entity";
+import { Formation } from "./formation.entity";
 export declare class CatalogueFormation {
     id: number;
     titre: string;
@@ -10,7 +11,7 @@ export declare class CatalogueFormation {
     image_url: string;
     tarif: number;
     formation_id: number;
-    formation: any;
+    formation: Formation;
     cursus_pdf: string;
     objectifs: string;
     programme: string;
