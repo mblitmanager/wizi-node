@@ -25,6 +25,8 @@ export declare class AnnouncementController {
         email: string;
         role: string;
     }[]>;
+    show(id: number): Promise<import("../entities/announcement.entity").Announcement>;
+    update(req: any, id: number, body: any): Promise<import("../entities/announcement.entity").Announcement>;
     destroy(req: any, id: number): Promise<{
         message: string;
     }>;

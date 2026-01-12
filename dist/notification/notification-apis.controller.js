@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParrainageEventsApiController = exports.SendDailyNotificationController = exports.NotifyApiController = exports.EmailApiController = exports.ContactApiController = exports.OnlineUsersApiController = exports.AutoRemindersApiController = exports.AnnouncementsApiController = exports.ParrainageApiController = exports.NotificationHistoryApiController = exports.NotificationsApiController = void 0;
+exports.ParrainageEventsApiController = exports.SendDailyNotificationController = exports.NotifyApiController = exports.EmailApiController = exports.ContactApiController = exports.OnlineUsersApiController = exports.ParrainageApiController = exports.NotificationHistoryApiController = exports.NotificationsApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const mail_service_1 = require("../mail/mail.service");
@@ -174,123 +174,6 @@ exports.ParrainageApiController = ParrainageApiController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], ParrainageApiController);
-let AnnouncementsApiController = class AnnouncementsApiController {
-    constructor(apiResponse) {
-        this.apiResponse = apiResponse;
-    }
-    async index() {
-        return this.apiResponse.success([]);
-    }
-    async store(data) {
-        return this.apiResponse.success(data);
-    }
-    async getRecipients() {
-        return this.apiResponse.success([]);
-    }
-    async show(id) {
-        return this.apiResponse.success({});
-    }
-    async update(id, data) {
-        return this.apiResponse.success(data);
-    }
-    async destroy(id) {
-        return this.apiResponse.success({ message: "Announcement deleted" });
-    }
-};
-exports.AnnouncementsApiController = AnnouncementsApiController;
-__decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AnnouncementsApiController.prototype, "index", null);
-__decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AnnouncementsApiController.prototype, "store", null);
-__decorate([
-    (0, common_1.Get)("recipients"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AnnouncementsApiController.prototype, "getRecipients", null);
-__decorate([
-    (0, common_1.Get)(":announcement"),
-    __param(0, (0, common_1.Param)("announcement")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], AnnouncementsApiController.prototype, "show", null);
-__decorate([
-    (0, common_1.Put)(":id"),
-    __param(0, (0, common_1.Param)("id")),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
-    __metadata("design:returntype", Promise)
-], AnnouncementsApiController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(":id"),
-    __param(0, (0, common_1.Param)("id")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Promise)
-], AnnouncementsApiController.prototype, "destroy", null);
-exports.AnnouncementsApiController = AnnouncementsApiController = __decorate([
-    (0, common_1.Controller)("announcements"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
-], AnnouncementsApiController);
-let AutoRemindersApiController = class AutoRemindersApiController {
-    constructor(apiResponse) {
-        this.apiResponse = apiResponse;
-    }
-    async history() {
-        return this.apiResponse.success([]);
-    }
-    async stats() {
-        return this.apiResponse.success({});
-    }
-    async targeted() {
-        return this.apiResponse.success([]);
-    }
-    async run() {
-        return this.apiResponse.success({ message: "Reminders sent" });
-    }
-};
-exports.AutoRemindersApiController = AutoRemindersApiController;
-__decorate([
-    (0, common_1.Get)("history"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AutoRemindersApiController.prototype, "history", null);
-__decorate([
-    (0, common_1.Get)("stats"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AutoRemindersApiController.prototype, "stats", null);
-__decorate([
-    (0, common_1.Get)("targeted"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AutoRemindersApiController.prototype, "targeted", null);
-__decorate([
-    (0, common_1.Post)("run"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], AutoRemindersApiController.prototype, "run", null);
-exports.AutoRemindersApiController = AutoRemindersApiController = __decorate([
-    (0, common_1.Controller)("auto-reminders"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
-], AutoRemindersApiController);
 let OnlineUsersApiController = class OnlineUsersApiController {
     constructor(apiResponse) {
         this.apiResponse = apiResponse;

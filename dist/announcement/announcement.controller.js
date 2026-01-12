@@ -44,6 +44,22 @@ let AnnouncementController = class AnnouncementController {
             throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async show(id) {
+        try {
+            return await this.announcementService.getAnnouncement(id);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async update(req, id, body) {
+        try {
+            return await this.announcementService.updateAnnouncement(id, body, req.user);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || "Internal error", error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async destroy(req, id) {
         try {
             return await this.announcementService.deleteAnnouncement(id, req.user);
@@ -81,6 +97,24 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AnnouncementController.prototype, "getRecipients", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Get)(":id"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AnnouncementController.prototype, "show", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.Patch)(":id"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)("id")),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number, Object]),
+    __metadata("design:returntype", Promise)
+], AnnouncementController.prototype, "update", null);
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     (0, common_1.Delete)(":id"),

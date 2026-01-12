@@ -106,68 +106,6 @@ export class ParrainageApiController {
   }
 }
 
-@Controller("announcements")
-@UseGuards(AuthGuard("jwt"))
-export class AnnouncementsApiController {
-  constructor(private apiResponse: ApiResponseService) {}
-
-  @Get()
-  async index() {
-    return this.apiResponse.success([]);
-  }
-
-  @Post()
-  async store(@Body() data: any) {
-    return this.apiResponse.success(data);
-  }
-
-  @Get("recipients")
-  async getRecipients() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get(":announcement")
-  async show(@Param("announcement") id: number) {
-    return this.apiResponse.success({});
-  }
-
-  @Put(":id")
-  async update(@Param("id") id: number, @Body() data: any) {
-    return this.apiResponse.success(data);
-  }
-
-  @Delete(":id")
-  async destroy(@Param("id") id: number) {
-    return this.apiResponse.success({ message: "Announcement deleted" });
-  }
-}
-
-@Controller("auto-reminders")
-@UseGuards(AuthGuard("jwt"))
-export class AutoRemindersApiController {
-  constructor(private apiResponse: ApiResponseService) {}
-
-  @Get("history")
-  async history() {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("stats")
-  async stats() {
-    return this.apiResponse.success({});
-  }
-
-  @Get("targeted")
-  async targeted() {
-    return this.apiResponse.success([]);
-  }
-
-  @Post("run")
-  async run() {
-    return this.apiResponse.success({ message: "Reminders sent" });
-  }
-}
-
 @Controller("online-users")
 @UseGuards(AuthGuard("jwt"))
 export class OnlineUsersApiController {

@@ -17,4 +17,19 @@ export declare class AgendaService {
     markNotificationAsRead(notificationId: number): Promise<boolean>;
     markAllNotificationsAsRead(userId: number): Promise<boolean>;
     private formatDateForICS;
+    formatAgendaJsonLd(agenda: Agenda): {
+        "@context": string;
+        "@id": string;
+        "@type": string;
+        id: number;
+        titre: string;
+        description: string;
+        date_debut: string;
+        date_fin: string;
+        evenement: string;
+        commentaire: string;
+        stagiaire: string;
+        created_at: string;
+        updated_at: string;
+    };
 }

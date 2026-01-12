@@ -101,6 +101,25 @@ let AgendaService = class AgendaService {
             return "";
         return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
     }
+    formatAgendaJsonLd(agenda) {
+        return {
+            "@context": "/api/contexts/Agenda",
+            "@id": `/api/agendas/${agenda.id}`,
+            "@type": "Agenda",
+            id: agenda.id,
+            titre: agenda.titre,
+            description: agenda.description,
+            date_debut: agenda.date_debut?.toISOString(),
+            date_fin: agenda.date_fin?.toISOString(),
+            evenement: agenda.evenement,
+            commentaire: agenda.commentaire,
+            stagiaire: agenda.stagiaire_id
+                ? `/api/stagiaires/${agenda.stagiaire_id}`
+                : null,
+            created_at: agenda.created_at?.toISOString(),
+            updated_at: agenda.updated_at?.toISOString(),
+        };
+    }
 };
 exports.AgendaService = AgendaService;
 exports.AgendaService = AgendaService = __decorate([

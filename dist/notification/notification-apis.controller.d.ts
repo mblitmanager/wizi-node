@@ -28,24 +28,6 @@ export declare class ParrainageApiController {
     registerFilleul(data: any): Promise<any>;
     stats(): Promise<any>;
 }
-export declare class AnnouncementsApiController {
-    private apiResponse;
-    constructor(apiResponse: ApiResponseService);
-    index(): Promise<any>;
-    store(data: any): Promise<any>;
-    getRecipients(): Promise<any>;
-    show(id: number): Promise<any>;
-    update(id: number, data: any): Promise<any>;
-    destroy(id: number): Promise<any>;
-}
-export declare class AutoRemindersApiController {
-    private apiResponse;
-    constructor(apiResponse: ApiResponseService);
-    history(): Promise<any>;
-    stats(): Promise<any>;
-    targeted(): Promise<any>;
-    run(): Promise<any>;
-}
 export declare class OnlineUsersApiController {
     private apiResponse;
     constructor(apiResponse: ApiResponseService);

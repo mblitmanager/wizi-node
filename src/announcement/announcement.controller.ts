@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Delete,
   Body,
   Param,
@@ -61,6 +62,36 @@ export class AnnouncementController {
       throw new HttpException(
         error.message || "Internal error",
         HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Get(":id")
+  async show(@Param("id") id: number) {
+    try {
+      return await this.announcementService.getAnnouncement(id);
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @UseGuards(AuthGuard("jwt"))
+  @Patch(":id")
+  async update(@Request() req, @Param("id") id: number, @Body() body: any) {
+    try {
+      return await this.announcementService.updateAnnouncement(
+        id,
+        body,
+        req.user
+      );
+    } catch (error) {
+      throw new HttpException(
+        error.message || "Internal error",
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }

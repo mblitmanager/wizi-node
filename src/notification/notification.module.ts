@@ -13,8 +13,6 @@ import {
   NotificationsApiController,
   NotificationHistoryApiController,
   ParrainageApiController,
-  AnnouncementsApiController,
-  AutoRemindersApiController,
   OnlineUsersApiController,
   ContactApiController,
   EmailApiController,
@@ -22,6 +20,8 @@ import {
   SendDailyNotificationController,
   ParrainageEventsApiController,
 } from "./notification-apis.controller";
+import { AutoRemindersApiController } from "./auto-reminders-api.controller";
+import { BroadcastingApiController } from "./broadcasting-api.controller";
 
 @Module({
   imports: [
@@ -35,7 +35,6 @@ import {
     NotificationsApiController,
     NotificationHistoryApiController,
     ParrainageApiController,
-    AnnouncementsApiController,
     AutoRemindersApiController,
     OnlineUsersApiController,
     ContactApiController,
@@ -43,6 +42,7 @@ import {
     NotifyApiController,
     SendDailyNotificationController,
     ParrainageEventsApiController,
+    BroadcastingApiController,
   ],
   exports: [NotificationService, FcmService],
 })

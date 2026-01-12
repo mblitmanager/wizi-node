@@ -18,6 +18,8 @@ const fcm_service_1 = require("./fcm.service");
 const config_1 = require("@nestjs/config");
 const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
 const notification_apis_controller_1 = require("./notification-apis.controller");
+const auto_reminders_api_controller_1 = require("./auto-reminders-api.controller");
+const broadcasting_api_controller_1 = require("./broadcasting-api.controller");
 let NotificationModule = class NotificationModule {
 };
 exports.NotificationModule = NotificationModule;
@@ -34,14 +36,14 @@ exports.NotificationModule = NotificationModule = __decorate([
             notification_apis_controller_1.NotificationsApiController,
             notification_apis_controller_1.NotificationHistoryApiController,
             notification_apis_controller_1.ParrainageApiController,
-            notification_apis_controller_1.AnnouncementsApiController,
-            notification_apis_controller_1.AutoRemindersApiController,
+            auto_reminders_api_controller_1.AutoRemindersApiController,
             notification_apis_controller_1.OnlineUsersApiController,
             notification_apis_controller_1.ContactApiController,
             notification_apis_controller_1.EmailApiController,
             notification_apis_controller_1.NotifyApiController,
             notification_apis_controller_1.SendDailyNotificationController,
             notification_apis_controller_1.ParrainageEventsApiController,
+            broadcasting_api_controller_1.BroadcastingApiController,
         ],
         exports: [notification_service_1.NotificationService, fcm_service_1.FcmService],
     })

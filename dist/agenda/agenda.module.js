@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const agenda_service_1 = require("./agenda.service");
 const agenda_controller_1 = require("./agenda.controller");
+const agendas_api_controller_1 = require("./agendas-api.controller");
 const agenda_entity_1 = require("../entities/agenda.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const notification_entity_1 = require("../entities/notification.entity");
@@ -20,7 +21,7 @@ exports.AgendaModule = AgendaModule;
 exports.AgendaModule = AgendaModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([agenda_entity_1.Agenda, stagiaire_entity_1.Stagiaire, notification_entity_1.Notification])],
-        controllers: [agenda_controller_1.AgendaController],
+        controllers: [agenda_controller_1.AgendaController, agendas_api_controller_1.AgendasApiController],
         providers: [agenda_service_1.AgendaService],
         exports: [agenda_service_1.AgendaService],
     })

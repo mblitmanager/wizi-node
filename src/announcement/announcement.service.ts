@@ -144,6 +144,60 @@ export class AnnouncementService {
     return { message: "Annonce supprimée avec succès." };
   }
 
+  async getAnnouncement(id: number) {
+    const announcement = await this.announcementRepository.findOne({
+      where: { id },
+      relations: ["creator"],
+    });
+
+    if (!announcement) {
+      throw new NotFoundException("Annonce introuvable.");
+    }
+
+    return announcement;
+  }
+
+  async updateAnnouncement(id: number, data: any, user: any) {
+    const announcement = await this.announcementRepository.findOne({
+      where: { id },
+    });
+
+    if (!announcement) {
+      throw new NotFoundException("Annonce introuvable.");
+    }
+
+    if (announcement.created_by !== user.id && user.role !== "admin") {
+      throw new ForbiddenException("Non autorisé.");
+    }
+
+    const { title, message, target_audience, recipient_ids, scheduled_at } =
+      data;
+
+    let filteredIds = announcement.recipient_ids;
+    if (target_audience === "specific_users" && recipient_ids) {
+      const allowedUsers = await this.getScopedStagiaireUsers(user);
+      const allowedIds = allowedUsers.map((u) => u.id);
+
+      if (user.role !== "admin") {
+        filteredIds = recipient_ids.filter((id) => allowedIds.includes(id));
+      } else {
+        filteredIds = recipient_ids;
+      }
+    }
+
+    Object.assign(announcement, {
+      title: title ?? announcement.title,
+      message: message ?? announcement.message,
+      target_audience: target_audience ?? announcement.target_audience,
+      recipient_ids: filteredIds,
+      scheduled_at: scheduled_at
+        ? new Date(scheduled_at)
+        : announcement.scheduled_at,
+    });
+
+    return await this.announcementRepository.save(announcement);
+  }
+
   async getPotentialRecipients(user: any) {
     if (user.role === "admin") {
       return this.userRepository.find({

@@ -33,6 +33,8 @@ export declare class AnnouncementService {
     deleteAnnouncement(id: number, user: any): Promise<{
         message: string;
     }>;
+    getAnnouncement(id: number): Promise<Announcement>;
+    updateAnnouncement(id: number, data: any, user: any): Promise<Announcement>;
     getPotentialRecipients(user: any): Promise<{
         id: number;
         name: string;
