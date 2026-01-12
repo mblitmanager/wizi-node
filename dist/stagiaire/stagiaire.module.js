@@ -12,7 +12,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const common_module_1 = require("../common/common.module");
 const api_response_service_1 = require("../common/services/api-response.service");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
-const user_achievement_entity_1 = require("../entities/user-achievement.entity");
+const stagiaire_achievement_entity_1 = require("../entities/stagiaire-achievement.entity");
 const stagiaire_service_1 = require("./stagiaire.service");
 const stagiaire_controller_1 = require("./stagiaire.controller");
 const stagiaires_controller_1 = require("./stagiaires.controller");
@@ -34,7 +34,7 @@ exports.StagiaireModule = StagiaireModule = __decorate([
             common_module_1.CommonModule,
             typeorm_1.TypeOrmModule.forFeature([
                 stagiaire_entity_1.Stagiaire,
-                user_achievement_entity_1.UserAchievement,
+                stagiaire_achievement_entity_1.StagiaireAchievement,
                 classement_entity_1.Classement,
                 catalogue_formation_entity_1.CatalogueFormation,
                 formation_entity_1.Formation,

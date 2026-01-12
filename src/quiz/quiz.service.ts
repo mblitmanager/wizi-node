@@ -7,6 +7,8 @@ import { Formation } from "../entities/formation.entity";
 import { Classement } from "../entities/classement.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { QuizParticipationAnswer } from "../entities/quiz-participation-answer.entity";
+import { CorrespondancePair } from "../entities/correspondance-pair.entity";
+import { Progression } from "../entities/progression.entity";
 
 @Injectable()
 export class QuizService {
@@ -22,7 +24,11 @@ export class QuizService {
     @InjectRepository(QuizParticipation)
     private participationRepository: Repository<QuizParticipation>,
     @InjectRepository(QuizParticipationAnswer)
-    private participationAnswerRepository: Repository<QuizParticipationAnswer>
+    private participationAnswerRepository: Repository<QuizParticipationAnswer>,
+    @InjectRepository(CorrespondancePair)
+    private correspondancePairRepository: Repository<CorrespondancePair>,
+    @InjectRepository(Progression)
+    private progressionRepository: Repository<Progression>
   ) {}
 
   async getAllQuizzes() {
@@ -402,7 +408,10 @@ export class QuizService {
     };
   }
 
-  private isAnswerCorrect(question: Question, selectedAnswers: any): any {
+  private async isAnswerCorrect(
+    question: Question,
+    selectedAnswers: any
+  ): Promise<any> {
     const normalize = (value: any) => {
       if (Array.isArray(value)) {
         return value.filter((v) => v !== null && v !== "" && v !== undefined);
@@ -435,14 +444,25 @@ export class QuizService {
           }
         }
 
-        // Logic based on Reponse.match_pair (assuming it holds the 'right' side)
-        // Check if reponse.match_pair matches the user's selected right text for the left text (reponse.text)
-        const correctPairs: Record<string, string> = {};
-        question.reponses.forEach((r) => {
-          if (r.match_pair) {
-            correctPairs[r.text] = r.match_pair;
-          }
+        // Fetch correct pairs from DB (Parity)
+        const dbCorrectPairs = await this.correspondancePairRepository.find({
+          where: { question_id: question.id },
         });
+
+        const correctPairs: Record<string, string> = {};
+
+        if (dbCorrectPairs.length > 0) {
+          dbCorrectPairs.forEach((pair) => {
+            correctPairs[pair.left_text] = pair.right_text;
+          });
+        } else {
+          // Fallback
+          question.reponses.forEach((r) => {
+            if (r.match_pair) {
+              correctPairs[r.text] = r.match_pair;
+            }
+          });
+        }
 
         // Determine correctness
         let isMatchCorrect = true;
@@ -596,31 +616,8 @@ export class QuizService {
     // 1. Create Participation
     const participation = this.participationRepository.create({
       user_id: userId,
-      // Wait, entity says user_id. Is stagiaireId the same as user_id?
-      // Node's existing submitQuizResult used "stagiaireId".
-      // Laravel uses Auth::user()->getKey().
-      // If "stagiaireId" passed here is actually the STAGIAIRE ID (table stagiaires),
-      // and quiz_participation links to USER (table users), I might need the user_id.
-      // Let's assume for now I should use user_id if valid, but I only have stagiaireId passed.
-      // I'll stick to stagiaireId for 'user_id' column if that's the pattern,
-      // BUT verify schema later. Entity says "user: User", so it likely expects a User ID.
-      // I will assume the caller passes the correct User ID or I need to fetch it?
-      // Caller `QuizApiController.submitResult` extracts `req.user.stagiaire?.id`.
-      // So it passes STAGIAIRE ID.
-      // `QuizParticipation` entity in Node has `user_id` and relationship to `User`.
-      // `Stagiaire` usually has `user_id`.
-      // I should probably find the Stagiaire to get User ID?
-      // OR does QuizParticipation link to Stagiaire?
-      // Entity says `@ManyToOne(() => User)`.
-      // I'll try to find the stagiaire to get the user_id if possible, or assume
-      // for now I'll use the passed ID (risky).
-      // ACTUALLY, checking the existing `submitQuizResult` signature: user passed `stagiaireId`.
-      // I'll assume I need to fetch the UserID from Stagiaire or just save it.
-      // For SAFETY: I'll save `user_id: stagiaireId` and fix if FK fails (fast/dirty) OR
-      // better: fetch Stagiaire to be sure. But I don't have StagiaireRepo injected.
-      // Let's use `quiz_id` and `user_id` as passed.
       quiz_id: quizId,
-      status: "completed", // or in_progress first? Laravel does 'in_progress' then update.
+      status: "completed",
       started_at: new Date(),
       completed_at: new Date(),
       score: 0,
@@ -641,7 +638,7 @@ export class QuizService {
       // Even if check fails or empty, we process it? Laravel says "if isset".
       if (userAnswer === undefined || userAnswer === null) continue;
 
-      const result = this.isAnswerCorrect(question, userAnswer);
+      const result = await this.isAnswerCorrect(question, userAnswer);
 
       if (result.isCorrect) correctCount++;
 
@@ -677,14 +674,7 @@ export class QuizService {
     }
 
     const score = correctCount * 2;
-    const totalQuestions = questionsDetails.length; // Or quiz.questions.length? Laravel uses questionsDetails.count() which are *answered* ones? No, typically total questions.
-    // Laravel: $totalQuestions = $questionsDetails->count(); // ONLY the processed ones matching request?
-    // "map(function... return isset...)" -> It filters only answered questions?
-    // Yes. `questionsDetails` only has answered.
-    // Ideally we want total questions of the quiz.
-    // I will use `quiz.questions.length` for total?
-    // Laravel uses `$questionsDetails->count()`. This might imply partial submission handling.
-    // I will stick to Laravel behavior: `questionsDetails.length`.
+    const totalQuestions = questionsDetails.length;
 
     // Update Participation
     savedParticipation.score = score;
@@ -710,8 +700,27 @@ export class QuizService {
         created_at: new Date(),
         updated_at: new Date(),
       });
+      classement.updated_at = new Date();
       await this.classementRepository.save(classement);
     }
+
+    // 4. Create Progression (History)
+    const progression = this.progressionRepository.create({
+      stagiaire_id: stagiaireId,
+      quiz_id: quizId,
+      formation_id: quiz.formation?.id,
+      score: score,
+      correct_answers: correctCount,
+      total_questions: totalQuestions,
+      time_spent: timeSpent,
+      completion_time: new Date(),
+      created_at: new Date(),
+      updated_at: new Date(),
+      termine: true,
+      pourcentage:
+        totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0,
+    });
+    await this.progressionRepository.save(progression);
 
     return {
       success: true,

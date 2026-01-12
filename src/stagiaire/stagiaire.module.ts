@@ -3,7 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { CommonModule } from "../common/common.module";
 import { ApiResponseService } from "../common/services/api-response.service";
 import { Stagiaire } from "../entities/stagiaire.entity";
-import { UserAchievement } from "../entities/user-achievement.entity";
+import { StagiaireAchievement } from "../entities/stagiaire-achievement.entity";
 import { StagiaireService } from "./stagiaire.service";
 import { StagiaireController } from "./stagiaire.controller";
 import { StagiairesController } from "./stagiaires.controller";
@@ -25,7 +25,7 @@ import { RankingModule } from "../ranking/ranking.module";
     CommonModule,
     TypeOrmModule.forFeature([
       Stagiaire,
-      UserAchievement,
+      StagiaireAchievement,
       Classement,
       CatalogueFormation,
       Formation,

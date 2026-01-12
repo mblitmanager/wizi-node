@@ -2,12 +2,20 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Media } from "../entities/media.entity";
+import { MediaStagiaire } from "../entities/media-stagiaire.entity";
+import { Stagiaire } from "../entities/stagiaire.entity";
+import { AchievementService } from "../achievement/achievement.service";
 
 @Injectable()
 export class MediaService {
   constructor(
     @InjectRepository(Media)
-    private mediaRepository: Repository<Media>
+    private mediaRepository: Repository<Media>,
+    @InjectRepository(MediaStagiaire)
+    private mediaStagiaireRepository: Repository<MediaStagiaire>,
+    @InjectRepository(Stagiaire)
+    private stagiaireRepository: Repository<Stagiaire>,
+    private achievementService: AchievementService
   ) {}
 
   async findAll() {
@@ -35,9 +43,9 @@ export class MediaService {
 
     if (userId) {
       query.leftJoinAndSelect(
-        "m.stagiaires",
-        "stagiaires",
-        "stagiaires.user_id = :userId",
+        "m.mediaStagiaires",
+        "ms",
+        "ms.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
         { userId }
       );
     }
@@ -48,8 +56,6 @@ export class MediaService {
       .getManyAndCount();
 
     const lastPage = Math.ceil(total / perPage);
-
-    // Format data to match Laravel structure exactly
     const formattedData = data.map((media) => this.formatMedia(media));
 
     return {
@@ -75,15 +81,11 @@ export class MediaService {
     baseUrl: string
   ) {
     const links: any[] = [];
-
-    // Previous link
     links.push({
       url: currentPage > 1 ? `${baseUrl}?page=${currentPage - 1}` : null,
       label: "pagination.previous",
       active: false,
     });
-
-    // Page numbers
     for (let i = 1; i <= lastPage; i++) {
       links.push({
         url: `${baseUrl}?page=${i}`,
@@ -91,14 +93,11 @@ export class MediaService {
         active: i === currentPage,
       });
     }
-
-    // Next link
     links.push({
       url: currentPage < lastPage ? `${baseUrl}?page=${currentPage + 1}` : null,
       label: "pagination.next",
       active: false,
     });
-
     return links;
   }
 
@@ -118,9 +117,9 @@ export class MediaService {
 
     if (userId) {
       query.leftJoinAndSelect(
-        "m.stagiaires",
-        "stagiaires",
-        "stagiaires.user_id = :userId",
+        "m.mediaStagiaires",
+        "ms",
+        "ms.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
         { userId }
       );
     }
@@ -132,15 +131,6 @@ export class MediaService {
 
     const lastPage = Math.ceil(total / perPage);
     const formattedData = data.map((media) => this.formatMedia(media));
-
-    // If no baseUrl is provided, return just the data array (backward compatibility if needed, but we want pagination)
-    if (!baseUrl) {
-      // Wait, if Laravel returns paginated object, we must return object.
-      // But wait, look at the User's input in Step 2534. They showed an ARRAY. And said it is erroneous.
-      // The target (Laravel) return for `getTutorielsByFormation` is `response()->json($tutoriels)`.
-      // $tutoriels comes from `getTutorielsByFormation` which takes $perPage. So it IS paginated.
-      // I'll return the full pagination object.
-    }
 
     return {
       current_page: page,
@@ -159,8 +149,44 @@ export class MediaService {
     };
   }
 
+  async markAsWatched(mediaId: number, userId: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { user_id: userId },
+    });
+    if (!stagiaire) {
+      throw new Error("Stagiaire not found");
+    }
+
+    let mediaStagiaire = await this.mediaStagiaireRepository.findOne({
+      where: { media_id: mediaId, stagiaire_id: stagiaire.id },
+    });
+
+    if (mediaStagiaire) {
+      mediaStagiaire.is_watched = true;
+      mediaStagiaire.watched_at = new Date();
+      await this.mediaStagiaireRepository.save(mediaStagiaire);
+    } else {
+      mediaStagiaire = this.mediaStagiaireRepository.create({
+        media_id: mediaId,
+        stagiaire_id: stagiaire.id,
+        is_watched: true,
+        watched_at: new Date(),
+      });
+      await this.mediaStagiaireRepository.save(mediaStagiaire);
+    }
+
+    // Check for achievements
+    const newAchievements = await this.achievementService.checkAchievements(
+      stagiaire.id
+    );
+
+    return {
+      message: "Media marked as watched",
+      new_achievements: newAchievements,
+    };
+  }
+
   private formatMedia(media: Media) {
-    // Helper to format media object exactly like Laravel
     return {
       id: media.id,
       titre: media.titre,
@@ -180,19 +206,19 @@ export class MediaService {
       formation_id: media.formation_id,
       created_at: media.created_at?.toISOString(),
       updated_at: media.updated_at?.toISOString(),
-      video_url: media.video_url, // Computed by @AfterLoad
-      subtitle_url: media.subtitle_url, // Computed by @AfterLoad
-      stagiaires: (media.stagiaires || []).map((stagiaire) => ({
-        id: stagiaire.id,
-        is_watched: 1, // If present in relation, it is watched
-        watched_at: null, // We don't have this in junction table entity yet, defaulting null
+      video_url: media.video_url,
+      subtitle_url: media.subtitle_url,
+      stagiaires: (media.mediaStagiaires || []).map((ms) => ({
+        id: ms.stagiaire_id,
+        is_watched: ms.is_watched ? 1 : 0,
+        watched_at: ms.watched_at,
         pivot: {
           media_id: media.id,
-          stagiaire_id: stagiaire.id,
-          is_watched: 1,
-          watched_at: null,
-          created_at: null,
-          updated_at: null,
+          stagiaire_id: ms.stagiaire_id,
+          is_watched: ms.is_watched ? 1 : 0,
+          watched_at: ms.watched_at,
+          created_at: ms.created_at,
+          updated_at: ms.updated_at,
         },
       })),
     };

@@ -11,15 +11,21 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const media_service_1 = require("./media.service");
 const media_controller_1 = require("./media.controller");
+const stagiaire_media_controller_1 = require("./stagiaire-media.controller");
 const media_entity_1 = require("../entities/media.entity");
 const media_stagiaire_entity_1 = require("../entities/media-stagiaire.entity");
+const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const achievement_module_1 = require("../achievement/achievement.module");
 let MediaModule = class MediaModule {
 };
 exports.MediaModule = MediaModule;
 exports.MediaModule = MediaModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([media_entity_1.Media, media_stagiaire_entity_1.MediaStagiaire])],
-        controllers: [media_controller_1.MediaController],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([media_entity_1.Media, media_stagiaire_entity_1.MediaStagiaire, stagiaire_entity_1.Stagiaire]),
+            achievement_module_1.AchievementModule,
+        ],
+        controllers: [media_controller_1.MediaController, stagiaire_media_controller_1.StagiaireMediaController],
         providers: [media_service_1.MediaService],
         exports: [media_service_1.MediaService],
     })

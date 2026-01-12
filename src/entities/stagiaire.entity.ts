@@ -127,6 +127,12 @@ export class Stagiaire {
   achievements: Achievement[];
 
   @Column({ type: "timestamp", nullable: true })
+  last_login_at: Date;
+
+  @Column({ default: 0 })
+  login_streak: number;
+
+  @Column({ type: "timestamp", nullable: true })
   created_at: Date;
 
   @Column({ type: "timestamp", nullable: true })

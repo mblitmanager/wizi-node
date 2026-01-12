@@ -14,6 +14,8 @@ import { QuizService } from "./quiz.service";
 import { QuizApiController } from "./quiz-api.controller";
 import { QuizzesApiController } from "./quizzes-api.controller";
 import { RankingModule } from "../ranking/ranking.module";
+import { AchievementModule } from "../achievement/achievement.module";
+import { Progression } from "../entities/progression.entity";
 
 @Module({
   imports: [
@@ -28,8 +30,10 @@ import { RankingModule } from "../ranking/ranking.module";
       QuizParticipation,
       QuizParticipationAnswer,
       CorrespondancePair,
+      Progression,
     ]),
     RankingModule,
+    AchievementModule,
   ],
   controllers: [QuizApiController, QuizzesApiController],
   providers: [QuizService, ApiResponseService],

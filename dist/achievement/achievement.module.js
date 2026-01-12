@@ -13,12 +13,29 @@ const achievement_service_1 = require("./achievement.service");
 const achievement_controller_1 = require("./achievement.controller");
 const achievement_entity_1 = require("../entities/achievement.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const stagiaire_achievement_entity_1 = require("../entities/stagiaire-achievement.entity");
+const progression_entity_1 = require("../entities/progression.entity");
+const quiz_entity_1 = require("../entities/quiz.entity");
+const media_stagiaire_entity_1 = require("../entities/media-stagiaire.entity");
+const media_entity_1 = require("../entities/media.entity");
+const parrainage_entity_1 = require("../entities/parrainage.entity");
 let AchievementModule = class AchievementModule {
 };
 exports.AchievementModule = AchievementModule;
 exports.AchievementModule = AchievementModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([achievement_entity_1.Achievement, stagiaire_entity_1.Stagiaire])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                achievement_entity_1.Achievement,
+                stagiaire_entity_1.Stagiaire,
+                stagiaire_achievement_entity_1.StagiaireAchievement,
+                progression_entity_1.Progression,
+                quiz_entity_1.Quiz,
+                media_stagiaire_entity_1.MediaStagiaire,
+                media_entity_1.Media,
+                parrainage_entity_1.Parrainage,
+            ]),
+        ],
         providers: [achievement_service_1.AchievementService],
         controllers: [achievement_controller_1.AchievementController],
         exports: [achievement_service_1.AchievementService],

@@ -1,11 +1,13 @@
 import { ApiResponseService } from "../common/services/api-response.service";
 import { RankingService } from "../ranking/ranking.service";
 import { QuizService } from "./quiz.service";
+import { AchievementService } from "../achievement/achievement.service";
 export declare class QuizApiController {
     private rankingService;
     private quizService;
     private apiResponse;
-    constructor(rankingService: RankingService, quizService: QuizService, apiResponse: ApiResponseService);
+    private achievementService;
+    constructor(rankingService: RankingService, quizService: QuizService, apiResponse: ApiResponseService, achievementService: AchievementService);
     getAll(): Promise<any>;
     byFormations(): Promise<any>;
     categories(): Promise<any>;

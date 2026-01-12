@@ -1,5 +1,6 @@
 import { Formation } from "./formation.entity";
 import { Stagiaire } from "./stagiaire.entity";
+import { MediaStagiaire } from "./media-stagiaire.entity";
 export declare class Media {
     id: number;
     url: string;
@@ -19,6 +20,7 @@ export declare class Media {
     mime: string;
     uploaded_by: number;
     stagiaires: Stagiaire[];
+    mediaStagiaires: MediaStagiaire[];
     created_at: Date;
     updated_at: Date;
     video_url?: string;

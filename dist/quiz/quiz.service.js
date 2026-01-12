@@ -22,14 +22,18 @@ const formation_entity_1 = require("../entities/formation.entity");
 const classement_entity_1 = require("../entities/classement.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
 const quiz_participation_answer_entity_1 = require("../entities/quiz-participation-answer.entity");
+const correspondance_pair_entity_1 = require("../entities/correspondance-pair.entity");
+const progression_entity_1 = require("../entities/progression.entity");
 let QuizService = class QuizService {
-    constructor(quizRepository, questionRepository, formationRepository, classementRepository, participationRepository, participationAnswerRepository) {
+    constructor(quizRepository, questionRepository, formationRepository, classementRepository, participationRepository, participationAnswerRepository, correspondancePairRepository, progressionRepository) {
         this.quizRepository = quizRepository;
         this.questionRepository = questionRepository;
         this.formationRepository = formationRepository;
         this.classementRepository = classementRepository;
         this.participationRepository = participationRepository;
         this.participationAnswerRepository = participationAnswerRepository;
+        this.correspondancePairRepository = correspondancePairRepository;
+        this.progressionRepository = progressionRepository;
     }
     async getAllQuizzes() {
         return this.quizRepository.find({ relations: ["formation"] });
@@ -333,7 +337,7 @@ let QuizService = class QuizService {
             },
         };
     }
-    isAnswerCorrect(question, selectedAnswers) {
+    async isAnswerCorrect(question, selectedAnswers) {
         const normalize = (value) => {
             if (Array.isArray(value)) {
                 return value.filter((v) => v !== null && v !== "" && v !== undefined);
@@ -358,12 +362,22 @@ let QuizService = class QuizService {
                         }
                     }
                 }
-                const correctPairs = {};
-                question.reponses.forEach((r) => {
-                    if (r.match_pair) {
-                        correctPairs[r.text] = r.match_pair;
-                    }
+                const dbCorrectPairs = await this.correspondancePairRepository.find({
+                    where: { question_id: question.id },
                 });
+                const correctPairs = {};
+                if (dbCorrectPairs.length > 0) {
+                    dbCorrectPairs.forEach((pair) => {
+                        correctPairs[pair.left_text] = pair.right_text;
+                    });
+                }
+                else {
+                    question.reponses.forEach((r) => {
+                        if (r.match_pair) {
+                            correctPairs[r.text] = r.match_pair;
+                        }
+                    });
+                }
                 let isMatchCorrect = true;
                 const correctKeys = Object.keys(correctPairs);
                 const selectedKeys = Object.keys(selectedPairs);
@@ -488,7 +502,7 @@ let QuizService = class QuizService {
             const userAnswer = answers[question.id];
             if (userAnswer === undefined || userAnswer === null)
                 continue;
-            const result = this.isAnswerCorrect(question, userAnswer);
+            const result = await this.isAnswerCorrect(question, userAnswer);
             if (result.isCorrect)
                 correctCount++;
             await this.participationAnswerRepository.save({
@@ -541,8 +555,24 @@ let QuizService = class QuizService {
                 created_at: new Date(),
                 updated_at: new Date(),
             });
+            classement.updated_at = new Date();
             await this.classementRepository.save(classement);
         }
+        const progression = this.progressionRepository.create({
+            stagiaire_id: stagiaireId,
+            quiz_id: quizId,
+            formation_id: quiz.formation?.id,
+            score: score,
+            correct_answers: correctCount,
+            total_questions: totalQuestions,
+            time_spent: timeSpent,
+            completion_time: new Date(),
+            created_at: new Date(),
+            updated_at: new Date(),
+            termine: true,
+            pourcentage: totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0,
+        });
+        await this.progressionRepository.save(progression);
         return {
             success: true,
             score,
@@ -573,7 +603,11 @@ exports.QuizService = QuizService = __decorate([
     __param(3, (0, typeorm_1.InjectRepository)(classement_entity_1.Classement)),
     __param(4, (0, typeorm_1.InjectRepository)(quiz_participation_entity_1.QuizParticipation)),
     __param(5, (0, typeorm_1.InjectRepository)(quiz_participation_answer_entity_1.QuizParticipationAnswer)),
+    __param(6, (0, typeorm_1.InjectRepository)(correspondance_pair_entity_1.CorrespondancePair)),
+    __param(7, (0, typeorm_1.InjectRepository)(progression_entity_1.Progression)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

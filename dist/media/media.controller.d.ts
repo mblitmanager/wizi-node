@@ -29,14 +29,14 @@ export declare class MediaController {
             stagiaires: {
                 id: number;
                 is_watched: number;
-                watched_at: any;
+                watched_at: Date;
                 pivot: {
                     media_id: number;
                     stagiaire_id: number;
                     is_watched: number;
-                    watched_at: any;
-                    created_at: any;
-                    updated_at: any;
+                    watched_at: Date;
+                    created_at: Date;
+                    updated_at: Date;
                 };
             }[];
         }[];
@@ -78,14 +78,14 @@ export declare class MediaController {
             stagiaires: {
                 id: number;
                 is_watched: number;
-                watched_at: any;
+                watched_at: Date;
                 pivot: {
                     media_id: number;
                     stagiaire_id: number;
                     is_watched: number;
-                    watched_at: any;
-                    created_at: any;
-                    updated_at: any;
+                    watched_at: Date;
+                    created_at: Date;
+                    updated_at: Date;
                 };
             }[];
         }[];
@@ -127,14 +127,14 @@ export declare class MediaController {
             stagiaires: {
                 id: number;
                 is_watched: number;
-                watched_at: any;
+                watched_at: Date;
                 pivot: {
                     media_id: number;
                     stagiaire_id: number;
                     is_watched: number;
-                    watched_at: any;
-                    created_at: any;
-                    updated_at: any;
+                    watched_at: Date;
+                    created_at: Date;
+                    updated_at: Date;
                 };
             }[];
         }[];
@@ -176,14 +176,14 @@ export declare class MediaController {
             stagiaires: {
                 id: number;
                 is_watched: number;
-                watched_at: any;
+                watched_at: Date;
                 pivot: {
                     media_id: number;
                     stagiaire_id: number;
                     is_watched: number;
-                    watched_at: any;
-                    created_at: any;
-                    updated_at: any;
+                    watched_at: Date;
+                    created_at: Date;
+                    updated_at: Date;
                 };
             }[];
         }[];

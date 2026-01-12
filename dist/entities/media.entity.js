@@ -13,6 +13,7 @@ exports.Media = void 0;
 const typeorm_1 = require("typeorm");
 const formation_entity_1 = require("./formation.entity");
 const stagiaire_entity_1 = require("./stagiaire.entity");
+const media_stagiaire_entity_1 = require("./media-stagiaire.entity");
 let Media = class Media {
     computeUrls() {
         if (this.video_platform === "server" && this.url) {
@@ -101,6 +102,10 @@ __decorate([
     (0, typeorm_1.ManyToMany)(() => stagiaire_entity_1.Stagiaire, (stagiaire) => stagiaire.medias),
     __metadata("design:type", Array)
 ], Media.prototype, "stagiaires", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => media_stagiaire_entity_1.MediaStagiaire, (mediaStagiaire) => mediaStagiaire.media),
+    __metadata("design:type", Array)
+], Media.prototype, "mediaStagiaires", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
     __metadata("design:type", Date)

@@ -32,6 +32,8 @@ export declare class Stagiaire {
     poleRelationClients: PoleRelationClient[];
     classements: Classement[];
     achievements: Achievement[];
+    last_login_at: Date;
+    login_streak: number;
     created_at: Date;
     updated_at: Date;
 }

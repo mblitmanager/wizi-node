@@ -12,6 +12,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { ApiResponseService } from "../common/services/api-response.service";
 import { RankingService } from "../ranking/ranking.service";
 import { QuizService } from "./quiz.service";
+import { AchievementService } from "../achievement/achievement.service";
 
 @Controller("quiz")
 @UseGuards(AuthGuard("jwt"))
@@ -19,7 +20,8 @@ export class QuizApiController {
   constructor(
     private rankingService: RankingService,
     private quizService: QuizService,
-    private apiResponse: ApiResponseService
+    private apiResponse: ApiResponseService,
+    private achievementService: AchievementService
   ) {}
 
   @Get()
@@ -127,7 +129,17 @@ export class QuizApiController {
       body.answers || {},
       body.timeSpent || 0
     );
-    return this.apiResponse.success(data);
+
+    // Check for achievements
+    const newAchievements = await this.achievementService.checkAchievements(
+      stagiaireId,
+      id
+    );
+
+    return this.apiResponse.success({
+      ...data,
+      new_achievements: newAchievements,
+    });
   }
 
   @Get(":quizId/questions")

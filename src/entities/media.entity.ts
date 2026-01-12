@@ -5,10 +5,12 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
+  OneToMany,
   AfterLoad,
 } from "typeorm";
 import { Formation } from "./formation.entity";
 import { Stagiaire } from "./stagiaire.entity";
+import { MediaStagiaire } from "./media-stagiaire.entity";
 
 @Entity("media")
 export class Media {
@@ -66,6 +68,9 @@ export class Media {
 
   @ManyToMany(() => Stagiaire, (stagiaire) => stagiaire.medias)
   stagiaires: Stagiaire[];
+
+  @OneToMany(() => MediaStagiaire, (mediaStagiaire) => mediaStagiaire.media)
+  mediaStagiaires: MediaStagiaire[];
 
   @Column({ type: "timestamp", nullable: true })
   created_at: Date;

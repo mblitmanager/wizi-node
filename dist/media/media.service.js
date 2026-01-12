@@ -17,9 +17,15 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const media_entity_1 = require("../entities/media.entity");
+const media_stagiaire_entity_1 = require("../entities/media-stagiaire.entity");
+const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const achievement_service_1 = require("../achievement/achievement.service");
 let MediaService = class MediaService {
-    constructor(mediaRepository) {
+    constructor(mediaRepository, mediaStagiaireRepository, stagiaireRepository, achievementService) {
         this.mediaRepository = mediaRepository;
+        this.mediaStagiaireRepository = mediaStagiaireRepository;
+        this.stagiaireRepository = stagiaireRepository;
+        this.achievementService = achievementService;
     }
     async findAll() {
         return this.mediaRepository.find();
@@ -36,7 +42,7 @@ let MediaService = class MediaService {
             .where("m.categorie = :categorie", { categorie })
             .orderBy("m.id", "DESC");
         if (userId) {
-            query.leftJoinAndSelect("m.stagiaires", "stagiaires", "stagiaires.user_id = :userId", { userId });
+            query.leftJoinAndSelect("m.mediaStagiaires", "ms", "ms.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId });
         }
         const [data, total] = await query
             .skip((page - 1) * perPage)
@@ -88,7 +94,7 @@ let MediaService = class MediaService {
             .andWhere("m.categorie = :categorie", { categorie })
             .orderBy("m.id", "DESC");
         if (userId) {
-            query.leftJoinAndSelect("m.stagiaires", "stagiaires", "stagiaires.user_id = :userId", { userId });
+            query.leftJoinAndSelect("m.mediaStagiaires", "ms", "ms.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)", { userId });
         }
         const [data, total] = await query
             .skip((page - 1) * perPage)
@@ -96,8 +102,6 @@ let MediaService = class MediaService {
             .getManyAndCount();
         const lastPage = Math.ceil(total / perPage);
         const formattedData = data.map((media) => this.formatMedia(media));
-        if (!baseUrl) {
-        }
         return {
             current_page: page,
             data: formattedData,
@@ -112,6 +116,36 @@ let MediaService = class MediaService {
             prev_page_url: page > 1 ? `${baseUrl}?page=${page - 1}` : null,
             to: Math.min(page * perPage, total),
             total,
+        };
+    }
+    async markAsWatched(mediaId, userId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!stagiaire) {
+            throw new Error("Stagiaire not found");
+        }
+        let mediaStagiaire = await this.mediaStagiaireRepository.findOne({
+            where: { media_id: mediaId, stagiaire_id: stagiaire.id },
+        });
+        if (mediaStagiaire) {
+            mediaStagiaire.is_watched = true;
+            mediaStagiaire.watched_at = new Date();
+            await this.mediaStagiaireRepository.save(mediaStagiaire);
+        }
+        else {
+            mediaStagiaire = this.mediaStagiaireRepository.create({
+                media_id: mediaId,
+                stagiaire_id: stagiaire.id,
+                is_watched: true,
+                watched_at: new Date(),
+            });
+            await this.mediaStagiaireRepository.save(mediaStagiaire);
+        }
+        const newAchievements = await this.achievementService.checkAchievements(stagiaire.id);
+        return {
+            message: "Media marked as watched",
+            new_achievements: newAchievements,
         };
     }
     formatMedia(media) {
@@ -136,17 +170,17 @@ let MediaService = class MediaService {
             updated_at: media.updated_at?.toISOString(),
             video_url: media.video_url,
             subtitle_url: media.subtitle_url,
-            stagiaires: (media.stagiaires || []).map((stagiaire) => ({
-                id: stagiaire.id,
-                is_watched: 1,
-                watched_at: null,
+            stagiaires: (media.mediaStagiaires || []).map((ms) => ({
+                id: ms.stagiaire_id,
+                is_watched: ms.is_watched ? 1 : 0,
+                watched_at: ms.watched_at,
                 pivot: {
                     media_id: media.id,
-                    stagiaire_id: stagiaire.id,
-                    is_watched: 1,
-                    watched_at: null,
-                    created_at: null,
-                    updated_at: null,
+                    stagiaire_id: ms.stagiaire_id,
+                    is_watched: ms.is_watched ? 1 : 0,
+                    watched_at: ms.watched_at,
+                    created_at: ms.created_at,
+                    updated_at: ms.updated_at,
                 },
             })),
         };
@@ -156,6 +190,11 @@ exports.MediaService = MediaService;
 exports.MediaService = MediaService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(media_entity_1.Media)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(media_stagiaire_entity_1.MediaStagiaire)),
+    __param(2, (0, typeorm_1.InjectRepository)(stagiaire_entity_1.Stagiaire)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        achievement_service_1.AchievementService])
 ], MediaService);
 //# sourceMappingURL=media.service.js.map

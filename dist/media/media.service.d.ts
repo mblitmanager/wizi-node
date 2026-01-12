@@ -1,8 +1,14 @@
 import { Repository } from "typeorm";
 import { Media } from "../entities/media.entity";
+import { MediaStagiaire } from "../entities/media-stagiaire.entity";
+import { Stagiaire } from "../entities/stagiaire.entity";
+import { AchievementService } from "../achievement/achievement.service";
 export declare class MediaService {
     private mediaRepository;
-    constructor(mediaRepository: Repository<Media>);
+    private mediaStagiaireRepository;
+    private stagiaireRepository;
+    private achievementService;
+    constructor(mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireRepository: Repository<Stagiaire>, achievementService: AchievementService);
     findAll(): Promise<Media[]>;
     findByType(type: string): Promise<Media[]>;
     findByCategoriePaginated(categorie: string, page?: number, perPage?: number, baseUrl?: string, userId?: number): Promise<{
@@ -31,14 +37,14 @@ export declare class MediaService {
             stagiaires: {
                 id: number;
                 is_watched: number;
-                watched_at: any;
+                watched_at: Date;
                 pivot: {
                     media_id: number;
                     stagiaire_id: number;
                     is_watched: number;
-                    watched_at: any;
-                    created_at: any;
-                    updated_at: any;
+                    watched_at: Date;
+                    created_at: Date;
+                    updated_at: Date;
                 };
             }[];
         }[];
@@ -81,14 +87,14 @@ export declare class MediaService {
             stagiaires: {
                 id: number;
                 is_watched: number;
-                watched_at: any;
+                watched_at: Date;
                 pivot: {
                     media_id: number;
                     stagiaire_id: number;
                     is_watched: number;
-                    watched_at: any;
-                    created_at: any;
-                    updated_at: any;
+                    watched_at: Date;
+                    created_at: Date;
+                    updated_at: Date;
                 };
             }[];
         }[];
@@ -103,6 +109,10 @@ export declare class MediaService {
         prev_page_url: string;
         to: number;
         total: number;
+    }>;
+    markAsWatched(mediaId: number, userId: number): Promise<{
+        message: string;
+        new_achievements: import("../entities/achievement.entity").Achievement[];
     }>;
     private formatMedia;
 }

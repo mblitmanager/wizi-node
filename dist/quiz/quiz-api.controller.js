@@ -18,11 +18,13 @@ const passport_1 = require("@nestjs/passport");
 const api_response_service_1 = require("../common/services/api-response.service");
 const ranking_service_1 = require("../ranking/ranking.service");
 const quiz_service_1 = require("./quiz.service");
+const achievement_service_1 = require("../achievement/achievement.service");
 let QuizApiController = class QuizApiController {
-    constructor(rankingService, quizService, apiResponse) {
+    constructor(rankingService, quizService, apiResponse, achievementService) {
         this.rankingService = rankingService;
         this.quizService = quizService;
         this.apiResponse = apiResponse;
+        this.achievementService = achievementService;
     }
     async getAll() {
         const data = await this.quizService.getAllQuizzes();
@@ -86,7 +88,11 @@ let QuizApiController = class QuizApiController {
             return this.apiResponse.error("Stagiaire not found", 404);
         }
         const data = await this.quizService.submitQuizResult(id, req.user.id, stagiaireId, body.answers || {}, body.timeSpent || 0);
-        return this.apiResponse.success(data);
+        const newAchievements = await this.achievementService.checkAchievements(stagiaireId, id);
+        return this.apiResponse.success({
+            ...data,
+            new_achievements: newAchievements,
+        });
     }
     async getQuestions(quizId) {
         const data = await this.quizService.getQuestionsByQuiz(quizId);
@@ -283,6 +289,7 @@ exports.QuizApiController = QuizApiController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [ranking_service_1.RankingService,
         quiz_service_1.QuizService,
-        api_response_service_1.ApiResponseService])
+        api_response_service_1.ApiResponseService,
+        achievement_service_1.AchievementService])
 ], QuizApiController);
 //# sourceMappingURL=quiz-api.controller.js.map

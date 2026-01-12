@@ -5,6 +5,8 @@ import { Formation } from "../entities/formation.entity";
 import { Classement } from "../entities/classement.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { QuizParticipationAnswer } from "../entities/quiz-participation-answer.entity";
+import { CorrespondancePair } from "../entities/correspondance-pair.entity";
+import { Progression } from "../entities/progression.entity";
 export declare class QuizService {
     private quizRepository;
     private questionRepository;
@@ -12,7 +14,9 @@ export declare class QuizService {
     private classementRepository;
     private participationRepository;
     private participationAnswerRepository;
-    constructor(quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, formationRepository: Repository<Formation>, classementRepository: Repository<Classement>, participationRepository: Repository<QuizParticipation>, participationAnswerRepository: Repository<QuizParticipationAnswer>);
+    private correspondancePairRepository;
+    private progressionRepository;
+    constructor(quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, formationRepository: Repository<Formation>, classementRepository: Repository<Classement>, participationRepository: Repository<QuizParticipation>, participationAnswerRepository: Repository<QuizParticipationAnswer>, correspondancePairRepository: Repository<CorrespondancePair>, progressionRepository: Repository<Progression>);
     getAllQuizzes(): Promise<Quiz[]>;
     getQuestionsByQuiz(quizId: number): Promise<{
         data: {
