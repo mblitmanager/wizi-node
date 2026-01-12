@@ -3,15 +3,44 @@ import { Quiz } from "../entities/quiz.entity";
 import { Question } from "../entities/question.entity";
 import { Formation } from "../entities/formation.entity";
 import { Classement } from "../entities/classement.entity";
+import { QuizParticipation } from "../entities/quiz-participation.entity";
+import { QuizParticipationAnswer } from "../entities/quiz-participation-answer.entity";
 export declare class QuizService {
     private quizRepository;
     private questionRepository;
     private formationRepository;
     private classementRepository;
-    constructor(quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, formationRepository: Repository<Formation>, classementRepository: Repository<Classement>);
+    private participationRepository;
+    private participationAnswerRepository;
+    constructor(quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, formationRepository: Repository<Formation>, classementRepository: Repository<Classement>, participationRepository: Repository<QuizParticipation>, participationAnswerRepository: Repository<QuizParticipationAnswer>);
     getAllQuizzes(): Promise<Quiz[]>;
-    getQuizDetails(id: number): Promise<Quiz>;
     getQuestionsByQuiz(quizId: number): Promise<{
+        data: {
+            id: number;
+            quiz_id: number;
+            text: string;
+            type: string;
+            explication: string;
+            points: string;
+            astuce: string;
+            media_url: string;
+            created_at: Date;
+            updated_at: Date;
+            reponses: {
+                id: number;
+                text: string;
+                question_id: number;
+                is_correct: number;
+                position: number;
+                match_pair: string;
+                bank_group: string;
+                flashcard_back: string;
+                created_at: Date;
+                updated_at: Date;
+            }[];
+        }[];
+    }>;
+    getQuizDetails(id: number): Promise<{
         id: string;
         titre: string;
         description: string;
@@ -82,7 +111,8 @@ export declare class QuizService {
             total_points: number;
         };
     }>;
-    submitQuizResult(quizId: number, stagiaireId: number, answers: Record<string, any>, timeSpent: number): Promise<{
+    private isAnswerCorrect;
+    submitQuizResult(quizId: number, userId: number, stagiaireId: number, answers: Record<string, any>, timeSpent: number): Promise<{
         success: boolean;
         score: number;
         correctAnswers: number;

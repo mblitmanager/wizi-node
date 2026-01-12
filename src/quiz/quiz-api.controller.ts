@@ -106,9 +106,7 @@ export class QuizApiController {
 
   @Get(":id")
   async getById(@Param("id") id: number) {
-    // Use getQuestionsByQuiz to return the full formatted object including questions
-    // This matches the Laravel structure expected by the frontend
-    const data = await this.quizService.getQuestionsByQuiz(id);
+    const data = await this.quizService.getQuizDetails(id);
     return this.apiResponse.success(data);
   }
 
@@ -124,6 +122,7 @@ export class QuizApiController {
     }
     const data = await this.quizService.submitQuizResult(
       id,
+      req.user.id,
       stagiaireId,
       body.answers || {},
       body.timeSpent || 0

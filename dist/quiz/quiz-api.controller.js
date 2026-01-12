@@ -77,7 +77,7 @@ let QuizApiController = class QuizApiController {
         });
     }
     async getById(id) {
-        const data = await this.quizService.getQuestionsByQuiz(id);
+        const data = await this.quizService.getQuizDetails(id);
         return this.apiResponse.success(data);
     }
     async submitResult(id, body, req) {
@@ -85,7 +85,7 @@ let QuizApiController = class QuizApiController {
         if (!stagiaireId) {
             return this.apiResponse.error("Stagiaire not found", 404);
         }
-        const data = await this.quizService.submitQuizResult(id, stagiaireId, body.answers || {}, body.timeSpent || 0);
+        const data = await this.quizService.submitQuizResult(id, req.user.id, stagiaireId, body.answers || {}, body.timeSpent || 0);
         return this.apiResponse.success(data);
     }
     async getQuestions(quizId) {
