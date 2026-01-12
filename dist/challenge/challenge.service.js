@@ -27,6 +27,43 @@ let ChallengeService = class ChallengeService {
         this.stagiaireRepository = stagiaireRepository;
         this.participationRepository = participationRepository;
     }
+    async findAll(page = 1, limit = 10) {
+        const [items, total] = await this.challengeRepository.findAndCount({
+            take: limit,
+            skip: (page - 1) * limit,
+            order: { created_at: "DESC" },
+        });
+        return { items, total };
+    }
+    async findOne(id) {
+        return this.challengeRepository.findOne({ where: { id } });
+    }
+    async create(data) {
+        const challenge = this.challengeRepository.create(data);
+        return this.challengeRepository.save(challenge);
+    }
+    async update(id, data) {
+        await this.challengeRepository.update(id, data);
+        return this.findOne(id);
+    }
+    async delete(id) {
+        return this.challengeRepository.softDelete(id);
+    }
+    formatChallengeJsonLd(challenge) {
+        return {
+            "@id": `/api/challenges/${challenge.id}`,
+            "@type": "Challenge",
+            id: challenge.id,
+            titre: challenge.titre,
+            description: challenge.description,
+            date_debut: challenge.date_debut,
+            date_fin: challenge.date_fin,
+            points: challenge.points,
+            participation_id: challenge.participation_id,
+            createdAt: challenge.created_at?.toISOString().replace("Z", "+00:00"),
+            updatedAt: challenge.updated_at?.toISOString().replace("Z", "+00:00"),
+        };
+    }
     async getChallengeConfig() {
         const activeChallenge = await this.challengeRepository.find({
             order: { created_at: "DESC" },

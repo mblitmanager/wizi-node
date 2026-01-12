@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const challenge_service_1 = require("./challenge.service");
 const challenge_controller_1 = require("./challenge.controller");
+const challenges_api_controller_1 = require("./challenges-api.controller");
 const challenge_entity_1 = require("../entities/challenge.entity");
 const progression_entity_1 = require("../entities/progression.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
@@ -28,7 +29,7 @@ exports.ChallengeModule = ChallengeModule = __decorate([
                 quiz_participation_entity_1.QuizParticipation,
             ]),
         ],
-        controllers: [challenge_controller_1.ChallengeController],
+        controllers: [challenge_controller_1.ChallengeController, challenges_api_controller_1.ChallengesApiController],
         providers: [challenge_service_1.ChallengeService],
     })
 ], ChallengeModule);

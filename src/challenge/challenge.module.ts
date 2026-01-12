@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ChallengeService } from "./challenge.service";
 import { ChallengeController } from "./challenge.controller";
+import { ChallengesApiController } from "./challenges-api.controller";
 import { Challenge } from "../entities/challenge.entity";
 import { Progression } from "../entities/progression.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
@@ -16,7 +17,7 @@ import { QuizParticipation } from "../entities/quiz-participation.entity";
       QuizParticipation,
     ]),
   ],
-  controllers: [ChallengeController],
+  controllers: [ChallengeController, ChallengesApiController],
   providers: [ChallengeService],
 })
 export class ChallengeModule {}
