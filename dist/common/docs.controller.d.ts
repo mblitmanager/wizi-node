@@ -102,16 +102,23 @@ export declare class DocsLdController {
                 "@id": string;
                 "@type": string;
             };
-            subClassOf: any;
-            ": { ": any;
-            ": ": any;
-            ", ": any;
-            " },": any;
+            subClassOf: {
+                "@id": string;
+                "@type": string;
+            };
+            expects: {
+                "@id": string;
+                "@type": string;
+            };
+            returns: {
+                "@id": string;
+                "@type": string;
+            };
         };
+        "@id": string;
+        "@type": string;
+        "hydra:title": string;
+        "hydra:description": string;
+        "hydra:entrypoint": string;
     }>;
-    "@id": "/api/docs.jsonld";
-    "@type": "hydra:ApiDocumentation";
-    "hydra:title": "Wizi Learn API";
-    "hydra:description": "API Documentation for Wizi Learn";
-    "hydra:entrypoint": "/api";
 }

@@ -142,19 +142,16 @@ let DocsLdController = class DocsLdController {
                 schema: "http://schema.org/",
                 domain: { "@id": "rdfs:domain", "@type": "@id" },
                 range: { "@id": "rdfs:range", "@type": "@id" },
-                subClassOf, ": { ": , ": ": rdfs, subClassOf, ", ": , ": ": , " },: expects
-            }
+                subClassOf: { "@id": "rdfs:subClassOf", "@type": "@id" },
+                expects: { "@id": "hydra:expects", "@type": "@id" },
+                returns: { "@id": "hydra:returns", "@type": "@id" },
+            },
+            "@id": "/api/docs.jsonld",
+            "@type": "hydra:ApiDocumentation",
+            "hydra:title": "Wizi Learn API",
+            "hydra:description": "API Documentation for Wizi Learn",
+            "hydra:entrypoint": "/api",
         };
-        {
-            "@id";
-            "hydra:expects", "@type";
-            "@id";
-        }
-        returns: {
-            "@id";
-            "hydra:returns", "@type";
-            "@id";
-        }
     }
 };
 exports.DocsLdController = DocsLdController;
@@ -168,5 +165,4 @@ __decorate([
 exports.DocsLdController = DocsLdController = __decorate([
     (0, common_1.Controller)("docs.jsonld")
 ], DocsLdController);
-;
 //# sourceMappingURL=docs.controller.js.map

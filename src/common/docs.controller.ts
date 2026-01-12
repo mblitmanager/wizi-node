@@ -89,7 +89,10 @@ export class DocsController {
   }
 
   @Get(":resource")
-  async getResourceContext(@Param("resource") resource: string, @Request() req: any) {
+  async getResourceContext(
+    @Param("resource") resource: string,
+    @Request() req: any
+  ) {
     const protocol = req.protocol;
     const host = req.get("host");
     const baseUrl = `${protocol}://${host}`;
@@ -118,7 +121,7 @@ export class DocsLdController {
         schema: "http://schema.org/",
         domain: { "@id": "rdfs:domain", "@type": "@id" },
         range: { "@id": "rdfs:range", "@type": "@id" },
-        subClassOf": { "@id": "rdfs:subClassOf", "@type": "@id" },
+        subClassOf: { "@id": "rdfs:subClassOf", "@type": "@id" },
         expects: { "@id": "hydra:expects", "@type": "@id" },
         returns: { "@id": "hydra:returns", "@type": "@id" },
       },
