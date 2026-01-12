@@ -54,7 +54,6 @@ __decorate([
 ], MediaController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)("tutoriels"),
-    (0, common_1.Get)("tutoriels"),
     __param(0, (0, common_1.Query)("page")),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -62,7 +61,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MediaController.prototype, "getTutoriels", null);
 __decorate([
-    (0, common_1.Get)("astuces"),
     (0, common_1.Get)("astuces"),
     __param(0, (0, common_1.Query)("page")),
     __param(1, (0, common_1.Req)()),

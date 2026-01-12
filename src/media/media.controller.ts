@@ -14,7 +14,6 @@ export class MediaController {
   }
 
   @Get("tutoriels")
-  @Get("tutoriels")
   async getTutoriels(@Query("page") page: string = "1", @Req() req: any) {
     const pageNum = parseInt(page) || 1;
     // Build full URL based on request
@@ -30,7 +29,6 @@ export class MediaController {
     );
   }
 
-  @Get("astuces")
   @Get("astuces")
   async getAstuces(@Query("page") page: string = "1", @Req() req: any) {
     const pageNum = parseInt(page) || 1;
