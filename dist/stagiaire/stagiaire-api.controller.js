@@ -40,7 +40,7 @@ let StagiaireApiController = class StagiaireApiController {
         return this.apiResponse.success();
     }
     async show(req) {
-        const userId = req.user?.id || 7;
+        const userId = req.user.id;
         const data = await this.stagiaireService.getShowData(userId);
         return this.apiResponse.success(data);
     }

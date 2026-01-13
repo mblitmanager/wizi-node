@@ -15,8 +15,9 @@ async function verify() {
     
     if (res.status === 200 || res.status === 201) {
       const data = await res.json();
+      log += `Full Response: ${JSON.stringify(data, null, 2)}\n`;
       log += `Success: ${data.success}\n`;
-      log += `Points: ${data.data?.points}\n`;
+      log += `Points: ${data.data?.points || data.points}\n`;
       log += `Completed Quizzes: ${data.data?.completed_quizzes}\n`;
       log += `Payload: ${JSON.stringify(data.data, null, 2)}\n`;
     } else {

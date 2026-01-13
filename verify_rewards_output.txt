@@ -1,4 +1,11 @@
 Testing GET /stagiaire/rewards...
-Status: 401
-Error Message: Unauthorized
-Error Stack: No stack
+Status: 200
+Full Response: {
+  "points": 2,
+  "completed_quizzes": 158,
+  "completed_challenges": 0
+}
+Success: undefined
+Points: 2
+Completed Quizzes: undefined
+Payload: undefined

@@ -48,7 +48,7 @@ export class StagiaireApiController {
 
   @Get("show")
   async show(@Request() req: any) {
-    const userId = req.user?.id || 7; // Fallback for testing
+    const userId = req.user.id; // Fallback for testing
     const data = await this.stagiaireService.getShowData(userId);
     return this.apiResponse.success(data);
   }
