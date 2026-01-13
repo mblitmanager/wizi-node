@@ -46,7 +46,7 @@ export class MediaController {
   }
 
   @Get("formations/:formationId/tutoriels")
-  @UseGuards(AuthGuard("jwt"))
+  // @UseGuards(AuthGuard("jwt"))
   async getTutorielsByFormation(
     @Param("formationId") formationId: number,
     @Req() req: any,
@@ -67,7 +67,7 @@ export class MediaController {
   }
 
   @Get("formations/:formationId/astuces")
-  @UseGuards(AuthGuard("jwt"))
+  // @UseGuards(AuthGuard("jwt"))
   async getAstucesByFormation(
     @Param("formationId") formationId: number,
     @Req() req: any,
@@ -85,6 +85,11 @@ export class MediaController {
       baseUrl,
       userId
     );
+  }
+
+  @Get("formations/interactives")
+  async getInteractivesFormations() {
+    return this.mediaService.getInteractivesFormations();
   }
 
   @Get("formations-with-status")

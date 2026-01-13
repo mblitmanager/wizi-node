@@ -47,6 +47,9 @@ let MediaController = class MediaController {
         const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/formations/${formationId}/astuces`;
         return this.mediaService.findByFormationAndCategorie(formationId, "astuce", pageNum, 10, baseUrl, userId);
     }
+    async getInteractivesFormations() {
+        return this.mediaService.getInteractivesFormations();
+    }
     async getFormationsWithStatus() {
         return this.mediaService.getFormationsWithStatus();
     }
@@ -77,7 +80,6 @@ __decorate([
 ], MediaController.prototype, "getAstuces", null);
 __decorate([
     (0, common_1.Get)("formations/:formationId/tutoriels"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __param(0, (0, common_1.Param)("formationId")),
     __param(1, (0, common_1.Req)()),
     __param(2, (0, common_1.Query)("page")),
@@ -87,7 +89,6 @@ __decorate([
 ], MediaController.prototype, "getTutorielsByFormation", null);
 __decorate([
     (0, common_1.Get)("formations/:formationId/astuces"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __param(0, (0, common_1.Param)("formationId")),
     __param(1, (0, common_1.Req)()),
     __param(2, (0, common_1.Query)("page")),
@@ -95,6 +96,12 @@ __decorate([
     __metadata("design:paramtypes", [Number, Object, String]),
     __metadata("design:returntype", Promise)
 ], MediaController.prototype, "getAstucesByFormation", null);
+__decorate([
+    (0, common_1.Get)("formations/interactives"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], MediaController.prototype, "getInteractivesFormations", null);
 __decorate([
     (0, common_1.Get)("formations-with-status"),
     __metadata("design:type", Function),
