@@ -1,0 +1,30 @@
+Testing GET /stagiaire/quizzes
+Status: 200
+Success: undefined
+Data Length: 118
+Sample Quiz: {
+  "id": "81",
+  "titre": "Excel : Découverte de l'interface",
+  "description": "<p><strong>\"Microsoft Excel : Découverte de l'interface\"</strong> :</p><p>L’interface d’Excel se compose du ruban, des onglets et de la barre d’outils d’accès rapide.</p><p>La feuille de calcul est organisée en lignes et colonnes formant des cellules où l’on saisit les données.</p><p>La barre de formule permet de visualiser et modifier le contenu d’une cellule sélectionnée.</p>",
+  "duree": "30",
+  "niveau": "débutant",
+  "status": "actif",
+  "nb_points_total": 20,
+  "formationId": "14",
+  "categorie": "Bureautique",
+  "formation": {
+    "id": 14,
+    "titre": "Excel",
+    "categorie": "Bureautique"
+  },
+  "questions": [],
+  "userParticipation": {
+    "id": 229,
+    "status": "completed",
+    "score": 8,
+    "correct_answers": 4,
+    "time_spent": 2,
+    "started_at": "2025-08-02T05:54:48.000Z",
+    "completed_at": "2025-08-02T05:54:48.000Z"
+  }
+}

@@ -456,6 +456,17 @@ export class RankingService {
           parseInt(quiz.nb_points_total || "0") ||
           0;
 
+        if (quiz.id === 81) {
+          console.log(
+            `Debug Quiz 81: nb_points_total type: ${typeof quiz.nb_points_total}, value: ${quiz.nb_points_total}`
+          );
+          console.log(
+            `Debug Quiz 81 Questions Length: ${quiz.questions?.length}`
+          );
+          if (quiz.questions?.length > 0)
+            console.log("First question:", quiz.questions[0]);
+        }
+
         const quizData = {
           id: quiz.id,
           titre: quiz.titre,

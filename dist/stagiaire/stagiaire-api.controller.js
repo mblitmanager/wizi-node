@@ -90,7 +90,7 @@ let StagiaireApiController = class StagiaireApiController {
     }
     async quizzes(req) {
         const userId = req.user?.id || 7;
-        return this.apiResponse.success(await this.rankingService.getQuizzesStat(userId));
+        return this.apiResponse.success(await this.rankingService.getQuizHistory(userId));
     }
     async rankingGlobal() {
         const data = await this.rankingService.getGlobalRanking();
@@ -342,6 +342,7 @@ __decorate([
 ], StagiaireApiController.prototype, "userCatalogueFormations", null);
 exports.StagiaireApiController = StagiaireApiController = __decorate([
     (0, common_1.Controller)("stagiaire"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [inscription_service_1.InscriptionService,
         ranking_service_1.RankingService,
         stagiaire_service_1.StagiaireService,
