@@ -13,12 +13,12 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
-import { extname } from "path";
+import { memoryStorage } from "multer";
 import { InscriptionService } from "../inscription/inscription.service";
 import { RankingService } from "../ranking/ranking.service";
 import { StagiaireService } from "./stagiaire.service";
 import { ApiResponseService } from "../common/services/api-response.service";
+import { S3StorageService } from "../common/services/s3-storage.service";
 
 @Controller("stagiaire")
 @UseGuards(AuthGuard("jwt"))
@@ -27,7 +27,8 @@ export class StagiaireApiController {
     private inscriptionService: InscriptionService,
     private rankingService: RankingService,
     private stagiaireService: StagiaireService,
-    private apiResponse: ApiResponseService
+    private apiResponse: ApiResponseService,
+    private s3Storage: S3StorageService
   ) {}
 
   @Get("profile")
@@ -240,31 +241,25 @@ export class ApiGeneralController {
   @Post("avatar/:id/update-profile")
   @UseInterceptors(
     FileInterceptor("image", {
-      storage: diskStorage({
-        destination: "./public/uploads/users",
-        filename: (req, file, cb) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join("");
-          return cb(null, `${randomName}${extname(file.originalname)}`);
-        },
-      }),
+      storage: memoryStorage(),
     })
   )
   async updateAvatar(
     @Param("id") id: string,
-    @UploadedFile() file: any,
+    @UploadedFile() file: Express.Multer.File,
     @Request() req: any
   ) {
     if (!file) {
       return this.apiResponse.error("No image uploaded", 400);
     }
-    const photoPath = `uploads/users/${file.filename}`;
-    await this.stagiaireService.updateProfilePhoto(req.user.id, photoPath);
+
+    const result = await this.s3Storage.uploadFile(file, "users");
+    await this.stagiaireService.updateProfilePhoto(req.user.id, result.key);
+
     return this.apiResponse.success({
       message: "Avatar mis à jour",
-      avatar: photoPath,
+      avatar: result.key,
+      avatar_url: result.url,
     });
   }
 

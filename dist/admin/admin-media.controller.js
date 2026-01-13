@@ -20,12 +20,15 @@ const roles_decorator_1 = require("../common/decorators/roles.decorator");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
 const media_entity_1 = require("../entities/media.entity");
 const api_response_service_1 = require("../common/services/api-response.service");
+const s3_storage_service_1 = require("../common/services/s3-storage.service");
 let AdminMediaController = class AdminMediaController {
-    constructor(mediaRepository, apiResponse) {
+    constructor(mediaRepository, apiResponse, s3Storage) {
         this.mediaRepository = mediaRepository;
         this.apiResponse = apiResponse;
+        this.s3Storage = s3Storage;
     }
     async findAll(page = 1, limit = 10, search = "") {
         const query = this.mediaRepository.createQueryBuilder("m");
@@ -54,9 +57,17 @@ let AdminMediaController = class AdminMediaController {
         if (!data.titre) {
             throw new common_1.BadRequestException("titre est obligatoire");
         }
+        let filePath = null;
+        let fileUrl = null;
+        if (file) {
+            const result = await this.s3Storage.uploadFile(file, "medias");
+            filePath = result.key;
+            fileUrl = result.url;
+        }
         const mediaData = {
             ...data,
-            file_path: file ? `/uploads/${file.filename}` : null,
+            file_path: filePath,
+            url: fileUrl,
         };
         const media = this.mediaRepository.create(mediaData);
         const saved = await this.mediaRepository.save(media);
@@ -105,7 +116,7 @@ __decorate([
 ], AdminMediaController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)("file")),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)("file", { storage: (0, multer_1.memoryStorage)() })),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
@@ -133,6 +144,7 @@ exports.AdminMediaController = AdminMediaController = __decorate([
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, typeorm_1.InjectRepository)(media_entity_1.Media)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        api_response_service_1.ApiResponseService])
+        api_response_service_1.ApiResponseService,
+        s3_storage_service_1.S3StorageService])
 ], AdminMediaController);
 //# sourceMappingURL=admin-media.controller.js.map

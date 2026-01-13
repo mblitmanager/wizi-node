@@ -19,9 +19,11 @@ import { Roles } from "../common/decorators/roles.decorator";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { memoryStorage } from "multer";
 import { Media } from "../entities/media.entity";
 import { type Express } from "express";
 import { ApiResponseService } from "../common/services/api-response.service";
+import { S3StorageService } from "../common/services/s3-storage.service";
 
 @Controller("admin/medias")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -30,7 +32,8 @@ export class AdminMediaController {
   constructor(
     @InjectRepository(Media)
     private mediaRepository: Repository<Media>,
-    private apiResponse: ApiResponseService
+    private apiResponse: ApiResponseService,
+    private s3Storage: S3StorageService
   ) {}
 
   @Get()
@@ -70,15 +73,25 @@ export class AdminMediaController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor("file"))
+  @UseInterceptors(FileInterceptor("file", { storage: memoryStorage() }))
   async create(@Body() data: any, @UploadedFile() file?: Express.Multer.File) {
     if (!data.titre) {
       throw new BadRequestException("titre est obligatoire");
     }
 
+    let filePath = null;
+    let fileUrl = null;
+
+    if (file) {
+      const result = await this.s3Storage.uploadFile(file, "medias");
+      filePath = result.key;
+      fileUrl = result.url;
+    }
+
     const mediaData = {
       ...data,
-      file_path: file ? `/uploads/${file.filename}` : null,
+      file_path: filePath,
+      url: fileUrl,
     };
 
     const media = this.mediaRepository.create(mediaData);

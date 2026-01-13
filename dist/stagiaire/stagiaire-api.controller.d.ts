@@ -2,12 +2,14 @@ import { InscriptionService } from "../inscription/inscription.service";
 import { RankingService } from "../ranking/ranking.service";
 import { StagiaireService } from "./stagiaire.service";
 import { ApiResponseService } from "../common/services/api-response.service";
+import { S3StorageService } from "../common/services/s3-storage.service";
 export declare class StagiaireApiController {
     private inscriptionService;
     private rankingService;
     private stagiaireService;
     private apiResponse;
-    constructor(inscriptionService: InscriptionService, rankingService: RankingService, stagiaireService: StagiaireService, apiResponse: ApiResponseService);
+    private s3Storage;
+    constructor(inscriptionService: InscriptionService, rankingService: RankingService, stagiaireService: StagiaireService, apiResponse: ApiResponseService, s3Storage: S3StorageService);
     profile(req: any): Promise<any>;
     updateProfile(req: any, data: any): Promise<any>;
     patchProfile(req: any, data: any): Promise<any>;
@@ -91,7 +93,7 @@ export declare class ApiGeneralController {
     reportUserAppUsage(req: any, data: any): Promise<any>;
     updateUserPhoto(req: any, data: any): Promise<any>;
     getUserPoints(req: any): Promise<any>;
-    updateAvatar(id: string, file: any, req: any): Promise<any>;
+    updateAvatar(id: string, file: Express.Multer.File, req: any): Promise<any>;
     getUserStatus(): Promise<{
         online_users: import("../entities/user.entity").User[];
         recently_online: import("../entities/user.entity").User[];

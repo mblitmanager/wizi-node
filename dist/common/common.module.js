@@ -10,15 +10,16 @@ exports.CommonModule = void 0;
 const common_1 = require("@nestjs/common");
 const api_response_service_1 = require("./services/api-response.service");
 const all_exceptions_filter_1 = require("./filters/all-exceptions.filter");
+const s3_storage_service_1 = require("./services/s3-storage.service");
 const docs_controller_1 = require("./docs.controller");
 let CommonModule = class CommonModule {
 };
 exports.CommonModule = CommonModule;
 exports.CommonModule = CommonModule = __decorate([
     (0, common_1.Module)({
-        providers: [api_response_service_1.ApiResponseService, all_exceptions_filter_1.AllExceptionsFilter],
+        providers: [api_response_service_1.ApiResponseService, all_exceptions_filter_1.AllExceptionsFilter, s3_storage_service_1.S3StorageService],
         controllers: [docs_controller_1.DocsController, docs_controller_1.DocsLdController],
-        exports: [api_response_service_1.ApiResponseService, all_exceptions_filter_1.AllExceptionsFilter],
+        exports: [api_response_service_1.ApiResponseService, all_exceptions_filter_1.AllExceptionsFilter, s3_storage_service_1.S3StorageService],
     })
 ], CommonModule);
 //# sourceMappingURL=common.module.js.map

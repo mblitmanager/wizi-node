@@ -17,17 +17,18 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
-const path_1 = require("path");
 const inscription_service_1 = require("../inscription/inscription.service");
 const ranking_service_1 = require("../ranking/ranking.service");
 const stagiaire_service_1 = require("./stagiaire.service");
 const api_response_service_1 = require("../common/services/api-response.service");
+const s3_storage_service_1 = require("../common/services/s3-storage.service");
 let StagiaireApiController = class StagiaireApiController {
-    constructor(inscriptionService, rankingService, stagiaireService, apiResponse) {
+    constructor(inscriptionService, rankingService, stagiaireService, apiResponse, s3Storage) {
         this.inscriptionService = inscriptionService;
         this.rankingService = rankingService;
         this.stagiaireService = stagiaireService;
         this.apiResponse = apiResponse;
+        this.s3Storage = s3Storage;
     }
     async profile(req) {
         const data = await this.stagiaireService.getDetailedProfile(req.user.id);
@@ -351,7 +352,8 @@ exports.StagiaireApiController = StagiaireApiController = __decorate([
     __metadata("design:paramtypes", [inscription_service_1.InscriptionService,
         ranking_service_1.RankingService,
         stagiaire_service_1.StagiaireService,
-        api_response_service_1.ApiResponseService])
+        api_response_service_1.ApiResponseService,
+        s3_storage_service_1.S3StorageService])
 ], StagiaireApiController);
 let ApiGeneralController = class ApiGeneralController {
     constructor(rankingService, stagiaireService, apiResponse) {
@@ -379,11 +381,12 @@ let ApiGeneralController = class ApiGeneralController {
         if (!file) {
             return this.apiResponse.error("No image uploaded", 400);
         }
-        const photoPath = `uploads/users/${file.filename}`;
-        await this.stagiaireService.updateProfilePhoto(req.user.id, photoPath);
+        const result = await this.s3Storage.uploadFile(file, "users");
+        await this.stagiaireService.updateProfilePhoto(req.user.id, result.key);
         return this.apiResponse.success({
             message: "Avatar mis à jour",
-            avatar: photoPath,
+            avatar: result.key,
+            avatar_url: result.url,
         });
     }
     async getUserStatus() {
@@ -436,16 +439,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)("avatar/:id/update-profile"),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)("image", {
-        storage: (0, multer_1.diskStorage)({
-            destination: "./public/uploads/users",
-            filename: (req, file, cb) => {
-                const randomName = Array(32)
-                    .fill(null)
-                    .map(() => Math.round(Math.random() * 16).toString(16))
-                    .join("");
-                return cb(null, `${randomName}${(0, path_1.extname)(file.originalname)}`);
-            },
-        }),
+        storage: (0, multer_1.memoryStorage)(),
     })),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.UploadedFile)()),
