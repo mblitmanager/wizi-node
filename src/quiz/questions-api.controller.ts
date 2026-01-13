@@ -181,8 +181,19 @@ export class QuestionsApiController {
       throw new NotFoundException("Question non trouvée");
     }
 
-    return question.reponses.map((r) =>
-      this.quizService.formatReponseJsonLd(r)
-    );
+    const data = question.reponses.map((r) => ({
+      id: r.id,
+      text: r.text,
+      question_id: r.question_id,
+      is_correct: r.isCorrect ? 1 : 0,
+      position: r.position,
+      match_pair: r.match_pair,
+      bank_group: r.bank_group,
+      flashcard_back: r.flashcardBack,
+      created_at: r.created_at,
+      updated_at: r.updated_at,
+    }));
+
+    return { success: true, data };
   }
 }

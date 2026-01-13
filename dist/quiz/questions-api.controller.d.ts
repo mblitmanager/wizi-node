@@ -76,17 +76,18 @@ export declare class QuestionsApiController {
         message: string;
     }>;
     getReponsesByQuestion(questionId: number): Promise<{
-        "@id": string;
-        "@type": string;
-        id: number;
-        text: string;
-        isCorrect: boolean;
-        position: number;
-        flashcardBack: string;
-        match_pair: string;
-        bank_group: string;
-        question: string;
-        createdAt: string;
-        updatedAt: string;
-    }[]>;
+        success: boolean;
+        data: {
+            id: number;
+            text: string;
+            question_id: number;
+            is_correct: number;
+            position: number;
+            match_pair: string;
+            bank_group: string;
+            flashcard_back: string;
+            created_at: Date;
+            updated_at: Date;
+        }[];
+    }>;
 }
