@@ -26,7 +26,7 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Progression.prototype, "termine", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], Progression.prototype, "stagiaire_id", void 0);
 __decorate([
@@ -53,7 +53,7 @@ __decorate([
     __metadata("design:type", formation_entity_1.Formation)
 ], Progression.prototype, "formation", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "decimal", precision: 5, scale: 2, default: 0 }),
+    (0, typeorm_1.Column)({ type: "float", default: 0 }),
     __metadata("design:type", Number)
 ], Progression.prototype, "pourcentage", void 0);
 __decorate([
@@ -61,39 +61,31 @@ __decorate([
     __metadata("design:type", String)
 ], Progression.prototype, "explication", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
+    (0, typeorm_1.Column)({ type: "int", default: 0 }),
     __metadata("design:type", Number)
 ], Progression.prototype, "score", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
-    __metadata("design:type", Number)
-], Progression.prototype, "points", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
-    __metadata("design:type", Number)
-], Progression.prototype, "completed_challenges", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
+    (0, typeorm_1.Column)({ type: "int", default: 0 }),
     __metadata("design:type", Number)
 ], Progression.prototype, "correct_answers", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 0 }),
+    (0, typeorm_1.Column)({ type: "int", default: 0 }),
     __metadata("design:type", Number)
 ], Progression.prototype, "total_questions", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Progression.prototype, "time_spent", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
+    (0, typeorm_1.Column)({ type: "datetime", nullable: true }),
     __metadata("design:type", Date)
 ], Progression.prototype, "completion_time", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
+    (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Progression.prototype, "created_at", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
+    (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], Progression.prototype, "updated_at", void 0);
 exports.Progression = Progression = __decorate([

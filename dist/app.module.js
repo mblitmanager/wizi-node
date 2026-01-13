@@ -62,6 +62,9 @@ const mail_module_1 = require("./mail/mail.module");
 const agenda_module_1 = require("./agenda/agenda.module");
 const announcement_module_1 = require("./announcement/announcement.module");
 const challenge_module_1 = require("./challenge/challenge.module");
+const participation_module_1 = require("./participation/participation.module");
+const pole_relation_client_module_1 = require("./pole-relation-client/pole-relation-client.module");
+const progression_module_1 = require("./progression/progression.module");
 let AppModule = class AppModule {
     constructor() {
         console.log("AppModule loaded - MediaModule should be active");
@@ -165,6 +168,9 @@ exports.AppModule = AppModule = __decorate([
             agenda_module_1.AgendaModule,
             announcement_module_1.AnnouncementModule,
             challenge_module_1.ChallengeModule,
+            participation_module_1.ParticipationModule,
+            pole_relation_client_module_1.PoleRelationClientModule,
+            progression_module_1.ProgressionModule,
             common_module_1.CommonModule,
         ],
         controllers: [app_controller_1.AppController],

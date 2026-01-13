@@ -64,7 +64,7 @@ export declare class QuizApiController {
         };
         score: number;
         completedAt: string;
-        timeSpent: number;
+        timeSpent: string | number;
         totalQuestions: number;
         correctAnswers: number;
     }[]>;

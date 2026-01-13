@@ -186,7 +186,7 @@ export declare class RankingService {
         };
         score: number;
         completedAt: string;
-        timeSpent: number;
+        timeSpent: string | number;
         totalQuestions: number;
         correctAnswers: number;
     }[]>;

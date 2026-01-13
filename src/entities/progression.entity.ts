@@ -4,6 +4,8 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Stagiaire } from "./stagiaire.entity";
 import { Quiz } from "./quiz.entity";
@@ -17,7 +19,7 @@ export class Progression {
   @Column({ default: false })
   termine: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   stagiaire_id: number;
 
   @ManyToOne(() => Stagiaire)
@@ -38,36 +40,30 @@ export class Progression {
   @JoinColumn({ name: "formation_id" })
   formation: Formation;
 
-  @Column({ type: "decimal", precision: 5, scale: 2, default: 0 })
+  @Column({ type: "float", default: 0 })
   pourcentage: number;
 
   @Column({ type: "text", nullable: true })
   explication: string;
 
-  @Column({ default: 0 })
+  @Column({ type: "int", default: 0 })
   score: number;
 
-  @Column({ default: 0 })
-  points: number;
-
-  @Column({ default: 0 })
-  completed_challenges: number;
-
-  @Column({ default: 0 })
+  @Column({ type: "int", default: 0 })
   correct_answers: number;
 
-  @Column({ default: 0 })
+  @Column({ type: "int", default: 0 })
   total_questions: number;
 
   @Column({ nullable: true })
-  time_spent: number;
+  time_spent: string;
 
-  @Column({ type: "timestamp", nullable: true })
+  @Column({ type: "datetime", nullable: true })
   completion_time: Date;
 
-  @Column({ type: "timestamp", nullable: true })
+  @CreateDateColumn()
   created_at: Date;
 
-  @Column({ type: "timestamp", nullable: true })
+  @UpdateDateColumn()
   updated_at: Date;
 }

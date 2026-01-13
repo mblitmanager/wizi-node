@@ -13,11 +13,9 @@ export declare class Progression {
     pourcentage: number;
     explication: string;
     score: number;
-    points: number;
-    completed_challenges: number;
     correct_answers: number;
     total_questions: number;
-    time_spent: number;
+    time_spent: string;
     completion_time: Date;
     created_at: Date;
     updated_at: Date;

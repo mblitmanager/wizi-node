@@ -41,8 +41,8 @@ export declare class ChallengeService {
         rank: number;
         stagiaire_id: number;
         name: string;
-        points: number;
-        completed_challenges: number;
+        points: any;
+        completed_challenges: any;
     }[]>;
     getChallengeEntries(userId: number): Promise<Challenge[]>;
 }

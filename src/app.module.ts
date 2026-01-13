@@ -52,6 +52,9 @@ import { MailModule } from "./mail/mail.module";
 import { AgendaModule } from "./agenda/agenda.module";
 import { AnnouncementModule } from "./announcement/announcement.module";
 import { ChallengeModule } from "./challenge/challenge.module";
+import { ParticipationModule } from "./participation/participation.module";
+import { PoleRelationClientModule } from "./pole-relation-client/pole-relation-client.module";
+import { ProgressionModule } from "./progression/progression.module";
 
 @Module({
   imports: [
@@ -146,6 +149,9 @@ import { ChallengeModule } from "./challenge/challenge.module";
     AgendaModule,
     AnnouncementModule,
     ChallengeModule,
+    ParticipationModule,
+    PoleRelationClientModule,
+    ProgressionModule,
     CommonModule,
   ],
   controllers: [AppController],

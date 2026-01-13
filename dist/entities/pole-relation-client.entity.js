@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PoleRelationClient = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
-const stagiaire_entity_1 = require("./stagiaire.entity");
 let PoleRelationClient = class PoleRelationClient {
 };
 exports.PoleRelationClient = PoleRelationClient;
@@ -25,7 +24,11 @@ __decorate([
     __metadata("design:type", String)
 ], PoleRelationClient.prototype, "role", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], PoleRelationClient.prototype, "stagiaire_id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], PoleRelationClient.prototype, "user_id", void 0);
 __decorate([
@@ -42,15 +45,11 @@ __decorate([
     __metadata("design:type", String)
 ], PoleRelationClient.prototype, "telephone", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => stagiaire_entity_1.Stagiaire, (stagiaire) => stagiaire.poleRelationClients),
-    __metadata("design:type", Array)
-], PoleRelationClient.prototype, "stagiaires", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
+    (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], PoleRelationClient.prototype, "created_at", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
+    (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], PoleRelationClient.prototype, "updated_at", void 0);
 exports.PoleRelationClient = PoleRelationClient = __decorate([

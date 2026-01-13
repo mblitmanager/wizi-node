@@ -13,8 +13,8 @@ export declare class ChallengeController {
         rank: number;
         stagiaire_id: number;
         name: string;
-        points: number;
-        completed_challenges: number;
+        points: any;
+        completed_challenges: any;
     }[]>;
     getEntries(req: any): Promise<import("../entities/challenge.entity").Challenge[]>;
 }

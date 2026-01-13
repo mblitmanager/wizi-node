@@ -4,10 +4,10 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  ManyToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { User } from "./user.entity";
-import { Stagiaire } from "./stagiaire.entity";
 
 @Entity("pole_relation_clients")
 export class PoleRelationClient {
@@ -17,7 +17,10 @@ export class PoleRelationClient {
   @Column({ nullable: true })
   role: string;
 
-  @Column()
+  @Column({ nullable: true })
+  stagiaire_id: number;
+
+  @Column({ nullable: true })
   user_id: number;
 
   @ManyToOne(() => User)
@@ -30,12 +33,9 @@ export class PoleRelationClient {
   @Column({ nullable: true })
   telephone: string;
 
-  @ManyToMany(() => Stagiaire, (stagiaire) => stagiaire.poleRelationClients)
-  stagiaires: Stagiaire[];
-
-  @Column({ type: "timestamp", nullable: true })
+  @CreateDateColumn()
   created_at: Date;
 
-  @Column({ type: "timestamp", nullable: true })
+  @UpdateDateColumn()
   updated_at: Date;
 }
