@@ -53,14 +53,6 @@ __decorate([
     __metadata("design:type", String)
 ], Question.prototype, "astuce", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: "flashcard_back", type: "text", nullable: true }),
-    __metadata("design:type", String)
-], Question.prototype, "flashcard_back", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], Question.prototype, "audio_url", void 0);
-__decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Question.prototype, "media_url", void 0);

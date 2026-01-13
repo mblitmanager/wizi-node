@@ -77,7 +77,6 @@ export class QuestionsApiController {
       astuce: createQuestionDto.astuce || createQuestionDto.hint,
       explication:
         createQuestionDto.explication || createQuestionDto.explanation,
-      audio_url: createQuestionDto.audio_url,
       media_url: createQuestionDto.media_url || createQuestionDto.image_url,
     });
 
@@ -133,7 +132,6 @@ export class QuestionsApiController {
         updateQuestionDto.explication ??
         updateQuestionDto.explanation ??
         question.explication,
-      audio_url: updateQuestionDto.audio_url ?? question.audio_url,
       media_url:
         updateQuestionDto.media_url ??
         updateQuestionDto.image_url ??

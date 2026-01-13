@@ -55,7 +55,6 @@ let QuestionsApiController = class QuestionsApiController {
             points: createQuestionDto.points || "1",
             astuce: createQuestionDto.astuce || createQuestionDto.hint,
             explication: createQuestionDto.explication || createQuestionDto.explanation,
-            audio_url: createQuestionDto.audio_url,
             media_url: createQuestionDto.media_url || createQuestionDto.image_url,
         });
         const saved = await this.questionRepository.save(question);
@@ -91,7 +90,6 @@ let QuestionsApiController = class QuestionsApiController {
             explication: updateQuestionDto.explication ??
                 updateQuestionDto.explanation ??
                 question.explication,
-            audio_url: updateQuestionDto.audio_url ?? question.audio_url,
             media_url: updateQuestionDto.media_url ??
                 updateQuestionDto.image_url ??
                 question.media_url,
