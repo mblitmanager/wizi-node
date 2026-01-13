@@ -647,3 +647,111 @@
 [2026-01-13T13:25:00.556Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
 [2026-01-13T13:25:00.560Z] participations found: 15
 [2026-01-13T13:25:00.560Z] Mapped 15 quiz-question sets
+[2026-01-13T13:27:24.390Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:27:24.413Z] formationIds: [10]
+[2026-01-13T13:27:24.425Z] quizzes found: 15
+[2026-01-13T13:27:24.426Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:27:24.449Z] allQuestions found: 252
+[2026-01-13T13:27:24.450Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:27:24.451Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:27:24.463Z] participations found: 16
+[2026-01-13T13:27:24.464Z] Mapped 15 quiz-question sets
+[2026-01-13T13:27:24.490Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:27:24.502Z] formationIds: [10]
+[2026-01-13T13:27:24.506Z] quizzes found: 15
+[2026-01-13T13:27:24.507Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:27:24.525Z] allQuestions found: 252
+[2026-01-13T13:27:24.526Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:27:24.527Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:27:24.530Z] participations found: 16
+[2026-01-13T13:27:24.530Z] Mapped 15 quiz-question sets
+[2026-01-13T13:30:02.359Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:30:02.386Z] formationIds: [10]
+[2026-01-13T13:30:02.398Z] quizzes found: 15
+[2026-01-13T13:30:02.399Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:30:02.428Z] allQuestions found: 252
+[2026-01-13T13:30:02.429Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:30:02.430Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:30:02.439Z] participations found: 18
+[2026-01-13T13:30:02.440Z] Mapped 15 quiz-question sets
+[2026-01-13T13:30:02.472Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:30:02.487Z] formationIds: [10]
+[2026-01-13T13:30:02.492Z] quizzes found: 15
+[2026-01-13T13:30:02.492Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:30:02.508Z] allQuestions found: 252
+[2026-01-13T13:30:02.509Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:30:02.510Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:30:02.514Z] participations found: 18
+[2026-01-13T13:30:02.514Z] Mapped 15 quiz-question sets
+[2026-01-13T13:30:36.455Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:30:36.461Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:30:36.474Z] formationIds: [10]
+[2026-01-13T13:30:36.479Z] formationIds: [10]
+[2026-01-13T13:30:36.483Z] quizzes found: 15
+[2026-01-13T13:30:36.483Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:30:36.486Z] quizzes found: 15
+[2026-01-13T13:30:36.487Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:30:36.508Z] allQuestions found: 252
+[2026-01-13T13:30:36.510Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:30:36.511Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:30:36.530Z] allQuestions found: 252
+[2026-01-13T13:30:36.531Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:30:36.532Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:30:36.536Z] participations found: 18
+[2026-01-13T13:30:36.537Z] Mapped 15 quiz-question sets
+[2026-01-13T13:30:36.539Z] participations found: 18
+[2026-01-13T13:30:36.540Z] Mapped 15 quiz-question sets
+[2026-01-13T13:30:40.787Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:30:40.804Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:30:40.823Z] formationIds: [10]
+[2026-01-13T13:30:40.828Z] formationIds: [10]
+[2026-01-13T13:30:40.831Z] quizzes found: 15
+[2026-01-13T13:30:40.832Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:30:40.836Z] quizzes found: 15
+[2026-01-13T13:30:40.836Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:30:40.852Z] allQuestions found: 252
+[2026-01-13T13:30:40.853Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:30:40.854Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:30:40.871Z] allQuestions found: 252
+[2026-01-13T13:30:40.872Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:30:40.873Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:30:40.876Z] participations found: 18
+[2026-01-13T13:30:40.877Z] Mapped 15 quiz-question sets
+[2026-01-13T13:30:40.879Z] participations found: 18
+[2026-01-13T13:30:40.880Z] Mapped 15 quiz-question sets
+[2026-01-13T13:30:40.894Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:30:40.904Z] formationIds: [10]
+[2026-01-13T13:30:40.909Z] quizzes found: 15
+[2026-01-13T13:30:40.910Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:30:40.931Z] allQuestions found: 252
+[2026-01-13T13:30:40.932Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:30:40.933Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:30:40.938Z] participations found: 18
+[2026-01-13T13:30:40.939Z] Mapped 15 quiz-question sets
+[2026-01-13T13:30:49.098Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:30:49.104Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:30:49.121Z] formationIds: [10]
+[2026-01-13T13:30:49.125Z] formationIds: [10]
+[2026-01-13T13:30:49.128Z] quizzes found: 15
+[2026-01-13T13:30:49.129Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:30:49.132Z] quizzes found: 15
+[2026-01-13T13:30:49.132Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:30:49.149Z] allQuestions found: 252
+[2026-01-13T13:30:49.149Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:30:49.150Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:30:49.159Z] allQuestions found: 252
+[2026-01-13T13:30:49.160Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:30:49.161Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:30:49.164Z] participations found: 18
+[2026-01-13T13:30:49.164Z] Mapped 15 quiz-question sets
+[2026-01-13T13:30:49.167Z] participations found: 18
+[2026-01-13T13:30:49.167Z] Mapped 15 quiz-question sets
+[2026-01-13T13:30:49.181Z] Starting getQuizHistory for userId: 119
+[2026-01-13T13:30:49.192Z] formationIds: [10]
+[2026-01-13T13:30:49.196Z] quizzes found: 15
+[2026-01-13T13:30:49.197Z] quizIds: [288,289,290,291,292,293,294,295,296,297,298,299,300,301,302]
+[2026-01-13T13:30:49.214Z] allQuestions found: 252
+[2026-01-13T13:30:49.215Z] First question ID: 5960, reponses count: 2
+[2026-01-13T13:30:49.216Z] First reponse: {"id":17560,"text":"Vrai","isCorrect":false,"position":1,"match_pair":null,"bank_group":null,"flashcardBack":null,"question_id":5960,"created_at":"2025-09-19T10:31:12.000Z","updated_at":"2025-09-19T10:31:12.000Z"}
+[2026-01-13T13:30:49.220Z] participations found: 18
+[2026-01-13T13:30:49.220Z] Mapped 15 quiz-question sets

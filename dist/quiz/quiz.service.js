@@ -734,6 +734,82 @@ let QuizService = class QuizService {
             },
         };
     }
+    async getLatestParticipation(quizId, userId) {
+        const participation = await this.participationRepository.findOne({
+            where: { quiz_id: quizId, user_id: userId },
+            order: { completed_at: "DESC" },
+            relations: [
+                "quiz",
+                "quiz.formation",
+                "quiz.questions",
+                "quiz.questions.reponses",
+            ],
+        });
+        if (!participation) {
+            return null;
+        }
+        const userAnswers = await this.participationAnswerRepository.find({
+            where: { participation_id: participation.id },
+            relations: ["question"],
+        });
+        const questionsDetails = participation.quiz.questions.map((question) => {
+            const userAnswer = userAnswers.find((a) => a.question_id === question.id);
+            let selectedAnswers = null;
+            let correctAnswers = [];
+            let isCorrect = false;
+            if (userAnswer) {
+                selectedAnswers = userAnswer.answer_ids;
+                correctAnswers = question.reponses
+                    .filter((r) => r.isCorrect)
+                    .map((r) => r.id);
+                if (Array.isArray(selectedAnswers)) {
+                    isCorrect =
+                        selectedAnswers.length === correctAnswers.length &&
+                            selectedAnswers.every((id) => correctAnswers.includes(id));
+                }
+            }
+            return {
+                id: question.id,
+                text: question.text,
+                type: question.type,
+                selectedAnswers,
+                correctAnswers,
+                isCorrect,
+                answers: question.reponses.map((r) => ({
+                    id: r.id,
+                    text: r.text,
+                    isCorrect: r.isCorrect,
+                })),
+            };
+        });
+        return {
+            success: true,
+            quizId: participation.quiz_id,
+            score: participation.score || 0,
+            correctAnswers: participation.correct_answers || 0,
+            totalQuestions: questionsDetails.length,
+            timeSpent: participation.time_spent || 0,
+            startedAt: participation.started_at
+                ? participation.started_at.toISOString()
+                : null,
+            completedAt: participation.completed_at
+                ? participation.completed_at.toISOString()
+                : null,
+            questions: questionsDetails,
+            quiz: {
+                id: participation.quiz.id,
+                titre: participation.quiz.titre,
+                description: participation.quiz.description,
+                formation: participation.quiz.formation
+                    ? {
+                        id: participation.quiz.formation.id,
+                        titre: participation.quiz.formation.titre,
+                        categorie: participation.quiz.formation.categorie,
+                    }
+                    : null,
+            },
+        };
+    }
 };
 exports.QuizService = QuizService;
 exports.QuizService = QuizService = __decorate([

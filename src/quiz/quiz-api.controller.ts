@@ -116,6 +116,26 @@ export class QuizApiController {
     return this.apiResponse.success(data);
   }
 
+  @Get(":id/result")
+  async getResult(@Param("id") id: number, @Request() req: any) {
+    const userId = req.user?.id;
+    if (!userId) {
+      return this.apiResponse.error("User not found", 401);
+    }
+
+    // Get the latest participation for this user and quiz
+    const participation = await this.quizService.getLatestParticipation(
+      id,
+      userId
+    );
+
+    if (!participation) {
+      return this.apiResponse.error("No quiz result found", 404);
+    }
+
+    return this.apiResponse.success(participation);
+  }
+
   @Post(":id/result")
   async submitResult(
     @Param("id") id: number,

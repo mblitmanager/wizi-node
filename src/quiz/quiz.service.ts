@@ -917,4 +917,96 @@ export class QuizService {
       },
     };
   }
+
+  async getLatestParticipation(quizId: number, userId: number) {
+    // Get the latest quiz participation with all related data
+    const participation = await this.participationRepository.findOne({
+      where: { quiz_id: quizId, user_id: userId },
+      order: { completed_at: "DESC" },
+      relations: [
+        "quiz",
+        "quiz.formation",
+        "quiz.questions",
+        "quiz.questions.reponses",
+      ],
+    });
+
+    if (!participation) {
+      return null;
+    }
+
+    // Get all user answers for this participation
+    const userAnswers = await this.participationAnswerRepository.find({
+      where: { participation_id: participation.id },
+      relations: ["question"],
+    });
+
+    // Build questions details with user answers
+    const questionsDetails = participation.quiz.questions.map((question) => {
+      const userAnswer = userAnswers.find((a) => a.question_id === question.id);
+      let selectedAnswers = null;
+      let correctAnswers: any[] = [];
+      let isCorrect = false;
+
+      if (userAnswer) {
+        selectedAnswers = userAnswer.answer_ids;
+
+        // Determine correct answers based on question type
+        correctAnswers = question.reponses
+          .filter((r) => r.isCorrect)
+          .map((r) => r.id);
+
+        // Check if answer is correct
+        if (Array.isArray(selectedAnswers)) {
+          isCorrect =
+            selectedAnswers.length === correctAnswers.length &&
+            selectedAnswers.every((id: number) => correctAnswers.includes(id));
+        }
+      }
+
+      return {
+        id: question.id,
+        text: question.text,
+        type: question.type,
+        selectedAnswers,
+        correctAnswers,
+        isCorrect,
+        answers: question.reponses.map((r) => ({
+          id: r.id,
+          text: r.text,
+          isCorrect: r.isCorrect,
+        })),
+      };
+    });
+
+    // Return formatted result with properly serialized dates
+    return {
+      success: true,
+      quizId: participation.quiz_id,
+      score: participation.score || 0,
+      correctAnswers: participation.correct_answers || 0,
+      totalQuestions: questionsDetails.length,
+      timeSpent: participation.time_spent || 0,
+      // Ensure dates are ISO strings or null
+      startedAt: participation.started_at
+        ? participation.started_at.toISOString()
+        : null,
+      completedAt: participation.completed_at
+        ? participation.completed_at.toISOString()
+        : null,
+      questions: questionsDetails,
+      quiz: {
+        id: participation.quiz.id,
+        titre: participation.quiz.titre,
+        description: participation.quiz.description,
+        formation: participation.quiz.formation
+          ? {
+              id: participation.quiz.formation.id,
+              titre: participation.quiz.formation.titre,
+              categorie: participation.quiz.formation.categorie,
+            }
+          : null,
+      },
+    };
+  }
 }

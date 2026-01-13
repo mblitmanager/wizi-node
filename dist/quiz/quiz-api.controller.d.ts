@@ -91,6 +91,7 @@ export declare class QuizApiController {
     statsPerformance(): Promise<any>;
     statsTrends(): Promise<any>;
     getById(id: number): Promise<any>;
+    getResult(id: number, req: any): Promise<any>;
     submitResult(id: number, body: any, req: any): Promise<any>;
     getQuestions(quizId: number): Promise<any>;
     submit(quizId: number, data: any): Promise<any>;

@@ -84,6 +84,17 @@ let QuizApiController = class QuizApiController {
         const data = await this.quizService.getQuizDetails(id);
         return this.apiResponse.success(data);
     }
+    async getResult(id, req) {
+        const userId = req.user?.id;
+        if (!userId) {
+            return this.apiResponse.error("User not found", 401);
+        }
+        const participation = await this.quizService.getLatestParticipation(id, userId);
+        if (!participation) {
+            return this.apiResponse.error("No quiz result found", 404);
+        }
+        return this.apiResponse.success(participation);
+    }
     async submitResult(id, body, req) {
         const stagiaireId = req.user.stagiaire?.id;
         if (!stagiaireId) {
@@ -213,6 +224,14 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "getById", null);
+__decorate([
+    (0, common_1.Get)(":id/result"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], QuizApiController.prototype, "getResult", null);
 __decorate([
     (0, common_1.Post)(":id/result"),
     __param(0, (0, common_1.Param)("id")),

@@ -229,4 +229,37 @@ export declare class QuizService {
             };
         };
     }>;
+    getLatestParticipation(quizId: number, userId: number): Promise<{
+        success: boolean;
+        quizId: number;
+        score: number;
+        correctAnswers: number;
+        totalQuestions: number;
+        timeSpent: number;
+        startedAt: string;
+        completedAt: string;
+        questions: {
+            id: number;
+            text: string;
+            type: string;
+            selectedAnswers: any;
+            correctAnswers: any[];
+            isCorrect: boolean;
+            answers: {
+                id: number;
+                text: string;
+                isCorrect: boolean;
+            }[];
+        }[];
+        quiz: {
+            id: number;
+            titre: string;
+            description: string;
+            formation: {
+                id: number;
+                titre: string;
+                categorie: string;
+            };
+        };
+    }>;
 }
