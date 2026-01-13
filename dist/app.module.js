@@ -121,7 +121,8 @@ exports.AppModule = AppModule = __decorate([
                         participation_entity_1.Participation,
                     ],
                     synchronize: false,
-                    logging: true,
+                    logging: ["query", "error"],
+                    logger: "advanced-console",
                 }),
             }),
             typeorm_1.TypeOrmModule.forFeature([

@@ -102,7 +102,8 @@ import { ProgressionModule } from "./progression/progression.module";
           Participation,
         ],
         synchronize: false,
-        logging: true,
+        logging: ["query", "error"],
+        logger: "advanced-console",
       }),
     }),
     TypeOrmModule.forFeature([
