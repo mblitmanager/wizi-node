@@ -130,10 +130,10 @@ export class StagiaireApiController {
 
   @Get("quizzes")
   async quizzes(@Request() req: any) {
-    const userId = req.user?.id || 7; // Fallback for testing
-    return this.apiResponse.success(
-      await this.rankingService.getQuizHistory(userId)
-    );
+    const userId = req.user?.id || 7;
+    return {
+      data: await this.rankingService.getQuizHistory(userId),
+    };
   }
 
   @Get("ranking/global")

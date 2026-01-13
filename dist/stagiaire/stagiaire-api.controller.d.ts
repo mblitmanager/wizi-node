@@ -31,7 +31,44 @@ export declare class StagiaireApiController {
     contactsPoleRelation(): Promise<any>;
     contactsPoleSave(): Promise<any>;
     progress(req: any): Promise<any>;
-    quizzes(req: any): Promise<any>;
+    quizzes(req: any): Promise<{
+        data: {
+            id: string;
+            titre: string;
+            description: string;
+            duree: string;
+            niveau: string;
+            status: string;
+            nb_points_total: string;
+            formationId: string;
+            categorie: string;
+            formation: {
+                id: number;
+                titre: string;
+                categorie: string;
+            };
+            questions: {
+                id: string;
+                text: string;
+                type: string;
+                points: string;
+                answers: {
+                    id: string;
+                    text: string;
+                    isCorrect: boolean;
+                }[];
+            }[];
+            userParticipation: {
+                id: number;
+                status: string;
+                score: number;
+                correct_answers: number;
+                time_spent: number;
+                started_at: string;
+                completed_at: string;
+            };
+        }[];
+    }>;
     rankingGlobal(): Promise<any>;
     rankingFormation(formationId: number): Promise<any>;
     rewards(req: any): Promise<any>;

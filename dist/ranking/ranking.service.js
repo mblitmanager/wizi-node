@@ -24,7 +24,8 @@ const quiz_entity_1 = require("../entities/quiz.entity");
 const user_entity_1 = require("../entities/user.entity");
 const formation_entity_1 = require("../entities/formation.entity");
 const question_entity_1 = require("../entities/question.entity");
-const typeorm_3 = require("typeorm");
+const fs = require("fs");
+const path = require("path");
 let RankingService = class RankingService {
     constructor(classementRepository, stagiaireRepository, participationRepository, progressionRepository, quizRepository, userRepository, formationRepository, questionRepository) {
         this.classementRepository = classementRepository;
@@ -349,6 +350,9 @@ let RankingService = class RankingService {
         };
     }
     async getQuizHistory(userId) {
+        const logPath = path.join(process.cwd(), "debug_ranking.txt");
+        const log = (msg) => fs.appendFileSync(logPath, `[${new Date().toISOString()}] ${msg}\n`);
+        log(`Starting getQuizHistory for userId: ${userId}`);
         const stagiaire = await this.stagiaireRepository.findOne({
             where: { user_id: userId },
             relations: [
@@ -357,41 +361,65 @@ let RankingService = class RankingService {
                 "stagiaire_catalogue_formations.catalogue_formation.formation",
             ],
         });
-        if (!stagiaire)
+        if (!stagiaire) {
+            log(`Stagiaire not found for userId: ${userId}`);
             return [];
+        }
         const formationIds = stagiaire.stagiaire_catalogue_formations
             ?.map((scf) => scf.catalogue_formation?.formation?.id)
             .filter((id) => id !== undefined) || [];
-        if (formationIds.length === 0)
+        log(`formationIds: ${JSON.stringify(formationIds)}`);
+        if (formationIds.length === 0) {
+            log(`No formations found for stagiaire ${stagiaire.id}`);
             return [];
+        }
         const quizzes = await this.quizRepository.find({
             where: {
-                formation_id: (0, typeorm_3.In)(formationIds),
+                formation_id: (0, typeorm_2.In)(formationIds),
                 status: "actif",
             },
-            relations: ["formation", "questions", "questions.reponses"],
+            relations: ["formation"],
         });
+        log(`quizzes found: ${quizzes.length}`);
+        if (quizzes.length === 0)
+            return [];
         const quizIds = quizzes.map((q) => q.id);
-        const participations = await this.progressionRepository.find({
+        log(`quizIds: ${JSON.stringify(quizIds)}`);
+        const allQuestions = await this.questionRepository.find({
+            where: { quiz_id: (0, typeorm_2.In)(quizIds) },
+            relations: ["reponses"],
+        });
+        log(`allQuestions found: ${allQuestions.length}`);
+        const participations = await this.participationRepository.find({
             where: {
-                stagiaire_id: stagiaire.id,
-                quiz_id: (0, typeorm_3.In)(quizIds),
+                user_id: userId,
+                quiz_id: (0, typeorm_2.In)(quizIds),
             },
             order: { created_at: "DESC" },
         });
+        log(`participations found: ${participations.length}`);
         const participationsByQuizId = {};
         participations.forEach((p) => {
             if (!participationsByQuizId[p.quiz_id]) {
                 participationsByQuizId[p.quiz_id] = p;
             }
         });
+        const questionsByQuizId = {};
+        allQuestions.forEach((q) => {
+            if (!questionsByQuizId[q.quiz_id]) {
+                questionsByQuizId[q.quiz_id] = [];
+            }
+            questionsByQuizId[q.quiz_id].push(q);
+        });
+        log(`Mapped ${Object.keys(questionsByQuizId).length} quiz-question sets`);
         return quizzes.map((quiz) => {
             const lastParticipation = participationsByQuizId[quiz.id];
+            const quizQuestions = questionsByQuizId[quiz.id] || [];
             return {
                 id: quiz.id.toString(),
                 titre: quiz.titre,
                 description: quiz.description,
-                duree: quiz.duree ?? null,
+                duree: quiz.duree ?? "30",
                 niveau: quiz.niveau ?? "débutant",
                 status: quiz.status ?? "actif",
                 nb_points_total: String(quiz.nb_points_total || "0"),
@@ -404,10 +432,10 @@ let RankingService = class RankingService {
                         categorie: quiz.formation.categorie ?? null,
                     }
                     : null,
-                questions: (quiz.questions || []).map((question) => ({
+                questions: quizQuestions.map((question) => ({
                     id: question.id.toString(),
                     text: question.text ?? null,
-                    type: question.type ?? null,
+                    type: question.type ?? "choix multiples",
                     points: question.points?.toString() || "0",
                     answers: (question.reponses || []).map((r) => ({
                         id: r.id.toString(),
@@ -418,12 +446,14 @@ let RankingService = class RankingService {
                 userParticipation: lastParticipation
                     ? {
                         id: lastParticipation.id,
-                        status: lastParticipation.termine ? "completed" : "in_progress",
+                        status: lastParticipation.status || "completed",
                         score: lastParticipation.score,
                         correct_answers: lastParticipation.correct_answers,
                         time_spent: lastParticipation.time_spent,
-                        started_at: lastParticipation.created_at?.toISOString(),
-                        completed_at: lastParticipation.updated_at?.toISOString(),
+                        started_at: lastParticipation.started_at?.toISOString() ||
+                            lastParticipation.created_at?.toISOString(),
+                        completed_at: lastParticipation.completed_at?.toISOString() ||
+                            lastParticipation.updated_at?.toISOString(),
                     }
                     : null,
             };

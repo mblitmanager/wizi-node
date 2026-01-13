@@ -100,9 +100,6 @@ let StagiaireController = class StagiaireController {
             throw new common_1.HttpException(error.message || "Internal error", common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async getMyQuizzes(req) {
-        return this.stagiaireService.getStagiaireQuizzes(req.user.id);
-    }
     async getStagiaireFormations(id) {
         try {
             return await this.stagiaireService.getFormationsByStagiaire(id);
@@ -245,14 +242,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StagiaireController.prototype, "getPoleSave", null);
-__decorate([
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    (0, common_1.Get)("quizzes"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StagiaireController.prototype, "getMyQuizzes", null);
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     (0, common_1.Get)(":id/formations"),

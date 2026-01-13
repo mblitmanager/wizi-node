@@ -173,34 +173,6 @@ export declare class StagiaireController {
         image: any;
         type: string;
     }[]>;
-    getMyQuizzes(req: any): Promise<{
-        data: {
-            id: string;
-            titre: string;
-            description: string;
-            duree: string;
-            niveau: string;
-            status: string;
-            nb_points_total: number;
-            formationId: string;
-            categorie: string;
-            formation: {
-                id: number;
-                titre: string;
-                categorie: string;
-            };
-            questions: any[];
-            userParticipation: {
-                id: number;
-                status: string;
-                score: number;
-                correct_answers: number;
-                time_spent: number;
-                started_at: string;
-                completed_at: string;
-            };
-        }[];
-    }>;
     getStagiaireFormations(id: number): Promise<{
         success: boolean;
         data: any[];

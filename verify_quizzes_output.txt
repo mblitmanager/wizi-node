@@ -1,7 +1,7 @@
 Testing GET /stagiaire/quizzes
 Status: 200
 Success: undefined
-Data Length: 118
+Data Length: 117
 Sample Quiz: {
   "id": "81",
   "titre": "Excel : Découverte de l'interface",
@@ -9,7 +9,7 @@ Sample Quiz: {
   "duree": "30",
   "niveau": "débutant",
   "status": "actif",
-  "nb_points_total": 20,
+  "nb_points_total": "20",
   "formationId": "14",
   "categorie": "Bureautique",
   "formation": {
@@ -17,14 +17,85 @@ Sample Quiz: {
     "titre": "Excel",
     "categorie": "Bureautique"
   },
-  "questions": [],
+  "questions": [
+    {
+      "id": "2380",
+      "text": "Quelle est la fonction principale du ruban dans  Excel ?",
+      "type": "choix multiples",
+      "points": "1",
+      "answers": []
+    },
+    {
+      "id": "2381",
+      "text": "Où pouvez-vous visualiser et modifier le contenu d'une cellule dans Excel ?",
+      "type": "choix multiples",
+      "points": "1",
+      "answers": []
+    },
+    {
+      "id": "2382",
+      "text": "Où se situe la barre d'état dans l'interface Excel ?",
+      "type": "choix multiples",
+      "points": "1",
+      "answers": []
+    },
+    {
+      "id": "2383",
+      "text": "Les onglets en bas de l'écran permettent de naviguer entre les différentes feuilles d'un classeur.",
+      "type": "vrai/faux",
+      "points": "1",
+      "answers": []
+    },
+    {
+      "id": "2384",
+      "text": "Le menu Fichier sert uniquement à modifier l'apparence des cellules.",
+      "type": "vrai/faux",
+      "points": "1",
+      "answers": []
+    },
+    {
+      "id": "2385",
+      "text": "Qu'est-ce qu'une cellule active dans Excel ?",
+      "type": "choix multiples",
+      "points": "1",
+      "answers": []
+    },
+    {
+      "id": "2386",
+      "text": "Comment appelle-t-on l'identifiant unique d'une cellule (ex: A1) ?",
+      "type": "choix multiples",
+      "points": "1",
+      "answers": []
+    },
+    {
+      "id": "2387",
+      "text": "Est-il possible de personnaliser le ruban dans Excel en ajoutant des commandes ?",
+      "type": "vrai/faux",
+      "points": "1",
+      "answers": []
+    },
+    {
+      "id": "2388",
+      "text": "Que contient la zone de nom ?",
+      "type": "choix multiples",
+      "points": "1",
+      "answers": []
+    },
+    {
+      "id": "2389",
+      "text": "L'outil de zoom permet uniquement d'agrandir la feuille de calcul.",
+      "type": "vrai/faux",
+      "points": "1",
+      "answers": []
+    }
+  ],
   "userParticipation": {
-    "id": 229,
+    "id": 317,
     "status": "completed",
-    "score": 8,
-    "correct_answers": 4,
-    "time_spent": 2,
-    "started_at": "2025-08-02T05:54:48.000Z",
-    "completed_at": "2025-08-02T05:54:48.000Z"
+    "score": 2,
+    "correct_answers": 1,
+    "time_spent": 27,
+    "started_at": "2025-09-22T04:27:08.000Z",
+    "completed_at": "2025-09-22T04:27:08.000Z"
   }
 }

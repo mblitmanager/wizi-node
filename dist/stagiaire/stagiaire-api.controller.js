@@ -90,7 +90,9 @@ let StagiaireApiController = class StagiaireApiController {
     }
     async quizzes(req) {
         const userId = req.user?.id || 7;
-        return this.apiResponse.success(await this.rankingService.getQuizHistory(userId));
+        return {
+            data: await this.rankingService.getQuizHistory(userId),
+        };
     }
     async rankingGlobal() {
         const data = await this.rankingService.getGlobalRanking();

@@ -155,12 +155,6 @@ export class StagiaireController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Get("quizzes")
-  async getMyQuizzes(@Request() req) {
-    return this.stagiaireService.getStagiaireQuizzes(req.user.id);
-  }
-
-  @UseGuards(AuthGuard("jwt"))
   @Get(":id/formations")
   async getStagiaireFormations(@Param("id") id: number) {
     try {
