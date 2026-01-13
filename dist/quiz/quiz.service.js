@@ -39,10 +39,13 @@ let QuizService = class QuizService {
         return this.quizRepository.find({ relations: ["formation"] });
     }
     async getQuizzesByFormation() {
-        const formations = await this.formationRepository.find({
-            relations: ["quizzes", "quizzes.questions", "quizzes.questions.reponses"],
-            order: { id: "ASC" },
-        });
+        const formations = await this.formationRepository
+            .createQueryBuilder("f")
+            .leftJoinAndSelect("f.quizzes", "q")
+            .leftJoinAndSelect("q.questions", "question")
+            .leftJoinAndSelect("question.reponses", "r")
+            .orderBy("f.id", "ASC")
+            .getMany();
         return formations.map((f) => ({
             id: f.id.toString(),
             titre: f.titre,
