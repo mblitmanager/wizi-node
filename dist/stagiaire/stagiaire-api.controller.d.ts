@@ -31,7 +31,7 @@ export declare class StagiaireApiController {
     contactsPoleRelation(): Promise<any>;
     contactsPoleSave(): Promise<any>;
     progress(req: any): Promise<any>;
-    quizzes(): Promise<any>;
+    quizzes(req: any): Promise<any>;
     rankingGlobal(): Promise<any>;
     rankingFormation(formationId: number): Promise<any>;
     rewards(req: any): Promise<any>;
