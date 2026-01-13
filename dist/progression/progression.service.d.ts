@@ -23,13 +23,13 @@ export declare class ProgressionService {
             updated_at: string;
         }[];
         totalItems: number;
-        "hydra:view": {
+        view: {
             "@id": string;
             "@type": string;
-            "hydra:first": string;
-            "hydra:last": string;
-            "hydra:next": string;
-            "hydra:previous": string;
+            first: string;
+            last: string;
+            next: string;
+            previous: string;
         };
     }>;
     findOne(id: number): Promise<{

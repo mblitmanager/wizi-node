@@ -48,15 +48,15 @@ let ProgressionService = class ProgressionService {
         return {
             member: formattedData,
             totalItems: total,
-            "hydra:view": {
+            view: {
                 "@id": `${baseUrl}?page=${page}`,
                 "@type": "hydra:PartialCollectionView",
-                "hydra:first": `${baseUrl}?page=1`,
-                "hydra:last": `${baseUrl}?page=${Math.ceil(total / perPage)}`,
-                "hydra:next": page < Math.ceil(total / perPage)
+                first: `${baseUrl}?page=1`,
+                last: `${baseUrl}?page=${Math.ceil(total / perPage)}`,
+                next: page < Math.ceil(total / perPage)
                     ? `${baseUrl}?page=${page + 1}`
                     : undefined,
-                "hydra:previous": page > 1 ? `${baseUrl}?page=${page - 1}` : undefined,
+                previous: page > 1 ? `${baseUrl}?page=${page - 1}` : undefined,
             },
         };
     }
