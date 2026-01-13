@@ -91,6 +91,7 @@ export declare class ApiGeneralController {
     reportUserAppUsage(req: any, data: any): Promise<any>;
     updateUserPhoto(req: any, data: any): Promise<any>;
     getUserPoints(req: any): Promise<any>;
+    updateAvatar(id: string, file: any, req: any): Promise<any>;
     getUserStatus(): Promise<{
         online_users: import("../entities/user.entity").User[];
         recently_online: import("../entities/user.entity").User[];

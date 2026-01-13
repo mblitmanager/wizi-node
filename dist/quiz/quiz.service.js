@@ -720,6 +720,7 @@ let QuizService = class QuizService {
             correctAnswers: correctCount,
             totalQuestions,
             timeSpent,
+            completedAt: progression.created_at.toISOString(),
             questions: questionsDetails,
             quiz: {
                 id: quiz.id,

@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiGeneralController = exports.StagiaireApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const path_1 = require("path");
 const inscription_service_1 = require("../inscription/inscription.service");
 const ranking_service_1 = require("../ranking/ranking.service");
 const stagiaire_service_1 = require("./stagiaire.service");
@@ -372,6 +375,17 @@ let ApiGeneralController = class ApiGeneralController {
         const data = await this.rankingService.getUserPoints(req.user.id);
         return this.apiResponse.success(data);
     }
+    async updateAvatar(id, file, req) {
+        if (!file) {
+            return this.apiResponse.error("No image uploaded", 400);
+        }
+        const photoPath = `uploads/users/${file.filename}`;
+        await this.stagiaireService.updateProfilePhoto(req.user.id, photoPath);
+        return this.apiResponse.success({
+            message: "Avatar mis à jour",
+            avatar: photoPath,
+        });
+    }
     async getUserStatus() {
         const data = await this.stagiaireService.getOnlineUsers();
         return data;
@@ -419,6 +433,27 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ApiGeneralController.prototype, "getUserPoints", null);
+__decorate([
+    (0, common_1.Post)("avatar/:id/update-profile"),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)("image", {
+        storage: (0, multer_1.diskStorage)({
+            destination: "./public/uploads/users",
+            filename: (req, file, cb) => {
+                const randomName = Array(32)
+                    .fill(null)
+                    .map(() => Math.round(Math.random() * 16).toString(16))
+                    .join("");
+                return cb(null, `${randomName}${(0, path_1.extname)(file.originalname)}`);
+            },
+        }),
+    })),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.UploadedFile)()),
+    __param(2, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], ApiGeneralController.prototype, "updateAvatar", null);
 __decorate([
     (0, common_1.Get)("user-status"),
     __metadata("design:type", Function),

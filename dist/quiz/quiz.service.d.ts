@@ -218,6 +218,7 @@ export declare class QuizService {
         correctAnswers: number;
         totalQuestions: number;
         timeSpent: number;
+        completedAt: string;
         questions: any[];
         quiz: {
             id: number;

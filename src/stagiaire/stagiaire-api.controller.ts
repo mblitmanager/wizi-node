@@ -8,8 +8,13 @@ import {
   Param,
   UseGuards,
   Request,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { extname } from "path";
 import { InscriptionService } from "../inscription/inscription.service";
 import { RankingService } from "../ranking/ranking.service";
 import { StagiaireService } from "./stagiaire.service";
@@ -230,6 +235,37 @@ export class ApiGeneralController {
   async getUserPoints(@Request() req: any) {
     const data = await this.rankingService.getUserPoints(req.user.id);
     return this.apiResponse.success(data);
+  }
+
+  @Post("avatar/:id/update-profile")
+  @UseInterceptors(
+    FileInterceptor("image", {
+      storage: diskStorage({
+        destination: "./public/uploads/users",
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join("");
+          return cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    })
+  )
+  async updateAvatar(
+    @Param("id") id: string,
+    @UploadedFile() file: any,
+    @Request() req: any
+  ) {
+    if (!file) {
+      return this.apiResponse.error("No image uploaded", 400);
+    }
+    const photoPath = `uploads/users/${file.filename}`;
+    await this.stagiaireService.updateProfilePhoto(req.user.id, photoPath);
+    return this.apiResponse.success({
+      message: "Avatar mis à jour",
+      avatar: photoPath,
+    });
   }
 
   @Get("user-status")
