@@ -277,7 +277,7 @@ __decorate([
 ], StagiaireApiController.prototype, "quizzes", null);
 __decorate([
     (0, common_1.Get)("ranking/global"),
-    __param(0, Query("period")),
+    __param(0, (0, common_1.Query)("period")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
@@ -357,10 +357,11 @@ exports.StagiaireApiController = StagiaireApiController = __decorate([
         s3_storage_service_1.S3StorageService])
 ], StagiaireApiController);
 let ApiGeneralController = class ApiGeneralController {
-    constructor(rankingService, stagiaireService, apiResponse) {
+    constructor(rankingService, stagiaireService, apiResponse, s3Storage) {
         this.rankingService = rankingService;
         this.stagiaireService = stagiaireService;
         this.apiResponse = apiResponse;
+        this.s3Storage = s3Storage;
     }
     async getUserSettings(req) {
         return this.apiResponse.success({});
@@ -468,6 +469,7 @@ exports.ApiGeneralController = ApiGeneralController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [ranking_service_1.RankingService,
         stagiaire_service_1.StagiaireService,
-        api_response_service_1.ApiResponseService])
+        api_response_service_1.ApiResponseService,
+        s3_storage_service_1.S3StorageService])
 ], ApiGeneralController);
 //# sourceMappingURL=stagiaire-api.controller.js.map

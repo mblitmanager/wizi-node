@@ -87,7 +87,8 @@ export declare class ApiGeneralController {
     private rankingService;
     private stagiaireService;
     private apiResponse;
-    constructor(rankingService: RankingService, stagiaireService: StagiaireService, apiResponse: ApiResponseService);
+    private s3Storage;
+    constructor(rankingService: RankingService, stagiaireService: StagiaireService, apiResponse: ApiResponseService, s3Storage: S3StorageService);
     getUserSettings(req: any): Promise<any>;
     updateUserSettings(req: any, data: any): Promise<any>;
     reportUserAppUsage(req: any, data: any): Promise<any>;

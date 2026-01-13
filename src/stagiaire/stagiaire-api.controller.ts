@@ -10,6 +10,7 @@ import {
   Request,
   UploadedFile,
   UseInterceptors,
+  Query,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -209,7 +210,8 @@ export class ApiGeneralController {
   constructor(
     private rankingService: RankingService,
     private stagiaireService: StagiaireService,
-    private apiResponse: ApiResponseService
+    private apiResponse: ApiResponseService,
+    private s3Storage: S3StorageService
   ) {}
 
   @Get("user/settings")
