@@ -50,6 +50,12 @@ export class Progression {
   score: number;
 
   @Column({ type: "int", default: 0 })
+  points: number;
+
+  @Column({ type: "int", default: 0 })
+  completed_challenges: number;
+
+  @Column({ type: "int", default: 0 })
   correct_answers: number;
 
   @Column({ type: "int", default: 0 })

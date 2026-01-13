@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PoleRelationClient = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
+const stagiaire_entity_1 = require("./stagiaire.entity");
 let PoleRelationClient = class PoleRelationClient {
 };
 exports.PoleRelationClient = PoleRelationClient;
@@ -36,6 +37,15 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: "user_id" }),
     __metadata("design:type", user_entity_1.User)
 ], PoleRelationClient.prototype, "user", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => stagiaire_entity_1.Stagiaire),
+    (0, typeorm_1.JoinTable)({
+        name: "pole_relation_client_stagiaire",
+        joinColumn: { name: "pole_relation_client_id" },
+        inverseJoinColumn: { name: "stagiaire_id" },
+    }),
+    __metadata("design:type", Array)
+], PoleRelationClient.prototype, "stagiaires", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)

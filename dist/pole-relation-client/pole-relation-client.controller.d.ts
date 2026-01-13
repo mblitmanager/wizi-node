@@ -3,7 +3,7 @@ export declare class PoleRelationClientController {
     private readonly prcService;
     constructor(prcService: PoleRelationClientService);
     findAll(page: string, req: any): Promise<{
-        "hydra:member": {
+        member: {
             "@id": string;
             "@type": string;
             id: number;
@@ -15,7 +15,7 @@ export declare class PoleRelationClientController {
             created_at: string;
             updated_at: string;
         }[];
-        "hydra:totalItems": number;
+        totalItems: number;
         "hydra:view": {
             "@id": string;
             "@type": string;

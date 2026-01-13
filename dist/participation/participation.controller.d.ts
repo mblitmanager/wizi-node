@@ -3,7 +3,7 @@ export declare class ParticipationController {
     private readonly participationService;
     constructor(participationService: ParticipationService);
     findAll(page: string, req: any): Promise<{
-        "hydra:member": {
+        member: {
             "@id": string;
             "@type": string;
             id: number;
@@ -17,7 +17,7 @@ export declare class ParticipationController {
             created_at: string;
             updated_at: string;
         }[];
-        "hydra:totalItems": number;
+        totalItems: number;
         "hydra:view": {
             "@id": string;
             "@type": string;

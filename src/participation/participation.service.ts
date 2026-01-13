@@ -33,8 +33,8 @@ export class ParticipationService {
     }));
 
     return {
-      "hydra:member": formattedData,
-      "hydra:totalItems": total,
+      member: formattedData,
+      totalItems: total,
       "hydra:view": {
         "@id": `${baseUrl}?page=${page}`,
         "@type": "hydra:PartialCollectionView",

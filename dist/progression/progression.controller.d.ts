@@ -3,7 +3,7 @@ export declare class ProgressionController {
     private readonly progressionService;
     constructor(progressionService: ProgressionService);
     findAll(page: string, req: any): Promise<{
-        "hydra:member": {
+        member: {
             "@id": string;
             "@type": string;
             id: number;
@@ -21,7 +21,7 @@ export declare class ProgressionController {
             created_at: string;
             updated_at: string;
         }[];
-        "hydra:totalItems": number;
+        totalItems: number;
         "hydra:view": {
             "@id": string;
             "@type": string;
