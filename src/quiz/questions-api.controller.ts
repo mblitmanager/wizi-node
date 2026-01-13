@@ -20,7 +20,7 @@ import { Question } from "../entities/question.entity";
 import { Reponse } from "../entities/reponse.entity";
 
 @Controller("questions")
-@UseGuards(AuthGuard("jwt"))
+// @UseGuards(AuthGuard("jwt"))
 export class QuestionsApiController {
   constructor(
     private quizService: QuizService,
@@ -55,11 +55,11 @@ export class QuestionsApiController {
     const members = data.map((q) => this.quizService.formatQuestionJsonLd(q));
 
     return {
-      "@context": "/api/contexts/Question",
+      "@context": "/api/contexts/Questions",
       "@id": "/api/questions",
       "@type": "Collection",
-      member: members,
       totalItems: total,
+      member: members,
     };
   }
 

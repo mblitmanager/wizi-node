@@ -190,24 +190,21 @@ export class QuizService {
   formatQuestionJsonLd(question: Question) {
     return {
       "@id": `/api/questions/${question.id}`,
-      "@type": "Question",
+      "@type": "Questions",
       id: question.id,
-      texte: question.text,
+      text: question.text,
       type: question.type || "choix multiples",
+      explication: question.explication,
       points: question.points?.toString() || "1",
       astuce: question.astuce,
-      explication: question.explication,
-      audio_url: question.audio_url,
-      media_url: question.media_url,
-      flashcard_back: question.flashcard_back,
+      createdAt: question.created_at?.toISOString() || null,
+      updatedAt: question.updated_at?.toISOString() || null,
       quiz: question.quiz_id
         ? `/api/quizzes/${question.quiz_id}`
         : question.quiz
           ? `/api/quizzes/${question.quiz.id}`
           : null,
       reponses: (question.reponses || []).map((r) => `/api/reponses/${r.id}`),
-      created_at: question.created_at,
-      updated_at: question.updated_at,
     };
   }
 

@@ -14,7 +14,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.QuestionsApiController = void 0;
 const common_1 = require("@nestjs/common");
-const passport_1 = require("@nestjs/passport");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const api_response_service_1 = require("../common/services/api-response.service");
@@ -40,11 +39,11 @@ let QuestionsApiController = class QuestionsApiController {
         });
         const members = data.map((q) => this.quizService.formatQuestionJsonLd(q));
         return {
-            "@context": "/api/contexts/Question",
+            "@context": "/api/contexts/Questions",
             "@id": "/api/questions",
             "@type": "Collection",
-            member: members,
             totalItems: total,
+            member: members,
         };
     }
     async create(createQuestionDto) {
@@ -171,7 +170,6 @@ __decorate([
 ], QuestionsApiController.prototype, "getReponsesByQuestion", null);
 exports.QuestionsApiController = QuestionsApiController = __decorate([
     (0, common_1.Controller)("questions"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __param(2, (0, typeorm_1.InjectRepository)(question_entity_1.Question)),
     __param(3, (0, typeorm_1.InjectRepository)(reponse_entity_1.Reponse)),
     __metadata("design:paramtypes", [quiz_service_1.QuizService,

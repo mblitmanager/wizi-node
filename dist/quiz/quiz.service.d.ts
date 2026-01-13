@@ -100,18 +100,15 @@ export declare class QuizService {
         "@id": string;
         "@type": string;
         id: number;
-        texte: string;
+        text: string;
         type: string;
+        explication: string;
         points: string;
         astuce: string;
-        explication: string;
-        audio_url: string;
-        media_url: string;
-        flashcard_back: string;
+        createdAt: string;
+        updatedAt: string;
         quiz: string;
         reponses: string[];
-        created_at: Date;
-        updated_at: Date;
     };
     formatReponseJsonLd(reponse: Reponse): {
         "@id": string;
