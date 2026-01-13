@@ -12,7 +12,6 @@ const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("../entities/user.entity");
 const common_module_1 = require("../common/common.module");
 const notification_service_1 = require("./notification.service");
-const notification_controller_1 = require("./notification.controller");
 const notification_entity_1 = require("../entities/notification.entity");
 const fcm_service_1 = require("./fcm.service");
 const config_1 = require("@nestjs/config");
@@ -32,7 +31,6 @@ exports.NotificationModule = NotificationModule = __decorate([
         ],
         providers: [notification_service_1.NotificationService, fcm_service_1.FcmService],
         controllers: [
-            notification_controller_1.NotificationController,
             notification_apis_controller_1.NotificationsApiController,
             notification_apis_controller_1.NotificationHistoryApiController,
             notification_apis_controller_1.ParrainageApiController,

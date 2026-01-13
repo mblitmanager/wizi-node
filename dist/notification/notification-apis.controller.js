@@ -48,6 +48,7 @@ let NotificationsApiController = class NotificationsApiController {
         return this.apiResponse.success({ message: "Marked as read" });
     }
     async delete(id) {
+        await this.notificationService.deleteNotification(id);
         return this.apiResponse.success({ message: "Notification deleted" });
     }
 };
@@ -104,24 +105,32 @@ exports.NotificationsApiController = NotificationsApiController = __decorate([
         typeorm_2.Repository])
 ], NotificationsApiController);
 let NotificationHistoryApiController = class NotificationHistoryApiController {
-    constructor(apiResponse) {
+    constructor(notificationService, apiResponse) {
+        this.notificationService = notificationService;
         this.apiResponse = apiResponse;
     }
-    async index() {
-        return this.apiResponse.success([]);
+    async index(req, page = "1") {
+        const pageNum = parseInt(page) || 1;
+        const baseUrl = `${req.protocol}://${req.get("host")}/api/notification-history`;
+        const userId = req.user.id;
+        const history = await this.notificationService.getNotificationHistoryPaginated(userId, pageNum, 10, baseUrl);
+        return this.apiResponse.success(history);
     }
 };
 exports.NotificationHistoryApiController = NotificationHistoryApiController;
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("page")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], NotificationHistoryApiController.prototype, "index", null);
 exports.NotificationHistoryApiController = NotificationHistoryApiController = __decorate([
     (0, common_1.Controller)("notification-history"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
+    __metadata("design:paramtypes", [notification_service_1.NotificationService,
+        api_response_service_1.ApiResponseService])
 ], NotificationHistoryApiController);
 let ParrainageApiController = class ParrainageApiController {
     constructor(apiResponse) {

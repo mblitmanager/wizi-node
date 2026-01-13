@@ -16,24 +16,31 @@ exports.NotificationController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const notification_service_1 = require("./notification.service");
+const api_response_service_1 = require("../common/services/api-response.service");
 let NotificationController = class NotificationController {
-    constructor(notificationService) {
+    constructor(notificationService, apiResponse) {
         this.notificationService = notificationService;
+        this.apiResponse = apiResponse;
     }
     async getNotifications(req) {
-        return this.notificationService.getNotifications(req.user.id);
+        const notifications = await this.notificationService.getNotifications(req.user.id);
+        return this.apiResponse.success(notifications);
     }
     async getUnreadCount(req) {
-        return this.notificationService.getUnreadCount(req.user.id);
+        const count = await this.notificationService.getUnreadCount(req.user.id);
+        return this.apiResponse.success({ count });
     }
     async markAsRead(id) {
-        return this.notificationService.markAsRead(id);
+        await this.notificationService.markAsRead(id);
+        return this.apiResponse.success({ message: "Marked as read" });
     }
     async markAllAsRead(req) {
-        return this.notificationService.markAllAsRead(req.user.id);
+        await this.notificationService.markAllAsRead(req.user.id);
+        return this.apiResponse.success({ message: "All marked as read" });
     }
     async deleteNotification(id) {
-        return this.notificationService.deleteNotification(id);
+        await this.notificationService.deleteNotification(id);
+        return this.apiResponse.success({ message: "Notification deleted" });
     }
 };
 exports.NotificationController = NotificationController;
@@ -75,6 +82,7 @@ __decorate([
 exports.NotificationController = NotificationController = __decorate([
     (0, common_1.Controller)("notifications"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [notification_service_1.NotificationService])
+    __metadata("design:paramtypes", [notification_service_1.NotificationService,
+        api_response_service_1.ApiResponseService])
 ], NotificationController);
 //# sourceMappingURL=notification.controller.js.map

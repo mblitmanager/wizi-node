@@ -113,9 +113,103 @@ export class NotificationService {
       date_fin: event.date_fin
         ? new Date(event.date_fin).toISOString().split("T")[0]
         : null,
-      created_at: event.created_at?.toISOString(),
-      updated_at: event.updated_at?.toISOString(),
+      created_at: this.formatIso(event.created_at),
+      updated_at: this.formatIso(event.updated_at),
       status: event.status,
     }));
+  }
+
+  async getNotificationHistoryPaginated(
+    userId: number,
+    page: number = 1,
+    perPage: number = 10,
+    baseUrl: string = ""
+  ) {
+    const [data, total] = await this.notificationRepository
+      .createQueryBuilder("n")
+      .where("n.user_id = :userId", { userId })
+      .orderBy("n.created_at", "DESC")
+      .skip((page - 1) * perPage)
+      .take(perPage)
+      .getManyAndCount();
+
+    const formattedData = data.map((n) => ({
+      id: n.id,
+      type: n.type,
+      notifiable_type: "App\\Models\\User", // Standard Laravel field
+      notifiable_id: n.user_id,
+      data: typeof n.data === "string" ? JSON.parse(n.data) : n.data || {},
+      read_at: n.read ? this.formatDateTime(n.updated_at) : null,
+      created_at: this.formatIso(n.created_at),
+      updated_at: this.formatIso(n.updated_at),
+    }));
+
+    return this.formatPagination(formattedData, total, page, perPage, baseUrl);
+  }
+
+  private formatPagination(
+    data: any[],
+    total: number,
+    page: number,
+    perPage: number,
+    baseUrl: string
+  ) {
+    const lastPage = Math.max(1, Math.ceil(total / perPage));
+
+    return {
+      current_page: Number(page),
+      data,
+      first_page_url: `${baseUrl}?page=1`,
+      from: total > 0 ? (page - 1) * perPage + 1 : null,
+      last_page: lastPage,
+      last_page_url: `${baseUrl}?page=${lastPage}`,
+      links: this.generateLinks(page, lastPage, baseUrl),
+      next_page_url: page < lastPage ? `${baseUrl}?page=${page + 1}` : null,
+      path: baseUrl,
+      per_page: perPage,
+      prev_page_url: page > 1 ? `${baseUrl}?page=${page - 1}` : null,
+      to: total > 0 ? Math.min(page * perPage, total) : null,
+      total,
+    };
+  }
+
+  private generateLinks(
+    currentPage: number,
+    lastPage: number,
+    baseUrl: string
+  ) {
+    const links: any[] = [];
+    links.push({
+      url: currentPage > 1 ? `${baseUrl}?page=${currentPage - 1}` : null,
+      label: "pagination.previous",
+      active: false,
+    });
+    for (let i = 1; i <= lastPage; i++) {
+      links.push({
+        url: `${baseUrl}?page=${i}`,
+        label: i.toString(),
+        active: i === currentPage,
+      });
+    }
+    links.push({
+      url: currentPage < lastPage ? `${baseUrl}?page=${currentPage + 1}` : null,
+      label: "pagination.next",
+      active: false,
+    });
+    return links;
+  }
+
+  private formatIso(date: any) {
+    if (!date) return null;
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString().replace(".000Z", ".000000Z");
+  }
+
+  private formatDateTime(date: any) {
+    if (!date) return null;
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString().split(".")[0].replace("T", " ");
   }
 }

@@ -37,4 +37,23 @@ export declare class NotificationService {
         updated_at: string;
         status: string;
     }[]>;
+    getNotificationHistoryPaginated(userId: number, page?: number, perPage?: number, baseUrl?: string): Promise<{
+        current_page: number;
+        data: any[];
+        first_page_url: string;
+        from: number;
+        last_page: number;
+        last_page_url: string;
+        links: any[];
+        next_page_url: string;
+        path: string;
+        per_page: number;
+        prev_page_url: string;
+        to: number;
+        total: number;
+    }>;
+    private formatPagination;
+    private generateLinks;
+    private formatIso;
+    private formatDateTime;
 }

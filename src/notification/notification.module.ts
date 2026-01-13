@@ -4,7 +4,6 @@ import { User } from "../entities/user.entity";
 import { CommonModule } from "../common/common.module";
 import { ApiResponseService } from "../common/services/api-response.service";
 import { NotificationService } from "./notification.service";
-import { NotificationController } from "./notification.controller";
 import { Notification } from "../entities/notification.entity";
 import { FcmService } from "./fcm.service";
 import { ConfigModule } from "@nestjs/config";
@@ -31,7 +30,6 @@ import { BroadcastingApiController } from "./broadcasting-api.controller";
   ],
   providers: [NotificationService, FcmService],
   controllers: [
-    NotificationController,
     NotificationsApiController,
     NotificationHistoryApiController,
     ParrainageApiController,

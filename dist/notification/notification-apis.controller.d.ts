@@ -16,9 +16,10 @@ export declare class NotificationsApiController {
     delete(id: number): Promise<any>;
 }
 export declare class NotificationHistoryApiController {
+    private notificationService;
     private apiResponse;
-    constructor(apiResponse: ApiResponseService);
-    index(): Promise<any>;
+    constructor(notificationService: NotificationService, apiResponse: ApiResponseService);
+    index(req: any, page?: string): Promise<any>;
 }
 export declare class ParrainageApiController {
     private apiResponse;

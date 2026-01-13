@@ -8,6 +8,7 @@ import {
   Request,
   Body,
   Put,
+  Query,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { MailService } from "../mail/mail.service";
@@ -61,8 +62,7 @@ export class NotificationsApiController {
 
   @Delete(":id")
   async delete(@Param("id") id: number) {
-    // Note: service doesn't have delete yet, but Repository does
-    // For now keep it as placeholder or implement it
+    await this.notificationService.deleteNotification(id);
     return this.apiResponse.success({ message: "Notification deleted" });
   }
 }
@@ -70,11 +70,24 @@ export class NotificationsApiController {
 @Controller("notification-history")
 @UseGuards(AuthGuard("jwt"))
 export class NotificationHistoryApiController {
-  constructor(private apiResponse: ApiResponseService) {}
+  constructor(
+    private notificationService: NotificationService,
+    private apiResponse: ApiResponseService
+  ) {}
 
   @Get()
-  async index() {
-    return this.apiResponse.success([]);
+  async index(@Request() req: any, @Query("page") page: string = "1") {
+    const pageNum = parseInt(page) || 1;
+    const baseUrl = `${req.protocol}://${req.get("host")}/api/notification-history`;
+    const userId = req.user.id;
+    const history =
+      await this.notificationService.getNotificationHistoryPaginated(
+        userId,
+        pageNum,
+        10,
+        baseUrl
+      );
+    return this.apiResponse.success(history);
   }
 }
 
