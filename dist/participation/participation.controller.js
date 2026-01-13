@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ParticipationController = void 0;
 const common_1 = require("@nestjs/common");
+const passport_1 = require("@nestjs/passport");
 const participation_service_1 = require("./participation.service");
 let ParticipationController = class ParticipationController {
     constructor(participationService) {
@@ -50,6 +51,7 @@ __decorate([
 ], ParticipationController.prototype, "findOne", null);
 exports.ParticipationController = ParticipationController = __decorate([
     (0, common_1.Controller)("participations"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [participation_service_1.ParticipationService])
 ], ParticipationController);
 //# sourceMappingURL=participation.controller.js.map

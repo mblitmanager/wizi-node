@@ -11,7 +11,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { ProgressionService } from "./progression.service";
 
 @Controller("progressions")
-// @UseGuards(AuthGuard("jwt"))
+@UseGuards(AuthGuard("jwt"))
 export class ProgressionController {
   constructor(private readonly progressionService: ProgressionService) {}
 

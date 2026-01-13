@@ -19,6 +19,31 @@ export declare class QuizService {
     private progressionRepository;
     constructor(quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, formationRepository: Repository<Formation>, classementRepository: Repository<Classement>, participationRepository: Repository<QuizParticipation>, participationAnswerRepository: Repository<QuizParticipationAnswer>, correspondancePairRepository: Repository<CorrespondancePair>, progressionRepository: Repository<Progression>);
     getAllQuizzes(): Promise<Quiz[]>;
+    getQuizzesByFormation(): Promise<{
+        id: string;
+        titre: string;
+        description: string;
+        categorie: string;
+        quizzes: {
+            id: string;
+            titre: string;
+            description: string;
+            categorie: string;
+            categorieId: string;
+            niveau: string;
+            questions: {
+                id: string;
+                text: string;
+                type: string;
+                answers: {
+                    id: string;
+                    text: string;
+                    isCorrect: boolean;
+                }[];
+            }[];
+            points: number;
+        }[];
+    }[]>;
     getQuestionsByQuiz(quizId: number): Promise<{
         data: {
             id: number;
@@ -114,15 +139,15 @@ export declare class QuizService {
         "@id": string;
         "@type": string;
         id: number;
-        texte: string;
-        correct: boolean;
+        text: string;
+        isCorrect: boolean;
         position: number;
-        explanation: string;
+        flashcardBack: string;
         match_pair: string;
         bank_group: string;
         question: string;
-        created_at: Date;
-        updated_at: Date;
+        createdAt: string;
+        updatedAt: string;
     };
     getCategories(): Promise<{
         id: string;

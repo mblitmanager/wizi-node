@@ -11,7 +11,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { ParticipationService } from "./participation.service";
 
 @Controller("participations")
-// @UseGuards(AuthGuard("jwt"))
+@UseGuards(AuthGuard("jwt"))
 export class ParticipationController {
   constructor(private readonly participationService: ParticipationService) {}
 

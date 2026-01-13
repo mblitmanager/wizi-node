@@ -9,7 +9,31 @@ export declare class QuizApiController {
     private achievementService;
     constructor(rankingService: RankingService, quizService: QuizService, apiResponse: ApiResponseService, achievementService: AchievementService);
     getAll(): Promise<any>;
-    byFormations(): Promise<any>;
+    byFormations(): Promise<{
+        id: string;
+        titre: string;
+        description: string;
+        categorie: string;
+        quizzes: {
+            id: string;
+            titre: string;
+            description: string;
+            categorie: string;
+            categorieId: string;
+            niveau: string;
+            questions: {
+                id: string;
+                text: string;
+                type: string;
+                answers: {
+                    id: string;
+                    text: string;
+                    isCorrect: boolean;
+                }[];
+            }[];
+            points: number;
+        }[];
+    }[]>;
     categories(): Promise<any>;
     byCategory(categoryId: string, req: any): Promise<any>;
     globalClassement(period?: string): Promise<{

@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProgressionController = void 0;
 const common_1 = require("@nestjs/common");
+const passport_1 = require("@nestjs/passport");
 const progression_service_1 = require("./progression.service");
 let ProgressionController = class ProgressionController {
     constructor(progressionService) {
@@ -50,6 +51,7 @@ __decorate([
 ], ProgressionController.prototype, "findOne", null);
 exports.ProgressionController = ProgressionController = __decorate([
     (0, common_1.Controller)("progressions"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [progression_service_1.ProgressionService])
 ], ProgressionController);
 //# sourceMappingURL=progression.controller.js.map

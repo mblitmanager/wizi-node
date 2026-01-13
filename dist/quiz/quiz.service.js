@@ -38,6 +38,37 @@ let QuizService = class QuizService {
     async getAllQuizzes() {
         return this.quizRepository.find({ relations: ["formation"] });
     }
+    async getQuizzesByFormation() {
+        const formations = await this.formationRepository.find({
+            relations: ["quizzes", "quizzes.questions", "quizzes.questions.reponses"],
+            order: { id: "ASC" },
+        });
+        return formations.map((f) => ({
+            id: f.id.toString(),
+            titre: f.titre,
+            description: f.description,
+            categorie: f.categorie,
+            quizzes: (f.quizzes || []).map((q) => ({
+                id: q.id.toString(),
+                titre: q.titre,
+                description: q.description,
+                categorie: f.categorie,
+                categorieId: f.categorie,
+                niveau: q.niveau,
+                questions: (q.questions || []).map((question) => ({
+                    id: question.id.toString(),
+                    text: question.text,
+                    type: question.type || "choix multiples",
+                    answers: (question.reponses || []).map((r) => ({
+                        id: r.id.toString(),
+                        text: r.text,
+                        isCorrect: r.isCorrect,
+                    })),
+                })),
+                points: parseInt(q.nb_points_total) || 0,
+            })),
+        }));
+    }
     async getQuestionsByQuiz(quizId) {
         try {
             const quiz = await this.quizRepository.findOne({
@@ -174,7 +205,7 @@ let QuizService = class QuizService {
     formatQuestionJsonLd(question) {
         return {
             "@id": `/api/questions/${question.id}`,
-            "@type": "Questions",
+            "@type": "Question",
             id: question.id,
             text: question.text,
             type: question.type || "choix multiples",
@@ -196,10 +227,10 @@ let QuizService = class QuizService {
             "@id": `/api/reponses/${reponse.id}`,
             "@type": "Reponse",
             id: reponse.id,
-            texte: reponse.text,
-            correct: reponse.isCorrect || false,
+            text: reponse.text,
+            isCorrect: reponse.isCorrect || false,
             position: reponse.position,
-            explanation: reponse.flashcardBack,
+            flashcardBack: reponse.flashcardBack,
             match_pair: reponse.match_pair,
             bank_group: reponse.bank_group,
             question: reponse.question_id
@@ -207,8 +238,8 @@ let QuizService = class QuizService {
                 : reponse.question
                     ? `/api/questions/${reponse.question.id}`
                     : null,
-            created_at: reponse.created_at,
-            updated_at: reponse.updated_at,
+            createdAt: reponse.created_at?.toISOString() || null,
+            updatedAt: reponse.updated_at?.toISOString() || null,
         };
     }
     async getCategories() {

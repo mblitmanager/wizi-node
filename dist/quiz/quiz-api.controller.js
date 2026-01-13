@@ -31,7 +31,7 @@ let QuizApiController = class QuizApiController {
         return this.apiResponse.success(data);
     }
     async byFormations() {
-        return this.apiResponse.success({});
+        return this.quizService.getQuizzesByFormation();
     }
     async categories() {
         const data = await this.quizService.getCategories();

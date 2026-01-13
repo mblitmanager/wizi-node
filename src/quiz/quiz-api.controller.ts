@@ -32,7 +32,7 @@ export class QuizApiController {
 
   @Get("by-formations")
   async byFormations() {
-    return this.apiResponse.success({});
+    return this.quizService.getQuizzesByFormation();
   }
 
   @Get("categories")

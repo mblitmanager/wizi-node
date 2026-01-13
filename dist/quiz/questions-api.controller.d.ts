@@ -79,14 +79,14 @@ export declare class QuestionsApiController {
         "@id": string;
         "@type": string;
         id: number;
-        texte: string;
-        correct: boolean;
+        text: string;
+        isCorrect: boolean;
         position: number;
-        explanation: string;
+        flashcardBack: string;
         match_pair: string;
         bank_group: string;
         question: string;
-        created_at: Date;
-        updated_at: Date;
+        createdAt: string;
+        updatedAt: string;
     }[]>;
 }
