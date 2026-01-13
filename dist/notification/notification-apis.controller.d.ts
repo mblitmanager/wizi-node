@@ -21,14 +21,6 @@ export declare class NotificationHistoryApiController {
     constructor(notificationService: NotificationService, apiResponse: ApiResponseService);
     index(req: any, page?: string): Promise<any>;
 }
-export declare class ParrainageApiController {
-    private apiResponse;
-    constructor(apiResponse: ApiResponseService);
-    generateLink(): Promise<any>;
-    getData(token: string): Promise<any>;
-    registerFilleul(data: any): Promise<any>;
-    stats(): Promise<any>;
-}
 export declare class OnlineUsersApiController {
     private apiResponse;
     constructor(apiResponse: ApiResponseService);

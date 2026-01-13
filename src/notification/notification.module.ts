@@ -11,7 +11,6 @@ import { ParrainageEvent } from "../entities/parrainage-event.entity";
 import {
   NotificationsApiController,
   NotificationHistoryApiController,
-  ParrainageApiController,
   OnlineUsersApiController,
   ContactApiController,
   EmailApiController,
@@ -32,7 +31,6 @@ import { BroadcastingApiController } from "./broadcasting-api.controller";
   controllers: [
     NotificationsApiController,
     NotificationHistoryApiController,
-    ParrainageApiController,
     AutoRemindersApiController,
     OnlineUsersApiController,
     ContactApiController,

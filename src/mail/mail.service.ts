@@ -13,16 +13,22 @@ export class MailService {
     attachments?: any[]
   ) {
     try {
-      await this.mailerService.sendMail({
+      console.log(
+        `[MailService] Sending email to: ${to} | Subject: ${subject} | Template: ${template}`
+      );
+      const info = await this.mailerService.sendMail({
         to,
         subject,
         template: `./${template}`,
         context,
         attachments,
       });
+      console.log(
+        `[MailService] Email sent successfully to ${to}. MessageId: ${info?.messageId}`
+      );
       return true;
     } catch (error) {
-      console.error("Error sending email:", error);
+      console.error(`[MailService] Error sending email to ${to}:`, error);
       throw error;
     }
   }

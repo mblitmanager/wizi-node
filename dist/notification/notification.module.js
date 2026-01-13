@@ -33,7 +33,6 @@ exports.NotificationModule = NotificationModule = __decorate([
         controllers: [
             notification_apis_controller_1.NotificationsApiController,
             notification_apis_controller_1.NotificationHistoryApiController,
-            notification_apis_controller_1.ParrainageApiController,
             auto_reminders_api_controller_1.AutoRemindersApiController,
             notification_apis_controller_1.OnlineUsersApiController,
             notification_apis_controller_1.ContactApiController,

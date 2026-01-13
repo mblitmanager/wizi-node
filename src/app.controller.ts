@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Query } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { FcmService } from "./notification/fcm.service";
+import { MailService } from "./mail/mail.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./entities/user.entity";
@@ -10,9 +11,25 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly fcmService: FcmService,
+    private readonly mailService: MailService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>
   ) {}
+
+  @Get("test-mail")
+  async testMail(@Query("to") to: string) {
+    if (!to) return { error: "Provide 'to' query parameter" };
+    try {
+      await this.mailService.sendPlainTextMail(
+        to,
+        "Test SMTP - Wizi Learn",
+        "Ceci est un mail de test pour vérifier la configuration SMTP de l'API Node.js."
+      );
+      return { success: true, message: `Email sent to ${to}` };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
 
   @Post("test-fcm")
   async testFcm(@Body() body: any) {

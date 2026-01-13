@@ -59,10 +59,6 @@ let QuizApiController = class QuizApiController {
         const data = await this.rankingService.getGlobalRanking(period);
         return data.map(({ level, ...item }) => item);
     }
-    async history(req) {
-        const data = await this.rankingService.getQuizHistory(req.user.id);
-        return data;
-    }
     async stats(req) {
         const data = await this.rankingService.getQuizStats(req.user.id);
         return this.apiResponse.success(data);
@@ -192,13 +188,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "globalClassement", null);
-__decorate([
-    (0, common_1.Get)("history"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], QuizApiController.prototype, "history", null);
 __decorate([
     (0, common_1.Get)("stats"),
     __param(0, (0, common_1.Request)()),

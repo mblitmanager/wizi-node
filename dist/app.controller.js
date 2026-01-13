@@ -16,14 +16,27 @@ exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const app_service_1 = require("./app.service");
 const fcm_service_1 = require("./notification/fcm.service");
+const mail_service_1 = require("./mail/mail.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 let AppController = class AppController {
-    constructor(appService, fcmService, userRepository) {
+    constructor(appService, fcmService, mailService, userRepository) {
         this.appService = appService;
         this.fcmService = fcmService;
+        this.mailService = mailService;
         this.userRepository = userRepository;
+    }
+    async testMail(to) {
+        if (!to)
+            return { error: "Provide 'to' query parameter" };
+        try {
+            await this.mailService.sendPlainTextMail(to, "Test SMTP - Wizi Learn", "Ceci est un mail de test pour vérifier la configuration SMTP de l'API Node.js.");
+            return { success: true, message: `Email sent to ${to}` };
+        }
+        catch (e) {
+            return { success: false, error: e.message };
+        }
     }
     async testFcm(body) {
         const { title, body: msgBody, data, token, user_id } = body;
@@ -145,6 +158,13 @@ let AppController = class AppController {
 };
 exports.AppController = AppController;
 __decorate([
+    (0, common_1.Get)("test-mail"),
+    __param(0, (0, common_1.Query)("to")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "testMail", null);
+__decorate([
     (0, common_1.Post)("test-fcm"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -184,9 +204,10 @@ __decorate([
 ], AppController.prototype, "getAdminRedirect", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
-    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(3, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [app_service_1.AppService,
         fcm_service_1.FcmService,
+        mail_service_1.MailService,
         typeorm_2.Repository])
 ], AppController);
 //# sourceMappingURL=app.controller.js.map

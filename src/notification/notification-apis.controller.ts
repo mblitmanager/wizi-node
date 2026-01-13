@@ -91,34 +91,6 @@ export class NotificationHistoryApiController {
   }
 }
 
-@Controller("parrainage")
-@UseGuards(AuthGuard("jwt"))
-export class ParrainageApiController {
-  constructor(private apiResponse: ApiResponseService) {}
-
-  @Post("generate-link")
-  async generateLink() {
-    return this.apiResponse.success({
-      link: "http://example.com/parrainage/token",
-    });
-  }
-
-  @Get("get-data/:token")
-  async getData(@Param("token") token: string) {
-    return this.apiResponse.success({});
-  }
-
-  @Post("register-filleul")
-  async registerFilleul(@Body() data: any) {
-    return this.apiResponse.success({ message: "Filleul registered" });
-  }
-
-  @Get("stats/:parrain_id")
-  async stats() {
-    return this.apiResponse.success({});
-  }
-}
-
 @Controller("online-users")
 @UseGuards(AuthGuard("jwt"))
 export class OnlineUsersApiController {

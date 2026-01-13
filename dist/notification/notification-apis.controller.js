@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParrainageEventsApiController = exports.SendDailyNotificationController = exports.NotifyApiController = exports.EmailApiController = exports.ContactApiController = exports.OnlineUsersApiController = exports.ParrainageApiController = exports.NotificationHistoryApiController = exports.NotificationsApiController = void 0;
+exports.ParrainageEventsApiController = exports.SendDailyNotificationController = exports.NotifyApiController = exports.EmailApiController = exports.ContactApiController = exports.OnlineUsersApiController = exports.NotificationHistoryApiController = exports.NotificationsApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const mail_service_1 = require("../mail/mail.service");
@@ -132,57 +132,6 @@ exports.NotificationHistoryApiController = NotificationHistoryApiController = __
     __metadata("design:paramtypes", [notification_service_1.NotificationService,
         api_response_service_1.ApiResponseService])
 ], NotificationHistoryApiController);
-let ParrainageApiController = class ParrainageApiController {
-    constructor(apiResponse) {
-        this.apiResponse = apiResponse;
-    }
-    async generateLink() {
-        return this.apiResponse.success({
-            link: "http://example.com/parrainage/token",
-        });
-    }
-    async getData(token) {
-        return this.apiResponse.success({});
-    }
-    async registerFilleul(data) {
-        return this.apiResponse.success({ message: "Filleul registered" });
-    }
-    async stats() {
-        return this.apiResponse.success({});
-    }
-};
-exports.ParrainageApiController = ParrainageApiController;
-__decorate([
-    (0, common_1.Post)("generate-link"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ParrainageApiController.prototype, "generateLink", null);
-__decorate([
-    (0, common_1.Get)("get-data/:token"),
-    __param(0, (0, common_1.Param)("token")),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], ParrainageApiController.prototype, "getData", null);
-__decorate([
-    (0, common_1.Post)("register-filleul"),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], ParrainageApiController.prototype, "registerFilleul", null);
-__decorate([
-    (0, common_1.Get)("stats/:parrain_id"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ParrainageApiController.prototype, "stats", null);
-exports.ParrainageApiController = ParrainageApiController = __decorate([
-    (0, common_1.Controller)("parrainage"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
-], ParrainageApiController);
 let OnlineUsersApiController = class OnlineUsersApiController {
     constructor(apiResponse) {
         this.apiResponse = apiResponse;

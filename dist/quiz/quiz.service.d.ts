@@ -295,7 +295,7 @@ export declare class QuizService {
                     position: number;
                     matchPair: string;
                     bankGroup: string;
-                    flashcardBack: any;
+                    flashcardBack: string;
                 }[];
             }[];
         };

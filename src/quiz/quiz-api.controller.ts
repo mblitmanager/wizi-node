@@ -77,13 +77,6 @@ export class QuizApiController {
     return data.map(({ level, ...item }) => item);
   }
 
-  @Get("history")
-  async history(@Request() req: any) {
-    const data = await this.rankingService.getQuizHistory(req.user.id);
-    // Note: Returning raw list without success() wrapper for parity
-    return data;
-  }
-
   @Get("stats")
   async stats(@Request() req: any) {
     const data = await this.rankingService.getQuizStats(req.user.id);

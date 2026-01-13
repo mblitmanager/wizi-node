@@ -857,7 +857,7 @@ let QuizService = class QuizService {
                             position: reponse.position || 0,
                             matchPair: reponse.match_pair || null,
                             bankGroup: reponse.bank_group || null,
-                            flashcardBack: reponse.flashcard_back || null,
+                            flashcardBack: reponse.flashcardBack || null,
                         })),
                     })),
                 },
