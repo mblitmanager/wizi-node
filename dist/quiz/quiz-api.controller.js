@@ -39,6 +39,14 @@ let QuizApiController = class QuizApiController {
         const data = await this.quizService.getCategories(userId);
         return this.apiResponse.success(data);
     }
+    async history(req) {
+        const userId = req.user?.id;
+        if (!userId) {
+            return this.apiResponse.error("User not found", 401);
+        }
+        const data = await this.quizService.getQuizHistory(userId);
+        return data;
+    }
     async byCategory(categoryId, req) {
         const stagiaireId = req.user.stagiaire?.id;
         if (!stagiaireId) {
@@ -162,6 +170,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "categories", null);
+__decorate([
+    (0, common_1.Get)("history"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QuizApiController.prototype, "history", null);
 __decorate([
     (0, common_1.Get)("category/:categoryId"),
     __param(0, (0, common_1.Param)("categoryId")),

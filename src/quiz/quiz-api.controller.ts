@@ -43,6 +43,17 @@ export class QuizApiController {
     return this.apiResponse.success(data);
   }
 
+  @Get("history")
+  async history(@Request() req: any) {
+    const userId = req.user?.id;
+    if (!userId) {
+      return this.apiResponse.error("User not found", 401);
+    }
+
+    const data = await this.quizService.getQuizHistory(userId);
+    return data; // Return the array directly, without wrapping in success()
+  }
+
   @Get("category/:categoryId")
   async byCategory(
     @Param("categoryId") categoryId: string,

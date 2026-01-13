@@ -262,4 +262,47 @@ export declare class QuizService {
             };
         };
     }>;
+    getQuizHistory(userId: number): Promise<{
+        id: string;
+        quiz: {
+            id: number;
+            titre: string;
+            description: string;
+            duree: string;
+            niveau: string;
+            status: string;
+            nb_points_total: string;
+            formation: {
+                id: number;
+                titre: string;
+                description: string;
+                duree: string;
+                categorie: string;
+            };
+            questions: {
+                id: string;
+                quizId: number;
+                text: string;
+                type: string;
+                explication: string;
+                points: string;
+                astuce: string;
+                mediaUrl: string;
+                answers: {
+                    id: string;
+                    text: string;
+                    isCorrect: number;
+                    position: number;
+                    matchPair: string;
+                    bankGroup: string;
+                    flashcardBack: any;
+                }[];
+            }[];
+        };
+        score: number;
+        completedAt: string;
+        timeSpent: number;
+        totalQuestions: number;
+        correctAnswers: number;
+    }[]>;
 }
