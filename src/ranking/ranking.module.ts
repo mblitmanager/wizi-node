@@ -11,6 +11,7 @@ import { Quiz } from "../entities/quiz.entity";
 import { User } from "../entities/user.entity";
 import { Formation } from "../entities/formation.entity";
 import { Question } from "../entities/question.entity";
+import { Reponse } from "../entities/reponse.entity";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Question } from "../entities/question.entity";
       User,
       Formation,
       Question,
+      Reponse,
     ]),
   ],
   providers: [RankingService],

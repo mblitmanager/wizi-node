@@ -157,48 +157,39 @@ export declare class RankingService {
     }>;
     getQuizHistory(userId: number): Promise<{
         id: string;
-        quiz: {
-            id: string;
-            titre: string;
-            description: string;
-            duree: string;
-            niveau: string;
-            status: string;
-            nb_points_total: string;
-            formationId: string;
-            categorie: string;
-            formation: {
-                id: number;
-                titre: string;
-                categorie: string;
-            };
-            questions: {
-                id: string;
-                quizId: string;
-                text: string;
-                type: string;
-                explication: string;
-                points: string;
-                astuce: string;
-                mediaUrl: string;
-                answers: {
-                    id: string;
-                    text: string;
-                    isCorrect: number;
-                    position: number;
-                    matchPair: string;
-                    bankGroup: string;
-                    flashcardBack: string;
-                }[];
-            }[];
-        };
-        score: number;
-        completed_at: string;
-        started_at: string;
-        time_spent: number;
-        total_questions: number;
-        correct_answers: number;
+        titre: string;
+        description: string;
+        duree: string;
+        niveau: string;
         status: string;
+        nb_points_total: string;
+        formationId: string;
+        categorie: string;
+        formation: {
+            id: number;
+            titre: string;
+            categorie: string;
+        };
+        questions: {
+            id: string;
+            text: string;
+            type: string;
+            points: string;
+            answers: {
+                id: string;
+                text: string;
+                isCorrect: boolean;
+            }[];
+        }[];
+        userParticipation: {
+            id: number;
+            status: string;
+            score: number;
+            correct_answers: number;
+            time_spent: number;
+            started_at: string;
+            completed_at: string;
+        };
     }[]>;
     getQuizStats(userId: number): Promise<{
         totalQuizzes: number;

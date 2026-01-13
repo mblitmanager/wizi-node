@@ -434,111 +434,97 @@ export class RankingService {
   }
 
   async getQuizHistory(userId: number) {
-    // Progression table uses stagiaire_id, not user_id directly
+    // This method now replicates Laravel's getStagiaireQuizzes behavior
     const stagiaire = await this.stagiaireRepository.findOne({
       where: { user_id: userId },
+      relations: [
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation",
+      ],
     });
 
     if (!stagiaire) return [];
 
-    const progressions = await this.progressionRepository.find({
-      where: { stagiaire_id: stagiaire.id },
-      relations: ["quiz", "quiz.formation"],
+    // Extract formation IDs from enrolled catalogue formations
+    const formationIds =
+      stagiaire.stagiaire_catalogue_formations
+        ?.map((scf) => scf.catalogue_formation?.formation?.id)
+        .filter((id) => id !== undefined) || [];
+
+    if (formationIds.length === 0) return [];
+
+    // Fetch all active quizzes for these formations with nested relations
+    const quizzes = await this.quizRepository.find({
+      where: {
+        formation_id: In(formationIds),
+        status: "actif",
+      },
+      relations: ["formation", "questions", "questions.reponses"],
+    });
+
+    // Fetch all participations for this user for these quizzes (optimised)
+    const quizIds = quizzes.map((q) => q.id);
+    const participations = await this.progressionRepository.find({
+      where: {
+        stagiaire_id: stagiaire.id,
+        quiz_id: In(quizIds),
+      },
       order: { created_at: "DESC" },
     });
 
-    const quizIds = progressions.filter((p) => p.quiz).map((p) => p.quiz.id);
+    // Group participations by quiz_id to get the latest one
+    const participationsByQuizId: { [key: number]: Progression } = {};
+    participations.forEach((p) => {
+      if (!participationsByQuizId[p.quiz_id]) {
+        participationsByQuizId[p.quiz_id] = p;
+      }
+    });
 
-    const questions =
-      quizIds.length > 0
-        ? await this.questionRepository.find({
-            where: { quiz_id: In(quizIds) }, // Use a proper filter later if needed, but for now we need questions for these quizzes
-            relations: ["reponses"],
-          })
-        : [];
+    return quizzes.map((quiz) => {
+      const lastParticipation = participationsByQuizId[quiz.id];
 
-    console.log(
-      `Debug getQuizHistory: Found ${progressions.length} progressions, ${quizIds.length} quizIds`
-    );
-    console.log(
-      `Debug getQuizHistory: Fetched ${questions.length} total questions for all quizzes`
-    );
-    if (questions.length > 0) {
-      console.log(
-        `Debug sample question quiz_id: ${questions[0].quiz_id}, type: ${typeof questions[0].quiz_id}`
-      );
-    }
-    if (quizIds.length > 0) {
-      console.log(
-        `Debug sample quizId: ${quizIds[0]}, type: ${typeof quizIds[0]}`
-      );
-    }
-
-    // Filter questions manually for each quiz to be safe if In() operator is complex with current setup
-    // Actually, let's just use the In operator correctly.
-    // I need to import In from typeorm.
-
-    return progressions
-      .filter((p) => p.quiz)
-      .map((progression) => {
-        const quiz = progression.quiz;
-        const quizQuestions = questions.filter((q) => q.quiz_id === quiz.id);
-
-        const totalQuestions =
-          progression.total_questions ||
-          parseInt(quiz.nb_points_total || "0") ||
-          0;
-
-        const quizData = {
-          id: quiz.id.toString(),
-          titre: quiz.titre,
-          description: quiz.description || "",
-          duree: quiz.duree?.toString() || "30",
-          niveau: quiz.niveau || "débutant",
-          status: quiz.status || "actif",
-          nb_points_total: String(quiz.nb_points_total || "0"),
-          formationId: quiz.formation?.id.toString(),
-          categorie: quiz.formation?.categorie || "Général",
-          formation: quiz.formation
-            ? {
-                id: quiz.formation.id,
-                titre: quiz.formation.titre,
-                categorie: quiz.formation.categorie || "Général",
-              }
-            : null,
-          questions: quizQuestions.map((question) => ({
-            id: question.id.toString(),
-            quizId: quiz.id.toString(),
-            text: question.text,
-            type: question.type || "choix multiples",
-            explication: question.explication,
-            points: question.points?.toString() || "1",
-            astuce: question.astuce,
-            mediaUrl: question.media_url || null,
-            answers: (question.reponses || []).map((reponse) => ({
-              id: reponse.id.toString(),
-              text: reponse.text || "",
-              isCorrect: reponse.isCorrect ? 1 : 0,
-              position: reponse.position,
-              matchPair: reponse.match_pair,
-              bankGroup: reponse.bank_group,
-              flashcardBack: reponse.flashcardBack,
-            })),
+      return {
+        id: quiz.id.toString(),
+        titre: quiz.titre,
+        description: quiz.description,
+        duree: quiz.duree ?? null,
+        niveau: quiz.niveau ?? "débutant",
+        status: quiz.status ?? "actif",
+        nb_points_total: String(quiz.nb_points_total || "0"),
+        formationId: quiz.formation?.id ? quiz.formation.id.toString() : null,
+        categorie: quiz.formation?.categorie ?? null,
+        formation: quiz.formation
+          ? {
+              id: quiz.formation.id,
+              titre: quiz.formation.titre ?? null,
+              categorie: quiz.formation.categorie ?? null,
+            }
+          : null,
+        questions: (quiz.questions || []).map((question) => ({
+          id: question.id.toString(),
+          text: question.text ?? null,
+          type: question.type ?? null,
+          points: question.points?.toString() || "0",
+          answers: (question.reponses || []).map((r) => ({
+            id: r.id.toString(),
+            text: r.text,
+            isCorrect: Boolean(r.isCorrect ?? false),
           })),
-        };
-
-        return {
-          id: progression.id.toString(),
-          quiz: quizData,
-          score: progression.score,
-          completed_at: progression.created_at?.toISOString(),
-          started_at: progression.created_at?.toISOString(), // Mock started_at for parity
-          time_spent: progression.time_spent || 0,
-          total_questions: totalQuestions,
-          correct_answers: progression.correct_answers || 0,
-          status: progression.termine ? "completed" : "in_progress",
-        };
-      });
+        })),
+        userParticipation: lastParticipation
+          ? {
+              id: lastParticipation.id,
+              status: lastParticipation.termine ? "completed" : "in_progress",
+              score: lastParticipation.score,
+              correct_answers: lastParticipation.correct_answers,
+              time_spent: lastParticipation.time_spent,
+              started_at: lastParticipation.created_at?.toISOString(),
+              completed_at: lastParticipation.updated_at?.toISOString(),
+            }
+          : null,
+      };
+    });
   }
 
   async getQuizStats(userId: number) {

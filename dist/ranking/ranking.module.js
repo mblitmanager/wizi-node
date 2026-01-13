@@ -20,6 +20,7 @@ const quiz_entity_1 = require("../entities/quiz.entity");
 const user_entity_1 = require("../entities/user.entity");
 const formation_entity_1 = require("../entities/formation.entity");
 const question_entity_1 = require("../entities/question.entity");
+const reponse_entity_1 = require("../entities/reponse.entity");
 let RankingModule = class RankingModule {
 };
 exports.RankingModule = RankingModule;
@@ -35,6 +36,7 @@ exports.RankingModule = RankingModule = __decorate([
                 user_entity_1.User,
                 formation_entity_1.Formation,
                 question_entity_1.Question,
+                reponse_entity_1.Reponse,
             ]),
         ],
         providers: [ranking_service_1.RankingService],
