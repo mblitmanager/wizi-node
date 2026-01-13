@@ -42,7 +42,7 @@ export declare class StagiaireApiController {
     parainageRewards(): Promise<any>;
     parainageAccept(data: any): Promise<any>;
     userFormations(id: number): Promise<any>;
-    userCatalogueFormations(id: number): Promise<any>;
+    userCatalogueFormations(id: number): Promise<any[]>;
 }
 export declare class ApiGeneralController {
     private rankingService;

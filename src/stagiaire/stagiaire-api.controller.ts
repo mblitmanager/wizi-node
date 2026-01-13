@@ -186,7 +186,8 @@ export class StagiaireApiController {
 
   @Get(":id/catalogueFormations")
   async userCatalogueFormations(@Param("id") id: number) {
-    return this.apiResponse.success([]);
+    const response = await this.stagiaireService.getFormationsByStagiaire(id);
+    return response.data;
   }
 }
 

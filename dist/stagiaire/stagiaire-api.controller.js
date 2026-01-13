@@ -123,7 +123,8 @@ let StagiaireApiController = class StagiaireApiController {
         return this.apiResponse.success([]);
     }
     async userCatalogueFormations(id) {
-        return this.apiResponse.success([]);
+        const response = await this.stagiaireService.getFormationsByStagiaire(id);
+        return response.data;
     }
 };
 exports.StagiaireApiController = StagiaireApiController;
