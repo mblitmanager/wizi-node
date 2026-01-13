@@ -1024,58 +1024,35 @@ export class QuizService {
     });
 
     // Build the response array matching Laravel's format
-    const history = await Promise.all(
-      participations.map(async (participation) => {
-        return {
-          id: String(participation.id),
-          quiz: {
-            id: participation.quiz.id,
-            titre: participation.quiz.titre,
-            description: participation.quiz.description,
-            duree: participation.quiz.duree || "30",
-            niveau: participation.quiz.niveau || "débutant",
-            status: participation.quiz.status || "actif",
-            nb_points_total: String(participation.quiz.nb_points_total || 0),
-            formation: participation.quiz.formation
-              ? {
-                  id: participation.quiz.formation.id,
-                  titre: participation.quiz.formation.titre,
-                  description: participation.quiz.formation.description,
-                  duree: participation.quiz.formation.duree,
-                  categorie: participation.quiz.formation.categorie,
-                }
-              : null,
-            questions: participation.quiz.questions.map((question) => ({
-              id: String(question.id),
-              quizId: participation.quiz.id,
-              text: question.text,
-              type: question.type,
-              explication: question.explication || "",
-              points: String(question.points || 1),
-              astuce: question.astuce || "",
-              mediaUrl: question.media_url || null,
-              answers: question.reponses.map((reponse) => ({
-                id: String(reponse.id),
-                text: reponse.text,
-                isCorrect: reponse.isCorrect ? 1 : 0,
-                position: reponse.position || 0,
-                matchPair: reponse.match_pair || null,
-                bankGroup: reponse.bank_group || null,
-                flashcardBack: reponse.flashcardBack || null,
-              })),
-            })),
-          },
-          score: participation.score || 0,
-          // Format date as ISO 8601 with microseconds like Laravel
-          completedAt: participation.completed_at
-            ? participation.completed_at.toISOString().replace("Z", ".000000Z")
+    const history = participations.map((participation) => {
+      return {
+        id: String(participation.id),
+        quiz: {
+          id: participation.quiz.id,
+          titre: participation.quiz.titre,
+          description: participation.quiz.description?.substring(0, 100) || "",
+          duree: participation.quiz.duree || "30",
+          niveau: participation.quiz.niveau || "débutant",
+          status: participation.quiz.status || "actif",
+          nb_points_total: String(participation.quiz.nb_points_total || 0),
+          formation: participation.quiz.formation
+            ? {
+                id: participation.quiz.formation.id,
+                titre: participation.quiz.formation.titre,
+                categorie: participation.quiz.formation.categorie,
+              }
             : null,
-          timeSpent: participation.time_spent || 0,
-          totalQuestions: participation.quiz.questions.length,
-          correctAnswers: participation.correct_answers || 0,
-        };
-      })
-    );
+          questions: [], // Laravel's getQuizHistory (Progression list) doesn't include questions
+        },
+        score: participation.score || 0,
+        completedAt: participation.completed_at
+          ? participation.completed_at.toISOString()
+          : null,
+        timeSpent: participation.time_spent || 0,
+        totalQuestions: participation.quiz.questions.length,
+        correctAnswers: participation.correct_answers || 0,
+      };
+    });
 
     return history;
   }

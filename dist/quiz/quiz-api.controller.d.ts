@@ -48,29 +48,9 @@ export declare class QuizApiController {
             formation: {
                 id: number;
                 titre: string;
-                description: string;
-                duree: string;
                 categorie: string;
             };
-            questions: {
-                id: string;
-                quizId: number;
-                text: string;
-                type: string;
-                explication: string;
-                points: string;
-                astuce: string;
-                mediaUrl: string;
-                answers: {
-                    id: string;
-                    text: string;
-                    isCorrect: number;
-                    position: number;
-                    matchPair: string;
-                    bankGroup: string;
-                    flashcardBack: string;
-                }[];
-            }[];
+            questions: any[];
         };
         score: number;
         completedAt: string;

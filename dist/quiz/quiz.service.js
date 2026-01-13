@@ -821,13 +821,13 @@ let QuizService = class QuizService {
                 "quiz.questions.reponses",
             ],
         });
-        const history = await Promise.all(participations.map(async (participation) => {
+        const history = participations.map((participation) => {
             return {
                 id: String(participation.id),
                 quiz: {
                     id: participation.quiz.id,
                     titre: participation.quiz.titre,
-                    description: participation.quiz.description,
+                    description: participation.quiz.description?.substring(0, 100) || "",
                     duree: participation.quiz.duree || "30",
                     niveau: participation.quiz.niveau || "débutant",
                     status: participation.quiz.status || "actif",
@@ -836,40 +836,20 @@ let QuizService = class QuizService {
                         ? {
                             id: participation.quiz.formation.id,
                             titre: participation.quiz.formation.titre,
-                            description: participation.quiz.formation.description,
-                            duree: participation.quiz.formation.duree,
                             categorie: participation.quiz.formation.categorie,
                         }
                         : null,
-                    questions: participation.quiz.questions.map((question) => ({
-                        id: String(question.id),
-                        quizId: participation.quiz.id,
-                        text: question.text,
-                        type: question.type,
-                        explication: question.explication || "",
-                        points: String(question.points || 1),
-                        astuce: question.astuce || "",
-                        mediaUrl: question.media_url || null,
-                        answers: question.reponses.map((reponse) => ({
-                            id: String(reponse.id),
-                            text: reponse.text,
-                            isCorrect: reponse.isCorrect ? 1 : 0,
-                            position: reponse.position || 0,
-                            matchPair: reponse.match_pair || null,
-                            bankGroup: reponse.bank_group || null,
-                            flashcardBack: reponse.flashcardBack || null,
-                        })),
-                    })),
+                    questions: [],
                 },
                 score: participation.score || 0,
                 completedAt: participation.completed_at
-                    ? participation.completed_at.toISOString().replace("Z", ".000000Z")
+                    ? participation.completed_at.toISOString()
                     : null,
                 timeSpent: participation.time_spent || 0,
                 totalQuestions: participation.quiz.questions.length,
                 correctAnswers: participation.correct_answers || 0,
             };
-        }));
+        });
         return history;
     }
 };

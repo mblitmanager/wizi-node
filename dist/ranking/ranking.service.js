@@ -387,19 +387,19 @@ let RankingService = class RankingService {
             return [];
         const quizIds = quizzes.map((q) => q.id);
         log(`quizIds: ${JSON.stringify(quizIds)}`);
-        const allQuestions = await this.questionRepository
-            .createQueryBuilder("question")
-            .leftJoinAndSelect("question.reponses", "reponse")
-            .where("question.quiz_id IN (:...quizIds)", { quizIds })
-            .getMany();
+        const allQuestions = await this.questionRepository.find({
+            where: { quiz_id: (0, typeorm_2.In)(quizIds) },
+            relations: ["reponses"],
+            order: { id: "ASC" },
+        });
         log(`allQuestions found: ${allQuestions.length}`);
-        if (allQuestions.length > 0) {
-            const firstQ = allQuestions[0];
-            log(`First question ID: ${firstQ.id}, reponses count: ${firstQ.reponses?.length || 0}`);
-            if (firstQ.reponses && firstQ.reponses.length > 0) {
-                log(`First reponse: ${JSON.stringify(firstQ.reponses[0])}`);
+        const questionsByQuizId = {};
+        allQuestions.forEach((q) => {
+            if (!questionsByQuizId[q.quiz_id]) {
+                questionsByQuizId[q.quiz_id] = [];
             }
-        }
+            questionsByQuizId[q.quiz_id].push(q);
+        });
         const participations = await this.participationRepository.find({
             where: {
                 user_id: userId,
@@ -414,14 +414,6 @@ let RankingService = class RankingService {
                 participationsByQuizId[p.quiz_id] = p;
             }
         });
-        const questionsByQuizId = {};
-        allQuestions.forEach((q) => {
-            if (!questionsByQuizId[q.quiz_id]) {
-                questionsByQuizId[q.quiz_id] = [];
-            }
-            questionsByQuizId[q.quiz_id].push(q);
-        });
-        log(`Mapped ${Object.keys(questionsByQuizId).length} quiz-question sets`);
         return quizzes.map((quiz) => {
             const lastParticipation = participationsByQuizId[quiz.id];
             const quizQuestions = questionsByQuizId[quiz.id] || [];
@@ -446,7 +438,7 @@ let RankingService = class RankingService {
                     id: question.id.toString(),
                     text: question.text ?? null,
                     type: question.type ?? "choix multiples",
-                    points: question.points?.toString() || "0",
+                    points: parseInt(question.points || "0") || 0,
                     answers: (question.reponses || []).map((r) => ({
                         id: r.id.toString(),
                         text: r.text,
@@ -460,10 +452,8 @@ let RankingService = class RankingService {
                         score: lastParticipation.score,
                         correct_answers: lastParticipation.correct_answers,
                         time_spent: lastParticipation.time_spent,
-                        started_at: lastParticipation.started_at?.toISOString() ||
-                            lastParticipation.created_at?.toISOString(),
-                        completed_at: lastParticipation.completed_at?.toISOString() ||
-                            lastParticipation.updated_at?.toISOString(),
+                        started_at: lastParticipation.started_at?.toISOString() || null,
+                        completed_at: lastParticipation.completed_at?.toISOString() || null,
                     }
                     : null,
             };

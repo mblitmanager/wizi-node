@@ -484,25 +484,25 @@ export class RankingService {
     const quizIds = quizzes.map((q) => q.id);
     log(`quizIds: ${JSON.stringify(quizIds)}`);
 
-    // Use QueryBuilder for more reliable nested relation loading
-    const allQuestions = await this.questionRepository
-      .createQueryBuilder("question")
-      .leftJoinAndSelect("question.reponses", "reponse")
-      .where("question.quiz_id IN (:...quizIds)", { quizIds })
-      .getMany();
+    // Fetch ALL questions for these quizzes with reponses in a single optimized query
+    const allQuestions = await this.questionRepository.find({
+      where: { quiz_id: In(quizIds) },
+      relations: ["reponses"],
+      order: { id: "ASC" },
+    });
 
     log(`allQuestions found: ${allQuestions.length}`);
-    if (allQuestions.length > 0) {
-      const firstQ = allQuestions[0];
-      log(
-        `First question ID: ${firstQ.id}, reponses count: ${firstQ.reponses?.length || 0}`
-      );
-      if (firstQ.reponses && firstQ.reponses.length > 0) {
-        log(`First reponse: ${JSON.stringify(firstQ.reponses[0])}`);
-      }
-    }
 
-    // Use QuizParticipation (quiz_participations table) as per Laravel
+    // Map questions by quiz_id
+    const questionsByQuizId: { [key: number]: Question[] } = {};
+    allQuestions.forEach((q) => {
+      if (!questionsByQuizId[q.quiz_id]) {
+        questionsByQuizId[q.quiz_id] = [];
+      }
+      questionsByQuizId[q.quiz_id].push(q);
+    });
+
+    // Fetch participations
     const participations = await this.participationRepository.find({
       where: {
         user_id: userId,
@@ -519,16 +519,6 @@ export class RankingService {
         participationsByQuizId[p.quiz_id] = p;
       }
     });
-
-    const questionsByQuizId: { [key: number]: Question[] } = {};
-    allQuestions.forEach((q) => {
-      if (!questionsByQuizId[q.quiz_id]) {
-        questionsByQuizId[q.quiz_id] = [];
-      }
-      questionsByQuizId[q.quiz_id].push(q);
-    });
-
-    log(`Mapped ${Object.keys(questionsByQuizId).length} quiz-question sets`);
 
     return quizzes.map((quiz) => {
       const lastParticipation = participationsByQuizId[quiz.id];
@@ -555,7 +545,7 @@ export class RankingService {
           id: question.id.toString(),
           text: question.text ?? null,
           type: question.type ?? "choix multiples",
-          points: question.points?.toString() || "0",
+          points: parseInt(question.points || "0") || 0, // Match Laravel's (int) cast for questions list
           answers: (question.reponses || []).map((r) => ({
             id: r.id.toString(),
             text: r.text,
@@ -569,12 +559,9 @@ export class RankingService {
               score: lastParticipation.score,
               correct_answers: lastParticipation.correct_answers,
               time_spent: lastParticipation.time_spent,
-              started_at:
-                lastParticipation.started_at?.toISOString() ||
-                lastParticipation.created_at?.toISOString(),
+              started_at: lastParticipation.started_at?.toISOString() || null,
               completed_at:
-                lastParticipation.completed_at?.toISOString() ||
-                lastParticipation.updated_at?.toISOString(),
+                lastParticipation.completed_at?.toISOString() || null,
             }
           : null,
       };

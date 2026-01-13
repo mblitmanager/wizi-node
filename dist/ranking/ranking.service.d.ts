@@ -176,7 +176,7 @@ export declare class RankingService {
             id: string;
             text: string;
             type: string;
-            points: string;
+            points: number;
             answers: {
                 id: string;
                 text: string;
