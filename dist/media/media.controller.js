@@ -80,6 +80,7 @@ __decorate([
 ], MediaController.prototype, "getAstuces", null);
 __decorate([
     (0, common_1.Get)("formations/:formationId/tutoriels"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __param(0, (0, common_1.Param)("formationId")),
     __param(1, (0, common_1.Req)()),
     __param(2, (0, common_1.Query)("page")),
@@ -89,6 +90,7 @@ __decorate([
 ], MediaController.prototype, "getTutorielsByFormation", null);
 __decorate([
     (0, common_1.Get)("formations/:formationId/astuces"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __param(0, (0, common_1.Param)("formationId")),
     __param(1, (0, common_1.Req)()),
     __param(2, (0, common_1.Query)("page")),
