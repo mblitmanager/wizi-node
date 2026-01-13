@@ -7,6 +7,7 @@ import { Quiz } from "../entities/quiz.entity";
 import { User } from "../entities/user.entity";
 import { Formation } from "../entities/formation.entity";
 import { Question } from "../entities/question.entity";
+import { Reponse } from "../entities/reponse.entity";
 export declare class RankingService {
     private classementRepository;
     private stagiaireRepository;
@@ -16,7 +17,8 @@ export declare class RankingService {
     private userRepository;
     private formationRepository;
     private questionRepository;
-    constructor(classementRepository: Repository<Classement>, stagiaireRepository: Repository<Stagiaire>, participationRepository: Repository<QuizParticipation>, progressionRepository: Repository<Progression>, quizRepository: Repository<Quiz>, userRepository: Repository<User>, formationRepository: Repository<Formation>, questionRepository: Repository<Question>);
+    private reponseRepository;
+    constructor(classementRepository: Repository<Classement>, stagiaireRepository: Repository<Stagiaire>, participationRepository: Repository<QuizParticipation>, progressionRepository: Repository<Progression>, quizRepository: Repository<Quiz>, userRepository: Repository<User>, formationRepository: Repository<Formation>, questionRepository: Repository<Question>, reponseRepository: Repository<Reponse>);
     getFormationsRankingSummary(): Promise<{
         formations: any[];
     }>;

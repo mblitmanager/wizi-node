@@ -24,10 +24,11 @@ const quiz_entity_1 = require("../entities/quiz.entity");
 const user_entity_1 = require("../entities/user.entity");
 const formation_entity_1 = require("../entities/formation.entity");
 const question_entity_1 = require("../entities/question.entity");
+const reponse_entity_1 = require("../entities/reponse.entity");
 const fs = require("fs");
 const path = require("path");
 let RankingService = class RankingService {
-    constructor(classementRepository, stagiaireRepository, participationRepository, progressionRepository, quizRepository, userRepository, formationRepository, questionRepository) {
+    constructor(classementRepository, stagiaireRepository, participationRepository, progressionRepository, quizRepository, userRepository, formationRepository, questionRepository, reponseRepository) {
         this.classementRepository = classementRepository;
         this.stagiaireRepository = stagiaireRepository;
         this.participationRepository = participationRepository;
@@ -36,6 +37,7 @@ let RankingService = class RankingService {
         this.userRepository = userRepository;
         this.formationRepository = formationRepository;
         this.questionRepository = questionRepository;
+        this.reponseRepository = reponseRepository;
     }
     async getFormationsRankingSummary() {
         const formations = await this.formationRepository.find({
@@ -385,11 +387,19 @@ let RankingService = class RankingService {
             return [];
         const quizIds = quizzes.map((q) => q.id);
         log(`quizIds: ${JSON.stringify(quizIds)}`);
-        const allQuestions = await this.questionRepository.find({
-            where: { quiz_id: (0, typeorm_2.In)(quizIds) },
-            relations: ["reponses"],
-        });
+        const allQuestions = await this.questionRepository
+            .createQueryBuilder("question")
+            .leftJoinAndSelect("question.reponses", "reponse")
+            .where("question.quiz_id IN (:...quizIds)", { quizIds })
+            .getMany();
         log(`allQuestions found: ${allQuestions.length}`);
+        if (allQuestions.length > 0) {
+            const firstQ = allQuestions[0];
+            log(`First question ID: ${firstQ.id}, reponses count: ${firstQ.reponses?.length || 0}`);
+            if (firstQ.reponses && firstQ.reponses.length > 0) {
+                log(`First reponse: ${JSON.stringify(firstQ.reponses[0])}`);
+            }
+        }
         const participations = await this.participationRepository.find({
             where: {
                 user_id: userId,
@@ -616,7 +626,9 @@ exports.RankingService = RankingService = __decorate([
     __param(5, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __param(6, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
     __param(7, (0, typeorm_1.InjectRepository)(question_entity_1.Question)),
+    __param(8, (0, typeorm_1.InjectRepository)(reponse_entity_1.Reponse)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

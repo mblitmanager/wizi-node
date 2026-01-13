@@ -31,7 +31,9 @@ export class RankingService {
     @InjectRepository(Formation)
     private formationRepository: Repository<Formation>,
     @InjectRepository(Question)
-    private questionRepository: Repository<Question>
+    private questionRepository: Repository<Question>,
+    @InjectRepository(Reponse)
+    private reponseRepository: Repository<Reponse>
   ) {}
 
   async getFormationsRankingSummary() {
@@ -482,12 +484,23 @@ export class RankingService {
     const quizIds = quizzes.map((q) => q.id);
     log(`quizIds: ${JSON.stringify(quizIds)}`);
 
-    const allQuestions = await this.questionRepository.find({
-      where: { quiz_id: In(quizIds) },
-      relations: ["reponses"],
-    });
+    // Use QueryBuilder for more reliable nested relation loading
+    const allQuestions = await this.questionRepository
+      .createQueryBuilder("question")
+      .leftJoinAndSelect("question.reponses", "reponse")
+      .where("question.quiz_id IN (:...quizIds)", { quizIds })
+      .getMany();
 
     log(`allQuestions found: ${allQuestions.length}`);
+    if (allQuestions.length > 0) {
+      const firstQ = allQuestions[0];
+      log(
+        `First question ID: ${firstQ.id}, reponses count: ${firstQ.reponses?.length || 0}`
+      );
+      if (firstQ.reponses && firstQ.reponses.length > 0) {
+        log(`First reponse: ${JSON.stringify(firstQ.reponses[0])}`);
+      }
+    }
 
     // Use QuizParticipation (quiz_participations table) as per Laravel
     const participations = await this.participationRepository.find({
