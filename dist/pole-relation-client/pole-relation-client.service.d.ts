@@ -9,7 +9,6 @@ export declare class PoleRelationClientService {
             "@type": string;
             id: number;
             role: string;
-            stagiaire_id: number;
             user_id: string;
             prenom: string;
             telephone: string;
@@ -32,7 +31,6 @@ export declare class PoleRelationClientService {
         "@type": string;
         id: number;
         role: string;
-        stagiaire_id: number;
         user_id: string;
         prenom: string;
         telephone: string;

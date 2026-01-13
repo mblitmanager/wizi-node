@@ -278,21 +278,20 @@ let StagiaireService = class StagiaireService {
         };
     }
     async getStagiaireById(id) {
-        const stagiaire = await this.stagiaireRepository.findOne({
-            where: { id },
-            relations: [
-                "user",
-                "formateurs",
-                "formateurs.user",
-                "commercials",
-                "commercials.user",
-                "poleRelationClients",
-                "poleRelationClients.user",
-                "stagiaire_catalogue_formations",
-                "stagiaire_catalogue_formations.catalogue_formation",
-                "stagiaire_catalogue_formations.catalogue_formation.formation",
-            ],
-        });
+        const stagiaire = await this.stagiaireRepository
+            .createQueryBuilder("s")
+            .leftJoinAndSelect("s.user", "user")
+            .leftJoinAndSelect("s.formateurs", "formateurs")
+            .leftJoinAndSelect("formateurs.user", "formateurs_user")
+            .leftJoinAndSelect("s.commercials", "commercials")
+            .leftJoinAndSelect("commercials.user", "commercials_user")
+            .leftJoinAndSelect("s.poleRelationClients", "prc")
+            .leftJoinAndSelect("prc.user", "prc_user")
+            .leftJoinAndSelect("s.stagiaire_catalogue_formations", "scf")
+            .leftJoinAndSelect("scf.catalogue_formation", "cf")
+            .leftJoinAndSelect("cf.formation", "f")
+            .where("s.id = :id", { id })
+            .getOne();
         if (!stagiaire) {
             throw new common_1.NotFoundException("Stagiaire not found");
         }

@@ -27,10 +27,6 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
-], PoleRelationClient.prototype, "stagiaire_id", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Number)
 ], PoleRelationClient.prototype, "user_id", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User),
@@ -38,12 +34,7 @@ __decorate([
     __metadata("design:type", user_entity_1.User)
 ], PoleRelationClient.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => stagiaire_entity_1.Stagiaire),
-    (0, typeorm_1.JoinTable)({
-        name: "pole_relation_client_stagiaire",
-        joinColumn: { name: "pole_relation_client_id" },
-        inverseJoinColumn: { name: "stagiaire_id" },
-    }),
+    (0, typeorm_1.ManyToMany)(() => stagiaire_entity_1.Stagiaire, (stagiaire) => stagiaire.poleRelationClients),
     __metadata("design:type", Array)
 ], PoleRelationClient.prototype, "stagiaires", void 0);
 __decorate([

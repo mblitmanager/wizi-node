@@ -20,8 +20,7 @@ export class PoleRelationClient {
   @Column({ nullable: true })
   role: string;
 
-  @Column({ nullable: true })
-  stagiaire_id: number;
+  // stagiaire_id removed: It is M2M, not a column on this table
 
   @Column({ nullable: true })
   user_id: number;
@@ -30,12 +29,7 @@ export class PoleRelationClient {
   @JoinColumn({ name: "user_id" })
   user: User;
 
-  @ManyToMany(() => Stagiaire)
-  @JoinTable({
-    name: "pole_relation_client_stagiaire",
-    joinColumn: { name: "pole_relation_client_id" },
-    inverseJoinColumn: { name: "stagiaire_id" },
-  })
+  @ManyToMany(() => Stagiaire, (stagiaire) => stagiaire.poleRelationClients)
   stagiaires: Stagiaire[];
 
   @Column({ nullable: true })
