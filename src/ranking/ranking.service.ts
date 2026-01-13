@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import * as fs from "fs";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, MoreThan } from "typeorm";
 import { Classement } from "../entities/classement.entity";
@@ -456,16 +457,11 @@ export class RankingService {
           parseInt(quiz.nb_points_total || "0") ||
           0;
 
-        if (quiz.id === 81) {
-          console.log(
-            `Debug Quiz 81: nb_points_total type: ${typeof quiz.nb_points_total}, value: ${quiz.nb_points_total}`
-          );
-          console.log(
-            `Debug Quiz 81 Questions Length: ${quiz.questions?.length}`
-          );
-          if (quiz.questions?.length > 0)
-            console.log("First question:", quiz.questions[0]);
-        }
+        const logLine = `Quiz ID: ${quiz.id}, nb_points_total type: ${typeof quiz.nb_points_total}, value: ${quiz.nb_points_total}, questions: ${quiz.questions?.length || 0}\n`;
+        fs.appendFileSync(
+          "c:/laragon/www/cursor/Wizi-learn-node/debug_ranking.txt",
+          logLine
+        );
 
         const quizData = {
           id: quiz.id,

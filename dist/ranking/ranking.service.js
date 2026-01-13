@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RankingService = void 0;
 const common_1 = require("@nestjs/common");
+const fs = require("fs");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const classement_entity_1 = require("../entities/classement.entity");
@@ -368,12 +369,8 @@ let RankingService = class RankingService {
             const totalQuestions = progression.total_questions ||
                 parseInt(quiz.nb_points_total || "0") ||
                 0;
-            if (quiz.id === 81) {
-                console.log(`Debug Quiz 81: nb_points_total type: ${typeof quiz.nb_points_total}, value: ${quiz.nb_points_total}`);
-                console.log(`Debug Quiz 81 Questions Length: ${quiz.questions?.length}`);
-                if (quiz.questions?.length > 0)
-                    console.log("First question:", quiz.questions[0]);
-            }
+            const logLine = `Quiz ID: ${quiz.id}, nb_points_total type: ${typeof quiz.nb_points_total}, value: ${quiz.nb_points_total}, questions: ${quiz.questions?.length || 0}\n`;
+            fs.appendFileSync("c:/laragon/www/cursor/Wizi-learn-node/debug_ranking.txt", logLine);
             const quizData = {
                 id: quiz.id,
                 titre: quiz.titre,
