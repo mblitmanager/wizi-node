@@ -27,7 +27,18 @@ let AppController = class AppController {
     }
     async testFcm(body) {
         const { title, body: msgBody, data, token, user_id } = body;
+        return this.handleFcmRequest(title, msgBody, data, token, user_id);
+    }
+    async testFcmGet(query) {
+        const { title, body: msgBody, data, token, user_id } = query;
+        return this.handleFcmRequest(title, msgBody, data, token, user_id);
+    }
+    async handleFcmRequest(title, msgBody, data, token, user_id) {
         if (!title || !msgBody) {
+            if (!title)
+                title = "Test Notification";
+            if (!msgBody)
+                msgBody = "This is a test message from GET request";
         }
         if (token) {
             const sent = await this.fcmService.sendPushNotification(token, title, msgBody, data || {});
@@ -140,6 +151,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "testFcm", null);
+__decorate([
+    (0, common_1.Get)("test-fcm"),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "testFcmGet", null);
 __decorate([
     (0, common_1.Get)("test-notif"),
     __metadata("design:type", Function),

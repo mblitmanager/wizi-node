@@ -14,6 +14,14 @@ export declare class AppController {
         error: string;
         ok?: undefined;
     }>;
+    testFcmGet(query: any): Promise<{
+        ok: boolean;
+        error?: undefined;
+    } | {
+        error: string;
+        ok?: undefined;
+    }>;
+    private handleFcmRequest;
     getTestNotif(): string;
     getHello(): {
         name: string;

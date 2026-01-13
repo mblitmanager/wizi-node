@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from "@nestjs/common";
+import { Controller, Get, Post, Body, Query } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { FcmService } from "./notification/fcm.service";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -17,12 +17,30 @@ export class AppController {
   @Post("test-fcm")
   async testFcm(@Body() body: any) {
     const { title, body: msgBody, data, token, user_id } = body;
+    return this.handleFcmRequest(title, msgBody, data, token, user_id);
+  }
 
+  @Get("test-fcm")
+  async testFcmGet(@Query() query: any) {
+    const { title, body: msgBody, data, token, user_id } = query;
+    return this.handleFcmRequest(title, msgBody, data, token, user_id);
+  }
+
+  private async handleFcmRequest(
+    title: string,
+    msgBody: string,
+    data: any,
+    token: string,
+    user_id: any
+  ) {
     // Basic validation matching Laravel
     if (!title || !msgBody) {
-      // NestJS might throw earlier validation error if using DTO, but here we do manual check
-      // Laravel returns 422 if validation fails, implicitly handled by Request validation
-      // But we are using 'any', so let's just proceed or throw
+      // Only enforce Validation if not just testing connectivity
+      // If empty, providing defaults for GET convenience if needed,
+      // but for parity we might want to error or defaults.
+      // Let's use defaults for GET convenience if missing
+      if (!title) title = "Test Notification";
+      if (!msgBody) msgBody = "This is a test message from GET request";
     }
 
     if (token) {
@@ -40,7 +58,7 @@ export class AppController {
         where: { id: user_id },
       });
       if (!user) {
-        return { error: "User not found" }; // Matching Laravel 404 response structure roughly, though logic might differ slightly in status code
+        return { error: "User not found" };
       }
       const sent = await this.fcmService.sendPushNotification(
         user.fcm_token,
