@@ -81,16 +81,15 @@ let ChallengeService = class ChallengeService {
         const rankings = await this.progressionRepository
             .createQueryBuilder("progression")
             .innerJoinAndSelect("progression.stagiaire", "stagiaire")
-            .orderBy("progression.completed_challenges", "DESC")
-            .addOrderBy("progression.points", "DESC")
+            .orderBy("progression.score", "DESC")
             .limit(20)
             .getMany();
         return rankings.map((r, index) => ({
             rank: index + 1,
             stagiaire_id: r.stagiaire_id,
             name: r.stagiaire.prenom,
-            points: r.points,
-            completed_challenges: r.completed_challenges,
+            points: r.score,
+            completed_challenges: 0,
         }));
     }
     async getChallengeEntries(userId) {

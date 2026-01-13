@@ -84,8 +84,7 @@ export class ChallengeService {
     const rankings = await this.progressionRepository
       .createQueryBuilder("progression")
       .innerJoinAndSelect("progression.stagiaire", "stagiaire")
-      .orderBy("progression.completed_challenges", "DESC")
-      .addOrderBy("progression.points", "DESC")
+      .orderBy("progression.score", "DESC")
       .limit(20)
       .getMany();
 
@@ -93,8 +92,8 @@ export class ChallengeService {
       rank: index + 1,
       stagiaire_id: r.stagiaire_id,
       name: r.stagiaire.prenom, // Simplified as we may not have user join here
-      points: r.points,
-      completed_challenges: r.completed_challenges,
+      points: r.score,
+      completed_challenges: 0, // Not available in current schema
     }));
   }
 
