@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, In } from "typeorm";
 import { Quiz } from "../entities/quiz.entity";
@@ -10,6 +10,9 @@ import { QuizParticipationAnswer } from "../entities/quiz-participation-answer.e
 import { CorrespondancePair } from "../entities/correspondance-pair.entity";
 import { Reponse } from "../entities/reponse.entity";
 import { Progression } from "../entities/progression.entity";
+import { User } from "../entities/user.entity";
+import { Stagiaire } from "../entities/stagiaire.entity";
+import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 
 @Injectable()
 export class QuizService {
@@ -29,7 +32,13 @@ export class QuizService {
     @InjectRepository(CorrespondancePair)
     private correspondancePairRepository: Repository<CorrespondancePair>,
     @InjectRepository(Progression)
-    private progressionRepository: Repository<Progression>
+    private progressionRepository: Repository<Progression>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(Stagiaire)
+    private stagiaireRepository: Repository<Stagiaire>,
+    @InjectRepository(StagiaireCatalogueFormation)
+    private scfRepository: Repository<StagiaireCatalogueFormation>
   ) {}
 
   async getAllQuizzes() {
@@ -317,59 +326,90 @@ export class QuizService {
     };
   }
 
-  async getCategories() {
-    const formations = await this.formationRepository.find({
-      where: { statut: 1 },
-      relations: ["quizzes"],
-    });
-
-    const categoriesMap: {
-      [key: string]: {
-        name: string;
-        icon: string;
-        description: string;
-        quizCount: number;
-      };
-    } = {};
-
-    formations.forEach((f) => {
-      const cat = f.categorie || "Général";
-      if (!categoriesMap[cat]) {
-        categoriesMap[cat] = {
-          name: cat,
-          icon: f.icon || "help-circle",
-          description:
-            f.description || `Explorez les quizzes de la catégorie ${cat}`,
-          quizCount: 0,
-        };
-      }
-      categoriesMap[cat].quizCount += (f.quizzes || []).length;
-    });
-
-    const categoryColors: { [key: string]: string } = {
+  private getCategoryColor(category: string): string {
+    const colors: { [key: string]: string } = {
       Création: "#9392BE",
       Bureautique: "#3D9BE9",
       Développement: "#4CAF50",
       Marketing: "#FF9800",
       Management: "#F44336",
     };
+    return colors[category] || "#888888";
+  }
 
-    return Object.keys(categoriesMap).map((catName) => {
-      const cat = categoriesMap[catName];
-      const color = categoryColors[catName] || "#888888";
-      return {
-        id: catName,
-        name: catName,
-        color: color,
-        icon: cat.icon,
-        description: cat.description,
-        quizCount: cat.quizCount,
-        colorClass: `category-${catName
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")}`,
-      };
+  private getCategoryIcon(category: string): string {
+    return "file-text"; // Can be customized per category
+  }
+
+  private getCategoryDescription(category: string): string {
+    const descriptions: { [key: string]: string } = {
+      Bureautique: "Maîtrisez les outils de bureautique essentiels",
+      Création:
+        "Formation complète sur Adobe Illustrator pour la création vectorielle",
+      Internet: "Création et gestion de sites web avec WordPress",
+      Langues: "Apprentissage du français avec méthode interactive",
+      IA: "Créez des contenus rédactionnels et visuels à l'aide de l'intelligence artificielle générative",
+    };
+    return (
+      descriptions[category] ||
+      `Explorez les quizzes de la catégorie ${category}`
+    );
+  }
+
+  async getCategories(userId: number) {
+    // Get stagiaire from user
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ["stagiaire"],
     });
+
+    if (!user?.stagiaire) {
+      throw new NotFoundException("Aucun stagiaire associé à cet utilisateur");
+    }
+
+    const stagiaireId = user.stagiaire.id;
+
+    // Get quizzes for stagiaire's enrolled formations (matching Laravel logic)
+    const quizzes = await this.quizRepository
+      .createQueryBuilder("quiz")
+      .leftJoinAndSelect("quiz.formation", "formation")
+      .innerJoin("formation.catalogueFormations", "catalogue")
+      .innerJoin(
+        "catalogue.stagiaire_catalogue_formations",
+        "scf",
+        "scf.stagiaire_id = :stagiaireId",
+        { stagiaireId }
+      )
+      .distinct(true)
+      .getMany();
+
+    // Group by category and count quizzes
+    const categoriesMap: Map<string, any> = new Map();
+
+    quizzes.forEach((quiz) => {
+      const categoryName = quiz.formation?.categorie || "Non catégorisé";
+
+      if (!categoriesMap.has(categoryName)) {
+        categoriesMap.set(categoryName, {
+          id: categoryName,
+          name: categoryName,
+          color: this.getCategoryColor(categoryName),
+          icon: this.getCategoryIcon(categoryName),
+          description: this.getCategoryDescription(categoryName),
+          quizCount: 0,
+          colorClass: `category-${categoryName
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")}
+            .replace(/\s+/g, "-")`,
+        });
+      }
+
+      const category = categoriesMap.get(categoryName);
+      category.quizCount += 1;
+    });
+
+    return Array.from(categoriesMap.values());
   }
 
   async getHistoryByStagiaire(stagiaireId: number) {

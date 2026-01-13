@@ -24,8 +24,11 @@ const quiz_participation_entity_1 = require("../entities/quiz-participation.enti
 const quiz_participation_answer_entity_1 = require("../entities/quiz-participation-answer.entity");
 const correspondance_pair_entity_1 = require("../entities/correspondance-pair.entity");
 const progression_entity_1 = require("../entities/progression.entity");
+const user_entity_1 = require("../entities/user.entity");
+const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
 let QuizService = class QuizService {
-    constructor(quizRepository, questionRepository, formationRepository, classementRepository, participationRepository, participationAnswerRepository, correspondancePairRepository, progressionRepository) {
+    constructor(quizRepository, questionRepository, formationRepository, classementRepository, participationRepository, participationAnswerRepository, correspondancePairRepository, progressionRepository, userRepository, stagiaireRepository, scfRepository) {
         this.quizRepository = quizRepository;
         this.questionRepository = questionRepository;
         this.formationRepository = formationRepository;
@@ -34,6 +37,9 @@ let QuizService = class QuizService {
         this.participationAnswerRepository = participationAnswerRepository;
         this.correspondancePairRepository = correspondancePairRepository;
         this.progressionRepository = progressionRepository;
+        this.userRepository = userRepository;
+        this.stagiaireRepository = stagiaireRepository;
+        this.scfRepository = scfRepository;
     }
     async getAllQuizzes() {
         return this.quizRepository.find({ relations: ["formation"] });
@@ -274,47 +280,68 @@ let QuizService = class QuizService {
             updatedAt: reponse.updated_at?.toISOString() || null,
         };
     }
-    async getCategories() {
-        const formations = await this.formationRepository.find({
-            where: { statut: 1 },
-            relations: ["quizzes"],
-        });
-        const categoriesMap = {};
-        formations.forEach((f) => {
-            const cat = f.categorie || "Général";
-            if (!categoriesMap[cat]) {
-                categoriesMap[cat] = {
-                    name: cat,
-                    icon: f.icon || "help-circle",
-                    description: f.description || `Explorez les quizzes de la catégorie ${cat}`,
-                    quizCount: 0,
-                };
-            }
-            categoriesMap[cat].quizCount += (f.quizzes || []).length;
-        });
-        const categoryColors = {
+    getCategoryColor(category) {
+        const colors = {
             Création: "#9392BE",
             Bureautique: "#3D9BE9",
             Développement: "#4CAF50",
             Marketing: "#FF9800",
             Management: "#F44336",
         };
-        return Object.keys(categoriesMap).map((catName) => {
-            const cat = categoriesMap[catName];
-            const color = categoryColors[catName] || "#888888";
-            return {
-                id: catName,
-                name: catName,
-                color: color,
-                icon: cat.icon,
-                description: cat.description,
-                quizCount: cat.quizCount,
-                colorClass: `category-${catName
-                    .toLowerCase()
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "")}`,
-            };
+        return colors[category] || "#888888";
+    }
+    getCategoryIcon(category) {
+        return "file-text";
+    }
+    getCategoryDescription(category) {
+        const descriptions = {
+            Bureautique: "Maîtrisez les outils de bureautique essentiels",
+            Création: "Formation complète sur Adobe Illustrator pour la création vectorielle",
+            Internet: "Création et gestion de sites web avec WordPress",
+            Langues: "Apprentissage du français avec méthode interactive",
+            IA: "Créez des contenus rédactionnels et visuels à l'aide de l'intelligence artificielle générative",
+        };
+        return (descriptions[category] ||
+            `Explorez les quizzes de la catégorie ${category}`);
+    }
+    async getCategories(userId) {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            relations: ["stagiaire"],
         });
+        if (!user?.stagiaire) {
+            throw new common_1.NotFoundException("Aucun stagiaire associé à cet utilisateur");
+        }
+        const stagiaireId = user.stagiaire.id;
+        const quizzes = await this.quizRepository
+            .createQueryBuilder("quiz")
+            .leftJoinAndSelect("quiz.formation", "formation")
+            .innerJoin("formation.catalogueFormations", "catalogue")
+            .innerJoin("catalogue.stagiaire_catalogue_formations", "scf", "scf.stagiaire_id = :stagiaireId", { stagiaireId })
+            .distinct(true)
+            .getMany();
+        const categoriesMap = new Map();
+        quizzes.forEach((quiz) => {
+            const categoryName = quiz.formation?.categorie || "Non catégorisé";
+            if (!categoriesMap.has(categoryName)) {
+                categoriesMap.set(categoryName, {
+                    id: categoryName,
+                    name: categoryName,
+                    color: this.getCategoryColor(categoryName),
+                    icon: this.getCategoryIcon(categoryName),
+                    description: this.getCategoryDescription(categoryName),
+                    quizCount: 0,
+                    colorClass: `category-${categoryName
+                        .toLowerCase()
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")}
+            .replace(/\s+/g, "-")`,
+                });
+            }
+            const category = categoriesMap.get(categoryName);
+            category.quizCount += 1;
+        });
+        return Array.from(categoriesMap.values());
     }
     async getHistoryByStagiaire(stagiaireId) {
         return this.classementRepository.find({
@@ -719,7 +746,13 @@ exports.QuizService = QuizService = __decorate([
     __param(5, (0, typeorm_1.InjectRepository)(quiz_participation_answer_entity_1.QuizParticipationAnswer)),
     __param(6, (0, typeorm_1.InjectRepository)(correspondance_pair_entity_1.CorrespondancePair)),
     __param(7, (0, typeorm_1.InjectRepository)(progression_entity_1.Progression)),
+    __param(8, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(9, (0, typeorm_1.InjectRepository)(stagiaire_entity_1.Stagiaire)),
+    __param(10, (0, typeorm_1.InjectRepository)(stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

@@ -34,7 +34,7 @@ export declare class QuizApiController {
             points: number;
         }[];
     }[]>;
-    categories(): Promise<any>;
+    categories(req: any): Promise<any>;
     byCategory(categoryId: string, req: any): Promise<any>;
     globalClassement(period?: string): Promise<{
         rang: number;

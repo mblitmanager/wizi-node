@@ -37,8 +37,9 @@ export class QuizApiController {
   }
 
   @Get("categories")
-  async categories() {
-    const data = await this.quizService.getCategories();
+  async categories(@Request() req: any) {
+    const userId = req.user?.id;
+    const data = await this.quizService.getCategories(userId);
     return this.apiResponse.success(data);
   }
 

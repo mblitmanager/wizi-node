@@ -8,6 +8,9 @@ import { QuizParticipationAnswer } from "../entities/quiz-participation-answer.e
 import { CorrespondancePair } from "../entities/correspondance-pair.entity";
 import { Reponse } from "../entities/reponse.entity";
 import { Progression } from "../entities/progression.entity";
+import { User } from "../entities/user.entity";
+import { Stagiaire } from "../entities/stagiaire.entity";
+import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 export declare class QuizService {
     private quizRepository;
     private questionRepository;
@@ -17,7 +20,10 @@ export declare class QuizService {
     private participationAnswerRepository;
     private correspondancePairRepository;
     private progressionRepository;
-    constructor(quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, formationRepository: Repository<Formation>, classementRepository: Repository<Classement>, participationRepository: Repository<QuizParticipation>, participationAnswerRepository: Repository<QuizParticipationAnswer>, correspondancePairRepository: Repository<CorrespondancePair>, progressionRepository: Repository<Progression>);
+    private userRepository;
+    private stagiaireRepository;
+    private scfRepository;
+    constructor(quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, formationRepository: Repository<Formation>, classementRepository: Repository<Classement>, participationRepository: Repository<QuizParticipation>, participationAnswerRepository: Repository<QuizParticipationAnswer>, correspondancePairRepository: Repository<CorrespondancePair>, progressionRepository: Repository<Progression>, userRepository: Repository<User>, stagiaireRepository: Repository<Stagiaire>, scfRepository: Repository<StagiaireCatalogueFormation>);
     getAllQuizzes(): Promise<Quiz[]>;
     getQuizzesByFormation(stagiaireId?: number): Promise<{
         id: string;
@@ -149,15 +155,10 @@ export declare class QuizService {
         createdAt: string;
         updatedAt: string;
     };
-    getCategories(): Promise<{
-        id: string;
-        name: string;
-        color: string;
-        icon: string;
-        description: string;
-        quizCount: number;
-        colorClass: string;
-    }[]>;
+    private getCategoryColor;
+    private getCategoryIcon;
+    private getCategoryDescription;
+    getCategories(userId: number): Promise<any[]>;
     getHistoryByStagiaire(stagiaireId: number): Promise<Classement[]>;
     getStats(userId: number): Promise<{
         totalQuizzes: number;

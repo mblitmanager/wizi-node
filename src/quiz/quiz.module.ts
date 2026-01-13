@@ -18,6 +18,9 @@ import { ReponseApiController } from "./reponses-api.controller";
 import { RankingModule } from "../ranking/ranking.module";
 import { AchievementModule } from "../achievement/achievement.module";
 import { Progression } from "../entities/progression.entity";
+import { User } from "../entities/user.entity";
+import { Stagiaire } from "../entities/stagiaire.entity";
+import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 
 @Module({
   imports: [
@@ -33,11 +36,19 @@ import { Progression } from "../entities/progression.entity";
       QuizParticipationAnswer,
       CorrespondancePair,
       Progression,
+      User,
+      Stagiaire,
+      StagiaireCatalogueFormation,
     ]),
     RankingModule,
     AchievementModule,
   ],
-  controllers: [QuizApiController, QuizzesApiController, QuestionsApiController, ReponseApiController],
+  controllers: [
+    QuizApiController,
+    QuizzesApiController,
+    QuestionsApiController,
+    ReponseApiController,
+  ],
   providers: [QuizService, ApiResponseService],
   exports: [QuizService],
 })
