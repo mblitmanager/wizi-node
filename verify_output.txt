@@ -1,0 +1,14 @@
+Testing GET /stagiaire/show...
+Status: 200
+Has stagiaire: true
+Sample Stagiaire: {
+  "id": 3,
+  "prenom": "Franck",
+  "nom": "COPIN",
+  "telephone": "+26560",
+  "ville": "SOMAIN",
+  "code_postal": "59490",
+  "adresse": "1 RUE Edmond Robton",
+  "email": "test@test.fr",
+  "image": "uploads/users/1761565221.png"
+}

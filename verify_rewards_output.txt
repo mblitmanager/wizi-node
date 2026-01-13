@@ -1,0 +1,4 @@
+Testing GET /stagiaire/rewards...
+Status: 401
+Error Message: Unauthorized
+Error Stack: No stack

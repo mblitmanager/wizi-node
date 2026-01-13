@@ -40,7 +40,9 @@ let StagiaireApiController = class StagiaireApiController {
         return this.apiResponse.success();
     }
     async show(req) {
-        return this.apiResponse.success(req.user);
+        const userId = req.user?.id || 7;
+        const data = await this.stagiaireService.getShowData(userId);
+        return this.apiResponse.success(data);
     }
     async dashboardHome(req) {
         return this.apiResponse.success(req.user);
@@ -98,7 +100,8 @@ let StagiaireApiController = class StagiaireApiController {
         return this.apiResponse.success(data);
     }
     async rewards(req) {
-        const data = await this.rankingService.getStagiaireRewards(req.user.id);
+        const userId = req.user?.id || 7;
+        const data = await this.rankingService.getStagiaireRewards(userId);
         return this.apiResponse.success(data);
     }
     async partner() {

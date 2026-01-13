@@ -473,6 +473,31 @@ let StagiaireService = class StagiaireService {
             all_users: allUsers,
         };
     }
+    async getShowData(userId) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!stagiaire) {
+            throw new common_1.NotFoundException("Stagiaire not found");
+        }
+        const [profile, stats, formations, agenda, notifications, media] = await Promise.all([
+            this.getDetailedProfile(userId),
+            this.rankingService.getStagiaireProgress(userId),
+            this.getFormationsByStagiaire(stagiaire.id),
+            this.agendaService.getStagiaireAgenda(userId),
+            this.agendaService.getStagiaireNotifications(userId),
+            this.mediaService.getTutorials(userId),
+        ]);
+        const formationsData = formations.data || formations;
+        return {
+            stagiaire: profile,
+            stats: stats,
+            formations: formationsData,
+            agenda: agenda,
+            notifications: notifications,
+            media: media,
+        };
+    }
 };
 exports.StagiaireService = StagiaireService;
 exports.StagiaireService = StagiaireService = __decorate([

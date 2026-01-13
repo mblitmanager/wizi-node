@@ -565,4 +565,35 @@ export class StagiaireService {
       all_users: allUsers,
     };
   }
+  async getShowData(userId: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!stagiaire) {
+      throw new NotFoundException("Stagiaire not found");
+    }
+
+    const [profile, stats, formations, agenda, notifications, media] =
+      await Promise.all([
+        this.getDetailedProfile(userId),
+        this.rankingService.getStagiaireProgress(userId),
+        this.getFormationsByStagiaire(stagiaire.id),
+        this.agendaService.getStagiaireAgenda(userId),
+        this.agendaService.getStagiaireNotifications(userId),
+        this.mediaService.getTutorials(userId),
+      ]);
+
+    // Unwrap formations data if it follows { success: true, data: [...] } structure
+    const formationsData = (formations as any).data || formations;
+
+    return {
+      stagiaire: profile,
+      stats: stats,
+      formations: formationsData,
+      agenda: agenda,
+      notifications: notifications,
+      media: media,
+    };
+  }
 }

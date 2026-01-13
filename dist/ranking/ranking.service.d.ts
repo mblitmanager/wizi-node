@@ -99,10 +99,16 @@ export declare class RankingService {
             };
         };
     }>;
-    getStagiaireRewards(stagiaireId: number): Promise<{
+    getStagiaireRewards(userId: number): Promise<{
         points: number;
         completed_quizzes: number;
         completed_challenges: number;
+        rank: number;
+    } | {
+        points: number;
+        completed_quizzes: number;
+        completed_challenges: number;
+        rank?: undefined;
     }>;
     getStagiaireDetails(stagiaireId: number): Promise<{
         id: number;

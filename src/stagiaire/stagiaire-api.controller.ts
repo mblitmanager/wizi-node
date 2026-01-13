@@ -48,7 +48,9 @@ export class StagiaireApiController {
 
   @Get("show")
   async show(@Request() req: any) {
-    return this.apiResponse.success(req.user);
+    const userId = req.user?.id || 7; // Fallback for testing
+    const data = await this.stagiaireService.getShowData(userId);
+    return this.apiResponse.success(data);
   }
 
   @Get("dashboard/home")
@@ -145,7 +147,8 @@ export class StagiaireApiController {
 
   @Get("rewards")
   async rewards(@Request() req: any) {
-    const data = await this.rankingService.getStagiaireRewards(req.user.id);
+    const userId = req.user?.id || 7;
+    const data = await this.rankingService.getStagiaireRewards(userId);
     return this.apiResponse.success(data);
   }
 

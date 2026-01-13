@@ -219,4 +219,110 @@ export declare class StagiaireService {
         recently_online: User[];
         all_users: User[];
     }>;
+    getShowData(userId: number): Promise<{
+        stagiaire: {
+            id: number;
+            prenom: string;
+            nom: string;
+            telephone: string;
+            ville: string;
+            code_postal: string;
+            adresse: string;
+            email: string;
+            image: string;
+        };
+        stats: {
+            stagiaire: {
+                id: string;
+                prenom: string;
+                image: string;
+            };
+            totalPoints: any;
+            quizCount: number;
+            averageScore: number;
+            completedQuizzes: number;
+            totalTimeSpent: number;
+            rang: number;
+            level: number;
+            categoryStats: {
+                category: string;
+                quizCount: number;
+                averageScore: number;
+            }[];
+            levelProgress: {
+                débutant: {
+                    completed: number;
+                    averageScore: number;
+                };
+                intermédiaire: {
+                    completed: number;
+                    averageScore: number;
+                };
+                avancé: {
+                    completed: number;
+                    averageScore: number;
+                };
+            };
+        };
+        formations: any;
+        agenda: {
+            formations: Formation[];
+            events: import("../entities/agenda.entity").Agenda[];
+            upcoming_events: import("../entities/agenda.entity").Agenda[];
+        };
+        notifications: import("../entities/notification.entity").Notification[];
+        media: {
+            stagiaires: {
+                id: number;
+                prenom: string;
+                civilite: string;
+                telephone: string;
+                adresse: string;
+                date_naissance: string;
+                ville: string;
+                code_postal: string;
+                date_debut_formation: string;
+                date_inscription: string;
+                role: string;
+                statut: string;
+                user_id: number;
+                deleted_at: any;
+                created_at: string;
+                updated_at: string;
+                date_fin_formation: string;
+                login_streak: number;
+                last_login_at: string;
+                onboarding_seen: number;
+                partenaire_id: number;
+                pivot: {
+                    media_id: number;
+                    stagiaire_id: number;
+                    is_watched: number;
+                    watched_at: string;
+                    created_at: any;
+                    updated_at: string;
+                };
+            }[];
+            id: number;
+            titre: string;
+            description: string;
+            url: string;
+            size: number;
+            mime: string;
+            uploaded_by: number;
+            video_platform: string;
+            video_file_path: string;
+            subtitle_file_path: string;
+            subtitle_language: string;
+            type: string;
+            categorie: string;
+            duree: string;
+            ordre: number;
+            formation_id: number;
+            created_at: string;
+            updated_at: string;
+            video_url: string;
+            subtitle_url: any;
+        }[];
+    }>;
 }

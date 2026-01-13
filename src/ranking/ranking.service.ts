@@ -253,9 +253,9 @@ export class RankingService {
       where: { id: userId },
       relations: [
         "stagiaire",
-        "stagiaire.formateur",
-        "stagiaire.formateur.user",
-        "stagiaire.commercial",
+        "stagiaire.formateurs",
+        "stagiaire.formateurs.user",
+        "stagiaire.commercials",
         "stagiaire.stagiaire_catalogue_formations",
         "stagiaire.stagiaire_catalogue_formations.catalogue_formation",
       ],
@@ -308,13 +308,26 @@ export class RankingService {
     };
   }
 
-  async getStagiaireRewards(stagiaireId: number) {
+  async getStagiaireRewards(userId: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!stagiaire) {
+      return {
+        points: 0,
+        completed_quizzes: 0,
+        completed_challenges: 0,
+        rank: 0,
+      };
+    }
+
     const progression = await this.progressionRepository.findOne({
-      where: { stagiaire_id: stagiaireId },
+      where: { stagiaire_id: stagiaire.id },
     });
 
     const completedQuizzes = await this.participationRepository.count({
-      where: { user_id: stagiaireId, status: "completed" }, // Note: stagiaireId != userId in some systems, check this
+      where: { user_id: userId, status: "completed" },
     });
 
     return {
