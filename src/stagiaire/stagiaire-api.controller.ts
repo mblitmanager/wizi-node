@@ -195,6 +195,7 @@ export class StagiaireApiController {
 export class ApiGeneralController {
   constructor(
     private rankingService: RankingService,
+    private stagiaireService: StagiaireService,
     private apiResponse: ApiResponseService
   ) {}
 
@@ -222,6 +223,12 @@ export class ApiGeneralController {
   async getUserPoints(@Request() req: any) {
     const data = await this.rankingService.getUserPoints(req.user.id);
     return this.apiResponse.success(data);
+  }
+
+  @Get("user-status")
+  async getUserStatus() {
+    const data = await this.stagiaireService.getOnlineUsers();
+    return data;
   }
 
   @Post("fcm-token")

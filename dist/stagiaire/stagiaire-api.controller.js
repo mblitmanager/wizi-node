@@ -343,8 +343,9 @@ exports.StagiaireApiController = StagiaireApiController = __decorate([
         api_response_service_1.ApiResponseService])
 ], StagiaireApiController);
 let ApiGeneralController = class ApiGeneralController {
-    constructor(rankingService, apiResponse) {
+    constructor(rankingService, stagiaireService, apiResponse) {
         this.rankingService = rankingService;
+        this.stagiaireService = stagiaireService;
         this.apiResponse = apiResponse;
     }
     async getUserSettings(req) {
@@ -362,6 +363,10 @@ let ApiGeneralController = class ApiGeneralController {
     async getUserPoints(req) {
         const data = await this.rankingService.getUserPoints(req.user.id);
         return this.apiResponse.success(data);
+    }
+    async getUserStatus() {
+        const data = await this.stagiaireService.getOnlineUsers();
+        return data;
     }
     async updateFcmToken(req, token) {
         return this.apiResponse.success();
@@ -407,6 +412,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ApiGeneralController.prototype, "getUserPoints", null);
 __decorate([
+    (0, common_1.Get)("user-status"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ApiGeneralController.prototype, "getUserStatus", null);
+__decorate([
     (0, common_1.Post)("fcm-token"),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)("token")),
@@ -418,6 +429,7 @@ exports.ApiGeneralController = ApiGeneralController = __decorate([
     (0, common_1.Controller)(),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [ranking_service_1.RankingService,
+        stagiaire_service_1.StagiaireService,
         api_response_service_1.ApiResponseService])
 ], ApiGeneralController);
 //# sourceMappingURL=stagiaire-api.controller.js.map

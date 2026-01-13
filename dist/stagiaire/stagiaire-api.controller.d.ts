@@ -46,12 +46,18 @@ export declare class StagiaireApiController {
 }
 export declare class ApiGeneralController {
     private rankingService;
+    private stagiaireService;
     private apiResponse;
-    constructor(rankingService: RankingService, apiResponse: ApiResponseService);
+    constructor(rankingService: RankingService, stagiaireService: StagiaireService, apiResponse: ApiResponseService);
     getUserSettings(req: any): Promise<any>;
     updateUserSettings(req: any, data: any): Promise<any>;
     reportUserAppUsage(req: any, data: any): Promise<any>;
     updateUserPhoto(req: any, data: any): Promise<any>;
     getUserPoints(req: any): Promise<any>;
+    getUserStatus(): Promise<{
+        online_users: import("../entities/user.entity").User[];
+        recently_online: import("../entities/user.entity").User[];
+        all_users: import("../entities/user.entity").User[];
+    }>;
     updateFcmToken(req: any, token: string): Promise<any>;
 }

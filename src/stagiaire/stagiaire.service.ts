@@ -538,24 +538,32 @@ export class StagiaireService {
   }
 
   async getOnlineUsers() {
-    // Current user and others who are online
-    const online = await this.userRepository.find({
+    // Get online users (is_online = true)
+    const onlineUsers = await this.userRepository.find({
       where: { is_online: true },
-      select: ["id", "name", "image", "last_activity_at"],
       order: { last_activity_at: "DESC" },
     });
 
-    const recentlyOnline = await this.userRepository.find({
-      where: { is_online: false },
-      select: ["id", "name", "image", "last_activity_at"],
+    // Get recently online (last 15 minutes, but not currently online)
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+    const recentlyOnline = await this.userRepository
+      .createQueryBuilder("user")
+      .where("user.is_online = :isOnline", { isOnline: false })
+      .andWhere("user.last_activity_at >= :cutoff", {
+        cutoff: fifteenMinutesAgo,
+      })
+      .orderBy("user.last_activity_at", "DESC")
+      .getMany();
+
+    // Get all users ordered by last_activity_at
+    const allUsers = await this.userRepository.find({
       order: { last_activity_at: "DESC" },
-      take: 10,
     });
 
     return {
-      online_users: online,
+      online_users: onlineUsers,
       recently_online: recentlyOnline,
-      all_users: [...online, ...recentlyOnline],
+      all_users: allUsers,
     };
   }
 }
