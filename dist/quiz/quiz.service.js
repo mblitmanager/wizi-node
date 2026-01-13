@@ -167,13 +167,12 @@ let QuizService = class QuizService {
             questions: (quiz.questions || []).map((q) => `/api/questions/${q.id}`),
             participations: [],
             status: quiz.status || "actif",
-            createdAt: quiz.created_at?.toISOString() || new Date().toISOString(),
-            updatedAt: quiz.updated_at?.toISOString() || new Date().toISOString(),
+            created_at: quiz.created_at?.toISOString() || new Date().toISOString(),
+            updated_at: quiz.updated_at?.toISOString() || new Date().toISOString(),
         };
     }
     formatQuestionJsonLd(question) {
         return {
-            "@context": "/api/contexts/Question",
             "@id": `/api/questions/${question.id}`,
             "@type": "Question",
             id: question.id,
@@ -197,7 +196,6 @@ let QuizService = class QuizService {
     }
     formatReponseJsonLd(reponse) {
         return {
-            "@context": "/api/contexts/Reponse",
             "@id": `/api/reponses/${reponse.id}`,
             "@type": "Reponse",
             id: reponse.id,

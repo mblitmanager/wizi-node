@@ -17,7 +17,7 @@ export declare class ProgressionService {
             score: number;
             correct_answers: number;
             total_questions: number;
-            time_spent: string;
+            time_spent: number;
             completion_time: string;
             created_at: string;
             updated_at: string;
@@ -46,7 +46,7 @@ export declare class ProgressionService {
         score: number;
         correct_answers: number;
         total_questions: number;
-        time_spent: string;
+        time_spent: number;
         completion_time: string;
         created_at: string;
         updated_at: string;

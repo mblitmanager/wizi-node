@@ -73,8 +73,8 @@ __decorate([
     __metadata("design:type", Number)
 ], Progression.prototype, "total_questions", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
+    (0, typeorm_1.Column)({ type: "int", nullable: true }),
+    __metadata("design:type", Number)
 ], Progression.prototype, "time_spent", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: "datetime", nullable: true }),

@@ -24,6 +24,7 @@ const catalogue_formation_entity_1 = require("./entities/catalogue-formation.ent
 const quiz_entity_1 = require("./entities/quiz.entity");
 const question_entity_1 = require("./entities/question.entity");
 const reponse_entity_1 = require("./entities/reponse.entity");
+const participation_entity_1 = require("./entities/participation.entity");
 const auth_module_1 = require("./auth/auth.module");
 const stagiaire_module_1 = require("./stagiaire/stagiaire.module");
 const formation_module_1 = require("./formation/formation.module");
@@ -117,6 +118,7 @@ exports.AppModule = AppModule = __decorate([
                         agenda_entity_1.Agenda,
                         announcement_entity_1.Announcement,
                         challenge_entity_1.Challenge,
+                        participation_entity_1.Participation,
                     ],
                     synchronize: false,
                     logging: true,
@@ -152,6 +154,7 @@ exports.AppModule = AppModule = __decorate([
                 agenda_entity_1.Agenda,
                 announcement_entity_1.Announcement,
                 challenge_entity_1.Challenge,
+                participation_entity_1.Participation,
             ]),
             auth_module_1.AuthModule,
             stagiaire_module_1.StagiaireModule,

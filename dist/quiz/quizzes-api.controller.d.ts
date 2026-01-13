@@ -25,8 +25,8 @@ export declare class QuizzesApiController {
             questions: string[];
             participations: any[];
             status: string;
-            createdAt: string;
-            updatedAt: string;
+            created_at: string;
+            updated_at: string;
         }[];
         totalItems: number;
     }>;
@@ -44,8 +44,8 @@ export declare class QuizzesApiController {
         questions: string[];
         participations: any[];
         status: string;
-        createdAt: string;
-        updatedAt: string;
+        created_at: string;
+        updated_at: string;
     }>;
     getById(id: number): Promise<{
         "@context": string;
@@ -61,8 +61,8 @@ export declare class QuizzesApiController {
         questions: string[];
         participations: any[];
         status: string;
-        createdAt: string;
-        updatedAt: string;
+        created_at: string;
+        updated_at: string;
     }>;
     update(id: number, updateQuizDto: any): Promise<{
         "@context": string;
@@ -78,8 +78,8 @@ export declare class QuizzesApiController {
         questions: string[];
         participations: any[];
         status: string;
-        createdAt: string;
-        updatedAt: string;
+        created_at: string;
+        updated_at: string;
     }>;
     delete(id: number): Promise<{
         id: number;

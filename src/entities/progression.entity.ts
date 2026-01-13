@@ -55,8 +55,8 @@ export class Progression {
   @Column({ type: "int", default: 0 })
   total_questions: number;
 
-  @Column({ nullable: true })
-  time_spent: string;
+  @Column({ type: "int", nullable: true })
+  time_spent: number;
 
   @Column({ type: "datetime", nullable: true })
   completion_time: Date;

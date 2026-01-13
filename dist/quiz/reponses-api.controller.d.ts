@@ -14,7 +14,6 @@ export declare class ReponseApiController {
         "@id": string;
         "@type": string;
         member: {
-            "@context": string;
             "@id": string;
             "@type": string;
             id: number;
@@ -31,7 +30,6 @@ export declare class ReponseApiController {
         totalItems: number;
     }>;
     create(createReponseDto: any): Promise<{
-        "@context": string;
         "@id": string;
         "@type": string;
         id: number;
@@ -46,7 +44,6 @@ export declare class ReponseApiController {
         updated_at: Date;
     }>;
     getById(id: number): Promise<{
-        "@context": string;
         "@id": string;
         "@type": string;
         id: number;
@@ -61,7 +58,6 @@ export declare class ReponseApiController {
         updated_at: Date;
     }>;
     update(id: number, updateReponseDto: any): Promise<{
-        "@context": string;
         "@id": string;
         "@type": string;
         id: number;

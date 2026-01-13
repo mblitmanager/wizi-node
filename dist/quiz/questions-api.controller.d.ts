@@ -14,7 +14,6 @@ export declare class QuestionsApiController {
         "@id": string;
         "@type": string;
         member: {
-            "@context": string;
             "@id": string;
             "@type": string;
             id: number;
@@ -34,7 +33,6 @@ export declare class QuestionsApiController {
         totalItems: number;
     }>;
     create(createQuestionDto: any): Promise<{
-        "@context": string;
         "@id": string;
         "@type": string;
         id: number;
@@ -52,7 +50,6 @@ export declare class QuestionsApiController {
         updated_at: Date;
     }>;
     getById(id: number): Promise<{
-        "@context": string;
         "@id": string;
         "@type": string;
         id: number;
@@ -70,7 +67,6 @@ export declare class QuestionsApiController {
         updated_at: Date;
     }>;
     update(id: number, updateQuestionDto: any): Promise<{
-        "@context": string;
         "@id": string;
         "@type": string;
         id: number;
@@ -92,7 +88,6 @@ export declare class QuestionsApiController {
         message: string;
     }>;
     getReponsesByQuestion(questionId: number): Promise<{
-        "@context": string;
         "@id": string;
         "@type": string;
         id: number;

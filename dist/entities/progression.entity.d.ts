@@ -15,7 +15,7 @@ export declare class Progression {
     score: number;
     correct_answers: number;
     total_questions: number;
-    time_spent: string;
+    time_spent: number;
     completion_time: Date;
     created_at: Date;
     updated_at: Date;

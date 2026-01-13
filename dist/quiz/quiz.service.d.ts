@@ -76,8 +76,8 @@ export declare class QuizService {
         questions: string[];
         participations: any[];
         status: string;
-        createdAt: string;
-        updatedAt: string;
+        created_at: string;
+        updated_at: string;
     }>;
     formatQuizJsonLd(quiz: Quiz): {
         "@context": string;
@@ -93,11 +93,10 @@ export declare class QuizService {
         questions: string[];
         participations: any[];
         status: string;
-        createdAt: string;
-        updatedAt: string;
+        created_at: string;
+        updated_at: string;
     };
     formatQuestionJsonLd(question: Question): {
-        "@context": string;
         "@id": string;
         "@type": string;
         id: number;
@@ -115,7 +114,6 @@ export declare class QuizService {
         updated_at: Date;
     };
     formatReponseJsonLd(reponse: Reponse): {
-        "@context": string;
         "@id": string;
         "@type": string;
         id: number;

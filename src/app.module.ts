@@ -14,6 +14,7 @@ import { CatalogueFormation } from "./entities/catalogue-formation.entity";
 import { Quiz } from "./entities/quiz.entity";
 import { Question } from "./entities/question.entity";
 import { Reponse } from "./entities/reponse.entity";
+import { Participation } from "./entities/participation.entity";
 import { AuthModule } from "./auth/auth.module";
 import { StagiaireModule } from "./stagiaire/stagiaire.module";
 import { FormationModule } from "./formation/formation.module";
@@ -98,6 +99,7 @@ import { ProgressionModule } from "./progression/progression.module";
           Agenda,
           Announcement,
           Challenge,
+          Participation,
         ],
         synchronize: false,
         logging: true,
@@ -133,6 +135,7 @@ import { ProgressionModule } from "./progression/progression.module";
       Agenda,
       Announcement,
       Challenge,
+      Participation,
     ]),
     AuthModule,
     StagiaireModule,
