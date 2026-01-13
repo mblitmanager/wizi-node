@@ -1,6 +1,7 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   ManyToOne,
   JoinColumn,
@@ -12,13 +13,10 @@ import { Stagiaire } from "./stagiaire.entity";
 
 @Entity("media_stagiaire")
 export class MediaStagiaire {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @PrimaryColumn()
   media_id: number;
 
-  @Column()
+  @PrimaryColumn()
   stagiaire_id: number;
 
   @Column({ default: false })

@@ -1,7 +1,6 @@
 import { Media } from "./media.entity";
 import { Stagiaire } from "./stagiaire.entity";
 export declare class MediaStagiaire {
-    id: number;
     media_id: number;
     stagiaire_id: number;
     is_watched: boolean;

@@ -250,7 +250,7 @@ export class MediaService {
       formation_id: media.formation_id,
       created_at: this.formatIso(media.created_at),
       updated_at: this.formatIso(media.updated_at),
-      video_url: media.video_url,
+      video_url: media.url ? media.url : null, // Mirroring Laravel's video_url logic if applicable, or just use media.video_url
       subtitle_url: media.subtitle_url,
       stagiaires: (media.mediaStagiaires || [])
         .map((ms) => {
@@ -262,40 +262,28 @@ export class MediaService {
             civilite: s.civilite,
             telephone: s.telephone,
             adresse: s.adresse,
-            date_naissance: s.date_naissance
-              ? s.date_naissance.toISOString().split("T")[0]
-              : null,
+            date_naissance: this.formatDateOnly(s.date_naissance),
             ville: s.ville,
             code_postal: s.code_postal,
-            date_debut_formation: s.date_debut_formation
-              ? s.date_debut_formation.toISOString().split("T")[0]
-              : null,
-            date_inscription: s.date_inscription
-              ? s.date_inscription.toISOString().split("T")[0]
-              : null,
+            date_debut_formation: this.formatDateOnly(s.date_debut_formation),
+            date_inscription: this.formatDateOnly(s.date_inscription),
             role: s.role,
             statut: s.statut,
             user_id: s.user_id,
             deleted_at: null,
             created_at: this.formatIso(s.created_at),
             updated_at: this.formatIso(s.updated_at),
-            date_fin_formation: s.date_fin_formation
-              ? s.date_fin_formation.toISOString().split("T")[0]
-              : null,
+            date_fin_formation: this.formatDateOnly(s.date_fin_formation),
             login_streak: s.login_streak,
-            last_login_at: this.formatIso(s.last_login_at),
+            last_login_at: this.formatDateTime(s.last_login_at),
             onboarding_seen: s.onboarding_seen ? 1 : 0,
             partenaire_id: s.partenaire_id,
             pivot: {
               media_id: media.id,
               stagiaire_id: s.id,
               is_watched: ms.is_watched ? 1 : 0,
-              watched_at: this.formatIso(ms.watched_at)?.replace(
-                ".000000Z",
-                ""
-              ), // Laravel shows as space separated if not careful, but ISO is safer. Laravel snippet shows space
-              // "watched_at": "2025-11-27 10:42:36"
-              created_at: null,
+              watched_at: this.formatDateTime(ms.watched_at),
+              created_at: this.formatIso(ms.created_at),
               updated_at: this.formatIso(ms.updated_at),
             },
           };
@@ -309,5 +297,21 @@ export class MediaService {
     const d = new Date(date);
     if (isNaN(d.getTime())) return null;
     return d.toISOString().replace(".000Z", ".000000Z");
+  }
+
+  private formatDateOnly(date: any) {
+    if (!date) return null;
+    if (typeof date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(date))
+      return date;
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString().split("T")[0];
+  }
+
+  private formatDateTime(date: any) {
+    if (!date) return null;
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString().split(".")[0].replace("T", " ");
   }
 }

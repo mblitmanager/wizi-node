@@ -1,0 +1,3 @@
+﻿Field	Type	Null	Key	Default	Extra
+media_id	bigint unsigned	NO	PRI	NULL	
+stagiaire_id	bigint unsigned	NO	PRI	NULL	

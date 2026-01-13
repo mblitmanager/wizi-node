@@ -53,7 +53,7 @@ export declare class MediaController {
                     stagiaire_id: number;
                     is_watched: number;
                     watched_at: string;
-                    created_at: any;
+                    created_at: string;
                     updated_at: string;
                 };
             }[];
@@ -120,7 +120,7 @@ export declare class MediaController {
                     stagiaire_id: number;
                     is_watched: number;
                     watched_at: string;
-                    created_at: any;
+                    created_at: string;
                     updated_at: string;
                 };
             }[];
@@ -187,7 +187,7 @@ export declare class MediaController {
                     stagiaire_id: number;
                     is_watched: number;
                     watched_at: string;
-                    created_at: any;
+                    created_at: string;
                     updated_at: string;
                 };
             }[];
@@ -254,7 +254,7 @@ export declare class MediaController {
                     stagiaire_id: number;
                     is_watched: number;
                     watched_at: string;
-                    created_at: any;
+                    created_at: string;
                     updated_at: string;
                 };
             }[];
@@ -331,7 +331,7 @@ export declare class MediaController {
                     stagiaire_id: number;
                     is_watched: number;
                     watched_at: string;
-                    created_at: any;
+                    created_at: string;
                     updated_at: string;
                 };
             }[];

@@ -17,15 +17,11 @@ let MediaStagiaire = class MediaStagiaire {
 };
 exports.MediaStagiaire = MediaStagiaire;
 __decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], MediaStagiaire.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", Number)
 ], MediaStagiaire.prototype, "media_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", Number)
 ], MediaStagiaire.prototype, "stagiaire_id", void 0);
 __decorate([
