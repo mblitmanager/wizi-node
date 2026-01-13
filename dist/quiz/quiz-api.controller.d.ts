@@ -52,23 +52,23 @@ export declare class QuizApiController {
     history(req: any): Promise<{
         id: string;
         quiz: {
-            id: number;
+            id: string;
             titre: string;
             description: string;
             duree: string;
             niveau: string;
             status: string;
             nb_points_total: string;
+            formationId: string;
+            categorie: string;
             formation: {
                 id: number;
                 titre: string;
-                description: string;
-                duree: string;
                 categorie: string;
             };
             questions: {
                 id: string;
-                quizId: number;
+                quizId: string;
                 text: string;
                 type: string;
                 explication: string;
@@ -87,10 +87,12 @@ export declare class QuizApiController {
             }[];
         };
         score: number;
-        completedAt: string;
-        timeSpent: number;
-        totalQuestions: number;
-        correctAnswers: number;
+        completed_at: string;
+        started_at: string;
+        time_spent: number;
+        total_questions: number;
+        correct_answers: number;
+        status: string;
     }[]>;
     stats(req: any): Promise<any>;
     statsCategories(req: any): Promise<any>;

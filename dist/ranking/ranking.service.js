@@ -14,7 +14,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RankingService = void 0;
 const common_1 = require("@nestjs/common");
-const fs = require("fs");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const classement_entity_1 = require("../entities/classement.entity");
@@ -24,8 +23,10 @@ const progression_entity_1 = require("../entities/progression.entity");
 const quiz_entity_1 = require("../entities/quiz.entity");
 const user_entity_1 = require("../entities/user.entity");
 const formation_entity_1 = require("../entities/formation.entity");
+const question_entity_1 = require("../entities/question.entity");
+const typeorm_3 = require("typeorm");
 let RankingService = class RankingService {
-    constructor(classementRepository, stagiaireRepository, participationRepository, progressionRepository, quizRepository, userRepository, formationRepository) {
+    constructor(classementRepository, stagiaireRepository, participationRepository, progressionRepository, quizRepository, userRepository, formationRepository, questionRepository) {
         this.classementRepository = classementRepository;
         this.stagiaireRepository = stagiaireRepository;
         this.participationRepository = participationRepository;
@@ -33,6 +34,7 @@ let RankingService = class RankingService {
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
         this.formationRepository = formationRepository;
+        this.questionRepository = questionRepository;
     }
     async getFormationsRankingSummary() {
         const formations = await this.formationRepository.find({
@@ -354,43 +356,52 @@ let RankingService = class RankingService {
             return [];
         const progressions = await this.progressionRepository.find({
             where: { stagiaire_id: stagiaire.id },
-            relations: [
-                "quiz",
-                "quiz.formation",
-                "quiz.questions",
-                "quiz.questions.reponses",
-            ],
+            relations: ["quiz", "quiz.formation"],
             order: { created_at: "DESC" },
         });
+        const quizIds = progressions.filter((p) => p.quiz).map((p) => p.quiz.id);
+        const questions = quizIds.length > 0
+            ? await this.questionRepository.find({
+                where: { quiz_id: (0, typeorm_3.In)(quizIds) },
+                relations: ["reponses"],
+            })
+            : [];
+        console.log(`Debug getQuizHistory: Found ${progressions.length} progressions, ${quizIds.length} quizIds`);
+        console.log(`Debug getQuizHistory: Fetched ${questions.length} total questions for all quizzes`);
+        if (questions.length > 0) {
+            console.log(`Debug sample question quiz_id: ${questions[0].quiz_id}, type: ${typeof questions[0].quiz_id}`);
+        }
+        if (quizIds.length > 0) {
+            console.log(`Debug sample quizId: ${quizIds[0]}, type: ${typeof quizIds[0]}`);
+        }
         return progressions
             .filter((p) => p.quiz)
             .map((progression) => {
             const quiz = progression.quiz;
+            const quizQuestions = questions.filter((q) => q.quiz_id === quiz.id);
             const totalQuestions = progression.total_questions ||
                 parseInt(quiz.nb_points_total || "0") ||
                 0;
-            const logLine = `Quiz ID: ${quiz.id}, nb_points_total type: ${typeof quiz.nb_points_total}, value: ${quiz.nb_points_total}, questions: ${quiz.questions?.length || 0}\n`;
-            fs.appendFileSync("c:/laragon/www/cursor/Wizi-learn-node/debug_ranking.txt", logLine);
             const quizData = {
-                id: quiz.id,
+                id: quiz.id.toString(),
                 titre: quiz.titre,
                 description: quiz.description || "",
                 duree: quiz.duree?.toString() || "30",
                 niveau: quiz.niveau || "débutant",
                 status: quiz.status || "actif",
-                nb_points_total: quiz.nb_points_total?.toString() || "0",
+                nb_points_total: String(quiz.nb_points_total || "0"),
+                formationId: quiz.formation?.id.toString(),
+                categorie: quiz.formation?.categorie || "Général",
                 formation: quiz.formation
                     ? {
                         id: quiz.formation.id,
                         titre: quiz.formation.titre,
-                        description: quiz.formation.description || "",
-                        duree: quiz.formation.duree?.toString() || "30",
                         categorie: quiz.formation.categorie || "Général",
                     }
                     : null,
-                questions: (quiz.questions || []).map((question) => ({
+                questions: quizQuestions.map((question) => ({
                     id: question.id.toString(),
-                    quizId: quiz.id,
+                    quizId: quiz.id.toString(),
                     text: question.text,
                     type: question.type || "choix multiples",
                     explication: question.explication,
@@ -412,10 +423,12 @@ let RankingService = class RankingService {
                 id: progression.id.toString(),
                 quiz: quizData,
                 score: progression.score,
-                completedAt: progression.created_at?.toISOString(),
-                timeSpent: progression.time_spent || 0,
-                totalQuestions: totalQuestions,
-                correctAnswers: progression.correct_answers || 0,
+                completed_at: progression.created_at?.toISOString(),
+                started_at: progression.created_at?.toISOString(),
+                time_spent: progression.time_spent || 0,
+                total_questions: totalQuestions,
+                correct_answers: progression.correct_answers || 0,
+                status: progression.termine ? "completed" : "in_progress",
             };
         });
     }
@@ -575,7 +588,9 @@ exports.RankingService = RankingService = __decorate([
     __param(4, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),
     __param(5, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __param(6, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
+    __param(7, (0, typeorm_1.InjectRepository)(question_entity_1.Question)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

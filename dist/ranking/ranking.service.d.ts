@@ -6,6 +6,7 @@ import { Progression } from "../entities/progression.entity";
 import { Quiz } from "../entities/quiz.entity";
 import { User } from "../entities/user.entity";
 import { Formation } from "../entities/formation.entity";
+import { Question } from "../entities/question.entity";
 export declare class RankingService {
     private classementRepository;
     private stagiaireRepository;
@@ -14,7 +15,8 @@ export declare class RankingService {
     private quizRepository;
     private userRepository;
     private formationRepository;
-    constructor(classementRepository: Repository<Classement>, stagiaireRepository: Repository<Stagiaire>, participationRepository: Repository<QuizParticipation>, progressionRepository: Repository<Progression>, quizRepository: Repository<Quiz>, userRepository: Repository<User>, formationRepository: Repository<Formation>);
+    private questionRepository;
+    constructor(classementRepository: Repository<Classement>, stagiaireRepository: Repository<Stagiaire>, participationRepository: Repository<QuizParticipation>, progressionRepository: Repository<Progression>, quizRepository: Repository<Quiz>, userRepository: Repository<User>, formationRepository: Repository<Formation>, questionRepository: Repository<Question>);
     getFormationsRankingSummary(): Promise<{
         formations: any[];
     }>;
@@ -156,23 +158,23 @@ export declare class RankingService {
     getQuizHistory(userId: number): Promise<{
         id: string;
         quiz: {
-            id: number;
+            id: string;
             titre: string;
             description: string;
             duree: string;
             niveau: string;
             status: string;
             nb_points_total: string;
+            formationId: string;
+            categorie: string;
             formation: {
                 id: number;
                 titre: string;
-                description: string;
-                duree: string;
                 categorie: string;
             };
             questions: {
                 id: string;
-                quizId: number;
+                quizId: string;
                 text: string;
                 type: string;
                 explication: string;
@@ -191,10 +193,12 @@ export declare class RankingService {
             }[];
         };
         score: number;
-        completedAt: string;
-        timeSpent: number;
-        totalQuestions: number;
-        correctAnswers: number;
+        completed_at: string;
+        started_at: string;
+        time_spent: number;
+        total_questions: number;
+        correct_answers: number;
+        status: string;
     }[]>;
     getQuizStats(userId: number): Promise<{
         totalQuizzes: number;

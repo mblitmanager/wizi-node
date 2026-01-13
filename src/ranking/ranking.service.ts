@@ -9,6 +9,8 @@ import { Progression } from "../entities/progression.entity";
 import { Quiz } from "../entities/quiz.entity";
 import { User } from "../entities/user.entity";
 import { Formation } from "../entities/formation.entity";
+import { Question } from "../entities/question.entity";
+import { In } from "typeorm";
 
 @Injectable()
 export class RankingService {
@@ -26,7 +28,9 @@ export class RankingService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(Formation)
-    private formationRepository: Repository<Formation>
+    private formationRepository: Repository<Formation>,
+    @InjectRepository(Question)
+    private questionRepository: Repository<Question>
   ) {}
 
   async getFormationsRankingSummary() {
@@ -439,50 +443,72 @@ export class RankingService {
 
     const progressions = await this.progressionRepository.find({
       where: { stagiaire_id: stagiaire.id },
-      relations: [
-        "quiz",
-        "quiz.formation",
-        "quiz.questions",
-        "quiz.questions.reponses",
-      ],
+      relations: ["quiz", "quiz.formation"],
       order: { created_at: "DESC" },
     });
 
+    const quizIds = progressions.filter((p) => p.quiz).map((p) => p.quiz.id);
+
+    const questions =
+      quizIds.length > 0
+        ? await this.questionRepository.find({
+            where: { quiz_id: In(quizIds) }, // Use a proper filter later if needed, but for now we need questions for these quizzes
+            relations: ["reponses"],
+          })
+        : [];
+
+    console.log(
+      `Debug getQuizHistory: Found ${progressions.length} progressions, ${quizIds.length} quizIds`
+    );
+    console.log(
+      `Debug getQuizHistory: Fetched ${questions.length} total questions for all quizzes`
+    );
+    if (questions.length > 0) {
+      console.log(
+        `Debug sample question quiz_id: ${questions[0].quiz_id}, type: ${typeof questions[0].quiz_id}`
+      );
+    }
+    if (quizIds.length > 0) {
+      console.log(
+        `Debug sample quizId: ${quizIds[0]}, type: ${typeof quizIds[0]}`
+      );
+    }
+
+    // Filter questions manually for each quiz to be safe if In() operator is complex with current setup
+    // Actually, let's just use the In operator correctly.
+    // I need to import In from typeorm.
+
     return progressions
-      .filter((p) => p.quiz) // Filter out null quiz (deleted quizzes)
+      .filter((p) => p.quiz)
       .map((progression) => {
         const quiz = progression.quiz;
+        const quizQuestions = questions.filter((q) => q.quiz_id === quiz.id);
+
         const totalQuestions =
           progression.total_questions ||
           parseInt(quiz.nb_points_total || "0") ||
           0;
 
-        const logLine = `Quiz ID: ${quiz.id}, nb_points_total type: ${typeof quiz.nb_points_total}, value: ${quiz.nb_points_total}, questions: ${quiz.questions?.length || 0}\n`;
-        fs.appendFileSync(
-          "c:/laragon/www/cursor/Wizi-learn-node/debug_ranking.txt",
-          logLine
-        );
-
         const quizData = {
-          id: quiz.id,
+          id: quiz.id.toString(),
           titre: quiz.titre,
           description: quiz.description || "",
           duree: quiz.duree?.toString() || "30",
           niveau: quiz.niveau || "débutant",
           status: quiz.status || "actif",
-          nb_points_total: quiz.nb_points_total?.toString() || "0",
+          nb_points_total: String(quiz.nb_points_total || "0"),
+          formationId: quiz.formation?.id.toString(),
+          categorie: quiz.formation?.categorie || "Général",
           formation: quiz.formation
             ? {
                 id: quiz.formation.id,
                 titre: quiz.formation.titre,
-                description: quiz.formation.description || "",
-                duree: quiz.formation.duree?.toString() || "30",
                 categorie: quiz.formation.categorie || "Général",
               }
             : null,
-          questions: (quiz.questions || []).map((question) => ({
+          questions: quizQuestions.map((question) => ({
             id: question.id.toString(),
-            quizId: quiz.id,
+            quizId: quiz.id.toString(),
             text: question.text,
             type: question.type || "choix multiples",
             explication: question.explication,
@@ -505,10 +531,12 @@ export class RankingService {
           id: progression.id.toString(),
           quiz: quizData,
           score: progression.score,
-          completedAt: progression.created_at?.toISOString(),
-          timeSpent: progression.time_spent || 0,
-          totalQuestions: totalQuestions,
-          correctAnswers: progression.correct_answers || 0,
+          completed_at: progression.created_at?.toISOString(),
+          started_at: progression.created_at?.toISOString(), // Mock started_at for parity
+          time_spent: progression.time_spent || 0,
+          total_questions: totalQuestions,
+          correct_answers: progression.correct_answers || 0,
+          status: progression.termine ? "completed" : "in_progress",
         };
       });
   }

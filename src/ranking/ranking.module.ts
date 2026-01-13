@@ -10,6 +10,7 @@ import { Progression } from "../entities/progression.entity";
 import { Quiz } from "../entities/quiz.entity";
 import { User } from "../entities/user.entity";
 import { Formation } from "../entities/formation.entity";
+import { Question } from "../entities/question.entity";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { Formation } from "../entities/formation.entity";
       Quiz,
       User,
       Formation,
+      Question,
     ]),
   ],
   providers: [RankingService],
