@@ -51,19 +51,20 @@ let QuizService = class QuizService {
         }
         const formations = await queryBuilder.orderBy("f.id", "ASC").getMany();
         const quizIds = formations.flatMap((f) => (f.quizzes || []).map((q) => q.id));
-        const questionsWithReponses = quizIds.length > 0
-            ? await this.questionRepository.find({
-                where: { quiz_id: quizIds.length === 1 ? quizIds[0] : undefined },
+        let allQuestions = [];
+        if (quizIds.length > 0) {
+            allQuestions = await this.questionRepository.find({
+                where: { quiz_id: (0, typeorm_2.In)(quizIds) },
                 relations: ["reponses"],
-            })
-            : [];
-        let allQuestions = questionsWithReponses;
-        if (quizIds.length > 1) {
-            allQuestions = await this.questionRepository
-                .createQueryBuilder("question")
-                .leftJoinAndSelect("question.reponses", "reponse")
-                .where("question.quiz_id IN (:...quizIds)", { quizIds })
-                .getMany();
+                order: { id: "ASC" },
+            });
+            const debugQ = allQuestions.find((q) => q.id === 6914);
+            if (debugQ) {
+                console.log("DEBUG: Question 6914 reponses:", JSON.stringify(debugQ.reponses));
+            }
+            else if (allQuestions.length > 0) {
+                console.log("DEBUG: First question reponses:", JSON.stringify(allQuestions[0].reponses));
+            }
         }
         const questionsByQuizId = new Map();
         allQuestions.forEach((q) => {

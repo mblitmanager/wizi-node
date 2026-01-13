@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, In } from "typeorm";
 import { Quiz } from "../entities/quiz.entity";
 import { Question } from "../entities/question.entity";
 import { Formation } from "../entities/formation.entity";
@@ -62,23 +62,28 @@ export class QuizService {
       (f.quizzes || []).map((q) => q.id)
     );
 
-    // Fetch questions with reponses separately (TypeORM handles nested relations better this way)
-    const questionsWithReponses =
-      quizIds.length > 0
-        ? await this.questionRepository.find({
-            where: { quiz_id: quizIds.length === 1 ? quizIds[0] : undefined },
-            relations: ["reponses"],
-          })
-        : [];
+    // Fetch questions with reponses separately using find/In for better relation handling
+    let allQuestions: Question[] = [];
+    if (quizIds.length > 0) {
+      allQuestions = await this.questionRepository.find({
+        where: { quiz_id: In(quizIds) },
+        relations: ["reponses"],
+        order: { id: "ASC" },
+      });
 
-    // If multiple quiz IDs, use query builder with IN clause
-    let allQuestions: Question[] = questionsWithReponses;
-    if (quizIds.length > 1) {
-      allQuestions = await this.questionRepository
-        .createQueryBuilder("question")
-        .leftJoinAndSelect("question.reponses", "reponse")
-        .where("question.quiz_id IN (:...quizIds)", { quizIds })
-        .getMany();
+      // Debug: Check a specific question that was problematic
+      const debugQ = allQuestions.find((q) => q.id === 6914);
+      if (debugQ) {
+        console.log(
+          "DEBUG: Question 6914 reponses:",
+          JSON.stringify(debugQ.reponses)
+        );
+      } else if (allQuestions.length > 0) {
+        console.log(
+          "DEBUG: First question reponses:",
+          JSON.stringify(allQuestions[0].reponses)
+        );
+      }
     }
 
     // Create a map of quiz_id -> questions

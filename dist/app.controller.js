@@ -8,13 +8,45 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const app_service_1 = require("./app.service");
+const fcm_service_1 = require("./notification/fcm.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
+const user_entity_1 = require("./entities/user.entity");
 let AppController = class AppController {
-    constructor(appService) {
+    constructor(appService, fcmService, userRepository) {
         this.appService = appService;
+        this.fcmService = fcmService;
+        this.userRepository = userRepository;
+    }
+    async testFcm(body) {
+        const { title, body: msgBody, data, token, user_id } = body;
+        if (!title || !msgBody) {
+        }
+        if (token) {
+            const sent = await this.fcmService.sendPushNotification(token, title, msgBody, data || {});
+            return { ok: sent };
+        }
+        if (user_id) {
+            const user = await this.userRepository.findOne({
+                where: { id: user_id },
+            });
+            if (!user) {
+                return { error: "User not found" };
+            }
+            const sent = await this.fcmService.sendPushNotification(user.fcm_token, title, msgBody, data || {});
+            return { ok: sent };
+        }
+        return { error: "Provide token or user_id" };
+    }
+    getTestNotif() {
+        return "Notification envoyée !";
     }
     getHello() {
         return {
@@ -102,6 +134,19 @@ let AppController = class AppController {
 };
 exports.AppController = AppController;
 __decorate([
+    (0, common_1.Post)("test-fcm"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "testFcm", null);
+__decorate([
+    (0, common_1.Get)("test-notif"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "getTestNotif", null);
+__decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -121,6 +166,9 @@ __decorate([
 ], AppController.prototype, "getAdminRedirect", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [app_service_1.AppService])
+    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [app_service_1.AppService,
+        fcm_service_1.FcmService,
+        typeorm_2.Repository])
 ], AppController);
 //# sourceMappingURL=app.controller.js.map

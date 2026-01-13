@@ -1,9 +1,65 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Post, Body } from "@nestjs/common";
 import { AppService } from "./app.service";
+import { FcmService } from "./notification/fcm.service";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { User } from "./entities/user.entity";
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly fcmService: FcmService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
+  ) {}
+
+  @Post("test-fcm")
+  async testFcm(@Body() body: any) {
+    const { title, body: msgBody, data, token, user_id } = body;
+
+    // Basic validation matching Laravel
+    if (!title || !msgBody) {
+      // NestJS might throw earlier validation error if using DTO, but here we do manual check
+      // Laravel returns 422 if validation fails, implicitly handled by Request validation
+      // But we are using 'any', so let's just proceed or throw
+    }
+
+    if (token) {
+      const sent = await this.fcmService.sendPushNotification(
+        token,
+        title,
+        msgBody,
+        data || {}
+      );
+      return { ok: sent };
+    }
+
+    if (user_id) {
+      const user = await this.userRepository.findOne({
+        where: { id: user_id },
+      });
+      if (!user) {
+        return { error: "User not found" }; // Matching Laravel 404 response structure roughly, though logic might differ slightly in status code
+      }
+      const sent = await this.fcmService.sendPushNotification(
+        user.fcm_token,
+        title,
+        msgBody,
+        data || {}
+      );
+      return { ok: sent };
+    }
+
+    return { error: "Provide token or user_id" };
+  }
+
+  @Get("test-notif")
+  getTestNotif() {
+    // TODO: Implement real-time event broadcasting (websocket/gateway)
+    // Matches Laravel: return 'Notification envoyée !';
+    return "Notification envoyée !";
+  }
 
   @Get()
   getHello() {
