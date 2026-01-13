@@ -19,7 +19,7 @@ export declare class QuizService {
     private progressionRepository;
     constructor(quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, formationRepository: Repository<Formation>, classementRepository: Repository<Classement>, participationRepository: Repository<QuizParticipation>, participationAnswerRepository: Repository<QuizParticipationAnswer>, correspondancePairRepository: Repository<CorrespondancePair>, progressionRepository: Repository<Progression>);
     getAllQuizzes(): Promise<Quiz[]>;
-    getQuizzesByFormation(): Promise<{
+    getQuizzesByFormation(stagiaireId?: number): Promise<{
         id: string;
         titre: string;
         description: string;

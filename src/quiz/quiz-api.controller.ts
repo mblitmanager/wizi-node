@@ -31,8 +31,9 @@ export class QuizApiController {
   }
 
   @Get("by-formations")
-  async byFormations() {
-    return this.quizService.getQuizzesByFormation();
+  async byFormations(@Request() req: any) {
+    const stagiaireId = req.user?.stagiaire?.id;
+    return this.quizService.getQuizzesByFormation(stagiaireId);
   }
 
   @Get("categories")

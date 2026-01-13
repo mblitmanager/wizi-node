@@ -36,39 +36,86 @@ export class QuizService {
     return this.quizRepository.find({ relations: ["formation"] });
   }
 
-  async getQuizzesByFormation() {
-    const formations = await this.formationRepository
+  async getQuizzesByFormation(stagiaireId?: number) {
+    let queryBuilder = this.formationRepository
       .createQueryBuilder("f")
-      .leftJoinAndSelect("f.quizzes", "q")
-      .leftJoinAndSelect("q.questions", "question")
-      .leftJoinAndSelect("question.reponses", "r")
-      .orderBy("f.id", "ASC")
-      .getMany();
+      .leftJoinAndSelect("f.quizzes", "q", "q.status = :status", {
+        status: "actif",
+      });
+
+    // If stagiaireId provided, filter by stagiaire's catalogue formations (matching Laravel)
+    if (stagiaireId) {
+      queryBuilder = queryBuilder
+        .innerJoin("catalogue_formations", "cf", "cf.formation_id = f.id")
+        .innerJoin(
+          "stagiaire_catalogue_formations",
+          "scf",
+          "scf.catalogue_formation_id = cf.id AND scf.stagiaire_id = :stagiaireId",
+          { stagiaireId }
+        );
+    }
+
+    const formations = await queryBuilder.orderBy("f.id", "ASC").getMany();
+
+    // Collect all quiz IDs to fetch questions with reponses in one query
+    const quizIds = formations.flatMap((f) =>
+      (f.quizzes || []).map((q) => q.id)
+    );
+
+    // Fetch questions with reponses separately (TypeORM handles nested relations better this way)
+    const questionsWithReponses =
+      quizIds.length > 0
+        ? await this.questionRepository.find({
+            where: { quiz_id: quizIds.length === 1 ? quizIds[0] : undefined },
+            relations: ["reponses"],
+          })
+        : [];
+
+    // If multiple quiz IDs, use query builder with IN clause
+    let allQuestions: Question[] = questionsWithReponses;
+    if (quizIds.length > 1) {
+      allQuestions = await this.questionRepository
+        .createQueryBuilder("question")
+        .leftJoinAndSelect("question.reponses", "reponse")
+        .where("question.quiz_id IN (:...quizIds)", { quizIds })
+        .getMany();
+    }
+
+    // Create a map of quiz_id -> questions
+    const questionsByQuizId = new Map<number, Question[]>();
+    allQuestions.forEach((q) => {
+      const existing = questionsByQuizId.get(q.quiz_id) || [];
+      existing.push(q);
+      questionsByQuizId.set(q.quiz_id, existing);
+    });
 
     return formations.map((f) => ({
       id: f.id.toString(),
       titre: f.titre,
       description: f.description,
       categorie: f.categorie,
-      quizzes: (f.quizzes || []).map((q) => ({
-        id: q.id.toString(),
-        titre: q.titre,
-        description: q.description,
-        categorie: f.categorie,
-        categorieId: f.categorie,
-        niveau: q.niveau,
-        questions: (q.questions || []).map((question) => ({
-          id: question.id.toString(),
-          text: question.text,
-          type: question.type || "choix multiples",
-          answers: (question.reponses || []).map((r) => ({
-            id: r.id.toString(),
-            text: r.text,
-            isCorrect: r.isCorrect,
+      quizzes: (f.quizzes || []).map((q) => {
+        const questions = questionsByQuizId.get(q.id) || [];
+        return {
+          id: q.id.toString(),
+          titre: q.titre,
+          description: q.description,
+          categorie: f.categorie,
+          categorieId: f.categorie,
+          niveau: q.niveau || "débutant",
+          questions: questions.map((question) => ({
+            id: question.id.toString(),
+            text: question.text,
+            type: question.type || "choix multiples",
+            answers: (question.reponses || []).map((r) => ({
+              id: r.id.toString(),
+              text: r.text,
+              isCorrect: Boolean(r.isCorrect),
+            })),
           })),
-        })),
-        points: parseInt(q.nb_points_total) || 0,
-      })),
+          points: parseInt(q.nb_points_total) || 0,
+        };
+      }),
     }));
   }
 

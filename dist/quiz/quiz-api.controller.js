@@ -30,8 +30,9 @@ let QuizApiController = class QuizApiController {
         const data = await this.quizService.getAllQuizzes();
         return this.apiResponse.success(data);
     }
-    async byFormations() {
-        return this.quizService.getQuizzesByFormation();
+    async byFormations(req) {
+        const stagiaireId = req.user?.stagiaire?.id;
+        return this.quizService.getQuizzesByFormation(stagiaireId);
     }
     async categories() {
         const data = await this.quizService.getCategories();
@@ -137,8 +138,9 @@ __decorate([
 ], QuizApiController.prototype, "getAll", null);
 __decorate([
     (0, common_1.Get)("by-formations"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], QuizApiController.prototype, "byFormations", null);
 __decorate([

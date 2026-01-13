@@ -9,7 +9,7 @@ export declare class QuizApiController {
     private achievementService;
     constructor(rankingService: RankingService, quizService: QuizService, apiResponse: ApiResponseService, achievementService: AchievementService);
     getAll(): Promise<any>;
-    byFormations(): Promise<{
+    byFormations(req: any): Promise<{
         id: string;
         titre: string;
         description: string;
