@@ -143,8 +143,8 @@ export class StagiaireApiController {
   }
 
   @Get("ranking/global")
-  async rankingGlobal() {
-    const data = await this.rankingService.getGlobalRanking();
+  async rankingGlobal(@Query("period") period: string = "all") {
+    const data = await this.rankingService.getGlobalRanking(period);
     return this.apiResponse.success(data);
   }
 

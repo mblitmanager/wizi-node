@@ -1,4 +1,11 @@
-import { Controller, Get, UseGuards, Request, Param } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Request,
+  Param,
+  Query,
+} from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RankingService } from "./ranking.service";
 
@@ -12,8 +19,8 @@ export class RankingController {
   }
 
   @Get("global")
-  async getGlobalRanking() {
-    const data = await this.rankingService.getGlobalRanking();
+  async getGlobalRanking(@Query("period") period: string = "all") {
+    const data = await this.rankingService.getGlobalRanking(period);
     return data.map(({ level, ...item }) => item);
   }
 

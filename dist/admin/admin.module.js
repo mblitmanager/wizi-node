@@ -26,6 +26,7 @@ const admin_achievement_controller_1 = require("./admin-achievement.controller")
 const admin_settings_controller_1 = require("./admin-settings.controller");
 const admin_media_controller_1 = require("./admin-media.controller");
 const admin_question_controller_1 = require("./admin-question.controller");
+const admin_data_reset_controller_1 = require("./admin-data-reset.controller");
 const admin_demande_historique_controller_1 = require("./admin-demande-historique.controller");
 const admin_parrainage_event_controller_1 = require("./admin-parrainage-event.controller");
 const admin_catalogue_formation_controller_1 = require("./admin-catalogue-formation.controller");
@@ -39,6 +40,7 @@ const formateur_commercial_api_controller_1 = require("./formateur-commercial-ap
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const user_entity_1 = require("../entities/user.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
+const quiz_participation_answer_entity_1 = require("../entities/quiz-participation-answer.entity");
 const formateur_entity_1 = require("../entities/formateur.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const quiz_entity_1 = require("../entities/quiz.entity");
@@ -52,6 +54,9 @@ const pole_relation_client_entity_1 = require("../entities/pole-relation-client.
 const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
 const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
 const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
+const classement_entity_1 = require("../entities/classement.entity");
+const progression_entity_1 = require("../entities/progression.entity");
+const stagiaire_achievement_entity_1 = require("../entities/stagiaire-achievement.entity");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -64,6 +69,7 @@ exports.AdminModule = AdminModule = __decorate([
                 stagiaire_entity_1.Stagiaire,
                 user_entity_1.User,
                 quiz_participation_entity_1.QuizParticipation,
+                quiz_participation_answer_entity_1.QuizParticipationAnswer,
                 formateur_entity_1.Formateur,
                 catalogue_formation_entity_1.CatalogueFormation,
                 quiz_entity_1.Quiz,
@@ -77,6 +83,9 @@ exports.AdminModule = AdminModule = __decorate([
                 stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
                 demande_inscription_entity_1.DemandeInscription,
                 parrainage_event_entity_1.ParrainageEvent,
+                classement_entity_1.Classement,
+                progression_entity_1.Progression,
+                stagiaire_achievement_entity_1.StagiaireAchievement,
             ]),
         ],
         providers: [admin_service_1.AdminService, api_response_service_1.ApiResponseService],
@@ -94,6 +103,7 @@ exports.AdminModule = AdminModule = __decorate([
             admin_settings_controller_1.AdminSettingsController,
             admin_media_controller_1.AdminMediaController,
             admin_question_controller_1.AdminQuestionController,
+            admin_data_reset_controller_1.AdminDataResetController,
             admin_catalogue_formation_controller_1.AdminCatalogueFormationController,
             admin_commercial_controller_1.AdminCommercialController,
             admin_prc_controller_1.AdminPoleRelationClientController,

@@ -13,13 +13,16 @@ export declare class AppController {
         error: string;
         success?: undefined;
         message?: undefined;
+        stack?: undefined;
     } | {
         success: boolean;
         message: string;
         error?: undefined;
+        stack?: undefined;
     } | {
         success: boolean;
         error: any;
+        stack: any;
         message?: undefined;
     }>;
     testFcm(body: any): Promise<{

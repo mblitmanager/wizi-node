@@ -5,7 +5,7 @@ export declare class RankingController {
     getFormationsRankingSummary(): Promise<{
         formations: any[];
     }>;
-    getGlobalRanking(): Promise<{
+    getGlobalRanking(period?: string): Promise<{
         rang: number;
         stagiaire: {
             id: any;

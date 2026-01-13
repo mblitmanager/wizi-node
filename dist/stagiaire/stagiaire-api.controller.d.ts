@@ -71,7 +71,7 @@ export declare class StagiaireApiController {
             };
         }[];
     }>;
-    rankingGlobal(): Promise<any>;
+    rankingGlobal(period?: string): Promise<any>;
     rankingFormation(formationId: number): Promise<any>;
     rewards(req: any): Promise<any>;
     partner(): Promise<any>;

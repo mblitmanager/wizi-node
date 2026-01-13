@@ -98,8 +98,8 @@ let StagiaireApiController = class StagiaireApiController {
             data: await this.rankingService.getQuizHistory(userId),
         };
     }
-    async rankingGlobal() {
-        const data = await this.rankingService.getGlobalRanking();
+    async rankingGlobal(period = "all") {
+        const data = await this.rankingService.getGlobalRanking(period);
         return this.apiResponse.success(data);
     }
     async rankingFormation(formationId) {
@@ -277,8 +277,9 @@ __decorate([
 ], StagiaireApiController.prototype, "quizzes", null);
 __decorate([
     (0, common_1.Get)("ranking/global"),
+    __param(0, Query("period")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], StagiaireApiController.prototype, "rankingGlobal", null);
 __decorate([

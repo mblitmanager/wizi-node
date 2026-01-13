@@ -117,6 +117,10 @@ export class RankingService {
       const monthAgo = new Date();
       monthAgo.setMonth(monthAgo.getMonth() - 1);
       query = query.where("c.updated_at >= :monthAgo", { monthAgo });
+    } else if (period === "quarter" || period === "trimestre") {
+      const quarterAgo = new Date();
+      quarterAgo.setMonth(quarterAgo.getMonth() - 3);
+      query = query.where("c.updated_at >= :quarterAgo", { quarterAgo });
     }
 
     const allClassements = await query.getMany();

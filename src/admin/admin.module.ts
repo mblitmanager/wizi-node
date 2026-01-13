@@ -17,6 +17,7 @@ import { AdminAchievementController } from "./admin-achievement.controller";
 import { AdminSettingsController } from "./admin-settings.controller";
 import { AdminMediaController } from "./admin-media.controller";
 import { AdminQuestionController } from "./admin-question.controller";
+import { AdminDataResetController } from "./admin-data-reset.controller";
 // New imports
 import { AdminDemandeHistoriqueController } from "./admin-demande-historique.controller";
 import { AdminParrainageEventController } from "./admin-parrainage-event.controller";
@@ -51,6 +52,7 @@ import {
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { User } from "../entities/user.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
+import { QuizParticipationAnswer } from "../entities/quiz-participation-answer.entity";
 import { Formateur } from "../entities/formateur.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { Quiz } from "../entities/quiz.entity";
@@ -64,6 +66,9 @@ import { PoleRelationClient } from "../entities/pole-relation-client.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { ParrainageEvent } from "../entities/parrainage-event.entity";
+import { Classement } from "../entities/classement.entity";
+import { Progression } from "../entities/progression.entity";
+import { StagiaireAchievement } from "../entities/stagiaire-achievement.entity";
 
 @Module({
   imports: [
@@ -73,6 +78,7 @@ import { ParrainageEvent } from "../entities/parrainage-event.entity";
       Stagiaire,
       User,
       QuizParticipation,
+      QuizParticipationAnswer,
       Formateur,
       CatalogueFormation,
       Quiz,
@@ -86,6 +92,9 @@ import { ParrainageEvent } from "../entities/parrainage-event.entity";
       StagiaireCatalogueFormation,
       DemandeInscription,
       ParrainageEvent,
+      Classement,
+      Progression,
+      StagiaireAchievement,
     ]),
   ],
   providers: [AdminService, ApiResponseService],
@@ -104,6 +113,7 @@ import { ParrainageEvent } from "../entities/parrainage-event.entity";
     AdminSettingsController,
     AdminMediaController,
     AdminQuestionController,
+    AdminDataResetController,
     // New Admin Controllers
     AdminCatalogueFormationController,
     AdminCommercialController,

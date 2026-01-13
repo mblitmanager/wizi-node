@@ -27,7 +27,7 @@ export class AppController {
       );
       return { success: true, message: `Email sent to ${to}` };
     } catch (e) {
-      return { success: false, error: e.message };
+      return { success: false, error: e.message, stack: e.stack };
     }
   }
 

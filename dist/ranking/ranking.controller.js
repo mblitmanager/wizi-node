@@ -23,8 +23,8 @@ let RankingController = class RankingController {
     async getFormationsRankingSummary() {
         return this.rankingService.getFormationsRankingSummary();
     }
-    async getGlobalRanking() {
-        const data = await this.rankingService.getGlobalRanking();
+    async getGlobalRanking(period = "all") {
+        const data = await this.rankingService.getGlobalRanking(period);
         return data.map(({ level, ...item }) => item);
     }
     async getMyRanking(req) {
@@ -56,8 +56,9 @@ __decorate([
 ], RankingController.prototype, "getFormationsRankingSummary", null);
 __decorate([
     (0, common_1.Get)("global"),
+    __param(0, (0, common_1.Query)("period")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RankingController.prototype, "getGlobalRanking", null);
 __decorate([
