@@ -316,7 +316,7 @@ let QuizService = class QuizService {
         const quizzes = await this.quizRepository
             .createQueryBuilder("quiz")
             .leftJoinAndSelect("quiz.formation", "formation")
-            .innerJoin("formation.catalogueFormations", "catalogue")
+            .innerJoin("formation.catalogue_formations", "catalogue")
             .innerJoin("catalogue.stagiaire_catalogue_formations", "scf", "scf.stagiaire_id = :stagiaireId", { stagiaireId })
             .distinct(true)
             .getMany();
