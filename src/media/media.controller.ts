@@ -13,6 +13,13 @@ export class MediaController {
     return this.mediaService.findAll();
   }
 
+  @Get("server")
+  async getServerMedias(@Query("page") page: string = "1", @Req() req: any) {
+    const pageNum = parseInt(page) || 1;
+    const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/server`;
+    return this.mediaService.getServerMediasPaginated(pageNum, 20, baseUrl);
+  }
+
   @Get("tutoriels")
   async getTutoriels(@Query("page") page: string = "1", @Req() req: any) {
     const pageNum = parseInt(page) || 1;

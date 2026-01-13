@@ -29,6 +29,25 @@ let MediaService = class MediaService {
         this.formationRepository = formationRepository;
         this.achievementService = achievementService;
     }
+    async getServerMediasPaginated(page = 1, perPage = 20, baseUrl = "") {
+        const [data, total] = await this.mediaRepository
+            .createQueryBuilder("m")
+            .orderBy("m.id", "DESC")
+            .skip((page - 1) * perPage)
+            .take(perPage)
+            .getManyAndCount();
+        const formattedData = data.map((m) => ({
+            id: m.id,
+            titre: m.titre,
+            description: m.description,
+            url: m.url,
+            size: m.size,
+            mime: m.mime,
+            uploaded_by: m.uploaded_by,
+            created_at: this.formatIso(m.created_at),
+        }));
+        return this.formatPagination(formattedData, total, page, perPage, baseUrl);
+    }
     async findAll() {
         return this.mediaRepository.find();
     }

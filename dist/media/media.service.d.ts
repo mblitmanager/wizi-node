@@ -11,6 +11,21 @@ export declare class MediaService {
     private formationRepository;
     private achievementService;
     constructor(mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireRepository: Repository<Stagiaire>, formationRepository: Repository<Formation>, achievementService: AchievementService);
+    getServerMediasPaginated(page?: number, perPage?: number, baseUrl?: string): Promise<{
+        current_page: number;
+        data: any[];
+        first_page_url: string;
+        from: number;
+        last_page: number;
+        last_page_url: string;
+        links: any[];
+        next_page_url: string;
+        path: string;
+        per_page: number;
+        prev_page_url: string;
+        to: number;
+        total: number;
+    }>;
     findAll(): Promise<Media[]>;
     findByType(type: string): Promise<Media[]>;
     getTutorials(userId?: number): Promise<{

@@ -23,6 +23,11 @@ let MediaController = class MediaController {
     findAll() {
         return this.mediaService.findAll();
     }
+    async getServerMedias(page = "1", req) {
+        const pageNum = parseInt(page) || 1;
+        const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/server`;
+        return this.mediaService.getServerMediasPaginated(pageNum, 20, baseUrl);
+    }
     async getTutoriels(page = "1", req) {
         const pageNum = parseInt(page) || 1;
         const baseUrl = `${req.protocol}://${req.get("host")}/api/medias/tutoriels`;
@@ -62,6 +67,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], MediaController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)("server"),
+    __param(0, (0, common_1.Query)("page")),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], MediaController.prototype, "getServerMedias", null);
 __decorate([
     (0, common_1.Get)("tutoriels"),
     __param(0, (0, common_1.Query)("page")),
