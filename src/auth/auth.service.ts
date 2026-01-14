@@ -62,9 +62,13 @@ export class AuthService {
 
     const formatIso = (date: any) => {
       if (!date) return null;
-      const d = new Date(date);
-      if (isNaN(d.getTime())) return null;
-      return d.toISOString().replace(".000Z", ".000000Z");
+      try {
+        const d = new Date(date);
+        if (isNaN(d.getTime())) return null;
+        return d.toISOString().replace(".000Z", ".000000Z");
+      } catch (e) {
+        return null;
+      }
     };
 
     const userData = {

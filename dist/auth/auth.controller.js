@@ -31,6 +31,7 @@ let AuthController = class AuthController {
         }
         console.log("Login success for:", credentials.email);
         const result = await this.authService.login(user);
+        console.log("Sending Login Response:", JSON.stringify(result, null, 2));
         return this.apiResponse.success(result);
     }
     async register(userData) {
