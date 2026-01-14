@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Request,
+  Query,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiResponseService } from "../common/services/api-response.service";
@@ -40,9 +41,15 @@ export class FormateurApiController {
   }
 
   @Get("stagiaires/inactive")
-  async inactiveStagiaires(@Request() req) {
+  async inactiveStagiaires(
+    @Request() req,
+    @Query("days") days: number = 7,
+    @Query("scope") scope: string = "all"
+  ) {
     const stats = await this.adminService.getFormateurInactiveStagiaires(
-      req.user.id
+      req.user.id,
+      days,
+      scope
     );
     return this.apiResponse.success(stats);
   }

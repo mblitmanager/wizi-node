@@ -8,7 +8,7 @@ export declare class FormateurApiController {
     formations(req: any): Promise<any>;
     stagiaires(req: any): Promise<any>;
     onlineStagiaires(): Promise<any>;
-    inactiveStagiaires(req: any): Promise<any>;
+    inactiveStagiaires(req: any, days?: number, scope?: string): Promise<any>;
     neverConnected(): Promise<any>;
     performance(req: any): Promise<any>;
     disconnect(data: any): Promise<any>;

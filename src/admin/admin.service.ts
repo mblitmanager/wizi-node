@@ -308,8 +308,16 @@ export class AdminService {
     };
   }
 
-  async getFormateurInactiveStagiaires(userId: number) {
-    const thresholdDays = 7;
+  async getFormateurInactiveStagiaires(
+    userId: number,
+    days: number = 7,
+    scope: string = "all"
+  ) {
+    const thresholdDays = days;
+    // Debug: Check total stagiaires in DB
+    const totalStagiaires = await this.stagiaireRepository.count();
+    console.log(`[DEBUG] Total Stagiaires in DB: ${totalStagiaires}`);
+
     const now = new Date();
     const weekAgo = new Date(
       now.getTime() - thresholdDays * 24 * 60 * 60 * 1000
@@ -366,10 +374,7 @@ export class AdminService {
           nom: s.user?.name, // Assuming name field holds surname or full name
           email: s.user?.email,
           last_activity_at: lastActivityAt
-            ? new Date(lastActivityAt.getTime() + 3 * 60 * 60 * 1000) // UTC+3 display
-                .toISOString()
-                .replace("T", " ")
-                .substring(0, 19)
+            ? lastActivityAt.toISOString().replace("T", " ").substring(0, 19)
             : null,
           days_since_activity: daysSinceActivity,
           never_connected: !lastActivityAt,

@@ -93,7 +93,7 @@ export declare class AdminService {
             }[];
         };
     }>;
-    getFormateurInactiveStagiaires(userId: number): Promise<{
+    getFormateurInactiveStagiaires(userId: number, days?: number, scope?: string): Promise<{
         inactive_stagiaires: {
             id: number;
             prenom: string;

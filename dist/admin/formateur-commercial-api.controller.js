@@ -34,8 +34,8 @@ let FormateurApiController = class FormateurApiController {
     async onlineStagiaires() {
         return this.apiResponse.success([]);
     }
-    async inactiveStagiaires(req) {
-        const stats = await this.adminService.getFormateurInactiveStagiaires(req.user.id);
+    async inactiveStagiaires(req, days = 7, scope = "all") {
+        const stats = await this.adminService.getFormateurInactiveStagiaires(req.user.id, days, scope);
         return this.apiResponse.success(stats);
     }
     async neverConnected() {
@@ -104,8 +104,10 @@ __decorate([
 __decorate([
     (0, common_1.Get)("stagiaires/inactive"),
     __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("days")),
+    __param(2, (0, common_1.Query)("scope")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Number, String]),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "inactiveStagiaires", null);
 __decorate([

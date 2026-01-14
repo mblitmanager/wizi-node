@@ -255,8 +255,10 @@ let AdminService = class AdminService {
             },
         };
     }
-    async getFormateurInactiveStagiaires(userId) {
-        const thresholdDays = 7;
+    async getFormateurInactiveStagiaires(userId, days = 7, scope = "all") {
+        const thresholdDays = days;
+        const totalStagiaires = await this.stagiaireRepository.count();
+        console.log(`[DEBUG] Total Stagiaires in DB: ${totalStagiaires}`);
         const now = new Date();
         const weekAgo = new Date(now.getTime() - thresholdDays * 24 * 60 * 60 * 1000);
         const formateur = await this.formateurRepository.findOne({
@@ -301,10 +303,7 @@ let AdminService = class AdminService {
                 nom: s.user?.name,
                 email: s.user?.email,
                 last_activity_at: lastActivityAt
-                    ? new Date(lastActivityAt.getTime() + 3 * 60 * 60 * 1000)
-                        .toISOString()
-                        .replace("T", " ")
-                        .substring(0, 19)
+                    ? lastActivityAt.toISOString().replace("T", " ").substring(0, 19)
                     : null,
                 days_since_activity: daysSinceActivity,
                 never_connected: !lastActivityAt,
