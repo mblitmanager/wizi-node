@@ -11,7 +11,9 @@ export declare class FormateurApiController {
     inactiveStagiaires(req: any, days?: number, scope?: string): Promise<any>;
     neverConnected(): Promise<any>;
     performance(req: any): Promise<any>;
-    disconnect(data: any): Promise<any>;
+    disconnect(data: {
+        stagiaire_ids: number[];
+    }): Promise<any>;
     stagiaireStats(id: number): Promise<any>;
     videoStats(id: number): Promise<any>;
     videos(): Promise<any>;

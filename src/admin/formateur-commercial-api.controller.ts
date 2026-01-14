@@ -81,8 +81,15 @@ export class FormateurApiController {
   }
 
   @Post("stagiaires/disconnect")
-  async disconnect(@Body() data: any) {
-    return this.apiResponse.success();
+  async disconnect(@Body() data: { stagiaire_ids: number[] }) {
+    const updatedCount = await this.adminService.disconnectStagiaires(
+      data.stagiaire_ids
+    );
+    return this.apiResponse.success({
+      success: true,
+      message: `${updatedCount} stagiaire(s) déconnecté(s)`,
+      disconnected_count: updatedCount,
+    });
   }
 
   @Get("stagiaire/:id/stats")

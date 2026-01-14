@@ -55,7 +55,12 @@ let FormateurApiController = class FormateurApiController {
         return this.apiResponse.success(stats);
     }
     async disconnect(data) {
-        return this.apiResponse.success();
+        const updatedCount = await this.adminService.disconnectStagiaires(data.stagiaire_ids);
+        return this.apiResponse.success({
+            success: true,
+            message: `${updatedCount} stagiaire(s) déconnecté(s)`,
+            disconnected_count: updatedCount,
+        });
     }
     async stagiaireStats(id) {
         const stats = await this.adminService.getStagiaireStats(id);

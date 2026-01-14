@@ -496,8 +496,21 @@ let AdminService = class AdminService {
         return {
             ranking,
             total_stagiaires: ranking.length,
-            period,
         };
+    }
+    async disconnectStagiaires(stagiaireIds) {
+        const stagiaires = await this.stagiaireRepository.find({
+            where: { id: (0, typeorm_2.In)(stagiaireIds) },
+            select: ["id", "user_id"],
+        });
+        const userIds = stagiaires
+            .map((s) => s.user_id)
+            .filter((id) => id !== null);
+        if (userIds.length === 0) {
+            return 0;
+        }
+        const result = await this.userRepository.update({ id: (0, typeorm_2.In)(userIds) }, { is_online: false });
+        return result.affected || 0;
     }
 };
 exports.AdminService = AdminService;

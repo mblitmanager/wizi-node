@@ -158,6 +158,10 @@ export declare class AdminService {
         };
     }>;
     getFormateurMesStagiairesRanking(userId: number, period?: string): Promise<{
+        ranking: any[];
+        total_stagiaires: number;
+        period: string;
+    } | {
         ranking: {
             rank: number;
             id: number;
@@ -170,6 +174,7 @@ export declare class AdminService {
             avg_score: number;
         }[];
         total_stagiaires: number;
-        period: string;
+        period?: undefined;
     }>;
+    disconnectStagiaires(stagiaireIds: number[]): Promise<number>;
 }

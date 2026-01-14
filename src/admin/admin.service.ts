@@ -600,7 +600,30 @@ export class AdminService {
     return {
       ranking,
       total_stagiaires: ranking.length,
-      period,
     };
+  }
+
+  async disconnectStagiaires(stagiaireIds: number[]) {
+    // 1. Get user_ids of the stagiaires
+    const stagiaires = await this.stagiaireRepository.find({
+      where: { id: In(stagiaireIds) },
+      select: ["id", "user_id"],
+    });
+
+    const userIds = stagiaires
+      .map((s) => s.user_id)
+      .filter((id) => id !== null);
+
+    if (userIds.length === 0) {
+      return 0;
+    }
+
+    // 2. Update is_online to 0 for those users
+    const result = await this.userRepository.update(
+      { id: In(userIds) },
+      { is_online: false }
+    );
+
+    return result.affected || 0;
   }
 }
