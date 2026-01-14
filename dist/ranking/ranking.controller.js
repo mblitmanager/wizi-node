@@ -20,8 +20,8 @@ let RankingController = class RankingController {
     constructor(rankingService) {
         this.rankingService = rankingService;
     }
-    async getFormationsRankingSummary() {
-        return this.rankingService.getFormationsRankingSummary();
+    async getFormationsRankingSummary(period = "all") {
+        return this.rankingService.getFormationsRankingSummary(period);
     }
     async getGlobalRanking(period = "all") {
         const data = await this.rankingService.getGlobalRanking(period);
@@ -34,8 +34,8 @@ let RankingController = class RankingController {
         const points = await this.rankingService.getUserPoints(req.user.id);
         return points;
     }
-    async getFormationRanking(formationId) {
-        return this.rankingService.getFormationRanking(formationId);
+    async getFormationRanking(formationId, period = "all") {
+        return this.rankingService.getFormationRanking(formationId, period);
     }
     async getMyRewards(req) {
         return this.rankingService.getStagiaireRewards(req.user.id);
@@ -50,8 +50,9 @@ let RankingController = class RankingController {
 exports.RankingController = RankingController;
 __decorate([
     (0, common_1.Get)("summary"),
+    __param(0, (0, common_1.Query)("period")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], RankingController.prototype, "getFormationsRankingSummary", null);
 __decorate([
@@ -81,8 +82,9 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     (0, common_1.Get)("formation/:formationId"),
     __param(0, (0, common_1.Param)("formationId")),
+    __param(1, (0, common_1.Query)("period")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, String]),
     __metadata("design:returntype", Promise)
 ], RankingController.prototype, "getFormationRanking", null);
 __decorate([

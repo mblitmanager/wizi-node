@@ -39,16 +39,33 @@ let RankingService = class RankingService {
         this.questionRepository = questionRepository;
         this.reponseRepository = reponseRepository;
     }
-    async getFormationsRankingSummary() {
+    async getFormationsRankingSummary(period = "all") {
         const formations = await this.formationRepository.find({
             order: { id: "ASC" },
         });
         const summary = [];
         for (const formation of formations) {
-            const classements = await this.classementRepository.find({
-                where: { quiz: { formation_id: formation.id } },
-                relations: ["stagiaire", "stagiaire.user"],
-            });
+            let query = this.classementRepository
+                .createQueryBuilder("c")
+                .leftJoinAndSelect("c.stagiaire", "stagiaire")
+                .leftJoinAndSelect("stagiaire.user", "user")
+                .where("c.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :formationId)", { formationId: formation.id });
+            if (period === "week") {
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                query = query.andWhere("c.updated_at >= :weekAgo", { weekAgo });
+            }
+            else if (period === "month") {
+                const monthAgo = new Date();
+                monthAgo.setMonth(monthAgo.getMonth() - 1);
+                query = query.andWhere("c.updated_at >= :monthAgo", { monthAgo });
+            }
+            else if (period === "quarter" || period === "trimestre") {
+                const quarterAgo = new Date();
+                quarterAgo.setMonth(quarterAgo.getMonth() - 3);
+                query = query.andWhere("c.updated_at >= :quarterAgo", { quarterAgo });
+            }
+            const classements = await query.getMany();
             const grouped = {};
             classements.forEach((c) => {
                 const sid = c.stagiaire_id;
@@ -205,12 +222,28 @@ let RankingService = class RankingService {
         }
         return myRanking;
     }
-    async getFormationRanking(formationId) {
-        const progressions = await this.progressionRepository.find({
-            where: { formation_id: formationId },
-            relations: ["stagiaire", "stagiaire.user"],
-            order: { score: "DESC" },
-        });
+    async getFormationRanking(formationId, period = "all") {
+        let query = this.progressionRepository
+            .createQueryBuilder("p")
+            .leftJoinAndSelect("p.stagiaire", "stagiaire")
+            .leftJoinAndSelect("stagiaire.user", "user")
+            .where("p.formation_id = :formationId", { formationId });
+        if (period === "week") {
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            query = query.andWhere("p.updated_at >= :weekAgo", { weekAgo });
+        }
+        else if (period === "month") {
+            const monthAgo = new Date();
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            query = query.andWhere("p.updated_at >= :monthAgo", { monthAgo });
+        }
+        else if (period === "quarter" || period === "trimestre") {
+            const quarterAgo = new Date();
+            quarterAgo.setMonth(quarterAgo.getMonth() - 3);
+            query = query.andWhere("p.updated_at >= :quarterAgo", { quarterAgo });
+        }
+        const progressions = await query.orderBy("p.score", "DESC").getMany();
         return progressions.map((p, index) => ({
             id: p.stagiaire.user_id,
             name: p.stagiaire.user?.name || "",

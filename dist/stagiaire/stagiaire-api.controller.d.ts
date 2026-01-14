@@ -72,7 +72,7 @@ export declare class StagiaireApiController {
         }[];
     }>;
     rankingGlobal(period?: string): Promise<any>;
-    rankingFormation(formationId: number): Promise<any>;
+    rankingFormation(formationId: number, period?: string): Promise<any>;
     rewards(req: any): Promise<any>;
     partner(): Promise<any>;
     parainageStats(): Promise<any>;

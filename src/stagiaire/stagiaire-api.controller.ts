@@ -150,8 +150,14 @@ export class StagiaireApiController {
   }
 
   @Get("ranking/formation/:formationId")
-  async rankingFormation(@Param("formationId") formationId: number) {
-    const data = await this.rankingService.getFormationRanking(formationId);
+  async rankingFormation(
+    @Param("formationId") formationId: number,
+    @Query("period") period: string = "all"
+  ) {
+    const data = await this.rankingService.getFormationRanking(
+      formationId,
+      period
+    );
     return this.apiResponse.success(data);
   }
 

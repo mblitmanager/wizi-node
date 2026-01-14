@@ -102,8 +102,8 @@ let StagiaireApiController = class StagiaireApiController {
         const data = await this.rankingService.getGlobalRanking(period);
         return this.apiResponse.success(data);
     }
-    async rankingFormation(formationId) {
-        const data = await this.rankingService.getFormationRanking(formationId);
+    async rankingFormation(formationId, period = "all") {
+        const data = await this.rankingService.getFormationRanking(formationId, period);
         return this.apiResponse.success(data);
     }
     async rewards(req) {
@@ -285,8 +285,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)("ranking/formation/:formationId"),
     __param(0, (0, common_1.Param)("formationId")),
+    __param(1, (0, common_1.Query)("period")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, String]),
     __metadata("design:returntype", Promise)
 ], StagiaireApiController.prototype, "rankingFormation", null);
 __decorate([

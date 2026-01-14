@@ -14,8 +14,8 @@ export class RankingController {
   constructor(private readonly rankingService: RankingService) {}
 
   @Get("summary")
-  async getFormationsRankingSummary() {
-    return this.rankingService.getFormationsRankingSummary();
+  async getFormationsRankingSummary(@Query("period") period: string = "all") {
+    return this.rankingService.getFormationsRankingSummary(period);
   }
 
   @Get("global")
@@ -39,8 +39,11 @@ export class RankingController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("formation/:formationId")
-  async getFormationRanking(@Param("formationId") formationId: number) {
-    return this.rankingService.getFormationRanking(formationId);
+  async getFormationRanking(
+    @Param("formationId") formationId: number,
+    @Query("period") period: string = "all"
+  ) {
+    return this.rankingService.getFormationRanking(formationId, period);
   }
 
   @UseGuards(AuthGuard("jwt"))

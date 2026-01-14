@@ -2,7 +2,7 @@ import { RankingService } from "./ranking.service";
 export declare class RankingController {
     private readonly rankingService;
     constructor(rankingService: RankingService);
-    getFormationsRankingSummary(): Promise<{
+    getFormationsRankingSummary(period?: string): Promise<{
         formations: any[];
     }>;
     getGlobalRanking(period?: string): Promise<{
@@ -46,7 +46,7 @@ export declare class RankingController {
         totalPoints: number;
         accessibleLevels: string[];
     }>;
-    getFormationRanking(formationId: number): Promise<{
+    getFormationRanking(formationId: number, period?: string): Promise<{
         id: number;
         name: string;
         points: number;

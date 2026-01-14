@@ -19,7 +19,7 @@ export declare class RankingService {
     private questionRepository;
     private reponseRepository;
     constructor(classementRepository: Repository<Classement>, stagiaireRepository: Repository<Stagiaire>, participationRepository: Repository<QuizParticipation>, progressionRepository: Repository<Progression>, quizRepository: Repository<Quiz>, userRepository: Repository<User>, formationRepository: Repository<Formation>, questionRepository: Repository<Question>, reponseRepository: Repository<Reponse>);
-    getFormationsRankingSummary(): Promise<{
+    getFormationsRankingSummary(period?: string): Promise<{
         formations: any[];
     }>;
     findAllPaginated(page?: number, limit?: number): Promise<{
@@ -64,7 +64,7 @@ export declare class RankingService {
         averageScore: number;
         rang: number;
     }>;
-    getFormationRanking(formationId: number): Promise<{
+    getFormationRanking(formationId: number, period?: string): Promise<{
         id: number;
         name: string;
         points: number;
