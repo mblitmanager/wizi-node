@@ -191,9 +191,10 @@ export class AdminService {
       "getFormateurStagiairesPerformance called with userId:",
       userId
     );
+
+    // 1. Get Formateur ID first (Mirroring Laravel: Formateur::where('user_id', $user->id)->first())
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },
-      relations: ["stagiaires", "stagiaires.user"],
     });
 
     if (!formateur) {
@@ -204,15 +205,47 @@ export class AdminService {
       };
     }
 
-    console.log("Formateur found:", formateur.id);
-    console.log("Stagiaires count:", formateur.stagiaires?.length);
+    const formateurId = formateur.id;
+    console.log("Found Formateur ID:", formateurId);
 
-    const stagiaires = formateur.stagiaires;
-    const userIds = stagiaires
-      .map((s) => s.user_id)
-      .filter((id) => id !== null);
+    // 2. Query Stagiaires filtered by Formateur ID
+    // Laravel: join users, join formateur_stagiaire where formateur_id = $id
+    const qb = this.stagiaireRepository
+      .createQueryBuilder("s")
+      .innerJoin("s.user", "u") // Ensure stagiaire has a user
+      .innerJoin("s.formateurs", "f") // Join table
+      .where("f.id = :formateurId", { formateurId })
+      .select([
+        "s.id",
+        "s.prenom",
+        "s.login_streak",
+        "u.id",
+        "u.name",
+        "u.email",
+        "u.image",
+      ]);
 
-    let quizStats = new Map<number, { count: number; last_at: Date }>();
+    // Debug generated SQL
+    console.log("Stagiaire Performance SQL:", qb.getSql());
+
+    const stagiaires = await qb.getMany();
+
+    console.log(
+      `Found ${stagiaires.length} stagiaires for formateur ${formateurId}`
+    );
+
+    if (stagiaires.length === 0) {
+      return {
+        performance: [],
+        rankings: { most_quizzes: [], most_active: [] },
+      };
+    }
+
+    const userIds = stagiaires.map((s) => s.user.id);
+
+    // 3. Aggregate quiz stats
+    let quizStats = new Map<number, { count: number; last_at: Date | null }>();
+
     if (userIds.length > 0) {
       const stats = await this.quizParticipationRepository
         .createQueryBuilder("qp")
@@ -220,32 +253,40 @@ export class AdminService {
         .addSelect("COUNT(qp.id)", "count")
         .addSelect("MAX(qp.created_at)", "last_at")
         .where("qp.user_id IN (:...userIds)", { userIds })
+        //.andWhere("qp.status = 'completed'") // Uncomment if strictly needed, but getting any activity is safer for now
         .groupBy("qp.user_id")
         .getRawMany();
 
       stats.forEach((stat) => {
         quizStats.set(stat.user_id, {
           count: parseInt(stat.count),
-          last_at: new Date(stat.last_at),
+          last_at: stat.last_at ? new Date(stat.last_at) : null,
         });
       });
     }
 
+    // 4. Map final data
     const performance = stagiaires.map((s) => {
-      const stats = quizStats.get(s.user_id) || { count: 0, last_at: null };
+      const stats = quizStats.get(s.user.id) || {
+        count: 0,
+        last_at: null,
+      };
+
       return {
-        id: s.id,
-        name: s.user?.name || `${s.prenom} ${s.nom || ""}`,
-        email: s.user?.email || s.email,
-        image: s.user?.image || null,
+        id: s.id, // Stagiaire ID as per Laravel response
+        // Laravel response: "id": 11 (This is Stagiaire ID, but note Laravel query does 'stagiaires.id')
+        // Laravel mapped name: "{$student->prenom} {$student->nom}"
+        name: s.user.name || `${s.prenom}`,
+        email: s.user.email,
+        image: s.user.image || null,
         last_quiz_at: stats.last_at
-          ? new Date(stats.last_at.getTime() + 3 * 60 * 60 * 1000)
+          ? new Date(stats.last_at.getTime() + 3 * 60 * 60 * 1000) // UTC+3
               .toISOString()
               .replace("T", " ")
               .substring(0, 19)
           : null,
         total_quizzes: stats.count,
-        total_logins: s.login_streak || 0, // Mapping login_streak to total_logins as best proxy
+        total_logins: s.login_streak || 0,
       };
     });
 

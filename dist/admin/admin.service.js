@@ -170,7 +170,6 @@ let AdminService = class AdminService {
         console.log("getFormateurStagiairesPerformance called with userId:", userId);
         const formateur = await this.formateurRepository.findOne({
             where: { user_id: userId },
-            relations: ["stagiaires", "stagiaires.user"],
         });
         if (!formateur) {
             console.log("Formateur not found for userId:", userId);
@@ -179,12 +178,32 @@ let AdminService = class AdminService {
                 rankings: { most_quizzes: [], most_active: [] },
             };
         }
-        console.log("Formateur found:", formateur.id);
-        console.log("Stagiaires count:", formateur.stagiaires?.length);
-        const stagiaires = formateur.stagiaires;
-        const userIds = stagiaires
-            .map((s) => s.user_id)
-            .filter((id) => id !== null);
+        const formateurId = formateur.id;
+        console.log("Found Formateur ID:", formateurId);
+        const qb = this.stagiaireRepository
+            .createQueryBuilder("s")
+            .innerJoin("s.user", "u")
+            .innerJoin("s.formateurs", "f")
+            .where("f.id = :formateurId", { formateurId })
+            .select([
+            "s.id",
+            "s.prenom",
+            "s.login_streak",
+            "u.id",
+            "u.name",
+            "u.email",
+            "u.image",
+        ]);
+        console.log("Stagiaire Performance SQL:", qb.getSql());
+        const stagiaires = await qb.getMany();
+        console.log(`Found ${stagiaires.length} stagiaires for formateur ${formateurId}`);
+        if (stagiaires.length === 0) {
+            return {
+                performance: [],
+                rankings: { most_quizzes: [], most_active: [] },
+            };
+        }
+        const userIds = stagiaires.map((s) => s.user.id);
         let quizStats = new Map();
         if (userIds.length > 0) {
             const stats = await this.quizParticipationRepository
@@ -198,17 +217,20 @@ let AdminService = class AdminService {
             stats.forEach((stat) => {
                 quizStats.set(stat.user_id, {
                     count: parseInt(stat.count),
-                    last_at: new Date(stat.last_at),
+                    last_at: stat.last_at ? new Date(stat.last_at) : null,
                 });
             });
         }
         const performance = stagiaires.map((s) => {
-            const stats = quizStats.get(s.user_id) || { count: 0, last_at: null };
+            const stats = quizStats.get(s.user.id) || {
+                count: 0,
+                last_at: null,
+            };
             return {
                 id: s.id,
-                name: s.user?.name || `${s.prenom} ${s.nom || ""}`,
-                email: s.user?.email || s.email,
-                image: s.user?.image || null,
+                name: s.user.name || `${s.prenom}`,
+                email: s.user.email,
+                image: s.user.image || null,
                 last_quiz_at: stats.last_at
                     ? new Date(stats.last_at.getTime() + 3 * 60 * 60 * 1000)
                         .toISOString()

@@ -64,32 +64,32 @@ export declare class AdminService {
     }>;
     getFormateurStagiairesPerformance(userId: number): Promise<{
         performance: {
-            id: any;
-            name: any;
-            email: any;
-            image: any;
+            id: number;
+            name: string;
+            email: string;
+            image: string;
             last_quiz_at: string;
             total_quizzes: number;
-            total_logins: any;
+            total_logins: number;
         }[];
         rankings: {
             most_quizzes: {
-                id: any;
-                name: any;
-                email: any;
-                image: any;
+                id: number;
+                name: string;
+                email: string;
+                image: string;
                 last_quiz_at: string;
                 total_quizzes: number;
-                total_logins: any;
+                total_logins: number;
             }[];
             most_active: {
-                id: any;
-                name: any;
-                email: any;
-                image: any;
+                id: number;
+                name: string;
+                email: string;
+                image: string;
                 last_quiz_at: string;
                 total_quizzes: number;
-                total_logins: any;
+                total_logins: number;
             }[];
         };
     }>;
