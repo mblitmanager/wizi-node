@@ -89,6 +89,9 @@ export class CatalogueFormation {
   @Column({ type: "timestamp", nullable: true })
   updated_at: Date;
 
+  @Column({ type: "timestamp", nullable: true })
+  deleted_at: Date;
+
   @OneToMany(
     () => StagiaireCatalogueFormation,
     (scf) => scf.catalogue_formation

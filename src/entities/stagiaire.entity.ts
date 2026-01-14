@@ -153,4 +153,7 @@ export class Stagiaire {
 
   @Column({ type: "timestamp", nullable: true })
   updated_at: Date;
+
+  @Column({ type: "timestamp", nullable: true })
+  deleted_at: Date;
 }

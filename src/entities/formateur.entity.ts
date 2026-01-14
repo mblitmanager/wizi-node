@@ -27,7 +27,16 @@ export class Formateur {
   prenom: string;
 
   @Column({ nullable: true })
+  civilite: string;
+
+  @Column({ nullable: true })
+  role: string;
+
+  @Column({ nullable: true })
   telephone: string;
+
+  @Column({ type: "timestamp", nullable: true })
+  deleted_at: Date;
 
   @ManyToMany("Stagiaire", (stagiaire: any) => stagiaire.formateurs)
   @JoinTable({
