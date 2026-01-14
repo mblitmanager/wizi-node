@@ -11,11 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommercialApiController = exports.FormateurApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
+const api_response_service_1 = require("../common/services/api-response.service");
 const admin_service_1 = require("./admin.service");
 let FormateurApiController = class FormateurApiController {
     constructor(apiResponse, adminService) {
@@ -182,7 +182,8 @@ __decorate([
 exports.FormateurApiController = FormateurApiController = __decorate([
     (0, common_1.Controller)("formateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [typeof (_a = typeof ApiResponseService !== "undefined" && ApiResponseService) === "function" ? _a : Object, admin_service_1.AdminService])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService,
+        admin_service_1.AdminService])
 ], FormateurApiController);
 let CommercialApiController = class CommercialApiController {
     constructor(apiResponse) {
@@ -203,6 +204,6 @@ __decorate([
 exports.CommercialApiController = CommercialApiController = __decorate([
     (0, common_1.Controller)("commercial/stats"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [typeof (_b = typeof ApiResponseService !== "undefined" && ApiResponseService) === "function" ? _b : Object])
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], CommercialApiController);
 //# sourceMappingURL=formateur-commercial-api.controller.js.map

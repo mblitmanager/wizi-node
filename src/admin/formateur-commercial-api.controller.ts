@@ -8,6 +8,7 @@ import {
   Request,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { ApiResponseService } from "../common/services/api-response.service";
 import { AdminService } from "./admin.service";
 
 @Controller("formateur")

@@ -1,3 +1,4 @@
+import { ApiResponseService } from "../common/services/api-response.service";
 import { AdminService } from "./admin.service";
 export declare class FormateurApiController {
     private apiResponse;
