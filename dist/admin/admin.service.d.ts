@@ -22,8 +22,11 @@ export declare class AdminService {
         total_video_hours: number;
         formations: {
             data: {
-                id: number;
-                titre: string;
+                id: any;
+                nom: any;
+                total_stagiaires: number;
+                stagiaires_actifs: number;
+                score_moyen: string;
             }[];
             current_page: number;
             first_page_url: string;
@@ -31,7 +34,7 @@ export declare class AdminService {
             last_page: number;
             last_page_url: string;
             links: any[];
-            next_page_url: any;
+            next_page_url: string;
             path: string;
             per_page: number;
             prev_page_url: any;
@@ -39,18 +42,23 @@ export declare class AdminService {
             total: number;
         };
         formateurs: {
-            data: any[];
+            data: {
+                id: any;
+                prenom: any;
+                nom: any;
+                total_stagiaires: number;
+            }[];
             current_page: number;
             first_page_url: string;
-            from: any;
+            from: number;
             last_page: number;
             last_page_url: string;
             links: any[];
-            next_page_url: any;
+            next_page_url: string;
             path: string;
             per_page: number;
             prev_page_url: any;
-            to: any;
+            to: number;
             total: number;
         };
     }>;

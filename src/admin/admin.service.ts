@@ -61,16 +61,61 @@ export class AdminService {
       }
     }
 
-    // Calculate total formations assigned to formateur's stagiaires
-    const formationIds = new Set<number>();
-    for (const stagiaire of stagiaires) {
-      if (stagiaire.stagiaire_catalogue_formations) {
-        stagiaire.stagiaire_catalogue_formations.forEach((scf) => {
-          formationIds.add(scf.catalogue_formation_id);
-        });
-      }
-    }
-    const totalFormations = formationIds.size;
+    // Aggregated stats for formations
+    const formationsQuery = this.formationRepository
+      .createQueryBuilder("cf")
+      .leftJoin("cf.stagiaire_catalogue_formations", "scf")
+      .leftJoin("scf.stagiaire", "s")
+      .leftJoin("s.user", "u")
+      .leftJoin(QuizParticipation, "qp", "u.id = qp.user_id")
+      .select([
+        "cf.id AS id",
+        "cf.titre AS nom",
+        "COUNT(DISTINCT s.id) AS total_stagiaires",
+        "COUNT(DISTINCT CASE WHEN u.last_activity_at >= :weekAgo THEN s.id END) AS stagiaires_actifs",
+        "COALESCE(AVG(qp.score), 0) AS score_moyen",
+      ])
+      .setParameter("weekAgo", weekAgo)
+      .groupBy("cf.id")
+      .addGroupBy("cf.titre")
+      .orderBy("total_stagiaires", "DESC")
+      .limit(10); // Page 1, limit 10
+
+    const formationsRaw = await formationsQuery.getRawMany();
+
+    // Aggregated stats for formateurs
+    const formateursQuery = this.formateurRepository
+      .createQueryBuilder("f")
+      .innerJoin("f.user", "u")
+      .leftJoin("f.stagiaires", "s")
+      .select([
+        "f.id AS id",
+        "f.prenom AS prenom",
+        "u.name AS nom",
+        "COUNT(DISTINCT s.id) AS total_stagiaires",
+      ])
+      .groupBy("f.id")
+      .addGroupBy("f.prenom")
+      .addGroupBy("u.name")
+      .orderBy("total_stagiaires", "DESC")
+      .limit(5); // Page 1, limit 5
+
+    const formateursRaw = await formateursQuery.getRawMany();
+
+    const totalCatalogFormations = await this.formationRepository.count();
+    const totalFormateursCount = await this.formateurRepository.count();
+
+    const distinctFormationsResult = await this.formationRepository
+      .createQueryBuilder("cf")
+      .innerJoin("cf.stagiaire_catalogue_formations", "scf")
+      .innerJoin("scf.stagiaire", "s")
+      .innerJoin("s.formateurs", "f", "f.id = :formateurId", {
+        formateurId: formateur.id,
+      })
+      .select("COUNT(DISTINCT cf.id)", "cnt")
+      .getRawOne();
+
+    const totalFormations = parseInt(distinctFormationsResult.cnt);
 
     // Calculate total quizzes taken by formateur's stagiaires
     let totalQuizzesTaken = 0;
@@ -80,12 +125,6 @@ export class AdminService {
       });
     }
 
-    // Get formations details (top 5 for dashboard)
-    const formations = await this.formationRepository.find({
-      where: { id: In([...formationIds]) },
-      take: 5,
-    });
-
     return {
       total_stagiaires: totalStagiaires,
       active_this_week: activeThisWeek,
@@ -94,43 +133,55 @@ export class AdminService {
       avg_quiz_score: parseFloat(avgScore.toFixed(1)),
       total_formations: totalFormations,
       total_quizzes_taken: totalQuizzesTaken,
-      total_video_hours: 0, // Placeholder as video tracking logic is complex
+      total_video_hours: 0,
       formations: {
-        data: formations.map((f) => ({
+        data: formationsRaw.map((f) => ({
           id: f.id,
-          titre: f.titre,
+          nom: f.nom,
+          total_stagiaires: parseInt(f.total_stagiaires),
+          stagiaires_actifs: parseInt(f.stagiaires_actifs),
+          score_moyen: parseFloat(f.score_moyen).toFixed(4),
         })),
         current_page: 1,
         first_page_url:
           "http://127.0.0.1:3000/api/formateur/dashboard/stats?page=1",
         from: 1,
-        last_page: 1,
-        last_page_url:
-          "http://127.0.0.1:3000/api/formateur/dashboard/stats?page=1",
+        last_page: Math.ceil(totalCatalogFormations / 10),
+        last_page_url: `http://127.0.0.1:3000/api/formateur/dashboard/stats?page=${Math.ceil(totalCatalogFormations / 10)}`,
         links: [],
-        next_page_url: null,
+        next_page_url:
+          totalCatalogFormations > 10
+            ? "http://127.0.0.1:3000/api/formateur/dashboard/stats?page=2"
+            : null,
         path: "http://127.0.0.1:3000/api/formateur/dashboard/stats",
         per_page: 10,
         prev_page_url: null,
-        to: formations.length,
-        total: formations.length,
+        to: formationsRaw.length,
+        total: totalCatalogFormations,
       },
       formateurs: {
-        data: [],
+        data: formateursRaw.map((f) => ({
+          id: f.id,
+          prenom: f.prenom,
+          nom: f.nom,
+          total_stagiaires: parseInt(f.total_stagiaires),
+        })),
         current_page: 1,
         first_page_url:
           "http://127.0.0.1:3000/api/formateur/dashboard/stats?page=1",
-        from: null,
-        last_page: 1,
-        last_page_url:
-          "http://127.0.0.1:3000/api/formateur/dashboard/stats?page=1",
+        from: 1,
+        last_page: Math.ceil(totalFormateursCount / 5),
+        last_page_url: `http://127.0.0.1:3000/api/formateur/dashboard/stats?page=${Math.ceil(totalFormateursCount / 5)}`,
         links: [],
-        next_page_url: null,
+        next_page_url:
+          totalFormateursCount > 5
+            ? "http://127.0.0.1:3000/api/formateur/dashboard/stats?page=2"
+            : null,
         path: "http://127.0.0.1:3000/api/formateur/dashboard/stats",
-        per_page: 10,
+        per_page: 5,
         prev_page_url: null,
-        to: null,
-        total: 0,
+        to: formateursRaw.length,
+        total: totalFormateursCount,
       },
     };
   }
