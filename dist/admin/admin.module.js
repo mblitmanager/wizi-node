@@ -15,7 +15,6 @@ const api_response_service_1 = require("../common/services/api-response.service"
 const admin_service_1 = require("./admin.service");
 const admin_controller_1 = require("./admin.controller");
 const admin_dashboard_controller_1 = require("./admin-dashboard.controller");
-const formateur_controller_1 = require("./formateur.controller");
 const commercial_controller_1 = require("./commercial.controller");
 const admin_stagiaire_controller_1 = require("./admin-stagiaire.controller");
 const admin_formateur_controller_1 = require("./admin-formateur.controller");
@@ -92,7 +91,6 @@ exports.AdminModule = AdminModule = __decorate([
         controllers: [
             admin_controller_1.AdminController,
             admin_dashboard_controller_1.AdminDashboardController,
-            formateur_controller_1.FormateurController,
             commercial_controller_1.CommercialController,
             admin_stagiaire_controller_1.AdminStagiaireController,
             admin_formateur_controller_1.AdminFormateurController,

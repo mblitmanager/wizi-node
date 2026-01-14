@@ -22,7 +22,10 @@ export class FormateurApiController {
 
   @Get("dashboard/stats")
   async dashboardStats(@Request() req: any) {
-    return this.apiResponse.success({});
+    const stats = await this.adminService.getFormateurDashboardStats(
+      req.user.id
+    );
+    return this.apiResponse.success(stats);
   }
 
   @Get("formations")
@@ -32,7 +35,11 @@ export class FormateurApiController {
 
   @Get("stagiaires")
   async stagiaires(@Request() req: any) {
+    console.log("[DEBUG] Controller: GET /api/formateur/stagiaires hit");
     const data = await this.adminService.getFormateurStagiaires();
+    console.log(
+      `[DEBUG] Controller: Service returned ${data.length} stagiaires`
+    );
     return this.apiResponse.success({ stagiaires: data });
   }
 
@@ -80,7 +87,11 @@ export class FormateurApiController {
 
   @Get("stagiaire/:id/stats")
   async stagiaireStats(@Param("id") id: number) {
-    return this.apiResponse.success({});
+    const stats = await this.adminService.getStagiaireStats(id);
+    if (!stats) {
+      return this.apiResponse.error("Stagiaire non trouvé", 404);
+    }
+    return this.apiResponse.success(stats);
   }
 
   @Get("video/:id/stats")

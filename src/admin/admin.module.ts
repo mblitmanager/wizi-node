@@ -102,7 +102,6 @@ import { StagiaireAchievement } from "../entities/stagiaire-achievement.entity";
     // Existing
     AdminController,
     AdminDashboardController,
-    FormateurController,
     CommercialController,
     AdminStagiaireController,
     AdminFormateurController,

@@ -34,11 +34,6 @@ export class FormateurWebController {
     return this.apiResponse.success({});
   }
 
-  @Get("formations")
-  async formations() {
-    return this.apiResponse.success([]);
-  }
-
   @Get("formations/:id(\\d+)")
   async showFormation() {
     return this.apiResponse.success({});
@@ -56,11 +51,6 @@ export class FormateurWebController {
     return this.apiResponse.success({
       user: req.user,
     });
-  }
-
-  @Get("stagiaires")
-  async stagiaires() {
-    return this.apiResponse.success([]);
   }
 
   @Get("stagiaires/en-cours")

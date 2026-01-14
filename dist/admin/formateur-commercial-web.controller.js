@@ -33,9 +33,6 @@ let FormateurWebController = class FormateurWebController {
     async classement() {
         return this.apiResponse.success({});
     }
-    async formations() {
-        return this.apiResponse.success([]);
-    }
     async showFormation() {
         return this.apiResponse.success({});
     }
@@ -48,9 +45,6 @@ let FormateurWebController = class FormateurWebController {
         return this.apiResponse.success({
             user: req.user,
         });
-    }
-    async stagiaires() {
-        return this.apiResponse.success([]);
     }
     async stagiaireEnCours() {
         return this.apiResponse.success([]);
@@ -107,12 +101,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurWebController.prototype, "classement", null);
 __decorate([
-    (0, common_1.Get)("formations"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FormateurWebController.prototype, "formations", null);
-__decorate([
     (0, common_1.Get)("formations/:id(\\d+)"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -133,12 +121,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], FormateurWebController.prototype, "updateProfile", null);
-__decorate([
-    (0, common_1.Get)("stagiaires"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FormateurWebController.prototype, "stagiaires", null);
 __decorate([
     (0, common_1.Get)("stagiaires/en-cours"),
     __metadata("design:type", Function),

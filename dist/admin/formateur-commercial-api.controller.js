@@ -23,13 +23,16 @@ let FormateurApiController = class FormateurApiController {
         this.adminService = adminService;
     }
     async dashboardStats(req) {
-        return this.apiResponse.success({});
+        const stats = await this.adminService.getFormateurDashboardStats(req.user.id);
+        return this.apiResponse.success(stats);
     }
     async formations(req) {
         return this.apiResponse.success([]);
     }
     async stagiaires(req) {
+        console.log("[DEBUG] Controller: GET /api/formateur/stagiaires hit");
         const data = await this.adminService.getFormateurStagiaires();
+        console.log(`[DEBUG] Controller: Service returned ${data.length} stagiaires`);
         return this.apiResponse.success({ stagiaires: data });
     }
     async onlineStagiaires() {
@@ -55,7 +58,11 @@ let FormateurApiController = class FormateurApiController {
         return this.apiResponse.success();
     }
     async stagiaireStats(id) {
-        return this.apiResponse.success({});
+        const stats = await this.adminService.getStagiaireStats(id);
+        if (!stats) {
+            return this.apiResponse.error("Stagiaire non trouvé", 404);
+        }
+        return this.apiResponse.success(stats);
     }
     async videoStats(id) {
         return this.apiResponse.success({});

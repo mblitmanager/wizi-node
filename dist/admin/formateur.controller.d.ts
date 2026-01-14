@@ -4,6 +4,4 @@ export declare class FormateurController {
     private readonly adminService;
     private apiResponse;
     constructor(adminService: AdminService, apiResponse: ApiResponseService);
-    getDashboardStats(req: any): Promise<any>;
-    getOnlineStagiaires(): Promise<any>;
 }

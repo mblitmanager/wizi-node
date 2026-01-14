@@ -5,11 +5,9 @@ export declare class FormateurWebController {
     dashboard(req: any): Promise<any>;
     catalogue(): Promise<any>;
     classement(): Promise<any>;
-    formations(): Promise<any>;
     showFormation(): Promise<any>;
     profile(req: any): Promise<any>;
     updateProfile(req: any, data: any): Promise<any>;
-    stagiaires(): Promise<any>;
     stagiaireEnCours(): Promise<any>;
     stagiaireTermines(): Promise<any>;
     stagiaireApplication(): Promise<any>;

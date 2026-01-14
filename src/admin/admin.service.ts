@@ -401,9 +401,13 @@ export class AdminService {
   }
 
   async getFormateurStagiaires() {
+    console.log("[DEBUG] AdminService: Fetching stagiaires...");
     const stagiaires = await this.stagiaireRepository.find({
       relations: ["user"],
     });
+    console.log(
+      `[DEBUG] AdminService: Found ${stagiaires.length} stagiaires in DB`
+    );
 
     return stagiaires.map((s) => {
       const formatDate = (date: Date | null) => {
@@ -471,5 +475,57 @@ export class AdminService {
       email: s.user?.email || "",
       last_activity_at: null,
     }));
+  }
+
+  async getStagiaireStats(id: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { id },
+      relations: ["user"],
+    });
+
+    if (!stagiaire) return null;
+
+    const quizStatsRaw = await this.quizParticipationRepository
+      .createQueryBuilder("qp")
+      .leftJoin("qp.quiz", "q")
+      .leftJoin("q.questions", "ques")
+      .where("qp.user_id = :userId", { userId: stagiaire.user_id })
+      .select([
+        "COUNT(DISTINCT qp.id) as total_quiz",
+        "AVG(qp.score) as avg_score",
+        "MAX(qp.score) as best_score",
+        "SUM(qp.correct_answers) as total_correct",
+        "COUNT(ques.id) as total_questions", // Note: This might be tricky with joins, but let's try
+      ])
+      .getRawOne();
+
+    const formatDate = (date: Date | null) => {
+      if (!date) return null;
+      return new Date(date).toISOString().replace("T", " ").substring(0, 19);
+    };
+
+    return {
+      stagiaire: {
+        id: stagiaire.id,
+        prenom: stagiaire.prenom,
+        nom: stagiaire.user?.name ?? "N/A",
+        email: stagiaire.user?.email ?? "N/A",
+      },
+      quiz_stats: {
+        total_quiz: parseInt(quizStatsRaw.total_quiz) || 0,
+        avg_score: parseFloat(quizStatsRaw.avg_score) || 0,
+        best_score: parseInt(quizStatsRaw.best_score) || 0,
+        total_correct: parseInt(quizStatsRaw.total_correct) || 0,
+        total_questions: parseInt(quizStatsRaw.total_questions) || 0,
+      },
+      activity: {
+        last_activity: stagiaire.user?.last_activity_at
+          ? "Récemment"
+          : "Jamais", // Placeholder for diffForHumans
+        last_login: formatDate(stagiaire.user?.last_login_at),
+        is_online: stagiaire.user?.is_online || false,
+        last_client: stagiaire.user?.last_client,
+      },
+    };
   }
 }

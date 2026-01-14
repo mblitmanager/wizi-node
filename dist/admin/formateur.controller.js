@@ -8,9 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FormateurController = void 0;
 const common_1 = require("@nestjs/common");
@@ -24,46 +21,8 @@ let FormateurController = class FormateurController {
         this.adminService = adminService;
         this.apiResponse = apiResponse;
     }
-    async getDashboardStats(req) {
-        const stats = await this.adminService.getFormateurDashboardStats(req.user.id);
-        return this.apiResponse.success(stats);
-    }
-    async getOnlineStagiaires() {
-        const stagiaires = await this.adminService.getOnlineStagiaires();
-        const formatted = stagiaires.map((s) => ({
-            id: s.id,
-            prenom: s.prenom,
-            nom: s.user?.name,
-            email: s.user?.email,
-            avatar: s.user?.image || null,
-            last_activity_at: s.user?.last_activity_at
-                ? new Date(new Date(s.user.last_activity_at).getTime() + 3 * 60 * 60 * 1000)
-                    .toISOString()
-                    .replace("T", " ")
-                    .substring(0, 19)
-                : null,
-            formations: s.stagiaire_catalogue_formations?.map((scf) => scf.catalogue_formation?.titre) || [],
-        }));
-        return this.apiResponse.success({
-            stagiaires: formatted,
-            total: formatted.length,
-        });
-    }
 };
 exports.FormateurController = FormateurController;
-__decorate([
-    (0, common_1.Get)("dashboard/stats"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], FormateurController.prototype, "getDashboardStats", null);
-__decorate([
-    (0, common_1.Get)("stagiaires/online"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FormateurController.prototype, "getOnlineStagiaires", null);
 exports.FormateurController = FormateurController = __decorate([
     (0, common_1.Controller)("formateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
