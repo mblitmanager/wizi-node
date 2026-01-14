@@ -13,7 +13,7 @@ import { ApiResponseService } from "../common/services/api-response.service";
 
 @Controller("formateur")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
-@Roles("formateur")
+@Roles("formateur", "formatrice")
 export class FormateurWebController {
   constructor(private apiResponse: ApiResponseService) {}
 
@@ -39,7 +39,7 @@ export class FormateurWebController {
     return this.apiResponse.success([]);
   }
 
-  @Get("formations/:id")
+  @Get("formations/:id(\\d+)")
   async showFormation() {
     return this.apiResponse.success({});
   }
@@ -78,7 +78,7 @@ export class FormateurWebController {
     return this.apiResponse.success([]);
   }
 
-  @Get("stagiaires/:id")
+  @Get("stagiaires/:id(\\d+)")
   async showStagiaire() {
     return this.apiResponse.success({});
   }

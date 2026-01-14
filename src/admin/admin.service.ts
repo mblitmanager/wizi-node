@@ -61,18 +61,77 @@ export class AdminService {
       }
     }
 
+    // Calculate total formations assigned to formateur's stagiaires
+    const formationIds = new Set<number>();
+    for (const stagiaire of stagiaires) {
+      if (stagiaire.stagiaire_catalogue_formations) {
+        stagiaire.stagiaire_catalogue_formations.forEach((scf) => {
+          formationIds.add(scf.catalogue_formation_id);
+        });
+      }
+    }
+    const totalFormations = formationIds.size;
+
+    // Calculate total quizzes taken by formateur's stagiaires
+    let totalQuizzesTaken = 0;
+    if (userIds.length > 0) {
+      totalQuizzesTaken = await this.quizParticipationRepository.count({
+        where: { user_id: In(userIds) },
+      });
+    }
+
+    // Get formations details (top 5 for dashboard)
+    const formations = await this.formationRepository.find({
+      where: { id: In([...formationIds]) },
+      take: 5,
+    });
+
     return {
       total_stagiaires: totalStagiaires,
       active_this_week: activeThisWeek,
       inactive_count: inactiveCount,
       never_connected: neverConnected,
       avg_quiz_score: parseFloat(avgScore.toFixed(1)),
-      // Simplified versions for now
-      total_formations: 0,
-      total_quizzes_taken: 0,
-      total_video_hours: 0,
-      formations: { data: [] },
-      formateurs: { data: [] },
+      total_formations: totalFormations,
+      total_quizzes_taken: totalQuizzesTaken,
+      total_video_hours: 0, // Placeholder as video tracking logic is complex
+      formations: {
+        data: formations.map((f) => ({
+          id: f.id,
+          titre: f.titre,
+        })),
+        current_page: 1,
+        first_page_url:
+          "http://127.0.0.1:3000/api/formateur/dashboard/stats?page=1",
+        from: 1,
+        last_page: 1,
+        last_page_url:
+          "http://127.0.0.1:3000/api/formateur/dashboard/stats?page=1",
+        links: [],
+        next_page_url: null,
+        path: "http://127.0.0.1:3000/api/formateur/dashboard/stats",
+        per_page: 10,
+        prev_page_url: null,
+        to: formations.length,
+        total: formations.length,
+      },
+      formateurs: {
+        data: [],
+        current_page: 1,
+        first_page_url:
+          "http://127.0.0.1:3000/api/formateur/dashboard/stats?page=1",
+        from: null,
+        last_page: 1,
+        last_page_url:
+          "http://127.0.0.1:3000/api/formateur/dashboard/stats?page=1",
+        links: [],
+        next_page_url: null,
+        path: "http://127.0.0.1:3000/api/formateur/dashboard/stats",
+        per_page: 10,
+        prev_page_url: null,
+        to: null,
+        total: 0,
+      },
     };
   }
 

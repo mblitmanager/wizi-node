@@ -47,7 +47,14 @@ export class FormateurApiController {
 
   @Get("stagiaires/performance")
   async performance() {
-    return this.apiResponse.success([]);
+    const mockStats = {
+      rankings: {
+        most_quizzes: [],
+        most_active: [],
+      },
+      performance: [],
+    };
+    return this.apiResponse.success(mockStats);
   }
 
   @Post("stagiaires/disconnect")

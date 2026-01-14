@@ -39,7 +39,14 @@ let FormateurApiController = class FormateurApiController {
         return this.apiResponse.success([]);
     }
     async performance() {
-        return this.apiResponse.success([]);
+        const mockStats = {
+            rankings: {
+                most_quizzes: [],
+                most_active: [],
+            },
+            performance: [],
+        };
+        return this.apiResponse.success(mockStats);
     }
     async disconnect(data) {
         return this.apiResponse.success();

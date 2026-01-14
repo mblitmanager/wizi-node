@@ -16,7 +16,9 @@ export class FormateurController {
 
   @Get("dashboard/stats")
   async getDashboardStats(@Request() req) {
-    const stats = await this.adminService.getFormateurDashboardStats(req.user.id);
+    const stats = await this.adminService.getFormateurDashboardStats(
+      req.user.id
+    );
     return this.apiResponse.success(stats);
   }
 
@@ -28,12 +30,23 @@ export class FormateurController {
       prenom: s.prenom,
       nom: s.user?.name,
       email: s.user?.email,
-      last_activity_at: s.user?.last_activity_at,
+      avatar: s.user?.image || null,
+      last_activity_at: s.user?.last_activity_at
+        ? new Date(
+            new Date(s.user.last_activity_at).getTime() + 3 * 60 * 60 * 1000
+          )
+            .toISOString()
+            .replace("T", " ")
+            .substring(0, 19)
+        : null,
       formations:
         s.stagiaire_catalogue_formations?.map(
           (scf) => scf.catalogue_formation?.titre
         ) || [],
     }));
-    return this.apiResponse.success(formatted);
+    return this.apiResponse.success({
+      stagiaires: formatted,
+      total: formatted.length,
+    });
   }
 }

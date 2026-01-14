@@ -113,7 +113,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurWebController.prototype, "formations", null);
 __decorate([
-    (0, common_1.Get)("formations/:id"),
+    (0, common_1.Get)("formations/:id(\\d+)"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -158,7 +158,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurWebController.prototype, "stagiaireApplication", null);
 __decorate([
-    (0, common_1.Get)("stagiaires/:id"),
+    (0, common_1.Get)("stagiaires/:id(\\d+)"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -208,7 +208,7 @@ __decorate([
 exports.FormateurWebController = FormateurWebController = __decorate([
     (0, common_1.Controller)("formateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)("formateur"),
+    (0, roles_decorator_1.Roles)("formateur", "formatrice"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], FormateurWebController);
 let CommercialWebController = class CommercialWebController {

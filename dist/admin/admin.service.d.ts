@@ -21,10 +21,37 @@ export declare class AdminService {
         total_quizzes_taken: number;
         total_video_hours: number;
         formations: {
-            data: any[];
+            data: {
+                id: number;
+                titre: string;
+            }[];
+            current_page: number;
+            first_page_url: string;
+            from: number;
+            last_page: number;
+            last_page_url: string;
+            links: any[];
+            next_page_url: any;
+            path: string;
+            per_page: number;
+            prev_page_url: any;
+            to: number;
+            total: number;
         };
         formateurs: {
             data: any[];
+            current_page: number;
+            first_page_url: string;
+            from: any;
+            last_page: number;
+            last_page_url: string;
+            links: any[];
+            next_page_url: any;
+            path: string;
+            per_page: number;
+            prev_page_url: any;
+            to: any;
+            total: number;
         };
     }>;
     getOnlineStagiaires(): Promise<Stagiaire[]>;
