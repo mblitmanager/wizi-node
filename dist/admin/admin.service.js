@@ -272,11 +272,15 @@ let AdminService = class AdminService {
             };
         }
         const formateurId = formateur.id;
-        const stagiaires = await this.stagiaireRepository
+        const query = this.stagiaireRepository
             .createQueryBuilder("s")
-            .innerJoin("s.user", "u")
-            .innerJoin("s.formateurs", "f")
-            .where("f.id = :formateurId", { formateurId })
+            .innerJoin("s.user", "u");
+        if (scope !== "all") {
+            query
+                .innerJoin("s.formateurs", "f")
+                .where("f.id = :formateurId", { formateurId });
+        }
+        const stagiaires = await query
             .select([
             "s.id",
             "s.prenom",

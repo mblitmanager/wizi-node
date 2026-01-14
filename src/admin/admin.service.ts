@@ -338,12 +338,18 @@ export class AdminService {
 
     const formateurId = formateur.id;
 
-    // 2. Fetch all stagiaires for the formateur
-    const stagiaires = await this.stagiaireRepository
+    // 2. Fetch stagiaires
+    const query = this.stagiaireRepository
       .createQueryBuilder("s")
-      .innerJoin("s.user", "u")
-      .innerJoin("s.formateurs", "f")
-      .where("f.id = :formateurId", { formateurId })
+      .innerJoin("s.user", "u");
+
+    if (scope !== "all") {
+      query
+        .innerJoin("s.formateurs", "f")
+        .where("f.id = :formateurId", { formateurId });
+    }
+
+    const stagiaires = await query
       .select([
         "s.id",
         "s.prenom",
