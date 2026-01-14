@@ -7,6 +7,7 @@ import {
   UseGuards,
   Request,
   Query,
+  HttpCode,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiResponseService } from "../common/services/api-response.service";
@@ -81,6 +82,7 @@ export class FormateurApiController {
   }
 
   @Post("stagiaires/disconnect")
+  @HttpCode(200)
   async disconnect(@Body() data: { stagiaire_ids: number[] }) {
     const updatedCount = await this.adminService.disconnectStagiaires(
       data.stagiaire_ids
