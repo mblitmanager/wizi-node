@@ -187,17 +187,25 @@ export class AdminService {
   }
 
   async getFormateurStagiairesPerformance(userId: number) {
+    console.log(
+      "getFormateurStagiairesPerformance called with userId:",
+      userId
+    );
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },
       relations: ["stagiaires", "stagiaires.user"],
     });
 
     if (!formateur) {
+      console.log("Formateur not found for userId:", userId);
       return {
         performance: [],
         rankings: { most_quizzes: [], most_active: [] },
       };
     }
+
+    console.log("Formateur found:", formateur.id);
+    console.log("Stagiaires count:", formateur.stagiaires?.length);
 
     const stagiaires = formateur.stagiaires;
     const userIds = stagiaires
