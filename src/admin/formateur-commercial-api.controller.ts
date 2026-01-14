@@ -32,12 +32,17 @@ export class FormateurApiController {
 
   @Get("stagiaires")
   async stagiaires(@Request() req: any) {
-    return this.apiResponse.success([]);
+    const data = await this.adminService.getFormateurStagiaires();
+    return this.apiResponse.success({ stagiaires: data });
   }
 
   @Get("stagiaires/online")
   async onlineStagiaires() {
-    return this.apiResponse.success([]);
+    const data = await this.adminService.getOnlineStagiaires();
+    return this.apiResponse.success({
+      stagiaires: data,
+      total: data.length,
+    });
   }
 
   @Get("stagiaires/inactive")
@@ -56,7 +61,8 @@ export class FormateurApiController {
 
   @Get("stagiaires/never-connected")
   async neverConnected() {
-    return this.apiResponse.success([]);
+    const data = await this.adminService.getNeverConnected();
+    return this.apiResponse.success({ stagiaires: data });
   }
 
   @Get("stagiaires/performance")

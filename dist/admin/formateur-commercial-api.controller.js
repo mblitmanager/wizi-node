@@ -29,17 +29,23 @@ let FormateurApiController = class FormateurApiController {
         return this.apiResponse.success([]);
     }
     async stagiaires(req) {
-        return this.apiResponse.success([]);
+        const data = await this.adminService.getFormateurStagiaires();
+        return this.apiResponse.success({ stagiaires: data });
     }
     async onlineStagiaires() {
-        return this.apiResponse.success([]);
+        const data = await this.adminService.getOnlineStagiaires();
+        return this.apiResponse.success({
+            stagiaires: data,
+            total: data.length,
+        });
     }
     async inactiveStagiaires(req, days = 7, scope = "all") {
         const stats = await this.adminService.getFormateurInactiveStagiaires(req.user.id, days, scope);
         return this.apiResponse.success(stats);
     }
     async neverConnected() {
-        return this.apiResponse.success([]);
+        const data = await this.adminService.getNeverConnected();
+        return this.apiResponse.success({ stagiaires: data });
     }
     async performance(req) {
         const stats = await this.adminService.getFormateurStagiairesPerformance(req.user.id);

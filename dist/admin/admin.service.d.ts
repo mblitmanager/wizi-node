@@ -107,5 +107,33 @@ export declare class AdminService {
         count: number;
         threshold_days: number;
     }>;
-    getOnlineStagiaires(): Promise<Stagiaire[]>;
+    getFormateurStagiaires(): Promise<{
+        id: number;
+        prenom: string;
+        nom: string;
+        email: string;
+        telephone: string;
+        ville: string;
+        last_login_at: string;
+        last_activity_at: string;
+        is_online: number;
+        last_client: string;
+        image: string;
+    }[]>;
+    getOnlineStagiaires(): Promise<{
+        id: number;
+        prenom: string;
+        nom: string;
+        email: string;
+        avatar: string;
+        last_activity_at: string;
+        formations: string[];
+    }[]>;
+    getNeverConnected(): Promise<{
+        id: number;
+        prenom: string;
+        nom: string;
+        email: string;
+        last_activity_at: any;
+    }[]>;
 }

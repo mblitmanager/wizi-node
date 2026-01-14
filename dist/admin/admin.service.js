@@ -322,8 +322,33 @@ let AdminService = class AdminService {
             threshold_days: thresholdDays,
         };
     }
+    async getFormateurStagiaires() {
+        const stagiaires = await this.stagiaireRepository.find({
+            relations: ["user"],
+        });
+        return stagiaires.map((s) => {
+            const formatDate = (date) => {
+                if (!date)
+                    return null;
+                return new Date(date).toISOString().replace("T", " ").substring(0, 19);
+            };
+            return {
+                id: s.id,
+                prenom: s.prenom,
+                nom: s.user?.name || "",
+                email: s.user?.email || "",
+                telephone: s.telephone,
+                ville: s.ville,
+                last_login_at: formatDate(s.user?.last_login_at),
+                last_activity_at: formatDate(s.user?.last_activity_at),
+                is_online: s.user?.is_online ? 1 : 0,
+                last_client: s.user?.last_client || null,
+                image: s.user?.image || null,
+            };
+        });
+    }
     async getOnlineStagiaires() {
-        return this.stagiaireRepository.find({
+        const stagiaires = await this.stagiaireRepository.find({
             where: { user: { is_online: true } },
             relations: [
                 "user",
@@ -331,6 +356,35 @@ let AdminService = class AdminService {
                 "stagiaire_catalogue_formations.catalogue_formation",
             ],
         });
+        return stagiaires.map((s) => {
+            const formatDate = (date) => {
+                if (!date)
+                    return null;
+                return new Date(date).toISOString().replace("T", " ").substring(0, 19);
+            };
+            return {
+                id: s.id,
+                prenom: s.prenom,
+                nom: s.user?.name || "",
+                email: s.user?.email || "",
+                avatar: s.user?.image || null,
+                last_activity_at: formatDate(s.user?.last_activity_at),
+                formations: (s.stagiaire_catalogue_formations || []).map((scf) => scf.catalogue_formation?.titre),
+            };
+        });
+    }
+    async getNeverConnected() {
+        const stagiaires = await this.stagiaireRepository.find({
+            where: { user: { last_login_at: null } },
+            relations: ["user"],
+        });
+        return stagiaires.map((s) => ({
+            id: s.id,
+            prenom: s.prenom,
+            nom: s.user?.name || "",
+            email: s.user?.email || "",
+            last_activity_at: null,
+        }));
     }
 };
 exports.AdminService = AdminService;

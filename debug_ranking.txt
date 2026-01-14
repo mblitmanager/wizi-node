@@ -1098,3 +1098,19 @@
 [2026-01-14T06:40:38.460Z] Stagiaire not found for userId: 51
 [2026-01-14T06:40:38.842Z] Starting getQuizHistory for userId: 51
 [2026-01-14T06:40:38.904Z] Stagiaire not found for userId: 51
+[2026-01-14T07:27:18.556Z] Starting getQuizHistory for userId: 51
+[2026-01-14T07:27:18.600Z] Stagiaire not found for userId: 51
+[2026-01-14T07:27:18.698Z] Starting getQuizHistory for userId: 51
+[2026-01-14T07:27:18.763Z] Stagiaire not found for userId: 51
+[2026-01-14T07:27:28.136Z] Starting getQuizHistory for userId: 51
+[2026-01-14T07:27:28.173Z] Stagiaire not found for userId: 51
+[2026-01-14T07:27:28.233Z] Starting getQuizHistory for userId: 51
+[2026-01-14T07:27:28.247Z] Stagiaire not found for userId: 51
+[2026-01-14T07:27:30.903Z] Starting getQuizHistory for userId: 51
+[2026-01-14T07:27:30.930Z] Stagiaire not found for userId: 51
+[2026-01-14T07:27:31.009Z] Starting getQuizHistory for userId: 51
+[2026-01-14T07:27:31.040Z] Stagiaire not found for userId: 51
+[2026-01-14T07:27:37.574Z] Starting getQuizHistory for userId: 51
+[2026-01-14T07:27:37.605Z] Stagiaire not found for userId: 51
+[2026-01-14T07:27:37.688Z] Starting getQuizHistory for userId: 51
+[2026-01-14T07:27:37.717Z] Stagiaire not found for userId: 51
