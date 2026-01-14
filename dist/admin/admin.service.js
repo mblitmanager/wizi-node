@@ -255,6 +255,70 @@ let AdminService = class AdminService {
             },
         };
     }
+    async getFormateurInactiveStagiaires(userId) {
+        const thresholdDays = 7;
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - thresholdDays * 24 * 60 * 60 * 1000);
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!formateur) {
+            return {
+                inactive_stagiaires: [],
+                count: 0,
+                threshold_days: thresholdDays,
+            };
+        }
+        const formateurId = formateur.id;
+        const stagiaires = await this.stagiaireRepository
+            .createQueryBuilder("s")
+            .innerJoin("s.user", "u")
+            .innerJoin("s.formateurs", "f")
+            .where("f.id = :formateurId", { formateurId })
+            .select([
+            "s.id",
+            "s.prenom",
+            "s.user_id",
+            "u.name",
+            "u.email",
+            "u.last_activity_at",
+            "u.last_client",
+        ])
+            .getMany();
+        const inactiveStagiaires = stagiaires
+            .map((s) => {
+            const lastActivityAt = s.user?.last_activity_at
+                ? new Date(s.user.last_activity_at)
+                : null;
+            let daysSinceActivity = null;
+            if (lastActivityAt) {
+                const diffTime = Math.abs(now.getTime() - lastActivityAt.getTime());
+                daysSinceActivity = diffTime / (1000 * 60 * 60 * 24);
+            }
+            return {
+                id: s.id,
+                prenom: s.prenom,
+                nom: s.user?.name,
+                email: s.user?.email,
+                last_activity_at: lastActivityAt
+                    ? new Date(lastActivityAt.getTime() + 3 * 60 * 60 * 1000)
+                        .toISOString()
+                        .replace("T", " ")
+                        .substring(0, 19)
+                    : null,
+                days_since_activity: daysSinceActivity,
+                never_connected: !lastActivityAt,
+                last_client: s.user?.last_client || null,
+            };
+        })
+            .filter((s) => s.never_connected ||
+            (s.days_since_activity && s.days_since_activity > thresholdDays));
+        return {
+            inactive_stagiaires: inactiveStagiaires,
+            count: inactiveStagiaires.length,
+            threshold_days: thresholdDays,
+        };
+    }
     async getOnlineStagiaires() {
         return this.stagiaireRepository.find({
             where: { user: { is_online: true } },

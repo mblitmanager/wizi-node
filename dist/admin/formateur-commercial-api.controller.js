@@ -34,8 +34,9 @@ let FormateurApiController = class FormateurApiController {
     async onlineStagiaires() {
         return this.apiResponse.success([]);
     }
-    async inactiveStagiaires() {
-        return this.apiResponse.success([]);
+    async inactiveStagiaires(req) {
+        const stats = await this.adminService.getFormateurInactiveStagiaires(req.user.id);
+        return this.apiResponse.success(stats);
     }
     async neverConnected() {
         return this.apiResponse.success([]);
@@ -102,8 +103,9 @@ __decorate([
 ], FormateurApiController.prototype, "onlineStagiaires", null);
 __decorate([
     (0, common_1.Get)("stagiaires/inactive"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "inactiveStagiaires", null);
 __decorate([

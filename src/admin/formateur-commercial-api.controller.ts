@@ -40,8 +40,11 @@ export class FormateurApiController {
   }
 
   @Get("stagiaires/inactive")
-  async inactiveStagiaires() {
-    return this.apiResponse.success([]);
+  async inactiveStagiaires(@Request() req) {
+    const stats = await this.adminService.getFormateurInactiveStagiaires(
+      req.user.id
+    );
+    return this.apiResponse.success(stats);
   }
 
   @Get("stagiaires/never-connected")

@@ -93,5 +93,19 @@ export declare class AdminService {
             }[];
         };
     }>;
+    getFormateurInactiveStagiaires(userId: number): Promise<{
+        inactive_stagiaires: {
+            id: number;
+            prenom: string;
+            nom: string;
+            email: string;
+            last_activity_at: string;
+            days_since_activity: number;
+            never_connected: boolean;
+            last_client: string;
+        }[];
+        count: number;
+        threshold_days: number;
+    }>;
     getOnlineStagiaires(): Promise<Stagiaire[]>;
 }
