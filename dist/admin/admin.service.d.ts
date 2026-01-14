@@ -62,5 +62,36 @@ export declare class AdminService {
             total: number;
         };
     }>;
+    getFormateurStagiairesPerformance(userId: number): Promise<{
+        performance: {
+            id: any;
+            name: any;
+            email: any;
+            image: any;
+            last_quiz_at: string;
+            total_quizzes: number;
+            total_logins: any;
+        }[];
+        rankings: {
+            most_quizzes: {
+                id: any;
+                name: any;
+                email: any;
+                image: any;
+                last_quiz_at: string;
+                total_quizzes: number;
+                total_logins: any;
+            }[];
+            most_active: {
+                id: any;
+                name: any;
+                email: any;
+                image: any;
+                last_quiz_at: string;
+                total_quizzes: number;
+                total_logins: any;
+            }[];
+        };
+    }>;
     getOnlineStagiaires(): Promise<Stagiaire[]>;
 }

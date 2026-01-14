@@ -11,14 +11,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a, _b;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommercialApiController = exports.FormateurApiController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
-const api_response_service_1 = require("../common/services/api-response.service");
+const admin_service_1 = require("./admin.service");
 let FormateurApiController = class FormateurApiController {
-    constructor(apiResponse) {
+    constructor(apiResponse, adminService) {
         this.apiResponse = apiResponse;
+        this.adminService = adminService;
     }
     async dashboardStats(req) {
         return this.apiResponse.success({});
@@ -38,15 +40,9 @@ let FormateurApiController = class FormateurApiController {
     async neverConnected() {
         return this.apiResponse.success([]);
     }
-    async performance() {
-        const mockStats = {
-            rankings: {
-                most_quizzes: [],
-                most_active: [],
-            },
-            performance: [],
-        };
-        return this.apiResponse.success(mockStats);
+    async performance(req) {
+        const stats = await this.adminService.getFormateurStagiairesPerformance(req.user.id);
+        return this.apiResponse.success(stats);
     }
     async disconnect(data) {
         return this.apiResponse.success();
@@ -118,8 +114,9 @@ __decorate([
 ], FormateurApiController.prototype, "neverConnected", null);
 __decorate([
     (0, common_1.Get)("stagiaires/performance"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "performance", null);
 __decorate([
@@ -185,7 +182,7 @@ __decorate([
 exports.FormateurApiController = FormateurApiController = __decorate([
     (0, common_1.Controller)("formateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
+    __metadata("design:paramtypes", [typeof (_a = typeof ApiResponseService !== "undefined" && ApiResponseService) === "function" ? _a : Object, admin_service_1.AdminService])
 ], FormateurApiController);
 let CommercialApiController = class CommercialApiController {
     constructor(apiResponse) {
@@ -206,6 +203,6 @@ __decorate([
 exports.CommercialApiController = CommercialApiController = __decorate([
     (0, common_1.Controller)("commercial/stats"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
+    __metadata("design:paramtypes", [typeof (_b = typeof ApiResponseService !== "undefined" && ApiResponseService) === "function" ? _b : Object])
 ], CommercialApiController);
 //# sourceMappingURL=formateur-commercial-api.controller.js.map

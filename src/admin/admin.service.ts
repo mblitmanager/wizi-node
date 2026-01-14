@@ -186,6 +186,79 @@ export class AdminService {
     };
   }
 
+  async getFormateurStagiairesPerformance(userId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+      relations: ["stagiaires", "stagiaires.user"],
+    });
+
+    if (!formateur) {
+      return {
+        performance: [],
+        rankings: { most_quizzes: [], most_active: [] },
+      };
+    }
+
+    const stagiaires = formateur.stagiaires;
+    const userIds = stagiaires
+      .map((s) => s.user_id)
+      .filter((id) => id !== null);
+
+    let quizStats = new Map<number, { count: number; last_at: Date }>();
+    if (userIds.length > 0) {
+      const stats = await this.quizParticipationRepository
+        .createQueryBuilder("qp")
+        .select("qp.user_id", "user_id")
+        .addSelect("COUNT(qp.id)", "count")
+        .addSelect("MAX(qp.created_at)", "last_at")
+        .where("qp.user_id IN (:...userIds)", { userIds })
+        .groupBy("qp.user_id")
+        .getRawMany();
+
+      stats.forEach((stat) => {
+        quizStats.set(stat.user_id, {
+          count: parseInt(stat.count),
+          last_at: new Date(stat.last_at),
+        });
+      });
+    }
+
+    const performance = stagiaires.map((s) => {
+      const stats = quizStats.get(s.user_id) || { count: 0, last_at: null };
+      return {
+        id: s.id,
+        name: s.user?.name || `${s.prenom} ${s.nom || ""}`,
+        email: s.user?.email || s.email,
+        image: s.user?.image || null,
+        last_quiz_at: stats.last_at
+          ? new Date(stats.last_at.getTime() + 3 * 60 * 60 * 1000)
+              .toISOString()
+              .replace("T", " ")
+              .substring(0, 19)
+          : null,
+        total_quizzes: stats.count,
+        total_logins: s.login_streak || 0, // Mapping login_streak to total_logins as best proxy
+      };
+    });
+
+    // Rankings
+    const mostQuizzes = [...performance]
+      .sort((a, b) => b.total_quizzes - a.total_quizzes)
+      .slice(0, 5);
+
+    const mostActive = [...performance]
+      .sort((a, b) => b.total_logins - a.total_logins)
+      .slice(0, 5);
+
+    return {
+      performance,
+      rankings: {
+        most_quizzes: mostQuizzes,
+        most_active: mostActive,
+      },
+    };
+  }
+
   async getOnlineStagiaires() {
     return this.stagiaireRepository.find({
       where: { user: { is_online: true } },

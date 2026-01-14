@@ -8,12 +8,15 @@ import {
   Request,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { ApiResponseService } from "../common/services/api-response.service";
+import { AdminService } from "./admin.service";
 
 @Controller("formateur")
 @UseGuards(AuthGuard("jwt"))
 export class FormateurApiController {
-  constructor(private apiResponse: ApiResponseService) {}
+  constructor(
+    private apiResponse: ApiResponseService,
+    private adminService: AdminService
+  ) {}
 
   @Get("dashboard/stats")
   async dashboardStats(@Request() req: any) {
@@ -46,15 +49,11 @@ export class FormateurApiController {
   }
 
   @Get("stagiaires/performance")
-  async performance() {
-    const mockStats = {
-      rankings: {
-        most_quizzes: [],
-        most_active: [],
-      },
-      performance: [],
-    };
-    return this.apiResponse.success(mockStats);
+  async performance(@Request() req) {
+    const stats = await this.adminService.getFormateurStagiairesPerformance(
+      req.user.id
+    );
+    return this.apiResponse.success(stats);
   }
 
   @Post("stagiaires/disconnect")
