@@ -110,8 +110,15 @@ export class FormateurApiController {
   }
 
   @Get("classement/mes-stagiaires")
-  async mesStagiairesRanking() {
-    return this.apiResponse.success([]);
+  async mesStagiairesRanking(
+    @Request() req,
+    @Query("period") period: string = "all"
+  ) {
+    const data = await this.adminService.getFormateurMesStagiairesRanking(
+      req.user.id,
+      period
+    );
+    return this.apiResponse.success(data);
   }
 
   @Post("send-email")

@@ -73,8 +73,9 @@ let FormateurApiController = class FormateurApiController {
     async formationRanking(formationId) {
         return this.apiResponse.success([]);
     }
-    async mesStagiairesRanking() {
-        return this.apiResponse.success([]);
+    async mesStagiairesRanking(req, period = "all") {
+        const data = await this.adminService.getFormateurMesStagiairesRanking(req.user.id, period);
+        return this.apiResponse.success(data);
     }
     async sendEmail(data) {
         return this.apiResponse.success();
@@ -172,8 +173,10 @@ __decorate([
 ], FormateurApiController.prototype, "formationRanking", null);
 __decorate([
     (0, common_1.Get)("classement/mes-stagiaires"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("period")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "mesStagiairesRanking", null);
 __decorate([

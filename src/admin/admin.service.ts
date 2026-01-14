@@ -528,4 +528,79 @@ export class AdminService {
       },
     };
   }
+
+  async getFormateurMesStagiairesRanking(
+    userId: number,
+    period: string = "all"
+  ) {
+    // 1. Get Formateur ID
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!formateur) {
+      return {
+        ranking: [],
+        total_stagiaires: 0,
+        period,
+      };
+    }
+
+    const formateurId = formateur.id;
+
+    // 2. Query stagiaires with aggregated points
+    const query = this.stagiaireRepository
+      .createQueryBuilder("s")
+      .innerJoin("s.user", "u")
+      .innerJoin("s.formateurs", "f", "f.id = :formateurId", { formateurId })
+      .leftJoin(QuizParticipation, "qp", "u.id = qp.user_id");
+
+    if (period === "week") {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      query.andWhere("qp.created_at >= :weekAgo", { weekAgo });
+    } else if (period === "month") {
+      const monthAgo = new Date();
+      monthAgo.setMonth(monthAgo.getMonth() - 1);
+      query.andWhere("qp.created_at >= :monthAgo", { monthAgo });
+    }
+
+    query
+      .select([
+        "s.id as id",
+        "s.prenom as prenom",
+        "u.name as nom",
+        "u.email as email",
+        "u.image as image",
+        "COALESCE(SUM(qp.score), 0) as total_points",
+        "COUNT(DISTINCT qp.id) as total_quiz",
+        "COALESCE(AVG(qp.score), 0) as avg_score",
+      ])
+      .groupBy("s.id")
+      .addGroupBy("s.prenom")
+      .addGroupBy("u.name")
+      .addGroupBy("u.email")
+      .addGroupBy("u.image")
+      .orderBy("total_points", "DESC");
+
+    const rawRanking = await query.getRawMany();
+
+    const ranking = rawRanking.map((item, index) => ({
+      rank: index + 1,
+      id: parseInt(item.id),
+      prenom: item.prenom,
+      nom: item.nom,
+      email: item.email,
+      image: item.image,
+      total_points: parseInt(item.total_points),
+      total_quiz: parseInt(item.total_quiz),
+      avg_score: parseFloat(parseFloat(item.avg_score).toFixed(1)),
+    }));
+
+    return {
+      ranking,
+      total_stagiaires: ranking.length,
+      period,
+    };
+  }
 }

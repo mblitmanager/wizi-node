@@ -157,4 +157,19 @@ export declare class AdminService {
             last_client: string;
         };
     }>;
+    getFormateurMesStagiairesRanking(userId: number, period?: string): Promise<{
+        ranking: {
+            rank: number;
+            id: number;
+            prenom: any;
+            nom: any;
+            email: any;
+            image: any;
+            total_points: number;
+            total_quiz: number;
+            avg_score: number;
+        }[];
+        total_stagiaires: number;
+        period: string;
+    }>;
 }
