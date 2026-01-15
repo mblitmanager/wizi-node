@@ -67,7 +67,7 @@ export declare class ParrainageService {
             name: string;
             date: Date;
             points: number;
-            status: string | number;
+            status: string;
         }[];
     }>;
     getRewards(parrainId: number): Promise<{
@@ -93,7 +93,7 @@ export declare class ParrainageService {
             filleul: {
                 id: number;
                 name: string;
-                statut: string | number;
+                statut: string;
             };
         }[];
         tokens: {

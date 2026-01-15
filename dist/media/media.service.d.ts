@@ -41,7 +41,7 @@ export declare class MediaService {
             date_debut_formation: string;
             date_inscription: string;
             role: string;
-            statut: string | number;
+            statut: string;
             user_id: number;
             deleted_at: any;
             created_at: string;
@@ -131,7 +131,7 @@ export declare class MediaService {
                 date_debut_formation: string;
                 date_inscription: string;
                 role: string;
-                statut: string | number;
+                statut: string;
                 user_id: number;
                 deleted_at: any;
                 created_at: string;
@@ -184,7 +184,7 @@ export declare class MediaService {
                 date_debut_formation: string;
                 date_inscription: string;
                 role: string;
-                statut: string | number;
+                statut: string;
                 user_id: number;
                 deleted_at: any;
                 created_at: string;
@@ -250,7 +250,7 @@ export declare class MediaService {
                 date_debut_formation: string;
                 date_inscription: string;
                 role: string;
-                statut: string | number;
+                statut: string;
                 user_id: number;
                 deleted_at: any;
                 created_at: string;

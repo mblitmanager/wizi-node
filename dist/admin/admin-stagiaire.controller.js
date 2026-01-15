@@ -40,22 +40,30 @@ let AdminStagiaireController = class AdminStagiaireController {
     }
     async findAll(page = 1, limit = 10, search = "") {
         try {
+            const pageNum = parseInt(page, 10) || 1;
+            const limitNum = parseInt(limit, 10) || 10;
             const query = this.stagiaireRepository
                 .createQueryBuilder("s")
                 .leftJoinAndSelect("s.user", "user");
-            if (search) {
-                query.where("s.prenom LIKE :search OR user.name LIKE :search OR s.ville LIKE :search OR user.email LIKE :search", { search: `%${search}%` });
+            if (search && search.trim()) {
+                const searchTerm = `%${search.trim()}%`;
+                query.where("(s.prenom LIKE :search OR user.name LIKE :search OR s.ville LIKE :search OR user.email LIKE :search)", { search: searchTerm });
             }
             const [data, total] = await query
-                .skip((page - 1) * limit)
-                .take(limit)
+                .skip((pageNum - 1) * limitNum)
+                .take(limitNum)
                 .orderBy("s.id", "DESC")
                 .getManyAndCount();
-            return this.apiResponse.paginated(data, total, page, limit);
+            return this.apiResponse.paginated(data, total, pageNum, limitNum);
         }
         catch (error) {
             console.error("Error in findAll stagiaires:", error);
-            throw error;
+            console.error("Error details:", {
+                message: error.message,
+                stack: error.stack,
+                name: error.name,
+            });
+            throw new common_1.BadRequestException(`Erreur lors de la récupération des stagiaires: ${error.message}`);
         }
     }
     async findOne(id) {
@@ -342,7 +350,7 @@ __decorate([
     __param(1, (0, common_1.Query)("limit")),
     __param(2, (0, common_1.Query)("search")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number, String]),
+    __metadata("design:paramtypes", [Object, Object, String]),
     __metadata("design:returntype", Promise)
 ], AdminStagiaireController.prototype, "findAll", null);
 __decorate([

@@ -57,7 +57,7 @@ export class Stagiaire {
   role: string;
 
   @Column({ nullable: true })
-  statut: number | string;
+  statut: string;
 
   @Column({ nullable: true })
   user_id: number;

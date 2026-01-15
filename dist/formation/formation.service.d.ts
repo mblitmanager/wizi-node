@@ -189,7 +189,7 @@ export declare class FormationService {
             date_debut_formation: Date;
             date_inscription: Date;
             role: string;
-            statut: string | number;
+            statut: string;
             user_id: number;
             deleted_at: any;
             created_at: string;
