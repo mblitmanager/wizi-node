@@ -12,6 +12,7 @@ export declare class NotificationsApiController {
     unreadCount(req: any): Promise<any>;
     markAllRead(req: any): Promise<any>;
     updateFcmToken(req: any, token: string): Promise<any>;
+    testPush(req: any): Promise<any>;
     markAsRead(id: number): Promise<any>;
     delete(id: number): Promise<any>;
 }

@@ -35,7 +35,19 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
+], Formateur.prototype, "civilite", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Formateur.prototype, "role", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
 ], Formateur.prototype, "telephone", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
+    __metadata("design:type", Date)
+], Formateur.prototype, "deleted_at", void 0);
 __decorate([
     (0, typeorm_1.ManyToMany)("Stagiaire", (stagiaire) => stagiaire.formateurs),
     (0, typeorm_1.JoinTable)({

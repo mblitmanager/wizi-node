@@ -43,6 +43,17 @@ let NotificationsApiController = class NotificationsApiController {
         await this.userRepository.update(req.user.id, { fcm_token: token });
         return this.apiResponse.success({ message: "FCM token updated" });
     }
+    async testPush(req) {
+        const userId = req.user.id;
+        const result = await this.notificationService.createNotification(userId, "test", "Ceci est une notification de test depuis Node.js !", {
+            click_action: "FLUTTER_NOTIFICATION_CLICK",
+            message: "Test message",
+        }, "Test Push Node");
+        return this.apiResponse.success({
+            message: "Notification de test envoyée",
+            result,
+        });
+    }
     async markAsRead(id) {
         await this.notificationService.markAsRead(id);
         return this.apiResponse.success({ message: "Marked as read" });
@@ -82,6 +93,13 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], NotificationsApiController.prototype, "updateFcmToken", null);
+__decorate([
+    (0, common_1.Get)("test-push"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NotificationsApiController.prototype, "testPush", null);
 __decorate([
     (0, common_1.Post)(":id/read"),
     __param(0, (0, common_1.Param)("id")),

@@ -72,6 +72,18 @@ let CatalogueFormationService = class CatalogueFormationService {
         }
     }
     formatCatalogueJson(item) {
+        const formatDate = (d) => {
+            if (!d)
+                return null;
+            const date = typeof d === "string" ? new Date(d) : d;
+            return date.toISOString().split("T")[0];
+        };
+        const formatDateTime = (d) => {
+            if (!d)
+                return null;
+            const date = typeof d === "string" ? new Date(d) : d;
+            return date.toISOString().replace("T", " ").substring(0, 19);
+        };
         return {
             id: item.id,
             titre: item.titre,
@@ -79,7 +91,7 @@ let CatalogueFormationService = class CatalogueFormationService {
             prerequis: item.prerequis,
             image_url: item.image_url,
             cursus_pdf: item.cursus_pdf,
-            tarif: item.tarif,
+            tarif: typeof item.tarif === "number" ? item.tarif.toFixed(2) : item.tarif,
             certification: item.certification,
             statut: item.statut,
             duree: item.duree,
@@ -117,7 +129,7 @@ let CatalogueFormationService = class CatalogueFormationService {
                 id: f.id,
                 role: f.role || "formateur",
                 prenom: f.prenom,
-                civilite: f.civilite,
+                civilite: f.civilite || null,
                 user_id: f.user_id,
                 telephone: f.telephone,
                 deleted_at: f.deleted_at || null,
@@ -134,28 +146,28 @@ let CatalogueFormationService = class CatalogueFormationService {
                 civilite: scf.stagiaire?.civilite,
                 telephone: scf.stagiaire?.telephone,
                 adresse: scf.stagiaire?.adresse,
-                date_naissance: scf.stagiaire?.date_naissance,
+                date_naissance: formatDate(scf.stagiaire?.date_naissance),
                 ville: scf.stagiaire?.ville,
                 code_postal: scf.stagiaire?.code_postal,
-                date_debut_formation: scf.stagiaire?.date_debut_formation,
-                date_inscription: scf.stagiaire?.date_inscription,
+                date_debut_formation: formatDate(scf.stagiaire?.date_debut_formation),
+                date_inscription: formatDate(scf.stagiaire?.date_inscription),
                 role: scf.stagiaire?.role || "stagiaire",
                 statut: scf.stagiaire?.statut,
                 user_id: scf.stagiaire?.user_id,
                 deleted_at: scf.stagiaire?.deleted_at || null,
                 created_at: scf.stagiaire?.created_at,
                 updated_at: scf.stagiaire?.updated_at,
-                date_fin_formation: scf.stagiaire?.date_fin_formation,
+                date_fin_formation: formatDate(scf.stagiaire?.date_fin_formation),
                 login_streak: scf.stagiaire?.login_streak || 0,
-                last_login_at: scf.stagiaire?.last_login_at || null,
-                onboarding_seen: scf.stagiaire?.onboarding_seen || 0,
+                last_login_at: formatDateTime(scf.stagiaire?.last_login_at),
+                onboarding_seen: scf.stagiaire?.onboarding_seen ? 1 : 0,
                 partenaire_id: scf.stagiaire?.partenaire_id || null,
                 pivot: {
                     catalogue_formation_id: item.id,
                     stagiaire_id: scf.stagiaire_id,
-                    date_debut: scf.date_debut,
-                    date_inscription: scf.date_inscription,
-                    date_fin: scf.date_fin,
+                    date_debut: formatDate(scf.date_debut),
+                    date_inscription: formatDate(scf.date_inscription),
+                    date_fin: formatDate(scf.date_fin),
                     formateur_id: scf.formateur_id,
                     created_at: scf.created_at,
                     updated_at: scf.updated_at,

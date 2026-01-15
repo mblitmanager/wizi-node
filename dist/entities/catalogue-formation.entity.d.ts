@@ -26,6 +26,7 @@ export declare class CatalogueFormation {
     nombre_participants: number;
     created_at: Date;
     updated_at: Date;
+    deleted_at: Date;
     stagiaire_catalogue_formations: StagiaireCatalogueFormation[];
     formateurs: any[];
 }

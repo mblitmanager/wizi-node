@@ -118,6 +118,10 @@ __decorate([
     __metadata("design:type", Date)
 ], CatalogueFormation.prototype, "updated_at", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
+    __metadata("design:type", Date)
+], CatalogueFormation.prototype, "deleted_at", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation, (scf) => scf.catalogue_formation),
     __metadata("design:type", Array)
 ], CatalogueFormation.prototype, "stagiaire_catalogue_formations", void 0);

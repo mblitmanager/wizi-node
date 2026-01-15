@@ -55,6 +55,7 @@ export declare class FormationService {
             nombre_participants: number;
             created_at: Date;
             updated_at: Date;
+            deleted_at: Date;
             stagiaire_catalogue_formations: import("../entities/stagiaire-catalogue-formation.entity").StagiaireCatalogueFormation[];
             formateurs: any[];
         }[];
