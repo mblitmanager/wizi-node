@@ -6,6 +6,10 @@ import {
   Query,
   Param,
   NotFoundException,
+  Post,
+  Body,
+  Put,
+  BadRequestException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -46,6 +50,80 @@ export class AdminAchievementController {
       .getManyAndCount();
 
     return this.apiResponse.paginated(data, total, page, limit);
+  }
+
+  @Get(":id")
+  async findOne(@Param("id") id: number) {
+    const achievement = await this.achievementRepository.findOne({
+      where: { id },
+    });
+
+    if (!achievement) {
+      throw new NotFoundException("Achievement not found");
+    }
+
+    return this.apiResponse.success(achievement);
+  }
+
+  @Post()
+  async create(
+    @Body()
+    body: {
+      name: string;
+      description?: string;
+      icon?: string;
+      tier?: number;
+    }
+  ) {
+    if (!body.name) {
+      throw new BadRequestException("name is required");
+    }
+
+    const achievement = this.achievementRepository.create({
+      name: body.name,
+      description: body.description ?? "",
+      icon: body.icon ?? "gold",
+      tier: body.tier ?? 1,
+    });
+
+    const saved = await this.achievementRepository.save(achievement);
+    return this.apiResponse.success(saved);
+  }
+
+  @Put(":id")
+  async update(
+    @Param("id") id: number,
+    @Body()
+    body: {
+      name?: string;
+      description?: string;
+      icon?: string;
+      tier?: number;
+    }
+  ) {
+    const achievement = await this.achievementRepository.findOne({
+      where: { id },
+    });
+
+    if (!achievement) {
+      throw new NotFoundException("Achievement not found");
+    }
+
+    if (body.name !== undefined) {
+      achievement.name = body.name;
+    }
+    if (body.description !== undefined) {
+      achievement.description = body.description;
+    }
+    if (body.icon !== undefined) {
+      achievement.icon = body.icon;
+    }
+    if (body.tier !== undefined) {
+      achievement.tier = body.tier;
+    }
+
+    const updated = await this.achievementRepository.save(achievement);
+    return this.apiResponse.success(updated);
   }
 
   @Delete(":id")
