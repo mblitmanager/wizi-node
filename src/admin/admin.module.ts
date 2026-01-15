@@ -64,6 +64,7 @@ import { Formation } from "../entities/formation.entity";
 import { Commercial } from "../entities/commercial.entity";
 import { PoleRelationClient } from "../entities/pole-relation-client.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
+import { Partenaire } from "../entities/partenaire.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { ParrainageEvent } from "../entities/parrainage-event.entity";
 import { Classement } from "../entities/classement.entity";
@@ -90,6 +91,7 @@ import { StagiaireAchievement } from "../entities/stagiaire-achievement.entity";
       Commercial,
       PoleRelationClient,
       StagiaireCatalogueFormation,
+      Partenaire,
       DemandeInscription,
       ParrainageEvent,
       Classement,

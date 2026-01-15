@@ -11,6 +11,7 @@ import {
   Put,
   BadRequestException,
 } from "@nestjs/common";
+import * as fs from "fs";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
@@ -52,6 +53,10 @@ export class AdminAchievementController {
 
       return this.apiResponse.paginated(data, total, page, limit);
     } catch (error) {
+      fs.appendFileSync(
+        "debug_500_errors.log",
+        `[AdminAchievementController] Error: ${error.message}\nStack: ${error.stack}\n\n`
+      );
       console.error("Error in findAll achievements:", error);
       return this.apiResponse.paginated([], 0, page, limit);
     }

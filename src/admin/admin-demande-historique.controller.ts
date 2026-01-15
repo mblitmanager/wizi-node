@@ -1,4 +1,5 @@
 import { Controller, Get, Param, UseGuards, Query, Res } from "@nestjs/common";
+import * as fs from "fs";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
@@ -31,9 +32,12 @@ export class AdminDemandeHistoriqueController {
         .leftJoinAndSelect("d.catalogue_formation", "cf");
 
       if (search) {
-        query.where("s.prenom LIKE :search OR s.nom LIKE :search OR cf.titre LIKE :search", {
-          search: `%${search}%`,
-        });
+        query.where(
+          "s.prenom LIKE :search OR s.nom LIKE :search OR cf.titre LIKE :search",
+          {
+            search: `%${search}%`,
+          }
+        );
       }
 
       const [data, total] = await query
@@ -44,6 +48,10 @@ export class AdminDemandeHistoriqueController {
 
       return this.apiResponse.paginated(data, total, page, limit);
     } catch (error) {
+      fs.appendFileSync(
+        "debug_500_errors.log",
+        `[AdminDemandeHistoriqueController] Error: ${error.message}\nStack: ${error.stack}\n\n`
+      );
       console.error("Error in demande historique:", error);
       return this.apiResponse.paginated([], 0, page, limit);
     }

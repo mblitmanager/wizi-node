@@ -12,6 +12,7 @@ import {
   BadRequestException,
   Patch,
 } from "@nestjs/common";
+import * as fs from "fs";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
@@ -73,6 +74,10 @@ export class AdminStagiaireController {
 
       return this.apiResponse.paginated(data, total, page, limit);
     } catch (error) {
+      fs.appendFileSync(
+        "debug_500_errors.log",
+        `[AdminStagiaireController] Error: ${error.message}\nStack: ${error.stack}\n\n`
+      );
       console.error("Error in findAll stagiaires:", error);
       return this.apiResponse.paginated([], 0, page, limit);
     }
@@ -282,8 +287,7 @@ export class AdminStagiaireController {
       }
 
       // Update Stagiaire fields
-      if (body.civilite !== undefined)
-        stagiaire.civilite = body.civilite;
+      if (body.civilite !== undefined) stagiaire.civilite = body.civilite;
       if (body.prenom !== undefined) stagiaire.prenom = body.prenom;
       if (body.telephone !== undefined) stagiaire.telephone = body.telephone;
       if (body.adresse !== undefined) stagiaire.adresse = body.adresse;
