@@ -24,24 +24,29 @@ export class AdminDemandeHistoriqueController {
     @Query("limit") limit = 10,
     @Query("search") search = ""
   ) {
-    const query = this.demandeRepository
-      .createQueryBuilder("d")
-      .leftJoinAndSelect("d.stagiaire", "s")
-      .leftJoinAndSelect("d.catalogue_formation", "cf");
+    try {
+      const query = this.demandeRepository
+        .createQueryBuilder("d")
+        .leftJoinAndSelect("d.stagiaire", "s")
+        .leftJoinAndSelect("d.catalogue_formation", "cf");
 
-    if (search) {
-      query.where("s.prenom LIKE :search OR cf.titre LIKE :search", {
-        search: `%${search}%`,
-      });
+      if (search) {
+        query.where("s.prenom LIKE :search OR s.nom LIKE :search OR cf.titre LIKE :search", {
+          search: `%${search}%`,
+        });
+      }
+
+      const [data, total] = await query
+        .skip((page - 1) * limit)
+        .take(limit)
+        .orderBy("d.id", "DESC")
+        .getManyAndCount();
+
+      return this.apiResponse.paginated(data, total, page, limit);
+    } catch (error) {
+      console.error("Error in demande historique:", error);
+      return this.apiResponse.paginated([], 0, page, limit);
     }
-
-    const [data, total] = await query
-      .skip((page - 1) * limit)
-      .take(limit)
-      .orderBy("d.date_demande", "DESC")
-      .getManyAndCount();
-
-    return this.apiResponse.paginated(data, total, page, limit);
   }
 
   @Get("demande/historique/:id")

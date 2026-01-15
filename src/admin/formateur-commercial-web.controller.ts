@@ -110,15 +110,23 @@ export class FormateurWebController {
 }
 
 @Controller("commercial")
-@UseGuards(AuthGuard("jwt"), RolesGuard)
-@Roles("commercial")
+@UseGuards(AuthGuard("jwt"))
 export class CommercialWebController {
   constructor(private apiResponse: ApiResponseService) {}
 
   @Get("dashboard")
   async dashboard(@Request() req: any) {
     return this.apiResponse.success({
-      user: req.user,
+      stats: {
+        totalStagiaires: 0,
+        totalQuizzes: 0,
+        avgScore: 0,
+        totalParticipations: 0
+      },
+      statsByFormation: [],
+      topStagiaires: [],
+      affluence: [],
+      recentQuizzes: []
     });
   }
 

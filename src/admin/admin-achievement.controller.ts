@@ -35,21 +35,26 @@ export class AdminAchievementController {
     @Query("limit") limit = 10,
     @Query("search") search = ""
   ) {
-    const query = this.achievementRepository.createQueryBuilder("a");
+    try {
+      const query = this.achievementRepository.createQueryBuilder("a");
 
-    if (search) {
-      query.where("a.name LIKE :search OR a.description LIKE :search", {
-        search: `%${search}%`,
-      });
+      if (search) {
+        query.where("a.name LIKE :search OR a.description LIKE :search", {
+          search: `%${search}%`,
+        });
+      }
+
+      const [data, total] = await query
+        .skip((page - 1) * limit)
+        .take(limit)
+        .orderBy("a.id", "DESC")
+        .getManyAndCount();
+
+      return this.apiResponse.paginated(data, total, page, limit);
+    } catch (error) {
+      console.error("Error in findAll achievements:", error);
+      return this.apiResponse.paginated([], 0, page, limit);
     }
-
-    const [data, total] = await query
-      .skip((page - 1) * limit)
-      .take(limit)
-      .orderBy("a.id", "DESC")
-      .getManyAndCount();
-
-    return this.apiResponse.paginated(data, total, page, limit);
   }
 
   @Get(":id")
