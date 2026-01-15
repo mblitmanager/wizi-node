@@ -61,7 +61,7 @@ export class AdminStagiaireController {
 
       if (search) {
         query.where(
-          "s.prenom LIKE :search OR s.nom LIKE :search OR s.ville LIKE :search OR user.email LIKE :search",
+          "s.prenom LIKE :search OR user.name LIKE :search OR s.ville LIKE :search OR user.email LIKE :search",
           { search: `%${search}%` }
         );
       }
@@ -156,9 +156,9 @@ export class AdminStagiaireController {
         date_debut_formation: body.date_debut_formation || null,
         date_inscription: body.date_inscription || null,
         partenaire_id: body.partenaire_id || null,
-        statut: 1, // Active by default
+        statut: "1", // Active by default (string to match Laravel)
       });
-      const savedStagiaire = await queryRunner.manager.save(stagiaire);
+      const savedStagiaire = await queryRunner.manager.save(stagiaire) as Stagiaire;
 
       // Handle formations
       if (body.formations && typeof body.formations === "object") {
@@ -192,7 +192,7 @@ export class AdminStagiaireController {
           const commercials = await this.commercialRepository.findBy({
             id: In(commercialIds),
           });
-          savedStagiaire.commercials = commercials;
+          (savedStagiaire as any).commercials = commercials;
           await queryRunner.manager.save(savedStagiaire);
         }
       }
@@ -209,7 +209,7 @@ export class AdminStagiaireController {
           const poles = await this.poleRelationClientRepository.findBy({
             id: In(poleIds),
           });
-          savedStagiaire.poleRelationClients = poles;
+          (savedStagiaire as any).poleRelationClients = poles;
           await queryRunner.manager.save(savedStagiaire);
         }
       }
@@ -404,7 +404,7 @@ export class AdminStagiaireController {
   async active(@Param("id") id: number) {
     const stagiaire = await this.stagiaireRepository.findOne({ where: { id } });
     if (!stagiaire) throw new NotFoundException("Stagiaire non trouvé");
-    stagiaire.statut = 1;
+    stagiaire.statut = "1";
     await this.stagiaireRepository.save(stagiaire);
     return this.apiResponse.success({ message: "Stagiaire activé" });
   }
@@ -413,7 +413,7 @@ export class AdminStagiaireController {
   async desactive(@Param("id") id: number) {
     const stagiaire = await this.stagiaireRepository.findOne({ where: { id } });
     if (!stagiaire) throw new NotFoundException("Stagiaire non trouvé");
-    stagiaire.statut = 0;
+    stagiaire.statut = "0";
     await this.stagiaireRepository.save(stagiaire);
     return this.apiResponse.success({ message: "Stagiaire désactivé" });
   }

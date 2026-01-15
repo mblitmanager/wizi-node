@@ -20,7 +20,7 @@ export declare class Stagiaire {
     date_debut_formation: Date;
     date_inscription: Date;
     role: string;
-    statut: string;
+    statut: number | string;
     user_id: number;
     date_fin_formation: Date;
     onboarding_seen: boolean;

@@ -116,7 +116,7 @@ let AdminStagiaireController = class AdminStagiaireController {
                 date_debut_formation: body.date_debut_formation || null,
                 date_inscription: body.date_inscription || null,
                 partenaire_id: body.partenaire_id || null,
-                statut: 1,
+                statut: "1",
             });
             const savedStagiaire = await queryRunner.manager.save(stagiaire);
             if (body.formations && typeof body.formations === "object") {
@@ -324,7 +324,7 @@ let AdminStagiaireController = class AdminStagiaireController {
         const stagiaire = await this.stagiaireRepository.findOne({ where: { id } });
         if (!stagiaire)
             throw new common_1.NotFoundException("Stagiaire non trouvé");
-        stagiaire.statut = 1;
+        stagiaire.statut = "1";
         await this.stagiaireRepository.save(stagiaire);
         return this.apiResponse.success({ message: "Stagiaire activé" });
     }
@@ -332,7 +332,7 @@ let AdminStagiaireController = class AdminStagiaireController {
         const stagiaire = await this.stagiaireRepository.findOne({ where: { id } });
         if (!stagiaire)
             throw new common_1.NotFoundException("Stagiaire non trouvé");
-        stagiaire.statut = 0;
+        stagiaire.statut = "0";
         await this.stagiaireRepository.save(stagiaire);
         return this.apiResponse.success({ message: "Stagiaire désactivé" });
     }

@@ -70,7 +70,7 @@ export declare class ParrainageController {
             date_debut_formation: Date;
             date_inscription: Date;
             role: string;
-            statut: string;
+            statut: string | number;
             user_id: number;
             deleted_at: any;
             created_at: string;
@@ -148,7 +148,7 @@ export declare class ParrainageController {
             name: string;
             date: Date;
             points: number;
-            status: string;
+            status: string | number;
         }[];
     }>;
     getRewards(req: any): Promise<{
@@ -174,7 +174,7 @@ export declare class ParrainageController {
             filleul: {
                 id: number;
                 name: string;
-                statut: string;
+                statut: string | number;
             };
         }[];
         tokens: {

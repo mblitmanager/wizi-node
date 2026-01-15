@@ -96,7 +96,7 @@ export declare class MediaController {
                 date_debut_formation: string;
                 date_inscription: string;
                 role: string;
-                statut: string;
+                statut: string | number;
                 user_id: number;
                 deleted_at: any;
                 created_at: string;
@@ -149,7 +149,7 @@ export declare class MediaController {
                 date_debut_formation: string;
                 date_inscription: string;
                 role: string;
-                statut: string;
+                statut: string | number;
                 user_id: number;
                 deleted_at: any;
                 created_at: string;
@@ -215,7 +215,7 @@ export declare class MediaController {
                 date_debut_formation: string;
                 date_inscription: string;
                 role: string;
-                statut: string;
+                statut: string | number;
                 user_id: number;
                 deleted_at: any;
                 created_at: string;
