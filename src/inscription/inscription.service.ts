@@ -25,22 +25,23 @@ export class InscriptionService {
   ) {}
 
   async inscrire(userId: number, catalogueFormationId: number) {
-    const stagiaire = await this.stagiaireRepository.findOne({
-      where: { user_id: userId },
-      relations: ["stagiaire_catalogue_formations", "user"],
-    });
+    try {
+      const stagiaire = await this.stagiaireRepository.findOne({
+        where: { user_id: userId },
+        relations: ["stagiaire_catalogue_formations", "user"],
+      });
 
-    if (!stagiaire) {
-      throw new Error("Stagiaire not found");
-    }
+      if (!stagiaire) {
+        throw new Error("Aucun stagiaire associé à cet utilisateur.");
+      }
 
-    const catalogueFormation = await this.catalogueRepository.findOne({
-      where: { id: catalogueFormationId },
-    });
+      const catalogueFormation = await this.catalogueRepository.findOne({
+        where: { id: catalogueFormationId },
+      });
 
-    if (!catalogueFormation) {
-      throw new Error("Formation not found");
-    }
+      if (!catalogueFormation) {
+        throw new Error("Formation not found");
+      }
 
     // syncWithoutDetaching logic:
     // Check if already enrolled
@@ -59,8 +60,8 @@ export class InscriptionService {
 
     // Create DemandeInscription entry
     const demande = this.demandeRepository.create({
-      parrain_id: userId,
-      filleul_id: userId,
+      parrain_id: null, // Pas de parrain pour une inscription directe (comme dans Laravel)
+      filleul_id: userId, // L'utilisateur qui s'inscrit
       formation_id: catalogueFormationId,
       statut: "en_attente",
       date_demande: new Date(),
@@ -72,16 +73,25 @@ export class InscriptionService {
         date: new Date().toISOString(),
         user_id: userId,
       }),
+      lien_parrainage: null,
     });
 
     const savedDemande = await this.demandeRepository.save(demande);
 
-    // Notify user via in-app notification
-    await this.notificationService.createNotification(
-      userId,
-      "inscription",
-      "Nous avons bien reçu votre demande d'inscription, votre conseiller/conseillère va prendre contact avec vous."
-    );
+    // Notify user via in-app notification (ne doit pas faire échouer l'inscription)
+    try {
+      await this.notificationService.createNotification(
+        userId,
+        "inscription",
+        "Nous avons bien reçu votre demande d'inscription, votre conseiller/conseillère va prendre contact avec vous."
+      );
+    } catch (notificationError) {
+      // Log l'erreur mais continue le processus d'inscription
+      console.warn(
+        "Erreur lors de l'envoi de la notification (inscription non affectée):",
+        notificationError
+      );
+    }
 
     // Prepare all email promises
     const emailPromises = [];
@@ -104,6 +114,7 @@ export class InscriptionService {
             formationPrice: catalogueFormation.tarif
               ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
               : null,
+            prerequis: catalogueFormation.prerequis || null,
             isPoleRelation: false,
           },
           [
@@ -154,6 +165,7 @@ export class InscriptionService {
                     catalogueFormation.tarif
                   )
                 : null,
+              prerequis: catalogueFormation.prerequis || null,
               isPoleRelation: true,
             },
             [
@@ -181,14 +193,26 @@ export class InscriptionService {
       );
     }
 
-    // Wait for all messages to be dispatched (parallely)
-    await Promise.all(emailPromises);
+      // Wait for all messages to be dispatched (parallely)
+      await Promise.all(emailPromises);
 
-    return {
-      success: true,
-      message:
-        "Un mail de confirmation vous a été envoyé, votre conseiller va bientôt prendre contact avec vous.",
-      demande: savedDemande,
-    };
+      return {
+        success: true,
+        message:
+          "Un mail de confirmation vous a été envoyé, votre conseiller va bientôt prendre contact avec vous.",
+        demande: savedDemande,
+      };
+    } catch (error) {
+      console.error("Erreur lors de l'inscription au catalogue formation:", {
+        user_id: userId,
+        catalogue_formation_id: catalogueFormationId,
+        error: error.message,
+        stack: error.stack,
+      });
+
+      throw new Error(
+        error.message || "Une erreur est survenue lors de l'inscription."
+      );
+    }
   }
 }

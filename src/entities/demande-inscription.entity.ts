@@ -15,7 +15,7 @@ export class DemandeInscription {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   parrain_id: number;
 
   @Column()

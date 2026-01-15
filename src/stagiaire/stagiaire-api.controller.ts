@@ -78,10 +78,24 @@ export class StagiaireApiController {
 
   @Post("inscription-catalogue-formation")
   async inscriptionCatalogueFormation(@Request() req: any, @Body() data: any) {
-    return this.inscriptionService.inscrire(
-      req.user.id,
-      data.catalogue_formation_id
-    );
+    try {
+      if (!data.catalogue_formation_id) {
+        return this.apiResponse.error(
+          "Le champ catalogue_formation_id est requis.",
+          400
+        );
+      }
+      return await this.inscriptionService.inscrire(
+        req.user.id,
+        data.catalogue_formation_id
+      );
+    } catch (error) {
+      console.error("Erreur lors de l'inscription:", error);
+      return this.apiResponse.error(
+        error.message || "Une erreur est survenue lors de l'inscription.",
+        500
+      );
+    }
   }
 
   @Post("onboarding-seen")
