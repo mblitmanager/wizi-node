@@ -54,6 +54,26 @@ export class NotificationsApiController {
     return this.apiResponse.success({ message: "FCM token updated" });
   }
 
+  @Get("test-push")
+  async testPush(@Request() req: any) {
+    const userId = req.user.id;
+    const result = await this.notificationService.createNotification(
+      userId,
+      "test",
+      "Ceci est une notification de test depuis Node.js !",
+      {
+        click_action: "FLUTTER_NOTIFICATION_CLICK",
+        message: "Test message",
+      },
+      "Test Push Node"
+    );
+
+    return this.apiResponse.success({
+      message: "Notification de test envoyée",
+      result,
+    });
+  }
+
   @Post(":id/read")
   async markAsRead(@Param("id") id: number) {
     await this.notificationService.markAsRead(id);

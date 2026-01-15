@@ -8,7 +8,6 @@ import { Notification } from "../entities/notification.entity";
 import { FcmService } from "./fcm.service";
 import { ConfigModule } from "@nestjs/config";
 import { ParrainageEvent } from "../entities/parrainage-event.entity";
-import { FcmTestController } from "./fcm-test.controller";
 import {
   NotificationsApiController,
   NotificationHistoryApiController,
@@ -40,7 +39,6 @@ import { BroadcastingApiController } from "./broadcasting-api.controller";
     SendDailyNotificationController,
     ParrainageEventsApiController,
     BroadcastingApiController,
-    FcmTestController,
   ],
   exports: [NotificationService, FcmService],
 })
