@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminAchievementController = void 0;
 const common_1 = require("@nestjs/common");
+const fs = require("fs");
 const passport_1 = require("@nestjs/passport");
 const roles_guard_1 = require("../common/guards/roles.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
@@ -42,6 +43,7 @@ let AdminAchievementController = class AdminAchievementController {
             return this.apiResponse.paginated(data, total, page, limit);
         }
         catch (error) {
+            fs.appendFileSync("debug_500_errors.log", `[AdminAchievementController] Error: ${error.message}\nStack: ${error.stack}\n\n`);
             console.error("Error in findAll achievements:", error);
             return this.apiResponse.paginated([], 0, page, limit);
         }

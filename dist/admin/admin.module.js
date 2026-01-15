@@ -51,6 +51,7 @@ const formation_entity_1 = require("../entities/formation.entity");
 const commercial_entity_1 = require("../entities/commercial.entity");
 const pole_relation_client_entity_1 = require("../entities/pole-relation-client.entity");
 const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
+const partenaire_entity_1 = require("../entities/partenaire.entity");
 const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
 const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
 const classement_entity_1 = require("../entities/classement.entity");
@@ -80,6 +81,7 @@ exports.AdminModule = AdminModule = __decorate([
                 commercial_entity_1.Commercial,
                 pole_relation_client_entity_1.PoleRelationClient,
                 stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
+                partenaire_entity_1.Partenaire,
                 demande_inscription_entity_1.DemandeInscription,
                 parrainage_event_entity_1.ParrainageEvent,
                 classement_entity_1.Classement,

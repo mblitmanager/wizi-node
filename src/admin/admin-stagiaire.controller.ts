@@ -96,20 +96,13 @@ export class AdminStagiaireController {
         "commercials.user",
         "poleRelationClients",
         "poleRelationClients.user",
+        "partenaire",
         "achievements",
       ],
     });
 
     if (!stagiaire) {
       throw new NotFoundException("Stagiaire non trouvé");
-    }
-
-    // Load partenaire if exists
-    if (stagiaire.partenaire_id) {
-      const partenaire = await this.partenaireRepository.findOne({
-        where: { id: stagiaire.partenaire_id },
-      });
-      (stagiaire as any).partenaire = partenaire;
     }
 
     return this.apiResponse.success(stagiaire);
