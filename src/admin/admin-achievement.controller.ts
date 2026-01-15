@@ -77,7 +77,7 @@ export class AdminAchievementController {
       name: string;
       description?: string;
       icon?: string;
-      tier?: number;
+      level?: string;
     }
   ) {
     if (!body.name) {
@@ -88,7 +88,7 @@ export class AdminAchievementController {
       name: body.name,
       description: body.description ?? "",
       icon: body.icon ?? "gold",
-      tier: body.tier ?? 1,
+      level: body.level ?? null,
     });
 
     const saved = await this.achievementRepository.save(achievement);
@@ -103,7 +103,7 @@ export class AdminAchievementController {
       name?: string;
       description?: string;
       icon?: string;
-      tier?: number;
+      level?: string;
     }
   ) {
     const achievement = await this.achievementRepository.findOne({
@@ -123,8 +123,8 @@ export class AdminAchievementController {
     if (body.icon !== undefined) {
       achievement.icon = body.icon;
     }
-    if (body.tier !== undefined) {
-      achievement.tier = body.tier;
+    if (body.level !== undefined) {
+      achievement.level = body.level;
     }
 
     const updated = await this.achievementRepository.save(achievement);

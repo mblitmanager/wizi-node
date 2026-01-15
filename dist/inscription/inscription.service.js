@@ -33,82 +33,55 @@ let InscriptionService = class InscriptionService {
         this.mailService = mailService;
     }
     async inscrire(userId, catalogueFormationId) {
-        const stagiaire = await this.stagiaireRepository.findOne({
-            where: { user_id: userId },
-            relations: ["stagiaire_catalogue_formations", "user"],
-        });
-        if (!stagiaire) {
-            throw new Error("Stagiaire not found");
-        }
-        const catalogueFormation = await this.catalogueRepository.findOne({
-            where: { id: catalogueFormationId },
-        });
-        if (!catalogueFormation) {
-            throw new Error("Formation not found");
-        }
-        const alreadyEnrolled = stagiaire.stagiaire_catalogue_formations.some((scf) => scf.catalogue_formation_id === catalogueFormationId);
-        if (!alreadyEnrolled) {
-            const scf = this.scfRepository.create({
-                stagiaire_id: stagiaire.id,
-                catalogue_formation_id: catalogueFormationId,
-                date_inscription: new Date(),
+        try {
+            const stagiaire = await this.stagiaireRepository.findOne({
+                where: { user_id: userId },
+                relations: ["stagiaire_catalogue_formations", "user"],
             });
-            await this.scfRepository.save(scf);
-        }
-        const demande = this.demandeRepository.create({
-            parrain_id: userId,
-            filleul_id: userId,
-            formation_id: catalogueFormationId,
-            statut: "en_attente",
-            date_demande: new Date(),
-            date_inscription: new Date(),
-            motif: "Demande d'inscription à une formation",
-            donnees_formulaire: JSON.stringify({
-                type: "inscription_directe",
+            if (!stagiaire) {
+                throw new Error("Aucun stagiaire associé à cet utilisateur.");
+            }
+            const catalogueFormation = await this.catalogueRepository.findOne({
+                where: { id: catalogueFormationId },
+            });
+            if (!catalogueFormation) {
+                throw new Error("Formation not found");
+            }
+            const alreadyEnrolled = stagiaire.stagiaire_catalogue_formations.some((scf) => scf.catalogue_formation_id === catalogueFormationId);
+            if (!alreadyEnrolled) {
+                const scf = this.scfRepository.create({
+                    stagiaire_id: stagiaire.id,
+                    catalogue_formation_id: catalogueFormationId,
+                    date_inscription: new Date(),
+                });
+                await this.scfRepository.save(scf);
+            }
+            const demande = this.demandeRepository.create({
+                parrain_id: null,
+                filleul_id: userId,
                 formation_id: catalogueFormationId,
-                date: new Date().toISOString(),
-                user_id: userId,
-            }),
-        });
-        const savedDemande = await this.demandeRepository.save(demande);
-        await this.notificationService.createNotification(userId, "inscription", "Nous avons bien reçu votre demande d'inscription, votre conseiller/conseillère va prendre contact avec vous.");
-        const emailPromises = [];
-        emailPromises.push(this.mailService
-            .sendMail(stagiaire.user.email, "Confirmation d'inscription à une formation - Wizi Learn", "inscription_catalogue", {
-            firstName: stagiaire.prenom || stagiaire.user.name,
-            lastName: stagiaire.user.name,
-            civility: stagiaire.civilite || "Non renseigné",
-            phone: stagiaire.telephone || "Non renseigné",
-            email: stagiaire.user.email,
-            formationTitle: catalogueFormation.titre,
-            formationDuration: catalogueFormation.duree,
-            formationPrice: catalogueFormation.tarif
-                ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
-                : null,
-            isPoleRelation: false,
-        }, [
-            {
-                filename: "aopia.png",
-                path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
-                cid: "aopia",
-            },
-            {
-                filename: "like.png",
-                path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
-                cid: "like",
-            },
-        ])
-            .catch((mailError) => {
-            console.error("Failed to send inscription confirmation email:", mailError);
-        }));
-        const notificationEmails = [
-            "adv@aopia.fr",
-            "alexandre.florek@aopia.fr",
-            "mbl.service.mada2@gmail.com",
-        ];
-        for (const email of notificationEmails) {
+                statut: "en_attente",
+                date_demande: new Date(),
+                date_inscription: new Date(),
+                motif: "Demande d'inscription à une formation",
+                donnees_formulaire: JSON.stringify({
+                    type: "inscription_directe",
+                    formation_id: catalogueFormationId,
+                    date: new Date().toISOString(),
+                    user_id: userId,
+                }),
+                lien_parrainage: null,
+            });
+            const savedDemande = await this.demandeRepository.save(demande);
+            try {
+                await this.notificationService.createNotification(userId, "inscription", "Nous avons bien reçu votre demande d'inscription, votre conseiller/conseillère va prendre contact avec vous.");
+            }
+            catch (notificationError) {
+                console.warn("Erreur lors de l'envoi de la notification (inscription non affectée):", notificationError);
+            }
+            const emailPromises = [];
             emailPromises.push(this.mailService
-                .sendMail(email, "Nouvelle inscription à une formation - Wizi Learn", "inscription_catalogue", {
+                .sendMail(stagiaire.user.email, "Confirmation d'inscription à une formation - Wizi Learn", "inscription_catalogue", {
                 firstName: stagiaire.prenom || stagiaire.user.name,
                 lastName: stagiaire.user.name,
                 civility: stagiaire.civilite || "Non renseigné",
@@ -119,7 +92,8 @@ let InscriptionService = class InscriptionService {
                 formationPrice: catalogueFormation.tarif
                     ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
                     : null,
-                isPoleRelation: true,
+                prerequis: catalogueFormation.prerequis || null,
+                isPoleRelation: false,
             }, [
                 {
                     filename: "aopia.png",
@@ -133,15 +107,60 @@ let InscriptionService = class InscriptionService {
                 },
             ])
                 .catch((mailError) => {
-                console.error(`Failed to send backoffice notification email to ${email}:`, mailError);
+                console.error("Failed to send inscription confirmation email:", mailError);
             }));
+            const notificationEmails = [
+                "adv@aopia.fr",
+                "alexandre.florek@aopia.fr",
+                "mbl.service.mada2@gmail.com",
+            ];
+            for (const email of notificationEmails) {
+                emailPromises.push(this.mailService
+                    .sendMail(email, "Nouvelle inscription à une formation - Wizi Learn", "inscription_catalogue", {
+                    firstName: stagiaire.prenom || stagiaire.user.name,
+                    lastName: stagiaire.user.name,
+                    civility: stagiaire.civilite || "Non renseigné",
+                    phone: stagiaire.telephone || "Non renseigné",
+                    email: stagiaire.user.email,
+                    formationTitle: catalogueFormation.titre,
+                    formationDuration: catalogueFormation.duree,
+                    formationPrice: catalogueFormation.tarif
+                        ? new Intl.NumberFormat("fr-FR").format(catalogueFormation.tarif)
+                        : null,
+                    prerequis: catalogueFormation.prerequis || null,
+                    isPoleRelation: true,
+                }, [
+                    {
+                        filename: "aopia.png",
+                        path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/aopia.png"),
+                        cid: "aopia",
+                    },
+                    {
+                        filename: "like.png",
+                        path: (0, path_1.join)(process.cwd(), "src/mail/templates/assets/like.png"),
+                        cid: "like",
+                    },
+                ])
+                    .catch((mailError) => {
+                    console.error(`Failed to send backoffice notification email to ${email}:`, mailError);
+                }));
+            }
+            await Promise.all(emailPromises);
+            return {
+                success: true,
+                message: "Un mail de confirmation vous a été envoyé, votre conseiller va bientôt prendre contact avec vous.",
+                demande: savedDemande,
+            };
         }
-        await Promise.all(emailPromises);
-        return {
-            success: true,
-            message: "Un mail de confirmation vous a été envoyé, votre conseiller va bientôt prendre contact avec vous.",
-            demande: savedDemande,
-        };
+        catch (error) {
+            console.error("Erreur lors de l'inscription au catalogue formation:", {
+                user_id: userId,
+                catalogue_formation_id: catalogueFormationId,
+                error: error.message,
+                stack: error.stack,
+            });
+            throw new Error(error.message || "Une erreur est survenue lors de l'inscription.");
+        }
     }
 };
 exports.InscriptionService = InscriptionService;

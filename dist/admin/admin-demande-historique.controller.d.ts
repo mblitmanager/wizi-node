@@ -6,7 +6,7 @@ export declare class AdminDemandeHistoriqueController {
     private demandeRepository;
     private apiResponse;
     constructor(demandeRepository: Repository<DemandeInscription>, apiResponse: ApiResponseService);
-    index(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<DemandeInscription>>;
+    index(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<any>>;
     show(id: number): Promise<any>;
     exportCsv(res: Response): Promise<Response<any, Record<string, any>>>;
     exportXlsx(res: Response): Promise<Response<any, Record<string, any>>>;

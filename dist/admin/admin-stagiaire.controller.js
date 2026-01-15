@@ -27,21 +27,24 @@ let AdminStagiaireController = class AdminStagiaireController {
         this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
-        const query = this.stagiaireRepository
-            .createQueryBuilder("s")
-            .leftJoinAndSelect("s.user", "user")
-            .leftJoinAndSelect("s.stagiaire_catalogue_formations", "scf")
-            .leftJoinAndSelect("scf.catalogue_formation", "cf")
-            .leftJoinAndSelect("cf.formation", "f");
-        if (search) {
-            query.where("s.prenom LIKE :search OR s.civilite LIKE :search OR s.ville LIKE :search", { search: `%${search}%` });
+        try {
+            const query = this.stagiaireRepository
+                .createQueryBuilder("s")
+                .leftJoinAndSelect("s.user", "user");
+            if (search) {
+                query.where("s.prenom LIKE :search OR s.nom LIKE :search OR s.ville LIKE :search OR user.email LIKE :search", { search: `%${search}%` });
+            }
+            const [data, total] = await query
+                .skip((page - 1) * limit)
+                .take(limit)
+                .orderBy("s.id", "DESC")
+                .getManyAndCount();
+            return this.apiResponse.paginated(data, total, page, limit);
         }
-        const [data, total] = await query
-            .skip((page - 1) * limit)
-            .take(limit)
-            .orderBy("s.created_at", "DESC")
-            .getManyAndCount();
-        return this.apiResponse.paginated(data, total, page, limit);
+        catch (error) {
+            console.error("Error in findAll stagiaires:", error);
+            return this.apiResponse.paginated([], 0, page, limit);
+        }
     }
     async findOne(id) {
         const stagiaire = await this.stagiaireRepository.findOne({

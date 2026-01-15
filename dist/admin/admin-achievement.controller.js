@@ -27,18 +27,68 @@ let AdminAchievementController = class AdminAchievementController {
         this.apiResponse = apiResponse;
     }
     async findAll(page = 1, limit = 10, search = "") {
-        const query = this.achievementRepository.createQueryBuilder("a");
-        if (search) {
-            query.where("a.name LIKE :search OR a.description LIKE :search", {
-                search: `%${search}%`,
-            });
+        try {
+            const query = this.achievementRepository.createQueryBuilder("a");
+            if (search) {
+                query.where("a.name LIKE :search OR a.description LIKE :search", {
+                    search: `%${search}%`,
+                });
+            }
+            const [data, total] = await query
+                .skip((page - 1) * limit)
+                .take(limit)
+                .orderBy("a.id", "DESC")
+                .getManyAndCount();
+            return this.apiResponse.paginated(data, total, page, limit);
         }
-        const [data, total] = await query
-            .skip((page - 1) * limit)
-            .take(limit)
-            .orderBy("a.id", "DESC")
-            .getManyAndCount();
-        return this.apiResponse.paginated(data, total, page, limit);
+        catch (error) {
+            console.error("Error in findAll achievements:", error);
+            return this.apiResponse.paginated([], 0, page, limit);
+        }
+    }
+    async findOne(id) {
+        const achievement = await this.achievementRepository.findOne({
+            where: { id },
+        });
+        if (!achievement) {
+            throw new common_1.NotFoundException("Achievement not found");
+        }
+        return this.apiResponse.success(achievement);
+    }
+    async create(body) {
+        if (!body.name) {
+            throw new common_1.BadRequestException("name is required");
+        }
+        const achievement = this.achievementRepository.create({
+            name: body.name,
+            description: body.description ?? "",
+            icon: body.icon ?? "gold",
+            level: body.level ?? null,
+        });
+        const saved = await this.achievementRepository.save(achievement);
+        return this.apiResponse.success(saved);
+    }
+    async update(id, body) {
+        const achievement = await this.achievementRepository.findOne({
+            where: { id },
+        });
+        if (!achievement) {
+            throw new common_1.NotFoundException("Achievement not found");
+        }
+        if (body.name !== undefined) {
+            achievement.name = body.name;
+        }
+        if (body.description !== undefined) {
+            achievement.description = body.description;
+        }
+        if (body.icon !== undefined) {
+            achievement.icon = body.icon;
+        }
+        if (body.level !== undefined) {
+            achievement.level = body.level;
+        }
+        const updated = await this.achievementRepository.save(achievement);
+        return this.apiResponse.success(updated);
     }
     async delete(id) {
         const achievement = await this.achievementRepository.findOne({
@@ -61,6 +111,28 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], AdminAchievementController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(":id"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], AdminAchievementController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdminAchievementController.prototype, "create", null);
+__decorate([
+    (0, common_1.Put)(":id"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], AdminAchievementController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(":id"),
     __param(0, (0, common_1.Param)("id")),

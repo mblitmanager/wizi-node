@@ -199,7 +199,16 @@ let CommercialWebController = class CommercialWebController {
     }
     async dashboard(req) {
         return this.apiResponse.success({
-            user: req.user,
+            stats: {
+                totalStagiaires: 0,
+                totalQuizzes: 0,
+                avgScore: 0,
+                totalParticipations: 0
+            },
+            statsByFormation: [],
+            topStagiaires: [],
+            affluence: [],
+            recentQuizzes: []
         });
     }
     async affluence() {
@@ -249,8 +258,7 @@ __decorate([
 ], CommercialWebController.prototype, "parFormation", null);
 exports.CommercialWebController = CommercialWebController = __decorate([
     (0, common_1.Controller)("commercial"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)("commercial"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
 ], CommercialWebController);
 //# sourceMappingURL=formateur-commercial-web.controller.js.map
