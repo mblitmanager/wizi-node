@@ -14,7 +14,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminDemandeHistoriqueController = void 0;
 const common_1 = require("@nestjs/common");
-const fs = require("fs");
 const passport_1 = require("@nestjs/passport");
 const roles_guard_1 = require("../common/guards/roles.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
@@ -31,10 +30,11 @@ let AdminDemandeHistoriqueController = class AdminDemandeHistoriqueController {
         try {
             const query = this.demandeRepository
                 .createQueryBuilder("d")
-                .leftJoinAndSelect("d.stagiaire", "s")
-                .leftJoinAndSelect("d.catalogue_formation", "cf");
+                .leftJoinAndSelect("d.filleul", "filleul")
+                .leftJoinAndSelect("d.parrain", "parrain")
+                .leftJoinAndSelect("d.formation", "formation");
             if (search) {
-                query.where("s.prenom LIKE :search OR s.nom LIKE :search OR cf.titre LIKE :search", {
+                query.where("filleul.name LIKE :search OR filleul.email LIKE :search OR formation.titre LIKE :search OR parrain.name LIKE :search", {
                     search: `%${search}%`,
                 });
             }
@@ -46,15 +46,14 @@ let AdminDemandeHistoriqueController = class AdminDemandeHistoriqueController {
             return this.apiResponse.paginated(data, total, page, limit);
         }
         catch (error) {
-            fs.appendFileSync("debug_500_errors.log", `[AdminDemandeHistoriqueController] Error: ${error.message}\nStack: ${error.stack}\n\n`);
             console.error("Error in demande historique:", error);
-            return this.apiResponse.paginated([], 0, page, limit);
+            throw error;
         }
     }
     async show(id) {
         const demande = await this.demandeRepository.findOne({
             where: { id },
-            relations: ["stagiaire", "catalogue_formation"],
+            relations: ["filleul", "parrain", "formation"],
         });
         if (!demande) {
             return this.apiResponse.error("Demande non trouvée", 404);

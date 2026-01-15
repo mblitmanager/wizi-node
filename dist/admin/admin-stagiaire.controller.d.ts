@@ -16,7 +16,7 @@ export declare class AdminStagiaireController {
     private dataSource;
     private apiResponse;
     constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>, commercialRepository: Repository<Commercial>, poleRelationClientRepository: Repository<PoleRelationClient>, partenaireRepository: Repository<Partenaire>, dataSource: DataSource, apiResponse: ApiResponseService);
-    findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<any>>;
+    findAll(page?: number, limit?: number, search?: string): Promise<import("../common/interfaces/api-response.interface").PaginatedResponse<Stagiaire>>;
     findOne(id: number): Promise<any>;
     create(body: any): Promise<any>;
     update(id: number, body: any): Promise<any>;

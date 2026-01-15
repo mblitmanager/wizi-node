@@ -1,5 +1,4 @@
 import { Controller, Get, Param, UseGuards, Query, Res } from "@nestjs/common";
-import * as fs from "fs";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
@@ -28,12 +27,13 @@ export class AdminDemandeHistoriqueController {
     try {
       const query = this.demandeRepository
         .createQueryBuilder("d")
-        .leftJoinAndSelect("d.stagiaire", "s")
-        .leftJoinAndSelect("d.catalogue_formation", "cf");
+        .leftJoinAndSelect("d.filleul", "filleul")
+        .leftJoinAndSelect("d.parrain", "parrain")
+        .leftJoinAndSelect("d.formation", "formation");
 
       if (search) {
         query.where(
-          "s.prenom LIKE :search OR s.nom LIKE :search OR cf.titre LIKE :search",
+          "filleul.name LIKE :search OR filleul.email LIKE :search OR formation.titre LIKE :search OR parrain.name LIKE :search",
           {
             search: `%${search}%`,
           }
@@ -48,12 +48,8 @@ export class AdminDemandeHistoriqueController {
 
       return this.apiResponse.paginated(data, total, page, limit);
     } catch (error) {
-      fs.appendFileSync(
-        "debug_500_errors.log",
-        `[AdminDemandeHistoriqueController] Error: ${error.message}\nStack: ${error.stack}\n\n`
-      );
       console.error("Error in demande historique:", error);
-      return this.apiResponse.paginated([], 0, page, limit);
+      throw error;
     }
   }
 
@@ -61,7 +57,7 @@ export class AdminDemandeHistoriqueController {
   async show(@Param("id") id: number) {
     const demande = await this.demandeRepository.findOne({
       where: { id },
-      relations: ["stagiaire", "catalogue_formation"],
+      relations: ["filleul", "parrain", "formation"],
     });
 
     if (!demande) {

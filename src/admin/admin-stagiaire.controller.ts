@@ -11,8 +11,8 @@ import {
   NotFoundException,
   BadRequestException,
   Patch,
+  ParseIntPipe,
 } from "@nestjs/common";
-import * as fs from "fs";
 import { AuthGuard } from "@nestjs/passport";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
@@ -50,36 +50,44 @@ export class AdminStagiaireController {
 
   @Get()
   async findAll(
-    @Query("page") page: number = 1,
-    @Query("limit") limit: number = 10,
+    @Query("page") page: any = 1,
+    @Query("limit") limit: any = 10,
     @Query("search") search: string = ""
   ) {
     try {
+      // Convert query params to numbers
+      const pageNum = parseInt(page, 10) || 1;
+      const limitNum = parseInt(limit, 10) || 10;
+
       const query = this.stagiaireRepository
         .createQueryBuilder("s")
         .leftJoinAndSelect("s.user", "user");
 
-      if (search) {
+      if (search && search.trim()) {
+        const searchTerm = `%${search.trim()}%`;
         query.where(
-          "s.prenom LIKE :search OR user.name LIKE :search OR s.ville LIKE :search OR user.email LIKE :search",
-          { search: `%${search}%` }
+          "(s.prenom LIKE :search OR user.name LIKE :search OR s.ville LIKE :search OR user.email LIKE :search)",
+          { search: searchTerm }
         );
       }
 
       const [data, total] = await query
-        .skip((page - 1) * limit)
-        .take(limit)
+        .skip((pageNum - 1) * limitNum)
+        .take(limitNum)
         .orderBy("s.id", "DESC")
         .getManyAndCount();
 
-      return this.apiResponse.paginated(data, total, page, limit);
+      return this.apiResponse.paginated(data, total, pageNum, limitNum);
     } catch (error) {
-      fs.appendFileSync(
-        "debug_500_errors.log",
-        `[AdminStagiaireController] Error: ${error.message}\nStack: ${error.stack}\n\n`
-      );
       console.error("Error in findAll stagiaires:", error);
-      return this.apiResponse.paginated([], 0, page, limit);
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      });
+      throw new BadRequestException(
+        `Erreur lors de la récupération des stagiaires: ${error.message}`
+      );
     }
   }
 
@@ -247,14 +255,14 @@ export class AdminStagiaireController {
     await queryRunner.startTransaction();
 
     try {
-      const stagiaire = await this.stagiaireRepository.findOne({
-        where: { id },
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { id },
         relations: ["user"],
-      });
+    });
 
-      if (!stagiaire) {
-        throw new NotFoundException("Stagiaire non trouvé");
-      }
+    if (!stagiaire) {
+      throw new NotFoundException("Stagiaire non trouvé");
+    }
 
       // Update User
       if (stagiaire.user) {
@@ -360,22 +368,22 @@ export class AdminStagiaireController {
       await queryRunner.commitTransaction();
 
       // Reload with all relations
-      const updated = await this.stagiaireRepository.findOne({
-        where: { id },
-        relations: [
-          "user",
-          "stagiaire_catalogue_formations",
-          "stagiaire_catalogue_formations.catalogue_formation",
-          "stagiaire_catalogue_formations.catalogue_formation.formation",
+    const updated = await this.stagiaireRepository.findOne({
+      where: { id },
+      relations: [
+        "user",
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation",
           "commercials",
           "commercials.user",
           "poleRelationClients",
           "poleRelationClients.user",
-          "achievements",
-        ],
-      });
+        "achievements",
+      ],
+    });
 
-      return this.apiResponse.success(updated);
+    return this.apiResponse.success(updated);
     } catch (error) {
       await queryRunner.rollbackTransaction();
       console.error("Error updating stagiaire:", error);

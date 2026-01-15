@@ -14,7 +14,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminStagiaireController = void 0;
 const common_1 = require("@nestjs/common");
-const fs = require("fs");
 const passport_1 = require("@nestjs/passport");
 const roles_guard_1 = require("../common/guards/roles.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
@@ -45,7 +44,7 @@ let AdminStagiaireController = class AdminStagiaireController {
                 .createQueryBuilder("s")
                 .leftJoinAndSelect("s.user", "user");
             if (search) {
-                query.where("s.prenom LIKE :search OR s.nom LIKE :search OR s.ville LIKE :search OR user.email LIKE :search", { search: `%${search}%` });
+                query.where("s.prenom LIKE :search OR user.name LIKE :search OR s.ville LIKE :search OR user.email LIKE :search", { search: `%${search}%` });
             }
             const [data, total] = await query
                 .skip((page - 1) * limit)
@@ -55,9 +54,8 @@ let AdminStagiaireController = class AdminStagiaireController {
             return this.apiResponse.paginated(data, total, page, limit);
         }
         catch (error) {
-            fs.appendFileSync("debug_500_errors.log", `[AdminStagiaireController] Error: ${error.message}\nStack: ${error.stack}\n\n`);
             console.error("Error in findAll stagiaires:", error);
-            return this.apiResponse.paginated([], 0, page, limit);
+            throw error;
         }
     }
     async findOne(id) {
