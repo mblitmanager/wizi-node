@@ -101,7 +101,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurWebController.prototype, "classement", null);
 __decorate([
-    (0, common_1.Get)("formations/:id(\\d+)"),
+    (0, common_1.Get)("formations/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -140,7 +140,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurWebController.prototype, "stagiaireApplication", null);
 __decorate([
-    (0, common_1.Get)("stagiaires/:id(\\d+)"),
+    (0, common_1.Get)("stagiaires/:id"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -203,12 +203,12 @@ let CommercialWebController = class CommercialWebController {
                 totalStagiaires: 0,
                 totalQuizzes: 0,
                 avgScore: 0,
-                totalParticipations: 0
+                totalParticipations: 0,
             },
             statsByFormation: [],
             topStagiaires: [],
             affluence: [],
-            recentQuizzes: []
+            recentQuizzes: [],
         });
     }
     async affluence() {

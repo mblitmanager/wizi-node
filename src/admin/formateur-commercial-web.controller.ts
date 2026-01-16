@@ -34,7 +34,7 @@ export class FormateurWebController {
     return this.apiResponse.success({});
   }
 
-  @Get("formations/:id(\\d+)")
+  @Get("formations/:id")
   async showFormation() {
     return this.apiResponse.success({});
   }
@@ -68,7 +68,7 @@ export class FormateurWebController {
     return this.apiResponse.success([]);
   }
 
-  @Get("stagiaires/:id(\\d+)")
+  @Get("stagiaires/:id")
   async showStagiaire() {
     return this.apiResponse.success({});
   }
@@ -121,12 +121,12 @@ export class CommercialWebController {
         totalStagiaires: 0,
         totalQuizzes: 0,
         avgScore: 0,
-        totalParticipations: 0
+        totalParticipations: 0,
       },
       statsByFormation: [],
       topStagiaires: [],
       affluence: [],
-      recentQuizzes: []
+      recentQuizzes: [],
     });
   }
 
