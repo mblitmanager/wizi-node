@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, Like } from "typeorm";
 import { Media } from "../entities/media.entity";
 import { MediaStagiaire } from "../entities/media-stagiaire.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
@@ -132,6 +132,12 @@ export class MediaService {
       active: false,
     });
     return links;
+  }
+
+  async findByFilePath(filename: string): Promise<Media | null> {
+    return this.mediaRepository.findOne({
+      where: [{ video_file_path: filename }, { url: Like(`%${filename}%`) }],
+    });
   }
 
   async findByFormationAndCategorie(
