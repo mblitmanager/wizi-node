@@ -292,8 +292,13 @@ export class MediaService {
       formation_id: media.formation_id,
       created_at: this.formatIso(media.created_at),
       updated_at: this.formatIso(media.updated_at),
-      video_url: media.video_url || media.url || null,
-      subtitle_url: null,
+      video_url:
+        media.video_platform === "server" && media.video_file_path
+          ? `/api/medias/stream/${media.video_file_path}`
+          : media.video_url || media.url || null,
+      subtitle_url: media.subtitle_file_path
+        ? `/api/medias/subtitles/${media.subtitle_file_path}`
+        : null,
       ...(includeStagiaires && {
         stagiaires: (media.mediaStagiaires || [])
           .map((ms) => {

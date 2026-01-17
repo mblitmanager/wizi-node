@@ -1,0 +1,43 @@
+name: Deploy Node.js App
+
+on:
+  push:
+    branches:
+      - master # Adjust this to your main branch (master in history)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # Adjust based on history (sudo apt install nodejs npm)
+          cache: "npm"
+          cache-dependency-path: Wizi-learn-node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: Wizi-learn-node
+        run: npm install
+
+      - name: Build application
+        working-directory: Wizi-learn-node
+        run: npm run build
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            cd /var/www/wizi-node
+            git pull origin master
+            npm install --production
+            npm run build
+            pm2 restart ecosystem.config.js || pm2 restart wizi-nestjs
