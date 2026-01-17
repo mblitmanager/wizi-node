@@ -12,9 +12,12 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { ApiResponseService } from "../common/services/api-response.service";
 import { AdminService } from "./admin.service";
+import { RolesGuard } from "../common/guards/roles.guard";
+import { Roles } from "../common/decorators/roles.decorator";
 
 @Controller("formateur")
-@UseGuards(AuthGuard("jwt"))
+@UseGuards(AuthGuard("jwt"), RolesGuard)
+@Roles("formateur", "formatrice")
 export class FormateurApiController {
   constructor(
     private apiResponse: ApiResponseService,
@@ -153,7 +156,8 @@ export class FormateurApiController {
 }
 
 @Controller("commercial/stats")
-@UseGuards(AuthGuard("jwt"))
+@UseGuards(AuthGuard("jwt"), RolesGuard)
+@Roles("commercial", "commerciale")
 export class CommercialApiController {
   constructor(
     private apiResponse: ApiResponseService,
