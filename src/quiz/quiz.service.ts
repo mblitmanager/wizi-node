@@ -80,6 +80,11 @@ export class QuizService {
         order: { id: "ASC" },
       });
 
+      // Filter questions with at least one reponse
+      allQuestions = allQuestions.filter(
+        (q) => q.reponses && q.reponses.length > 0
+      );
+
       // Debug: Check a specific question that was problematic
       const debugQ = allQuestions.find((q) => q.id === 6914);
       if (debugQ) {
@@ -103,34 +108,42 @@ export class QuizService {
       questionsByQuizId.set(q.quiz_id, existing);
     });
 
-    return formations.map((f) => ({
-      id: f.id.toString(),
-      titre: f.titre,
-      description: f.description,
-      categorie: f.categorie,
-      quizzes: (f.quizzes || []).map((q) => {
-        const questions = questionsByQuizId.get(q.id) || [];
-        return {
-          id: q.id.toString(),
-          titre: q.titre,
-          description: q.description,
-          categorie: f.categorie,
-          categorieId: f.categorie,
-          niveau: q.niveau || "débutant",
-          questions: questions.map((question) => ({
-            id: question.id.toString(),
-            text: question.text,
-            type: question.type || "choix multiples",
-            answers: (question.reponses || []).map((r) => ({
-              id: r.id.toString(),
-              text: r.text,
-              isCorrect: Boolean(r.isCorrect),
+    return formations.map((f) => {
+      const validQuizzes = (f.quizzes || [])
+        .map((q) => {
+          const questions = questionsByQuizId.get(q.id) || [];
+          if (questions.length === 0) return null; // Mark for exclusion
+
+          return {
+            id: q.id.toString(),
+            titre: q.titre,
+            description: q.description,
+            categorie: f.categorie,
+            categorieId: f.categorie,
+            niveau: q.niveau || "débutant",
+            questions: questions.map((question) => ({
+              id: question.id.toString(),
+              text: question.text,
+              type: question.type || "choix multiples",
+              answers: (question.reponses || []).map((r) => ({
+                id: r.id.toString(),
+                text: r.text,
+                isCorrect: Boolean(r.isCorrect),
+              })),
             })),
-          })),
-          points: parseInt(q.nb_points_total) || 0,
-        };
-      }),
-    }));
+            points: parseInt(q.nb_points_total) || 0,
+          };
+        })
+        .filter((q) => q !== null); // Remove quizzes with no valid questions
+
+      return {
+        id: f.id.toString(),
+        titre: f.titre,
+        description: f.description,
+        categorie: f.categorie,
+        quizzes: validQuizzes,
+      };
+    });
   }
 
   async getQuestionsByQuiz(quizId: number) {
@@ -145,30 +158,32 @@ export class QuizService {
       }
 
       // Format matching Laravel's /api/quiz/{id}/questions endpoint exactly
-      const rawQuestions = quiz.questions.map((question) => ({
-        id: question.id,
-        quiz_id: quizId,
-        text: question.text,
-        type: question.type,
-        explication: question.explication,
-        points: question.points,
-        astuce: question.astuce,
-        media_url: question.media_url,
-        created_at: question.created_at,
-        updated_at: question.updated_at,
-        reponses: (question.reponses || []).map((reponse) => ({
-          id: reponse.id,
-          text: reponse.text,
-          question_id: question.id,
-          is_correct: reponse.isCorrect ? 1 : 0,
-          position: reponse.position,
-          match_pair: reponse.match_pair,
-          bank_group: reponse.bank_group,
-          flashcard_back: reponse.flashcardBack,
-          created_at: reponse.created_at,
-          updated_at: reponse.updated_at,
-        })),
-      }));
+      const rawQuestions = quiz.questions
+        .filter((q) => q.reponses && q.reponses.length > 0)
+        .map((question) => ({
+          id: question.id,
+          quiz_id: quizId,
+          text: question.text,
+          type: question.type,
+          explication: question.explication,
+          points: question.points,
+          astuce: question.astuce,
+          media_url: question.media_url,
+          created_at: question.created_at,
+          updated_at: question.updated_at,
+          reponses: (question.reponses || []).map((reponse) => ({
+            id: reponse.id,
+            text: reponse.text,
+            question_id: question.id,
+            is_correct: reponse.isCorrect ? 1 : 0,
+            position: reponse.position,
+            match_pair: reponse.match_pair,
+            bank_group: reponse.bank_group,
+            flashcard_back: reponse.flashcardBack,
+            created_at: reponse.created_at,
+            updated_at: reponse.updated_at,
+          })),
+        }));
 
       // Return { data: [...] } structure
       return { data: rawQuestions };
@@ -191,33 +206,35 @@ export class QuizService {
       }
 
       // Map questions with proper formatting based on type
-      const questions = quiz.questions.map((question) => {
-        const questionData: any = {
-          id: question.id.toString(),
-          text: question.text,
-          type: question.type || "choix multiples",
-          explication: question.explication,
-          points: question.points?.toString() || "1",
-          astuce: question.astuce,
-          quizId: id,
-          mediaUrl: question.media_url || null,
-        };
+      const questions = quiz.questions
+        .filter((q) => q.reponses && q.reponses.length > 0)
+        .map((question) => {
+          const questionData: any = {
+            id: question.id.toString(),
+            text: question.text,
+            type: question.type || "choix multiples",
+            explication: question.explication,
+            points: question.points?.toString() || "1",
+            astuce: question.astuce,
+            quizId: id,
+            mediaUrl: question.media_url || null,
+          };
 
-        // Default answers for all question types
-        questionData.answers = (question.reponses || [])
-          .map((reponse) => ({
-            id: reponse.id.toString(),
-            text: reponse.text || "",
-            isCorrect: reponse.isCorrect ? 1 : 0,
-            position: reponse.position,
-            matchPair: reponse.match_pair,
-            bankGroup: reponse.bank_group,
-            flashcardBack: reponse.flashcardBack,
-          }))
-          .sort((a, b) => a.id.localeCompare(b.id));
+          // Default answers for all question types
+          questionData.answers = (question.reponses || [])
+            .map((reponse) => ({
+              id: reponse.id.toString(),
+              text: reponse.text || "",
+              isCorrect: reponse.isCorrect ? 1 : 0,
+              position: reponse.position,
+              matchPair: reponse.match_pair,
+              bankGroup: reponse.bank_group,
+              flashcardBack: reponse.flashcardBack,
+            }))
+            .sort((a, b) => a.id.localeCompare(b.id));
 
-        return questionData;
-      });
+          return questionData;
+        });
 
       // Return formatted response matching Laravel structure
       return {
@@ -380,6 +397,8 @@ export class QuizService {
         "scf.stagiaire_id = :stagiaireId",
         { stagiaireId }
       )
+      .innerJoin("quiz.questions", "questions")
+      .innerJoin("questions.reponses", "reponses")
       .distinct(true)
       .getMany();
 
@@ -523,18 +542,34 @@ export class QuizService {
       .leftJoinAndSelect("quiz.formation", "quizFormation")
       .getMany();
 
+    // Filter quizzes to only those with questions that have reponses
+    const quizIds = quizzes.map((q) => q.id);
+    let validQuizIds: number[] = [];
+    if (quizIds.length > 0) {
+      const questionsWithReponses = await this.questionRepository
+        .createQueryBuilder("q")
+        .innerJoin("q.reponses", "r")
+        .where("q.quiz_id IN (:...quizIds)", { quizIds })
+        .select("DISTINCT q.quiz_id", "quiz_id")
+        .getRawMany();
+
+      validQuizIds = questionsWithReponses.map((qr) => qr.quiz_id);
+    }
+
     // Format matching Laravel
-    return quizzes.map((quiz) => ({
-      id: quiz.id.toString(),
-      titre: quiz.titre,
-      description: quiz.description?.substring(0, 150) || "",
-      categorie: quiz.formation?.categorie || "Non catégorisé",
-      categorieId: quiz.formation?.categorie || "non-categorise",
-      niveau: quiz.niveau || "débutant",
-      questionCount: 0, // Lightweight - no eager load
-      questions: [],
-      points: parseInt(quiz.nb_points_total?.toString() || "0"),
-    }));
+    return quizzes
+      .filter((q) => validQuizIds.includes(q.id))
+      .map((quiz) => ({
+        id: quiz.id.toString(),
+        titre: quiz.titre,
+        description: quiz.description?.substring(0, 150) || "",
+        categorie: quiz.formation?.categorie || "Non catégorisé",
+        categorieId: quiz.formation?.categorie || "non-categorise",
+        niveau: quiz.niveau || "débutant",
+        questionCount: 0, // Lightweight - no eager load
+        questions: [],
+        points: parseInt(quiz.nb_points_total?.toString() || "0"),
+      }));
   }
 
   async getQuizStatistics(quizId: number, stagiaireId: number) {
