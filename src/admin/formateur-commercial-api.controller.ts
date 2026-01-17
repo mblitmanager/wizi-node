@@ -140,6 +140,12 @@ export class FormateurApiController {
     return this.apiResponse.success();
   }
 
+  @Get("trends")
+  async trends(@Request() req: any) {
+    const data = await this.adminService.getFormateurTrends(req.user.id);
+    return this.apiResponse.success(data);
+  }
+
   @Get("stats/dashboard")
   async stats() {
     return this.apiResponse.success({});
@@ -149,10 +155,14 @@ export class FormateurApiController {
 @Controller("commercial/stats")
 @UseGuards(AuthGuard("jwt"))
 export class CommercialApiController {
-  constructor(private apiResponse: ApiResponseService) {}
+  constructor(
+    private apiResponse: ApiResponseService,
+    private adminService: AdminService
+  ) {}
 
   @Get("dashboard")
   async dashboard(@Request() req: any) {
-    return this.apiResponse.success({});
+    const data = await this.adminService.getCommercialDashboardStats();
+    return this.apiResponse.success(data);
   }
 }
