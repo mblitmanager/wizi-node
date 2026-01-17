@@ -18,14 +18,12 @@ jobs:
         with:
           node-version: "20" # Adjust based on history (sudo apt install nodejs npm)
           cache: "npm"
-          cache-dependency-path: Wizi-learn-node/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        working-directory: Wizi-learn-node
         run: npm install
 
       - name: Build application
-        working-directory: Wizi-learn-node
         run: npm run build
 
       - name: Deploy via SSH
