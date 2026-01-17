@@ -34,19 +34,16 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT || 22 }}
           script: |
-            git config --global --add safe.directory /var/www/wizi-node
+            sudo git config --global --add safe.directory /var/www/wizi-node
             cd /var/www/wizi-node
-            git pull origin master
-            # Ensure the current user owns the directory to avoid EACCES
-            # We use sudo -n (non-interactive) in case it's configured, or just try to chown if appropriate
-            # However, the safest for an automated deploy is to ensure permissions are correct
-            npm install --omit=dev
-            npm run build
-            # More robust PM2 restart
-            if pm2 list | grep -q "wizi-nestjs"; then
-              pm2 restart wizi-nestjs
+            sudo git pull origin master
+            sudo npm install --omit=dev
+            sudo npm run build
+            # Using sudo for PM2 as well to ensure permissions
+            if sudo pm2 list | grep -q "wizi-nestjs"; then
+              sudo pm2 restart wizi-nestjs
             elif [ -f "ecosystem.config.js" ]; then
-              pm2 restart ecosystem.config.js
+              sudo pm2 restart ecosystem.config.js
             else
-              pm2 start dist/main.js --name "wizi-nestjs"
+              sudo pm2 start dist/main.js --name "wizi-nestjs"
             fi

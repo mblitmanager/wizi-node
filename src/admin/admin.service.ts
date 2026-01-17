@@ -603,6 +603,38 @@ export class AdminService {
     };
   }
 
+  async getFormateurFormations(userId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!formateur) return [];
+
+    const formations = await this.catalogueFormationRepository
+      .createQueryBuilder("cf")
+      .innerJoin("cf.formateurs", "f", "f.id = :formateurId", {
+        formateurId: formateur.id,
+      })
+      .leftJoin("cf.stagiaire_catalogue_formations", "scf")
+      .select([
+        "cf.id as id",
+        "cf.titre as titre",
+        "cf.image_url as image_url",
+        "cf.tarif as tarif",
+        "COUNT(scf.id) as student_count",
+      ])
+      .groupBy("cf.id")
+      .getRawMany();
+
+    return formations.map((f) => ({
+      id: f.id,
+      titre: f.titre,
+      image_url: f.image_url,
+      tarif: f.tarif,
+      student_count: parseInt(f.student_count),
+    }));
+  }
+
   async getFormateurTrends(userId: number) {
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },
