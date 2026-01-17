@@ -610,7 +610,7 @@ export class AdminService {
 
     if (!formateur) return [];
 
-    const formations = await this.catalogueFormationRepository
+    const formations = await this.formationRepository
       .createQueryBuilder("cf")
       .innerJoin("cf.formateurs", "f", "f.id = :formateurId", {
         formateurId: formateur.id,

@@ -34,7 +34,8 @@ export class FormateurApiController {
 
   @Get("formations")
   async formations(@Request() req: any) {
-    return this.apiResponse.success([]);
+    const data = await this.adminService.getFormateurFormations(req.user.id);
+    return this.apiResponse.success(data);
   }
 
   @Get("stagiaires")
