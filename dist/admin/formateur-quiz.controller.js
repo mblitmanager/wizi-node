@@ -168,7 +168,7 @@ let FormateurQuizController = class FormateurQuizController {
         return this.apiResponse.success({
             success: true,
             message: "Quiz supprimé",
-        });
+        }, common_1.HttpStatus.OK);
     }
     async addQuestion(id, data) {
         const quiz = await this.quizRepository.findOne({
@@ -182,13 +182,13 @@ let FormateurQuizController = class FormateurQuizController {
         if (!hasCorrect) {
             throw new common_1.HttpException("Au moins une réponse doit être correcte", common_1.HttpStatus.BAD_REQUEST);
         }
-        const question = this.questionsRepository.create({
+        const question = this.questionRepository.create({
             quiz_id: quiz.id,
             text: data.question,
             type: data.type || "qcm",
             ordre: data.ordre || (quiz.questions?.length || 0) + 1,
         });
-        await this.questionsRepository.save(question);
+        await this.questionRepository.save(question);
         for (const reponseData of data.reponses) {
             const reponse = this.reponseRepository.create({
                 question_id: question.id,
@@ -211,7 +211,7 @@ let FormateurQuizController = class FormateurQuizController {
     }
     async updateQuestion(quizId, questionId, data) {
         const quiz = await this.quizRepository.findOne({ where: { id: quizId } });
-        const question = await this.questionsRepository.findOne({
+        const question = await this.questionRepository.findOne({
             where: { id: questionId, quiz_id: quizId },
         });
         if (!quiz || !question) {
@@ -229,11 +229,11 @@ let FormateurQuizController = class FormateurQuizController {
         await this.questionsRepository.save(question);
         if (data.reponses) {
             await this.reponseRepository.delete({ question_id: questionId });
-            for (const reponseData of data.reponses) {
+            for (const r of data.reponses) {
                 const reponse = this.reponseRepository.create({
-                    question_id: questionId,
-                    text: reponseData.reponse,
-                    is_correct: reponseData.correct ? 1 : 0,
+                    question_id: question.id,
+                    reponse: r.reponse,
+                    isCorrect: r.correct || r.isCorrect || false,
                 });
                 await this.reponseRepository.save(reponse);
             }
@@ -326,7 +326,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurQuizController.prototype, "destroy", null);
 __decorate([
-    (0, common_1.Post)("quizzes/:id/questions"),
+    (0, common_1.Post)(":id/questions"),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

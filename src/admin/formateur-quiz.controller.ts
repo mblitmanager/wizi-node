@@ -208,13 +208,16 @@ export class FormateurQuizController {
 
     await this.quizRepository.remove(quiz);
 
-    return this.apiResponse.success({
-      success: true,
-      message: "Quiz supprimé",
-    });
+    return this.apiResponse.success(
+      {
+        success: true,
+        message: "Quiz supprimé",
+      },
+      HttpStatus.OK // Added HttpStatus
+    );
   }
 
-  @Post("quizzes/:id/questions")
+  @Post(":id/questions") // Changed path from "quizzes/:id/questions" to ":id/questions"
   async addQuestion(@Param("id") id: number, @Body() data: any) {
     const quiz = await this.quizRepository.findOne({
       where: { id },
@@ -234,14 +237,19 @@ export class FormateurQuizController {
       );
     }
 
-    const question = this.questionsRepository.create({
-      quiz_id: quiz.id,
+    // Fix creation logic
+    const question = this.questionRepository.create({
+      quiz_id: quiz.id, // Kept original logic for quiz_id
       text: data.question,
       type: data.type || "qcm",
-      ordre: data.ordre || (quiz.questions?.length || 0) + 1,
+      ordre: data.ordre || (quiz.questions?.length || 0) + 1, // Kept original logic for ordre
+      // Assuming 'points' is a new field to be added to the Question entity if needed,
+      // but based on the original code, 'ordre' was the field here.
+      // If 'points' is intended, the Question entity schema needs to be updated.
+      // For now, keeping 'ordre' as it was.
     });
 
-    await this.questionsRepository.save(question);
+    await this.questionRepository.save(question); // Changed questionsRepository to questionRepository
 
     // Add answers
     for (const reponseData of data.reponses) {
@@ -278,7 +286,8 @@ export class FormateurQuizController {
     @Body() data: any
   ) {
     const quiz = await this.quizRepository.findOne({ where: { id: quizId } });
-    const question = await this.questionsRepository.findOne({
+    const question = await this.questionRepository.findOne({
+      // Changed questionsRepository to questionRepository
       where: { id: questionId, quiz_id: quizId },
     });
 
@@ -306,11 +315,11 @@ export class FormateurQuizController {
       await this.reponseRepository.delete({ question_id: questionId });
 
       // Add new answers
-      for (const reponseData of data.reponses) {
+      for (const r of data.reponses) {
         const reponse = this.reponseRepository.create({
-          question_id: questionId,
-          text: reponseData.reponse,
-          is_correct: reponseData.correct ? 1 : 0,
+          question_id: question.id,
+          reponse: r.reponse,
+          isCorrect: r.correct || r.isCorrect || false, // Adjusted to match entity and frontend payload
         });
         await this.reponseRepository.save(reponse);
       }
