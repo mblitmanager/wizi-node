@@ -270,6 +270,57 @@ let FormateurAnalyticsController = class FormateurAnalyticsController {
             },
         });
     }
+    async getStudentPerformance(req) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: req.user.id },
+            relations: ["stagiaires", "stagiaires.user"],
+        });
+        const stagiaireIds = formateur.stagiaires.map((s) => s.id);
+        const quizStats = await this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .select("qp.stagiaire_id", "stagiaire_id")
+            .addSelect("COUNT(DISTINCT qp.quiz_id)", "total_quizzes")
+            .addSelect("MAX(qp.created_at)", "last_quiz_at")
+            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .andWhere("qp.status = :status", { status: "completed" })
+            .groupBy("qp.stagiaire_id")
+            .getRawMany();
+        const statsMap = new Map();
+        quizStats.forEach((stat) => {
+            statsMap.set(stat.stagiaire_id, {
+                total_quizzes: parseInt(stat.total_quizzes),
+                last_quiz_at: stat.last_quiz_at,
+            });
+        });
+        const performanceData = formateur.stagiaires.map((stagiaire) => {
+            const stats = statsMap.get(stagiaire.id) || {
+                total_quizzes: 0,
+                last_quiz_at: null,
+            };
+            return {
+                id: stagiaire.id,
+                name: `${stagiaire.user.prenom} ${stagiaire.user.nom}`,
+                email: stagiaire.user.email,
+                image: stagiaire.user.image,
+                last_quiz_at: stats.last_quiz_at,
+                total_quizzes: stats.total_quizzes,
+                total_logins: stagiaire.login_streak || 0,
+            };
+        });
+        const mostQuizzes = [...performanceData]
+            .sort((a, b) => b.total_quizzes - a.total_quizzes)
+            .slice(0, 5);
+        const mostActive = [...performanceData]
+            .sort((a, b) => b.total_logins - a.total_logins)
+            .slice(0, 5);
+        return this.apiResponse.success({
+            performance: performanceData,
+            rankings: {
+                most_quizzes: mostQuizzes,
+                most_active: mostActive,
+            },
+        });
+    }
 };
 exports.FormateurAnalyticsController = FormateurAnalyticsController;
 __decorate([
@@ -311,6 +362,13 @@ __decorate([
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], FormateurAnalyticsController.prototype, "getDashboard", null);
+__decorate([
+    (0, common_1.Get)("performance"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FormateurAnalyticsController.prototype, "getStudentPerformance", null);
 exports.FormateurAnalyticsController = FormateurAnalyticsController = __decorate([
     (0, common_1.Controller)("formateur/analytics"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),

@@ -34,19 +34,11 @@ let AuthService = class AuthService {
             relations: ["stagiaire"],
         });
         if (user) {
-            console.log("Login attempt for:", email);
-            console.log("DB Hash:", user.password);
             const normalizedPassword = user.password.replace(/^\$2y\$/, "$2b$");
-            console.log("Normalized Hash:", normalizedPassword);
-            const isMatch = await bcrypt.compare(pass, normalizedPassword);
-            console.log("Password Match:", isMatch);
-            if (isMatch) {
+            if (await bcrypt.compare(pass, normalizedPassword)) {
                 const { password, ...result } = user;
                 return result;
             }
-        }
-        else {
-            console.log("User not found by email:", email);
         }
         return null;
     }

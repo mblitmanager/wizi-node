@@ -36,6 +36,10 @@ const admin_misc_controller_1 = require("./admin-misc.controller");
 const admin_stats_import_controller_1 = require("./admin-stats-import.controller");
 const formateur_commercial_web_controller_1 = require("./formateur-commercial-web.controller");
 const formateur_commercial_api_controller_1 = require("./formateur-commercial-api.controller");
+const formateur_analytics_controller_1 = require("./formateur-analytics.controller");
+const formateur_formation_controller_1 = require("./formateur-formation.controller");
+const formateur_quiz_controller_1 = require("./formateur-quiz.controller");
+const formateur_alerts_controller_1 = require("./formateur-alerts.controller");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const user_entity_1 = require("../entities/user.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
@@ -57,6 +61,7 @@ const parrainage_event_entity_1 = require("../entities/parrainage-event.entity")
 const classement_entity_1 = require("../entities/classement.entity");
 const progression_entity_1 = require("../entities/progression.entity");
 const stagiaire_achievement_entity_1 = require("../entities/stagiaire-achievement.entity");
+const reponse_entity_1 = require("../entities/reponse.entity");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -87,6 +92,7 @@ exports.AdminModule = AdminModule = __decorate([
                 classement_entity_1.Classement,
                 progression_entity_1.Progression,
                 stagiaire_achievement_entity_1.StagiaireAchievement,
+                reponse_entity_1.Reponse,
             ]),
         ],
         providers: [admin_service_1.AdminService, api_response_service_1.ApiResponseService],
@@ -123,6 +129,10 @@ exports.AdminModule = AdminModule = __decorate([
             formateur_commercial_web_controller_1.CommercialWebController,
             formateur_commercial_api_controller_1.FormateurApiController,
             formateur_commercial_api_controller_1.CommercialApiController,
+            formateur_analytics_controller_1.FormateurAnalyticsController,
+            formateur_formation_controller_1.FormateurFormationController,
+            formateur_quiz_controller_1.FormateurQuizController,
+            formateur_alerts_controller_1.FormateurAlertsController,
         ],
         exports: [admin_service_1.AdminService],
     })

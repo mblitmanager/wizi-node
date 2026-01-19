@@ -48,6 +48,10 @@ import {
   FormateurApiController,
   CommercialApiController,
 } from "./formateur-commercial-api.controller";
+import { FormateurAnalyticsController } from "./formateur-analytics.controller";
+import { FormateurFormationController } from "./formateur-formation.controller";
+import { FormateurQuizController } from "./formateur-quiz.controller";
+import { FormateurAlertsController } from "./formateur-alerts.controller";
 // Import entities
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { User } from "../entities/user.entity";
@@ -70,6 +74,7 @@ import { ParrainageEvent } from "../entities/parrainage-event.entity";
 import { Classement } from "../entities/classement.entity";
 import { Progression } from "../entities/progression.entity";
 import { StagiaireAchievement } from "../entities/stagiaire-achievement.entity";
+import { Reponse } from "../entities/reponse.entity";
 
 @Module({
   imports: [
@@ -97,6 +102,7 @@ import { StagiaireAchievement } from "../entities/stagiaire-achievement.entity";
       Classement,
       Progression,
       StagiaireAchievement,
+      Reponse,
     ]),
   ],
   providers: [AdminService, ApiResponseService],
@@ -137,6 +143,11 @@ import { StagiaireAchievement } from "../entities/stagiaire-achievement.entity";
     // API Controllers
     FormateurApiController,
     CommercialApiController,
+    // Formateur Specific Controllers
+    FormateurAnalyticsController,
+    FormateurFormationController,
+    FormateurQuizController,
+    FormateurAlertsController,
   ],
   exports: [AdminService],
 })

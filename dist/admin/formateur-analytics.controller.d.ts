@@ -12,4 +12,5 @@ export declare class FormateurAnalyticsController {
     getActivityHeatmap(period: number, req: any): Promise<any>;
     getDropoutRate(req: any): Promise<any>;
     getDashboard(period: number, req: any): Promise<any>;
+    getStudentPerformance(req: any): Promise<any>;
 }
