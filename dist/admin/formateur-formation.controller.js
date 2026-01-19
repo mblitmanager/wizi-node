@@ -221,14 +221,15 @@ let FormateurFormationController = class FormateurFormationController {
         })
             .leftJoinAndSelect("s.mediaStagiaires", "ms")
             .getMany();
-        const totalVideos = formation.medias?.filter((m) => m.type === "video").length || 0;
-        const totalQuiz = formation.quizzes?.length || 0;
+        const formationEntity = formation.formation;
+        const totalVideos = formationEntity?.medias?.filter((m) => m.type === "video").length || 0;
+        const totalQuiz = formationEntity?.quizzes?.length || 0;
         const totalStagiaires = stagiaires.length;
         let completed = 0;
         let inProgress = 0;
         let notStarted = 0;
         stagiaires.forEach((stagiaire) => {
-            const watchedCount = stagiaire.mediaStagiaires.filter((ms) => formation.medias.find((m) => m.id === ms.media_id)).length;
+            const watchedCount = stagiaire.mediaStagiaires.filter((ms) => formationEntity?.medias?.find((m) => m.id === ms.media_id)).length;
             const progress = totalVideos > 0 ? Math.round((watchedCount / totalVideos) * 100) : 0;
             if (progress === 100) {
                 completed++;

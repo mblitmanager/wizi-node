@@ -1,15 +1,16 @@
 import { ApiResponseService } from "../common/services/api-response.service";
 import { Repository } from "typeorm";
 import { Quiz } from "../entities/quiz.entity";
+import { Question } from "../entities/question.entity";
 import { Reponse } from "../entities/reponse.entity";
 import { Formation } from "../entities/formation.entity";
 export declare class FormateurQuizController {
     private quizRepository;
-    private questionsRepository;
+    private questionRepository;
     private reponseRepository;
     private formationRepository;
     private apiResponse;
-    constructor(quizRepository: Repository<Quiz>, questionsRepository: Repository<Questions>, reponseRepository: Repository<Reponse>, formationRepository: Repository<Formation>, apiResponse: ApiResponseService);
+    constructor(quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, reponseRepository: Repository<Reponse>, formationRepository: Repository<Formation>, apiResponse: ApiResponseService);
     index(query: any): Promise<any>;
     show(id: number): Promise<any>;
     store(data: any): Promise<any>;

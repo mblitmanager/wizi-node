@@ -21,12 +21,13 @@ const api_response_service_1 = require("../common/services/api-response.service"
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const quiz_entity_1 = require("../entities/quiz.entity");
+const question_entity_1 = require("../entities/question.entity");
 const reponse_entity_1 = require("../entities/reponse.entity");
 const formation_entity_1 = require("../entities/formation.entity");
 let FormateurQuizController = class FormateurQuizController {
-    constructor(quizRepository, questionsRepository, reponseRepository, formationRepository, apiResponse) {
+    constructor(quizRepository, questionRepository, reponseRepository, formationRepository, apiResponse) {
         this.quizRepository = quizRepository;
-        this.questionsRepository = questionsRepository;
+        this.questionRepository = questionRepository;
         this.reponseRepository = reponseRepository;
         this.formationRepository = formationRepository;
         this.apiResponse = apiResponse;
@@ -58,7 +59,7 @@ let FormateurQuizController = class FormateurQuizController {
             formation: quiz.formation
                 ? {
                     id: quiz.formation.id,
-                    nom: quiz.formation.nom,
+                    nom: quiz.formation.titre,
                 }
                 : null,
             nb_questions: quiz.questions?.length || 0,
@@ -83,7 +84,7 @@ let FormateurQuizController = class FormateurQuizController {
             reponses: (question.reponses || []).map((reponse) => ({
                 id: reponse.id,
                 reponse: reponse.text,
-                correct: !!reponse.is_correct,
+                correct: !!reponse.isCorrect,
             })),
         }))
             .sort((a, b) => a.ordre - b.ordre);
@@ -102,7 +103,7 @@ let FormateurQuizController = class FormateurQuizController {
                 formation: quiz.formation
                     ? {
                         id: quiz.formation.id,
-                        nom: quiz.formation.nom,
+                        nom: quiz.formation.titre,
                     }
                     : null,
             },
@@ -117,7 +118,7 @@ let FormateurQuizController = class FormateurQuizController {
             niveau: data.niveau,
             formation_id: data.formation_id,
             status: data.status || "brouillon",
-            nb_points_total: 0,
+            nb_points_total: "0",
         });
         await this.quizRepository.save(quiz);
         return this.apiResponse.success({
@@ -128,7 +129,7 @@ let FormateurQuizController = class FormateurQuizController {
                 titre: quiz.titre,
                 status: quiz.status,
             },
-        }, common_1.HttpStatus.CREATED);
+        }, "Quiz créé avec succès");
     }
     async update(id, data) {
         const quiz = await this.quizRepository.findOne({ where: { id } });
@@ -168,7 +169,7 @@ let FormateurQuizController = class FormateurQuizController {
         return this.apiResponse.success({
             success: true,
             message: "Quiz supprimé",
-        }, common_1.HttpStatus.OK);
+        }, "Quiz supprimé avec succès");
     }
     async addQuestion(id, data) {
         const quiz = await this.quizRepository.findOne({
@@ -186,14 +187,14 @@ let FormateurQuizController = class FormateurQuizController {
             quiz_id: quiz.id,
             text: data.question,
             type: data.type || "qcm",
-            ordre: data.ordre || (quiz.questions?.length || 0) + 1,
+            points: 1,
         });
         await this.questionRepository.save(question);
         for (const reponseData of data.reponses) {
             const reponse = this.reponseRepository.create({
                 question_id: question.id,
                 text: reponseData.reponse,
-                is_correct: reponseData.correct ? 1 : 0,
+                isCorrect: reponseData.correct ? true : false,
             });
             await this.reponseRepository.save(reponse);
         }
@@ -207,7 +208,7 @@ let FormateurQuizController = class FormateurQuizController {
                 id: question.id,
                 question: question.text,
             },
-        }, common_1.HttpStatus.CREATED);
+        }, "Question ajoutée avec succès");
     }
     async updateQuestion(quizId, questionId, data) {
         const quiz = await this.quizRepository.findOne({ where: { id: quizId } });
@@ -223,17 +224,14 @@ let FormateurQuizController = class FormateurQuizController {
         if (data.type) {
             question.type = data.type;
         }
-        if (data.ordre !== undefined) {
-            question.ordre = data.ordre;
-        }
-        await this.questionsRepository.save(question);
+        await this.questionRepository.save(question);
         if (data.reponses) {
             await this.reponseRepository.delete({ question_id: questionId });
             for (const r of data.reponses) {
                 const reponse = this.reponseRepository.create({
                     question_id: question.id,
-                    reponse: r.reponse,
-                    isCorrect: r.correct || r.isCorrect || false,
+                    text: r.reponse,
+                    isCorrect: r.correct ? true : false,
                 });
                 await this.reponseRepository.save(reponse);
             }
@@ -248,14 +246,15 @@ let FormateurQuizController = class FormateurQuizController {
             where: { id: quizId },
             relations: ["questions"],
         });
-        const question = await this.questionsRepository.findOne({
+        const question = await this.questionRepository.findOne({
             where: { id: questionId, quiz_id: quizId },
         });
         if (!quiz || !question) {
             throw new common_1.HttpException("Quiz ou question non trouvé", common_1.HttpStatus.NOT_FOUND);
         }
-        await this.questionsRepository.remove(question);
-        quiz.nb_points_total = ((quiz.questions?.length || 1) - 1) * 2;
+        await this.questionRepository.remove(question);
+        const points = ((quiz.questions?.length || 0) - 1) * 2;
+        quiz.nb_points_total = points.toString();
         await this.quizRepository.save(quiz);
         return this.apiResponse.success({
             success: true,
@@ -368,7 +367,7 @@ exports.FormateurQuizController = FormateurQuizController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("formateur", "formatrice"),
     __param(0, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),
-    __param(1, (0, typeorm_1.InjectRepository)(Questions)),
+    __param(1, (0, typeorm_1.InjectRepository)(question_entity_1.Question)),
     __param(2, (0, typeorm_1.InjectRepository)(reponse_entity_1.Reponse)),
     __param(3, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
     __metadata("design:paramtypes", [typeorm_2.Repository,

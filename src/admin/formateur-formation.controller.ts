@@ -314,10 +314,11 @@ export class FormateurFormationController {
       .leftJoinAndSelect("s.mediaStagiaires", "ms")
       .getMany();
 
-    // Access medias and quizzes directly from the loaded formation entity
+    // Access medias and quizzes directly from the loaded formation entity (CatalogueFormation -> Formation)
+    const formationEntity = formation.formation;
     const totalVideos =
-      formation.medias?.filter((m) => m.type === "video").length || 0;
-    const totalQuiz = formation.quizzes?.length || 0; // Assuming quizzes are on Formation
+      formationEntity?.medias?.filter((m) => m.type === "video").length || 0;
+    const totalQuiz = formationEntity?.quizzes?.length || 0;
 
     const totalStagiaires = stagiaires.length;
 
@@ -327,7 +328,7 @@ export class FormateurFormationController {
 
     stagiaires.forEach((stagiaire: any) => {
       const watchedCount = stagiaire.mediaStagiaires.filter((ms: any) =>
-        formation.medias.find((m) => m.id === ms.media_id)
+        formationEntity?.medias?.find((m) => m.id === ms.media_id)
       ).length;
 
       const progress =

@@ -30,8 +30,8 @@ export class FormateurQuizController {
   constructor(
     @InjectRepository(Quiz)
     private quizRepository: Repository<Quiz>,
-    @InjectRepository(Questions)
-    private questionsRepository: Repository<Questions>,
+    @InjectRepository(Question)
+    private questionRepository: Repository<Question>,
     @InjectRepository(Reponse)
     private reponseRepository: Repository<Reponse>,
     @InjectRepository(Formation)
@@ -71,7 +71,7 @@ export class FormateurQuizController {
       formation: quiz.formation
         ? {
             id: quiz.formation.id,
-            nom: quiz.formation.nom,
+            nom: quiz.formation.titre,
           }
         : null,
       nb_questions: quiz.questions?.length || 0,
@@ -101,7 +101,7 @@ export class FormateurQuizController {
         reponses: (question.reponses || []).map((reponse: any) => ({
           id: reponse.id,
           reponse: reponse.text,
-          correct: !!reponse.is_correct,
+          correct: !!reponse.isCorrect,
         })),
       }))
       .sort((a, b) => a.ordre - b.ordre);
@@ -121,7 +121,7 @@ export class FormateurQuizController {
         formation: quiz.formation
           ? {
               id: quiz.formation.id,
-              nom: quiz.formation.nom,
+              nom: quiz.formation.titre,
             }
           : null,
       },
@@ -138,7 +138,7 @@ export class FormateurQuizController {
       niveau: data.niveau,
       formation_id: data.formation_id,
       status: data.status || "brouillon",
-      nb_points_total: 0,
+      nb_points_total: "0",
     });
 
     await this.quizRepository.save(quiz);
@@ -153,7 +153,7 @@ export class FormateurQuizController {
           status: quiz.status,
         },
       },
-      HttpStatus.CREATED
+      "Quiz créé avec succès"
     );
   }
 
@@ -213,11 +213,11 @@ export class FormateurQuizController {
         success: true,
         message: "Quiz supprimé",
       },
-      HttpStatus.OK // Added HttpStatus
+      "Quiz supprimé avec succès"
     );
   }
 
-  @Post(":id/questions") // Changed path from "quizzes/:id/questions" to ":id/questions"
+  @Post(":id/questions")
   async addQuestion(@Param("id") id: number, @Body() data: any) {
     const quiz = await this.quizRepository.findOne({
       where: { id },
@@ -228,7 +228,6 @@ export class FormateurQuizController {
       throw new HttpException("Quiz non trouvé", HttpStatus.NOT_FOUND);
     }
 
-    // Validate at least one correct answer
     const hasCorrect = data.reponses.some((r: any) => r.correct);
     if (!hasCorrect) {
       throw new HttpException(
@@ -237,31 +236,25 @@ export class FormateurQuizController {
       );
     }
 
-    // Fix creation logic
     const question = this.questionRepository.create({
-      quiz_id: quiz.id, // Kept original logic for quiz_id
+      quiz_id: quiz.id,
       text: data.question,
       type: data.type || "qcm",
-      ordre: data.ordre || (quiz.questions?.length || 0) + 1, // Kept original logic for ordre
-      // Assuming 'points' is a new field to be added to the Question entity if needed,
-      // but based on the original code, 'ordre' was the field here.
-      // If 'points' is intended, the Question entity schema needs to be updated.
-      // For now, keeping 'ordre' as it was.
+      points: 1, // Default points
+      // ordre handled by defaults or DB
     });
 
-    await this.questionRepository.save(question); // Changed questionsRepository to questionRepository
+    await this.questionRepository.save(question);
 
-    // Add answers
     for (const reponseData of data.reponses) {
       const reponse = this.reponseRepository.create({
         question_id: question.id,
         text: reponseData.reponse,
-        is_correct: reponseData.correct ? 1 : 0,
+        isCorrect: reponseData.correct ? true : false,
       });
       await this.reponseRepository.save(reponse);
     }
 
-    // Update total points (simple logic: 2 points per question for example)
     const points = ((quiz.questions?.length || 0) + 1) * 2;
     quiz.nb_points_total = points.toString();
     await this.quizRepository.save(quiz);
@@ -275,7 +268,7 @@ export class FormateurQuizController {
           question: question.text,
         },
       },
-      HttpStatus.CREATED
+      "Question ajoutée avec succès"
     );
   }
 
@@ -287,7 +280,6 @@ export class FormateurQuizController {
   ) {
     const quiz = await this.quizRepository.findOne({ where: { id: quizId } });
     const question = await this.questionRepository.findOne({
-      // Changed questionsRepository to questionRepository
       where: { id: questionId, quiz_id: quizId },
     });
 
@@ -304,22 +296,17 @@ export class FormateurQuizController {
     if (data.type) {
       question.type = data.type;
     }
-    if (data.ordre !== undefined) {
-      question.ordre = data.ordre;
-    }
 
-    await this.questionsRepository.save(question);
+    await this.questionRepository.save(question);
 
     if (data.reponses) {
-      // Delete old answers
       await this.reponseRepository.delete({ question_id: questionId });
 
-      // Add new answers
       for (const r of data.reponses) {
         const reponse = this.reponseRepository.create({
           question_id: question.id,
-          reponse: r.reponse,
-          isCorrect: r.correct || r.isCorrect || false, // Adjusted to match entity and frontend payload
+          text: r.reponse,
+          isCorrect: r.correct ? true : false,
         });
         await this.reponseRepository.save(reponse);
       }
@@ -340,7 +327,7 @@ export class FormateurQuizController {
       where: { id: quizId },
       relations: ["questions"],
     });
-    const question = await this.questionsRepository.findOne({
+    const question = await this.questionRepository.findOne({
       where: { id: questionId, quiz_id: quizId },
     });
 
@@ -351,10 +338,10 @@ export class FormateurQuizController {
       );
     }
 
-    await this.questionsRepository.remove(question);
+    await this.questionRepository.remove(question);
 
-    // Update quiz points
-    quiz.nb_points_total = ((quiz.questions?.length || 1) - 1) * 2;
+    const points = ((quiz.questions?.length || 0) - 1) * 2;
+    quiz.nb_points_total = points.toString();
     await this.quizRepository.save(quiz);
 
     return this.apiResponse.success({
@@ -393,8 +380,8 @@ export class FormateurQuizController {
   @Get("formations-list")
   async getFormations() {
     const formations = await this.formationRepository.find({
-      select: ["id", "titre"], // Changed nom to titre
-      order: { titre: "ASC" }, // Changed nom to titre
+      select: ["id", "titre"],
+      order: { titre: "ASC" },
     });
 
     return this.apiResponse.success({ formations });
