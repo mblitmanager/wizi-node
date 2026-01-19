@@ -3,12 +3,14 @@ import { Notification } from "../entities/notification.entity";
 import { User } from "../entities/user.entity";
 import { FcmService } from "./fcm.service";
 import { ParrainageEvent } from "../entities/parrainage-event.entity";
+import { Queue } from "bullmq";
 export declare class NotificationService {
     private notificationRepository;
     private userRepository;
     private parrainageEventRepository;
     private fcmService;
-    constructor(notificationRepository: Repository<Notification>, userRepository: Repository<User>, parrainageEventRepository: Repository<ParrainageEvent>, fcmService: FcmService);
+    private readonly notificationsQueue;
+    constructor(notificationRepository: Repository<Notification>, userRepository: Repository<User>, parrainageEventRepository: Repository<ParrainageEvent>, fcmService: FcmService, notificationsQueue: Queue);
     createNotification(userId: number, type: string, message: string, data?: any, title?: string): Promise<Notification>;
     getNotifications(userId: number): Promise<{
         data: {

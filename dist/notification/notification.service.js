@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationService = void 0;
 const common_1 = require("@nestjs/common");
@@ -20,12 +21,15 @@ const notification_entity_1 = require("../entities/notification.entity");
 const user_entity_1 = require("../entities/user.entity");
 const fcm_service_1 = require("./fcm.service");
 const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
+const bullmq_1 = require("@nestjs/bullmq");
+const bullmq_2 = require("bullmq");
 let NotificationService = class NotificationService {
-    constructor(notificationRepository, userRepository, parrainageEventRepository, fcmService) {
+    constructor(notificationRepository, userRepository, parrainageEventRepository, fcmService, notificationsQueue) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
         this.parrainageEventRepository = parrainageEventRepository;
         this.fcmService = fcmService;
+        this.notificationsQueue = notificationsQueue;
     }
     async createNotification(userId, type, message, data = {}, title) {
         const notification = this.notificationRepository.create({
@@ -39,12 +43,16 @@ let NotificationService = class NotificationService {
         const savedNotification = await this.notificationRepository.save(notification);
         try {
             const user = await this.userRepository.findOne({ where: { id: userId } });
-            if (user && user.fcm_token) {
-                await this.fcmService.sendPushNotification(user.fcm_token, title || "Nouvelle notification", message, data);
-            }
+            await this.notificationsQueue.add("send-push", {
+                userId,
+                title: title || "Nouvelle notification",
+                message,
+                data,
+                fcmToken: user?.fcm_token,
+            });
         }
         catch (error) {
-            console.error("Failed to send push notification:", error);
+            console.error("Failed to queue notification job:", error);
         }
         return savedNotification;
     }
@@ -181,9 +189,10 @@ exports.NotificationService = NotificationService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(notification_entity_1.Notification)),
     __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __param(2, (0, typeorm_1.InjectRepository)(parrainage_event_entity_1.ParrainageEvent)),
+    __param(4, (0, bullmq_1.InjectQueue)("notifications")),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        fcm_service_1.FcmService])
+        fcm_service_1.FcmService, typeof (_a = typeof bullmq_2.Queue !== "undefined" && bullmq_2.Queue) === "function" ? _a : Object])
 ], NotificationService);
 //# sourceMappingURL=notification.service.js.map

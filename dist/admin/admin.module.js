@@ -36,7 +36,6 @@ const admin_misc_controller_1 = require("./admin-misc.controller");
 const admin_stats_import_controller_1 = require("./admin-stats-import.controller");
 const formateur_commercial_web_controller_1 = require("./formateur-commercial-web.controller");
 const formateur_commercial_api_controller_1 = require("./formateur-commercial-api.controller");
-const formateur_analytics_controller_1 = require("./formateur-analytics.controller");
 const formateur_formation_controller_1 = require("./formateur-formation.controller");
 const formateur_quiz_controller_1 = require("./formateur-quiz.controller");
 const formateur_alerts_controller_1 = require("./formateur-alerts.controller");
@@ -129,7 +128,6 @@ exports.AdminModule = AdminModule = __decorate([
             formateur_commercial_web_controller_1.CommercialWebController,
             formateur_commercial_api_controller_1.FormateurApiController,
             formateur_commercial_api_controller_1.CommercialApiController,
-            formateur_analytics_controller_1.FormateurAnalyticsController,
             formateur_formation_controller_1.FormateurFormationController,
             formateur_quiz_controller_1.FormateurQuizController,
             formateur_alerts_controller_1.FormateurAlertsController,

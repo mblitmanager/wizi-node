@@ -144,7 +144,6 @@ import { Reponse } from "../entities/reponse.entity";
     FormateurApiController,
     CommercialApiController,
     // Formateur Specific Controllers
-    FormateurAnalyticsController,
     FormateurFormationController,
     FormateurQuizController,
     FormateurAlertsController,

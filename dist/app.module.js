@@ -68,6 +68,7 @@ const challenge_module_1 = require("./challenge/challenge.module");
 const participation_module_1 = require("./participation/participation.module");
 const pole_relation_client_module_1 = require("./pole-relation-client/pole-relation-client.module");
 const progression_module_1 = require("./progression/progression.module");
+const workers_module_1 = require("./workers/workers.module");
 let AppModule = class AppModule {
     constructor() {
         console.log("AppModule loaded - MediaModule should be active");
@@ -178,6 +179,7 @@ exports.AppModule = AppModule = __decorate([
             pole_relation_client_module_1.PoleRelationClientModule,
             progression_module_1.ProgressionModule,
             common_module_1.CommonModule,
+            workers_module_1.WorkersModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

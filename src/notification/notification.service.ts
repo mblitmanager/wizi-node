@@ -5,6 +5,8 @@ import { Notification } from "../entities/notification.entity";
 import { User } from "../entities/user.entity";
 import { FcmService } from "./fcm.service";
 import { ParrainageEvent } from "../entities/parrainage-event.entity";
+import { InjectQueue } from "@nestjs/bullmq";
+import { Queue } from "bullmq";
 
 @Injectable()
 export class NotificationService {
@@ -15,7 +17,9 @@ export class NotificationService {
     private userRepository: Repository<User>,
     @InjectRepository(ParrainageEvent)
     private parrainageEventRepository: Repository<ParrainageEvent>,
-    private fcmService: FcmService
+    private fcmService: FcmService,
+    @InjectQueue("notifications")
+    private readonly notificationsQueue: Queue
   ) {}
 
   async createNotification(
@@ -36,19 +40,18 @@ export class NotificationService {
     const savedNotification =
       await this.notificationRepository.save(notification);
 
-    // Send Push Notification via FCM
+    // Offload Push Notification to Worker via BullMQ
     try {
       const user = await this.userRepository.findOne({ where: { id: userId } });
-      if (user && user.fcm_token) {
-        await this.fcmService.sendPushNotification(
-          user.fcm_token,
-          title || "Nouvelle notification",
-          message,
-          data
-        );
-      }
+      await this.notificationsQueue.add("send-push", {
+        userId,
+        title: title || "Nouvelle notification",
+        message,
+        data,
+        fcmToken: user?.fcm_token,
+      });
     } catch (error) {
-      console.error("Failed to send push notification:", error);
+      console.error("Failed to queue notification job:", error);
     }
 
     return savedNotification;

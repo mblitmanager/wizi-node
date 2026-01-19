@@ -57,6 +57,7 @@ import { ChallengeModule } from "./challenge/challenge.module";
 import { ParticipationModule } from "./participation/participation.module";
 import { PoleRelationClientModule } from "./pole-relation-client/pole-relation-client.module";
 import { ProgressionModule } from "./progression/progression.module";
+import { WorkersModule } from "./workers/workers.module";
 
 @Module({
   imports: [
@@ -158,6 +159,7 @@ import { ProgressionModule } from "./progression/progression.module";
     PoleRelationClientModule,
     ProgressionModule,
     CommonModule,
+    WorkersModule,
   ],
   controllers: [AppController],
   providers: [

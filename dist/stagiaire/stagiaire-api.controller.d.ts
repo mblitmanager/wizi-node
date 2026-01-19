@@ -18,11 +18,11 @@ export declare class StagiaireApiController {
     dashboardHome(req: any): Promise<any>;
     formations(req: any): Promise<any>;
     formationClassement(formationId: number): Promise<any>;
-    inscriptionCatalogueFormation(req: any, data: any): Promise<import("../common/interfaces/api-response.interface").ApiResponse<any> | {
+    inscriptionCatalogueFormation(req: any, data: any): Promise<{
         success: boolean;
         message: string;
         demande: import("../entities/demande-inscription.entity").DemandeInscription;
-    }>;
+    } | import("../common/interfaces/api-response.interface").ApiResponse<any>>;
     onboardingSeen(req: any): Promise<any>;
     achievements(req: any): Promise<any>;
     allAchievements(): Promise<any>;
