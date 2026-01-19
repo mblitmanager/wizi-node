@@ -21,13 +21,15 @@ const user_entity_1 = require("../entities/user.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
 const formateur_entity_1 = require("../entities/formateur.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const notification_service_1 = require("../notification/notification.service");
 let AdminService = class AdminService {
-    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, formationRepository) {
+    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, formationRepository, notificationService) {
         this.stagiaireRepository = stagiaireRepository;
         this.userRepository = userRepository;
         this.quizParticipationRepository = quizParticipationRepository;
         this.formateurRepository = formateurRepository;
         this.formationRepository = formationRepository;
+        this.notificationService = notificationService;
     }
     async getFormateurDashboardStats(userId) {
         const formateur = await this.formateurRepository.findOne({
@@ -732,6 +734,20 @@ let AdminService = class AdminService {
         const result = await this.userRepository.update({ id: (0, typeorm_2.In)(userIds) }, { is_online: false });
         return result.affected || 0;
     }
+    async sendNotification(senderId, recipientIds, title, message) {
+        console.log(`[DEBUG] AdminService: Sending notification to ${recipientIds.length} recipients...`);
+        const promises = recipientIds.map(async (id) => {
+            const stagiaire = await this.stagiaireRepository.findOne({
+                where: { id },
+                select: ["id", "user_id"],
+            });
+            if (stagiaire && stagiaire.user_id) {
+                return this.notificationService.createNotification(stagiaire.user_id, "system", message, { type: "custom", sender_id: senderId }, title);
+            }
+        });
+        await Promise.all(promises);
+        return { success: true, count: recipientIds.length };
+    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
@@ -745,6 +761,7 @@ exports.AdminService = AdminService = __decorate([
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        notification_service_1.NotificationService])
 ], AdminService);
 //# sourceMappingURL=admin.service.js.map

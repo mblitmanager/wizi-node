@@ -20,7 +20,7 @@ export declare class FormateurApiController {
     formationRanking(formationId: number): Promise<any>;
     mesStagiairesRanking(req: any, period?: string): Promise<any>;
     sendEmail(data: any): Promise<any>;
-    sendNotification(data: any): Promise<any>;
+    sendNotification(req: any, data: any): Promise<any>;
     trends(req: any): Promise<any>;
     stats(): Promise<any>;
 }

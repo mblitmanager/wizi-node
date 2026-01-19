@@ -140,8 +140,15 @@ export class FormateurApiController {
   }
 
   @Post("send-notification")
-  async sendNotification(@Body() data: any) {
-    return this.apiResponse.success();
+  async sendNotification(@Request() req: any, @Body() data: any) {
+    const { recipient_ids, title, body } = data;
+    const result = await this.adminService.sendNotification(
+      req.user.id,
+      recipient_ids,
+      title,
+      body
+    );
+    return this.apiResponse.success(result);
   }
 
   @Get("trends")

@@ -4,13 +4,15 @@ import { User } from "../entities/user.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { Formateur } from "../entities/formateur.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { NotificationService } from "../notification/notification.service";
 export declare class AdminService {
     private stagiaireRepository;
     private userRepository;
     private quizParticipationRepository;
     private formateurRepository;
     private formationRepository;
-    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, formationRepository: Repository<CatalogueFormation>);
+    private notificationService;
+    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, formationRepository: Repository<CatalogueFormation>, notificationService: NotificationService);
     getFormateurDashboardStats(userId: number): Promise<{
         total_stagiaires: number;
         active_this_week: number;
@@ -231,4 +233,8 @@ export declare class AdminService {
         }[];
     }>;
     disconnectStagiaires(stagiaireIds: number[]): Promise<number>;
+    sendNotification(senderId: number, recipientIds: number[], title: string, message: string): Promise<{
+        success: boolean;
+        count: number;
+    }>;
 }

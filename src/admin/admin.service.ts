@@ -6,6 +6,7 @@ import { User } from "../entities/user.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { Formateur } from "../entities/formateur.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { NotificationService } from "../notification/notification.service";
 
 @Injectable()
 export class AdminService {
@@ -19,7 +20,8 @@ export class AdminService {
     @InjectRepository(Formateur)
     private formateurRepository: Repository<Formateur>,
     @InjectRepository(CatalogueFormation)
-    private formationRepository: Repository<CatalogueFormation>
+    private formationRepository: Repository<CatalogueFormation>,
+    private notificationService: NotificationService
   ) {}
 
   async getFormateurDashboardStats(userId: number) {
@@ -886,5 +888,37 @@ export class AdminService {
     );
 
     return result.affected || 0;
+  }
+
+  async sendNotification(
+    senderId: number,
+    recipientIds: number[],
+    title: string,
+    message: string
+  ) {
+    console.log(
+      `[DEBUG] AdminService: Sending notification to ${recipientIds.length} recipients...`
+    );
+
+    const promises = recipientIds.map(async (id) => {
+      // Find the user_id associated with this stagiaire id
+      const stagiaire = await this.stagiaireRepository.findOne({
+        where: { id },
+        select: ["id", "user_id"],
+      });
+
+      if (stagiaire && stagiaire.user_id) {
+        return this.notificationService.createNotification(
+          stagiaire.user_id,
+          "system",
+          message,
+          { type: "custom", sender_id: senderId },
+          title
+        );
+      }
+    });
+
+    await Promise.all(promises);
+    return { success: true, count: recipientIds.length };
   }
 }

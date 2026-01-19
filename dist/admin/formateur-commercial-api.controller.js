@@ -88,8 +88,10 @@ let FormateurApiController = class FormateurApiController {
     async sendEmail(data) {
         return this.apiResponse.success();
     }
-    async sendNotification(data) {
-        return this.apiResponse.success();
+    async sendNotification(req, data) {
+        const { recipient_ids, title, body } = data;
+        const result = await this.adminService.sendNotification(req.user.id, recipient_ids, title, body);
+        return this.apiResponse.success(result);
     }
     async trends(req) {
         const data = await this.adminService.getFormateurTrends(req.user.id);
@@ -201,9 +203,10 @@ __decorate([
 ], FormateurApiController.prototype, "sendEmail", null);
 __decorate([
     (0, common_1.Post)("send-notification"),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "sendNotification", null);
 __decorate([
