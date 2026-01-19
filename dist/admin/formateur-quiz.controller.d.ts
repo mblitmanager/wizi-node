@@ -1,7 +1,6 @@
 import { ApiResponseService } from "../common/services/api-response.service";
 import { Repository } from "typeorm";
 import { Quiz } from "../entities/quiz.entity";
-import { Questions } from "../entities/questions.entity";
 import { Reponse } from "../entities/reponse.entity";
 import { Formation } from "../entities/formation.entity";
 export declare class FormateurQuizController {

@@ -19,7 +19,7 @@ import { ApiResponseService } from "../common/services/api-response.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Quiz } from "../entities/quiz.entity";
-import { Questions } from "../entities/questions.entity";
+import { Question } from "../entities/question.entity";
 import { Reponse } from "../entities/reponse.entity";
 import { Formation } from "../entities/formation.entity";
 
@@ -114,8 +114,10 @@ export class FormateurQuizController {
         duree: quiz.duree,
         niveau: quiz.niveau,
         nb_points_total: quiz.nb_points_total,
-        status: quiz.status || "actif",
+        status: quiz.status,
+        nb_questions: quiz.questions?.length || 0,
         formation_id: quiz.formation_id,
+        formation_nom: quiz.formation?.titre,
         formation: quiz.formation
           ? {
               id: quiz.formation.id,
@@ -251,8 +253,9 @@ export class FormateurQuizController {
       await this.reponseRepository.save(reponse);
     }
 
-    // Update quiz points
-    quiz.nb_points_total = ((quiz.questions?.length || 0) + 1) * 2;
+    // Update total points (simple logic: 2 points per question for example)
+    const points = ((quiz.questions?.length || 0) + 1) * 2;
+    quiz.nb_points_total = points.toString();
     await this.quizRepository.save(quiz);
 
     return this.apiResponse.success(
@@ -381,8 +384,8 @@ export class FormateurQuizController {
   @Get("formations-list")
   async getFormations() {
     const formations = await this.formationRepository.find({
-      select: ["id", "nom"],
-      order: { nom: "ASC" },
+      select: ["id", "titre"], // Changed nom to titre
+      order: { titre: "ASC" }, // Changed nom to titre
     });
 
     return this.apiResponse.success({ formations });

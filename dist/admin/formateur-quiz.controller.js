@@ -21,7 +21,6 @@ const api_response_service_1 = require("../common/services/api-response.service"
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const quiz_entity_1 = require("../entities/quiz.entity");
-const questions_entity_1 = require("../entities/questions.entity");
 const reponse_entity_1 = require("../entities/reponse.entity");
 const formation_entity_1 = require("../entities/formation.entity");
 let FormateurQuizController = class FormateurQuizController {
@@ -96,8 +95,10 @@ let FormateurQuizController = class FormateurQuizController {
                 duree: quiz.duree,
                 niveau: quiz.niveau,
                 nb_points_total: quiz.nb_points_total,
-                status: quiz.status || "actif",
+                status: quiz.status,
+                nb_questions: quiz.questions?.length || 0,
                 formation_id: quiz.formation_id,
+                formation_nom: quiz.formation?.titre,
                 formation: quiz.formation
                     ? {
                         id: quiz.formation.id,
@@ -196,7 +197,8 @@ let FormateurQuizController = class FormateurQuizController {
             });
             await this.reponseRepository.save(reponse);
         }
-        quiz.nb_points_total = ((quiz.questions?.length || 0) + 1) * 2;
+        const points = ((quiz.questions?.length || 0) + 1) * 2;
+        quiz.nb_points_total = points.toString();
         await this.quizRepository.save(quiz);
         return this.apiResponse.success({
             success: true,
@@ -280,8 +282,8 @@ let FormateurQuizController = class FormateurQuizController {
     }
     async getFormations() {
         const formations = await this.formationRepository.find({
-            select: ["id", "nom"],
-            order: { nom: "ASC" },
+            select: ["id", "titre"],
+            order: { titre: "ASC" },
         });
         return this.apiResponse.success({ formations });
     }
@@ -366,7 +368,7 @@ exports.FormateurQuizController = FormateurQuizController = __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("formateur", "formatrice"),
     __param(0, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),
-    __param(1, (0, typeorm_1.InjectRepository)(questions_entity_1.Questions)),
+    __param(1, (0, typeorm_1.InjectRepository)(Questions)),
     __param(2, (0, typeorm_1.InjectRepository)(reponse_entity_1.Reponse)),
     __param(3, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
     __metadata("design:paramtypes", [typeorm_2.Repository,

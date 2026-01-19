@@ -80,9 +80,14 @@ let FormateurFormationController = class FormateurFormationController {
             .leftJoinAndSelect("s.user", "user")
             .leftJoinAndSelect("s.mediaStagiaires", "ms")
             .getMany();
-        const totalVideos = formation.medias.filter((m) => m.type === "video").length;
+        const totalVideos = formation.formation?.medias?.filter((m) => m.type === "video").length ||
+            0;
         const stagiairesData = stagiaires.map((stagiaire) => {
-            const watchedCount = stagiaire.mediaStagiaires.filter((ms) => formation.medias.find((m) => m.id === ms.media_id)).length;
+            const watchedCount = stagiaire.mediaStagiaires.filter((ms) => formation.formation?.medias?.find((m) => m.id === ms.media_id)).length;
+            const completedVideos = stagiaire.mediaStagiaires.filter((ms) => {
+                const media = formation.formation?.medias?.find((m) => m.id === ms.media_id);
+                return media?.type === "video" && ms.status === "completed";
+            }).length;
             const progress = totalVideos > 0 ? Math.round((watchedCount / totalVideos) * 100) : 0;
             return {
                 id: stagiaire.id,
@@ -131,7 +136,7 @@ let FormateurFormationController = class FormateurFormationController {
         }
         let assigned = 0;
         for (const stagiaire of stagiaires) {
-            const alreadyAssigned = stagiaire.catalogue_formations.some((cf) => cf.id === formationId);
+            const alreadyAssigned = stagiaire.stagiaire_catalogue_formations?.some((scf) => scf.catalogue_formation_id === formationId);
             if (!alreadyAssigned) {
                 await this.catalogueFormationRepository
                     .createQueryBuilder()
@@ -216,7 +221,8 @@ let FormateurFormationController = class FormateurFormationController {
         })
             .leftJoinAndSelect("s.mediaStagiaires", "ms")
             .getMany();
-        const totalVideos = formation.medias.filter((m) => m.type === "video").length;
+        const totalVideos = formation.medias?.filter((m) => m.type === "video").length || 0;
+        const totalQuiz = formation.quizzes?.length || 0;
         const totalStagiaires = stagiaires.length;
         let completed = 0;
         let inProgress = 0;

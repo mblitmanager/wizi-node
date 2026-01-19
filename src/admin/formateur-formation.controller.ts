@@ -110,14 +110,21 @@ export class FormateurFormationController {
       .leftJoinAndSelect("s.mediaStagiaires", "ms")
       .getMany();
 
-    const totalVideos = formation.medias.filter(
-      (m) => m.type === "video"
-    ).length;
+    const totalVideos =
+      formation.formation?.medias?.filter((m) => m.type === "video").length ||
+      0;
 
     const stagiairesData = stagiaires.map((stagiaire: any) => {
       const watchedCount = stagiaire.mediaStagiaires.filter((ms: any) =>
-        formation.medias.find((m) => m.id === ms.media_id)
+        formation.formation?.medias?.find((m) => m.id === ms.media_id)
       ).length;
+
+      const completedVideos = stagiaire.mediaStagiaires.filter((ms: any) => {
+        const media = formation.formation?.medias?.find(
+          (m) => m.id === ms.media_id
+        );
+        return media?.type === "video" && ms.status === "completed";
+      }).length;
 
       const progress =
         totalVideos > 0 ? Math.round((watchedCount / totalVideos) * 100) : 0;
@@ -186,9 +193,9 @@ export class FormateurFormationController {
 
     let assigned = 0;
     for (const stagiaire of stagiaires) {
-      // Check if already assigned
-      const alreadyAssigned = stagiaire.catalogue_formations.some(
-        (cf: any) => cf.id === formationId
+      // Check if stagiaire is assigned to this formation
+      const alreadyAssigned = stagiaire.stagiaire_catalogue_formations?.some(
+        (scf) => scf.catalogue_formation_id === formationId
       );
 
       if (!alreadyAssigned) {
@@ -307,9 +314,11 @@ export class FormateurFormationController {
       .leftJoinAndSelect("s.mediaStagiaires", "ms")
       .getMany();
 
-    const totalVideos = formation.medias.filter(
-      (m) => m.type === "video"
-    ).length;
+    // Access medias and quizzes directly from the loaded formation entity
+    const totalVideos =
+      formation.medias?.filter((m) => m.type === "video").length || 0;
+    const totalQuiz = formation.quizzes?.length || 0; // Assuming quizzes are on Formation
+
     const totalStagiaires = stagiaires.length;
 
     let completed = 0;
