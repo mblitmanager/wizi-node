@@ -240,7 +240,7 @@ export class FormateurQuizController {
       quiz_id: quiz.id,
       text: data.question,
       type: data.type || "qcm",
-      points: 1, // Default points
+      points: "1", // Points as string
       // ordre handled by defaults or DB
     });
 

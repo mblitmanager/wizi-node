@@ -187,7 +187,7 @@ let FormateurQuizController = class FormateurQuizController {
             quiz_id: quiz.id,
             text: data.question,
             type: data.type || "qcm",
-            points: 1,
+            points: "1",
         });
         await this.questionRepository.save(question);
         for (const reponseData of data.reponses) {

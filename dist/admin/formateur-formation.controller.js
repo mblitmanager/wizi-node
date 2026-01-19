@@ -43,13 +43,14 @@ let FormateurFormationController = class FormateurFormationController {
             .leftJoinAndSelect("cf.medias", "media", "media.type = :type", {
             type: "video",
         })
+            .leftJoinAndSelect("cf.formation", "formation")
             .loadRelationCountAndMap("cf.stagiairesCount", "cf.stagiaires", "stagiaire", (qb) => qb.innerJoin("stagiaire.formateurs", "formateur", "formateur.id = :formateurId", { formateurId: formateur.id }))
             .orderBy("cf.titre", "ASC")
             .getMany();
         const formationsData = formations.map((formation) => ({
             id: formation.id,
             titre: formation.titre,
-            categorie: formation.categorie || "Général",
+            categorie: formation.formation?.categorie || "Général",
             description: formation.description,
             image: formation.image_url,
             nb_stagiaires: formation.stagiairesCount || 0,
@@ -104,7 +105,7 @@ let FormateurFormationController = class FormateurFormationController {
             formation: {
                 id: formation.id,
                 titre: formation.titre,
-                categorie: formation.categorie,
+                categorie: formation.formation?.categorie || "Général",
             },
             stagiaires: stagiairesData,
         });
