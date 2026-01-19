@@ -322,7 +322,7 @@ export declare class StagiaireService {
             created_at: string;
             updated_at: string;
             video_url: string;
-            subtitle_url: any;
+            subtitle_url: string;
         }[];
     }>;
 }

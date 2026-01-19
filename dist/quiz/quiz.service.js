@@ -64,6 +64,7 @@ let QuizService = class QuizService {
                 relations: ["reponses"],
                 order: { id: "ASC" },
             });
+            allQuestions = allQuestions.filter((q) => q.reponses && q.reponses.length > 0);
             const debugQ = allQuestions.find((q) => q.id === 6914);
             if (debugQ) {
                 console.log("DEBUG: Question 6914 reponses:", JSON.stringify(debugQ.reponses));
@@ -78,13 +79,12 @@ let QuizService = class QuizService {
             existing.push(q);
             questionsByQuizId.set(q.quiz_id, existing);
         });
-        return formations.map((f) => ({
-            id: f.id.toString(),
-            titre: f.titre,
-            description: f.description,
-            categorie: f.categorie,
-            quizzes: (f.quizzes || []).map((q) => {
+        return formations.map((f) => {
+            const validQuizzes = (f.quizzes || [])
+                .map((q) => {
                 const questions = questionsByQuizId.get(q.id) || [];
+                if (questions.length === 0)
+                    return null;
                 return {
                     id: q.id.toString(),
                     titre: q.titre,
@@ -104,8 +104,16 @@ let QuizService = class QuizService {
                     })),
                     points: parseInt(q.nb_points_total) || 0,
                 };
-            }),
-        }));
+            })
+                .filter((q) => q !== null);
+            return {
+                id: f.id.toString(),
+                titre: f.titre,
+                description: f.description,
+                categorie: f.categorie,
+                quizzes: validQuizzes,
+            };
+        });
     }
     async getQuestionsByQuiz(quizId) {
         try {
@@ -116,7 +124,9 @@ let QuizService = class QuizService {
             if (!quiz) {
                 throw new Error("Quiz not found");
             }
-            const rawQuestions = quiz.questions.map((question) => ({
+            const rawQuestions = quiz.questions
+                .filter((q) => q.reponses && q.reponses.length > 0)
+                .map((question) => ({
                 id: question.id,
                 quiz_id: quizId,
                 text: question.text,
@@ -156,7 +166,9 @@ let QuizService = class QuizService {
             if (!quiz) {
                 throw new Error("Quiz not found");
             }
-            const questions = quiz.questions.map((question) => {
+            const questions = quiz.questions
+                .filter((q) => q.reponses && q.reponses.length > 0)
+                .map((question) => {
                 const questionData = {
                     id: question.id.toString(),
                     text: question.text,
@@ -318,6 +330,8 @@ let QuizService = class QuizService {
             .leftJoinAndSelect("quiz.formation", "formation")
             .innerJoin("formation.catalogue_formations", "catalogue")
             .innerJoin("catalogue.stagiaire_catalogue_formations", "scf", "scf.stagiaire_id = :stagiaireId", { stagiaireId })
+            .innerJoin("quiz.questions", "questions")
+            .innerJoin("questions.reponses", "reponses")
             .distinct(true)
             .getMany();
         const categoriesMap = new Map();
@@ -428,7 +442,20 @@ let QuizService = class QuizService {
             .andWhere("quiz.status = :status", { status: "actif" })
             .leftJoinAndSelect("quiz.formation", "quizFormation")
             .getMany();
-        return quizzes.map((quiz) => ({
+        const quizIds = quizzes.map((q) => q.id);
+        let validQuizIds = [];
+        if (quizIds.length > 0) {
+            const questionsWithReponses = await this.questionRepository
+                .createQueryBuilder("q")
+                .innerJoin("q.reponses", "r")
+                .where("q.quiz_id IN (:...quizIds)", { quizIds })
+                .select("DISTINCT q.quiz_id", "quiz_id")
+                .getRawMany();
+            validQuizIds = questionsWithReponses.map((qr) => qr.quiz_id);
+        }
+        return quizzes
+            .filter((q) => validQuizIds.includes(q.id))
+            .map((quiz) => ({
             id: quiz.id.toString(),
             titre: quiz.titre,
             description: quiz.description?.substring(0, 150) || "",

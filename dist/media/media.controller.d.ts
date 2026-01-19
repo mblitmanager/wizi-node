@@ -134,7 +134,7 @@ export declare class MediaController {
             created_at: string;
             updated_at: string;
             video_url: string;
-            subtitle_url: any;
+            subtitle_url: string;
         }[];
         astuces: {
             stagiaires: {
@@ -187,7 +187,7 @@ export declare class MediaController {
             created_at: string;
             updated_at: string;
             video_url: string;
-            subtitle_url: any;
+            subtitle_url: string;
         }[];
     }[]>;
     getFormationsWithStatus(): Promise<{
@@ -253,7 +253,7 @@ export declare class MediaController {
             created_at: string;
             updated_at: string;
             video_url: string;
-            subtitle_url: any;
+            subtitle_url: string;
         }[];
     }[]>;
 }

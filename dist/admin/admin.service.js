@@ -498,6 +498,156 @@ let AdminService = class AdminService {
             total_stagiaires: ranking.length,
         };
     }
+    async getFormateurFormations(userId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!formateur)
+            return [];
+        const formations = await this.formationRepository
+            .createQueryBuilder("cf")
+            .innerJoin("cf.formateurs", "f", "f.id = :formateurId", {
+            formateurId: formateur.id,
+        })
+            .leftJoin("cf.stagiaire_catalogue_formations", "scf")
+            .select([
+            "cf.id as id",
+            "cf.titre as titre",
+            "cf.image_url as image_url",
+            "cf.tarif as tarif",
+            "COUNT(scf.id) as student_count",
+        ])
+            .groupBy("cf.id")
+            .getRawMany();
+        return formations.map((f) => ({
+            id: f.id,
+            titre: f.titre,
+            image_url: f.image_url,
+            tarif: f.tarif,
+            student_count: parseInt(f.student_count),
+        }));
+    }
+    async getFormateurTrends(userId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["stagiaires"],
+        });
+        if (!formateur)
+            return { quiz_trends: [], activity_trends: [] };
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const userIds = formateur.stagiaires
+            .map((s) => s.user_id)
+            .filter((id) => id !== null);
+        if (userIds.length === 0)
+            return { quiz_trends: [], activity_trends: [] };
+        const quizTrends = await this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .where("qp.user_id IN (:...userIds)", { userIds })
+            .andWhere("qp.created_at >= :thirtyDaysAgo", { thirtyDaysAgo })
+            .select([
+            "DATE(qp.created_at) as date",
+            "COUNT(*) as count",
+            "AVG(qp.score) as avg_score",
+        ])
+            .groupBy("date")
+            .orderBy("date")
+            .getRawMany();
+        const activityTrends = await this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .where("qp.user_id IN (:...userIds)", { userIds })
+            .andWhere("qp.created_at >= :thirtyDaysAgo", { thirtyDaysAgo })
+            .select([
+            "DATE(qp.created_at) as date",
+            "COUNT(DISTINCT qp.user_id) as count",
+        ])
+            .groupBy("date")
+            .orderBy("date")
+            .getRawMany();
+        return {
+            quiz_trends: quizTrends.map((t) => ({
+                date: t.date,
+                count: parseInt(t.count),
+                avg_score: parseFloat(parseFloat(t.avg_score || 0).toFixed(1)),
+            })),
+            activity_trends: activityTrends.map((t) => ({
+                date: t.date,
+                count: parseInt(t.count),
+            })),
+        };
+    }
+    async getCommercialDashboardStats() {
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const totalSignups = await this.stagiaireRepository.count();
+        const signupsThisMonth = await this.stagiaireRepository.count({
+            where: { created_at: (0, typeorm_2.Between)(monthStart, now) },
+        });
+        const activeStudents = await this.userRepository.count({
+            where: { last_activity_at: (0, typeorm_2.Between)(thirtyDaysAgo, now) },
+        });
+        const conversionRate = totalSignups > 0 ? (activeStudents / totalSignups) * 100 : 0;
+        const recentSignups = await this.stagiaireRepository.find({
+            relations: ["user"],
+            order: { created_at: "DESC" },
+            take: 10,
+        });
+        const topFormations = await this.formationRepository
+            .createQueryBuilder("cf")
+            .loadRelationCountAndMap("cf.enrollments", "cf.stagiaire_catalogue_formations")
+            .orderBy("cf.enrollments", "DESC")
+            .limit(5)
+            .getMany();
+        const topFormationsQuery = await this.formationRepository
+            .createQueryBuilder("cf")
+            .leftJoin("cf.stagiaire_catalogue_formations", "scf")
+            .select([
+            "cf.id as id",
+            "cf.titre as name",
+            "COUNT(scf.id) as enrollments",
+            "cf.tarif as price",
+        ])
+            .groupBy("cf.id")
+            .orderBy("enrollments", "DESC")
+            .limit(5)
+            .getRawMany();
+        const signupTrends = await this.stagiaireRepository
+            .createQueryBuilder("s")
+            .where("s.created_at >= :thirtyDaysAgo", { thirtyDaysAgo })
+            .select(["DATE(s.created_at) as date", "COUNT(*) as value"])
+            .groupBy("date")
+            .orderBy("date")
+            .getRawMany();
+        return {
+            summary: {
+                totalSignups,
+                signupsThisMonth,
+                activeStudents,
+                conversionRate: parseFloat(conversionRate.toFixed(2)),
+            },
+            recentSignups: recentSignups.map((s) => ({
+                id: s.id,
+                name: s.user?.name || "Unknown",
+                email: s.user?.email || "",
+                role: s.user?.role || "stagiaire",
+                created_at: s.created_at
+                    .toISOString()
+                    .replace("T", " ")
+                    .substring(0, 19),
+            })),
+            topFormations: topFormationsQuery.map((f) => ({
+                id: parseInt(f.id),
+                name: f.name,
+                enrollments: parseInt(f.enrollments),
+                price: parseFloat(f.price || 0),
+            })),
+            signupTrends: signupTrends.map((t) => ({
+                date: t.date,
+                value: parseInt(t.value),
+            })),
+        };
+    }
     async disconnectStagiaires(stagiaireIds) {
         const stagiaires = await this.stagiaireRepository.find({
             where: { id: (0, typeorm_2.In)(stagiaireIds) },

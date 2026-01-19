@@ -21,10 +21,12 @@ export declare class FormateurApiController {
     mesStagiairesRanking(req: any, period?: string): Promise<any>;
     sendEmail(data: any): Promise<any>;
     sendNotification(data: any): Promise<any>;
+    trends(req: any): Promise<any>;
     stats(): Promise<any>;
 }
 export declare class CommercialApiController {
     private apiResponse;
-    constructor(apiResponse: ApiResponseService);
+    private adminService;
+    constructor(apiResponse: ApiResponseService, adminService: AdminService);
     dashboard(req: any): Promise<any>;
 }

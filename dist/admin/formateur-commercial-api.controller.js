@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const api_response_service_1 = require("../common/services/api-response.service");
 const admin_service_1 = require("./admin.service");
+const roles_guard_1 = require("../common/guards/roles.guard");
+const roles_decorator_1 = require("../common/decorators/roles.decorator");
 let FormateurApiController = class FormateurApiController {
     constructor(apiResponse, adminService) {
         this.apiResponse = apiResponse;
@@ -27,7 +29,8 @@ let FormateurApiController = class FormateurApiController {
         return this.apiResponse.success(stats);
     }
     async formations(req) {
-        return this.apiResponse.success([]);
+        const data = await this.adminService.getFormateurFormations(req.user.id);
+        return this.apiResponse.success(data);
     }
     async stagiaires(req) {
         console.log("[DEBUG] Controller: GET /api/formateur/stagiaires hit");
@@ -87,6 +90,10 @@ let FormateurApiController = class FormateurApiController {
     }
     async sendNotification(data) {
         return this.apiResponse.success();
+    }
+    async trends(req) {
+        const data = await this.adminService.getFormateurTrends(req.user.id);
+        return this.apiResponse.success(data);
     }
     async stats() {
         return this.apiResponse.success({});
@@ -200,6 +207,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "sendNotification", null);
 __decorate([
+    (0, common_1.Get)("trends"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FormateurApiController.prototype, "trends", null);
+__decorate([
     (0, common_1.Get)("stats/dashboard"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -207,16 +221,19 @@ __decorate([
 ], FormateurApiController.prototype, "stats", null);
 exports.FormateurApiController = FormateurApiController = __decorate([
     (0, common_1.Controller)("formateur"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)("formateur", "formatrice"),
     __metadata("design:paramtypes", [api_response_service_1.ApiResponseService,
         admin_service_1.AdminService])
 ], FormateurApiController);
 let CommercialApiController = class CommercialApiController {
-    constructor(apiResponse) {
+    constructor(apiResponse, adminService) {
         this.apiResponse = apiResponse;
+        this.adminService = adminService;
     }
     async dashboard(req) {
-        return this.apiResponse.success({});
+        const data = await this.adminService.getCommercialDashboardStats();
+        return this.apiResponse.success(data);
     }
 };
 exports.CommercialApiController = CommercialApiController;
@@ -229,7 +246,9 @@ __decorate([
 ], CommercialApiController.prototype, "dashboard", null);
 exports.CommercialApiController = CommercialApiController = __decorate([
     (0, common_1.Controller)("commercial/stats"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
-    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService])
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)("commercial", "commerciale"),
+    __metadata("design:paramtypes", [api_response_service_1.ApiResponseService,
+        admin_service_1.AdminService])
 ], CommercialApiController);
 //# sourceMappingURL=formateur-commercial-api.controller.js.map

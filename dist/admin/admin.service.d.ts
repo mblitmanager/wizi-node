@@ -176,5 +176,48 @@ export declare class AdminService {
         total_stagiaires: number;
         period?: undefined;
     }>;
+    getFormateurFormations(userId: number): Promise<{
+        id: any;
+        titre: any;
+        image_url: any;
+        tarif: any;
+        student_count: number;
+    }[]>;
+    getFormateurTrends(userId: number): Promise<{
+        quiz_trends: {
+            date: any;
+            count: number;
+            avg_score: number;
+        }[];
+        activity_trends: {
+            date: any;
+            count: number;
+        }[];
+    }>;
+    getCommercialDashboardStats(): Promise<{
+        summary: {
+            totalSignups: number;
+            signupsThisMonth: number;
+            activeStudents: number;
+            conversionRate: number;
+        };
+        recentSignups: {
+            id: number;
+            name: string;
+            email: string;
+            role: string;
+            created_at: string;
+        }[];
+        topFormations: {
+            id: number;
+            name: any;
+            enrollments: number;
+            price: number;
+        }[];
+        signupTrends: {
+            date: any;
+            value: number;
+        }[];
+    }>;
     disconnectStagiaires(stagiaireIds: number[]): Promise<number>;
 }

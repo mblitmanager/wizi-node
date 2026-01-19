@@ -79,7 +79,7 @@ export declare class MediaService {
         created_at: string;
         updated_at: string;
         video_url: string;
-        subtitle_url: any;
+        subtitle_url: string;
     }[]>;
     findByCategoriePaginated(categorie: string, page?: number, perPage?: number, baseUrl?: string, userId?: number): Promise<{
         current_page: number;
@@ -97,6 +97,7 @@ export declare class MediaService {
         total: number;
     }>;
     private generateLinks;
+    findByFilePath(filename: string): Promise<Media | null>;
     findByFormationAndCategorie(formationId: number, categorie: string, page?: number, perPage?: number, baseUrl?: string, userId?: number): Promise<{
         current_page: number;
         data: any[];
@@ -169,7 +170,7 @@ export declare class MediaService {
             created_at: string;
             updated_at: string;
             video_url: string;
-            subtitle_url: any;
+            subtitle_url: string;
         }[];
         astuces: {
             stagiaires: {
@@ -222,7 +223,7 @@ export declare class MediaService {
             created_at: string;
             updated_at: string;
             video_url: string;
-            subtitle_url: any;
+            subtitle_url: string;
         }[];
     }[]>;
     getFormationsWithStatus(): Promise<{
@@ -288,7 +289,7 @@ export declare class MediaService {
             created_at: string;
             updated_at: string;
             video_url: string;
-            subtitle_url: any;
+            subtitle_url: string;
         }[];
     }[]>;
     markAsWatched(mediaId: number, userId: number): Promise<{
