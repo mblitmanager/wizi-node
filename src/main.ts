@@ -10,6 +10,10 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new AllExceptionsFilter());
 
+  // Direct use for simplicity as it requires Repository injection,
+  // better to use app.get but for now we'll stick to a manual interceptor instance if possible
+  // or better, use NestJS dependency injection by registering it in AppModule
+
   const config = new DocumentBuilder()
     .setTitle("Wizi-Learn API")
     .setDescription("L'API pour le clone Node.js de Wizi-Learn")

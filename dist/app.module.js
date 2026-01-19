@@ -17,6 +17,8 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const logger_middleware_1 = require("./common/middleware/logger.middleware");
 const common_module_1 = require("./common/common.module");
+const core_1 = require("@nestjs/core");
+const user_presence_interceptor_1 = require("./common/interceptors/user-presence.interceptor");
 const user_entity_1 = require("./entities/user.entity");
 const stagiaire_entity_1 = require("./entities/stagiaire.entity");
 const formation_entity_1 = require("./entities/formation.entity");
@@ -178,7 +180,13 @@ exports.AppModule = AppModule = __decorate([
             common_module_1.CommonModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [
+            app_service_1.AppService,
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: user_presence_interceptor_1.UserPresenceInterceptor,
+            },
+        ],
     }),
     __metadata("design:paramtypes", [])
 ], AppModule);

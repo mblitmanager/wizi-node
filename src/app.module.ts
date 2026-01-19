@@ -5,8 +5,9 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { LoggerMiddleware } from "./common/middleware/logger.middleware";
 import { CommonModule } from "./common/common.module";
-import { APP_GUARD } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { RolesGuard } from "./common/guards/roles.guard";
+import { UserPresenceInterceptor } from "./common/interceptors/user-presence.interceptor";
 import { User } from "./entities/user.entity";
 import { Stagiaire } from "./entities/stagiaire.entity";
 import { Formation } from "./entities/formation.entity";
@@ -159,7 +160,13 @@ import { ProgressionModule } from "./progression/progression.module";
     CommonModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: UserPresenceInterceptor,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   constructor() {
