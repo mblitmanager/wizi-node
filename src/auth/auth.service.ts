@@ -28,12 +28,22 @@ export class AuthService {
     });
 
     if (user) {
+      console.log("Login attempt for:", email);
+      console.log("DB Hash:", user.password);
+
       // Laravel uses $2y$ prefix for bcrypt, Node bcrypt expects $2b$
       const normalizedPassword = user.password.replace(/^\$2y\$/, "$2b$");
-      if (await bcrypt.compare(pass, normalizedPassword)) {
+      console.log("Normalized Hash:", normalizedPassword);
+
+      const isMatch = await bcrypt.compare(pass, normalizedPassword);
+      console.log("Password Match:", isMatch);
+
+      if (isMatch) {
         const { password, ...result } = user;
         return result;
       }
+    } else {
+      console.log("User not found by email:", email);
     }
     return null;
   }
