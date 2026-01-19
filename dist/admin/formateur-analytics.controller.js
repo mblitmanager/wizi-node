@@ -22,11 +22,21 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const formateur_entity_1 = require("../entities/formateur.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
+const admin_service_1 = require("./admin.service");
 let FormateurAnalyticsController = class FormateurAnalyticsController {
-    constructor(formateurRepository, quizParticipationRepository, apiResponse) {
+    constructor(formateurRepository, quizParticipationRepository, adminService, apiResponse) {
         this.formateurRepository = formateurRepository;
         this.quizParticipationRepository = quizParticipationRepository;
+        this.adminService = adminService;
         this.apiResponse = apiResponse;
+    }
+    async getFormationsPerformance(req) {
+        const data = await this.adminService.getFormateurFormations(req.user.id);
+        return this.apiResponse.success(data);
+    }
+    async getStagiaireFormations(id) {
+        const data = await this.adminService.getStagiaireFormationPerformance(id);
+        return this.apiResponse.success(data);
     }
     async getQuizSuccessRate(period = 30, req) {
         const formateur = await this.formateurRepository.findOne({
@@ -275,33 +285,55 @@ let FormateurAnalyticsController = class FormateurAnalyticsController {
             where: { user_id: req.user.id },
             relations: ["stagiaires", "stagiaires.user"],
         });
-        const stagiaireIds = formateur.stagiaires.map((s) => s.id);
+        if (!formateur) {
+            return this.apiResponse.success({
+                performance: [],
+                rankings: {
+                    most_quizzes: [],
+                    most_active: [],
+                },
+            });
+        }
+        const userIds = formateur.stagiaires
+            ? formateur.stagiaires
+                .map((s) => s.user_id)
+                .filter((id) => id != null)
+            : [];
+        if (userIds.length === 0) {
+            return this.apiResponse.success({
+                performance: [],
+                rankings: {
+                    most_quizzes: [],
+                    most_active: [],
+                },
+            });
+        }
         const quizStats = await this.quizParticipationRepository
             .createQueryBuilder("qp")
-            .select("qp.stagiaire_id", "stagiaire_id")
+            .select("qp.user_id", "user_id")
             .addSelect("COUNT(DISTINCT qp.quiz_id)", "total_quizzes")
             .addSelect("MAX(qp.created_at)", "last_quiz_at")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .where("qp.user_id IN (:...ids)", { ids: userIds })
             .andWhere("qp.status = :status", { status: "completed" })
-            .groupBy("qp.stagiaire_id")
+            .groupBy("qp.user_id")
             .getRawMany();
         const statsMap = new Map();
         quizStats.forEach((stat) => {
-            statsMap.set(stat.stagiaire_id, {
+            statsMap.set(parseInt(stat.user_id), {
                 total_quizzes: parseInt(stat.total_quizzes),
                 last_quiz_at: stat.last_quiz_at,
             });
         });
         const performanceData = formateur.stagiaires.map((stagiaire) => {
-            const stats = statsMap.get(stagiaire.id) || {
+            const stats = statsMap.get(stagiaire.user_id) || {
                 total_quizzes: 0,
                 last_quiz_at: null,
             };
             return {
                 id: stagiaire.id,
-                name: `${stagiaire.user.prenom} ${stagiaire.user.nom}`,
-                email: stagiaire.user.email,
-                image: stagiaire.user.image,
+                name: stagiaire.user?.name || stagiaire.prenom || "Apprenant",
+                email: stagiaire.user?.email,
+                image: stagiaire.user?.image,
                 last_quiz_at: stats.last_quiz_at,
                 total_quizzes: stats.total_quizzes,
                 total_logins: stagiaire.login_streak || 0,
@@ -323,6 +355,20 @@ let FormateurAnalyticsController = class FormateurAnalyticsController {
     }
 };
 exports.FormateurAnalyticsController = FormateurAnalyticsController;
+__decorate([
+    (0, common_1.Get)("formations/performance"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FormateurAnalyticsController.prototype, "getFormationsPerformance", null);
+__decorate([
+    (0, common_1.Get)("stagiaire/:id/formations"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], FormateurAnalyticsController.prototype, "getStagiaireFormations", null);
 __decorate([
     (0, common_1.Get)("quiz-success-rate"),
     __param(0, (0, common_1.Query)("period")),
@@ -377,6 +423,7 @@ exports.FormateurAnalyticsController = FormateurAnalyticsController = __decorate
     __param(1, (0, typeorm_1.InjectRepository)(quiz_participation_entity_1.QuizParticipation)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
+        admin_service_1.AdminService,
         api_response_service_1.ApiResponseService])
 ], FormateurAnalyticsController);
 //# sourceMappingURL=formateur-analytics.controller.js.map

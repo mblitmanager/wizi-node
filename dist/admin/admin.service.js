@@ -501,9 +501,13 @@ let AdminService = class AdminService {
     async getFormateurFormations(userId) {
         const formateur = await this.formateurRepository.findOne({
             where: { user_id: userId },
+            relations: ["stagiaires"],
         });
         if (!formateur)
             return [];
+        const stagiaireUserIds = formateur.stagiaires
+            .map((s) => s.user_id)
+            .filter((id) => id != null);
         const formations = await this.formationRepository
             .createQueryBuilder("cf")
             .innerJoin("cf.formateurs", "f", "f.id = :formateurId", {
@@ -515,17 +519,83 @@ let AdminService = class AdminService {
             "cf.titre as titre",
             "cf.image_url as image_url",
             "cf.tarif as tarif",
-            "COUNT(scf.id) as student_count",
+            "COUNT(DISTINCT scf.stagiaire_id) as student_count",
         ])
             .groupBy("cf.id")
             .getRawMany();
-        return formations.map((f) => ({
-            id: f.id,
-            titre: f.titre,
-            image_url: f.image_url,
-            tarif: f.tarif,
-            student_count: parseInt(f.student_count),
+        const enrichedFormations = await Promise.all(formations.map(async (f) => {
+            let analytics = { avg_score: 0, total_completions: 0 };
+            if (stagiaireUserIds.length > 0) {
+                const stats = await this.quizParticipationRepository
+                    .createQueryBuilder("qp")
+                    .innerJoin("qp.quiz", "q")
+                    .where("q.formation_id = :formationId", { formationId: f.id })
+                    .andWhere("qp.user_id IN (:...userIds)", {
+                    userIds: stagiaireUserIds,
+                })
+                    .andWhere("qp.status = :status", { status: "completed" })
+                    .select([
+                    "AVG(qp.score) as avg_score",
+                    "COUNT(qp.id) as total_completions",
+                ])
+                    .getRawOne();
+                analytics = {
+                    avg_score: Math.round((parseFloat(stats.avg_score) || 0) * 10) / 10,
+                    total_completions: parseInt(stats.total_completions) || 0,
+                };
+            }
+            return {
+                id: parseInt(f.id),
+                titre: f.titre,
+                image_url: f.image_url,
+                tarif: f.tarif,
+                student_count: parseInt(f.student_count),
+                ...analytics,
+            };
         }));
+        return enrichedFormations;
+    }
+    async getStagiaireFormationPerformance(id) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { id },
+            relations: [
+                "stagiaire_catalogue_formations",
+                "stagiaire_catalogue_formations.catalogue_formation",
+                "stagiaire_catalogue_formations.catalogue_formation.formation",
+            ],
+        });
+        if (!stagiaire)
+            return [];
+        const performance = await Promise.all(stagiaire.stagiaire_catalogue_formations.map(async (scf) => {
+            const formation = scf.catalogue_formation?.formation;
+            if (!formation)
+                return null;
+            const stats = await this.quizParticipationRepository
+                .createQueryBuilder("qp")
+                .innerJoin("qp.quiz", "q")
+                .where("q.formation_id = :formationId", { formationId: formation.id })
+                .andWhere("qp.user_id = :userId", { userId: stagiaire.user_id })
+                .andWhere("qp.status = :status", { status: "completed" })
+                .select([
+                "AVG(qp.score) as avg_score",
+                "MAX(qp.score) as best_score",
+                "COUNT(qp.id) as completions",
+                "MAX(qp.created_at) as last_activity",
+            ])
+                .getRawOne();
+            return {
+                id: formation.id,
+                titre: formation.titre,
+                image_url: formation.image,
+                avg_score: Math.round((parseFloat(stats.avg_score) || 0) * 10) / 10,
+                best_score: parseInt(stats.best_score) || 0,
+                completions: parseInt(stats.completions) || 0,
+                last_activity: stats.last_activity
+                    ? new Date(stats.last_activity).toISOString()
+                    : null,
+            };
+        }));
+        return performance.filter((p) => p !== null);
     }
     async getFormateurTrends(userId) {
         const formateur = await this.formateurRepository.findOne({

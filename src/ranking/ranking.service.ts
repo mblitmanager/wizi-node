@@ -311,7 +311,18 @@ export class RankingService {
     });
 
     if (!user || !user.stagiaire) {
-      throw new NotFoundException("Stagiaire not found");
+      return {
+        stagiaire: null,
+        totalPoints: 0,
+        quizCount: 0,
+        averageScore: 0,
+        completedQuizzes: 0,
+        totalTimeSpent: 0,
+        rang: 0,
+        level: 1,
+        categoryStats: [],
+        levelProgress: {},
+      };
     }
 
     const stagiaireId = user.stagiaire.id;

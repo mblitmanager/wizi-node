@@ -32,6 +32,7 @@ export class AchievementService {
   ) {}
 
   async getAchievements(stagiaireId: number) {
+    if (!stagiaireId) return [];
     const stagiaire = await this.stagiaireRepository.findOne({
       where: { id: stagiaireId },
       relations: ["achievements"],

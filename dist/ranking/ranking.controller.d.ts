@@ -64,6 +64,17 @@ export declare class RankingController {
         rank?: undefined;
     }>;
     getMyProgress(req: any): Promise<{
+        stagiaire: any;
+        totalPoints: number;
+        quizCount: number;
+        averageScore: number;
+        completedQuizzes: number;
+        totalTimeSpent: number;
+        rang: number;
+        level: number;
+        categoryStats: any[];
+        levelProgress: {};
+    } | {
         stagiaire: {
             id: string;
             prenom: string;

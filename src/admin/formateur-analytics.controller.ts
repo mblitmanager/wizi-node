@@ -4,6 +4,7 @@ import {
   Query,
   UseGuards,
   Request,
+  Param,
   HttpException,
   HttpStatus,
 } from "@nestjs/common";
@@ -16,6 +17,8 @@ import { Repository } from "typeorm";
 import { Formateur } from "../entities/formateur.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 
+import { AdminService } from "./admin.service";
+
 @Controller("formateur/analytics")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("formateur", "formatrice")
@@ -25,8 +28,21 @@ export class FormateurAnalyticsController {
     private formateurRepository: Repository<Formateur>,
     @InjectRepository(QuizParticipation)
     private quizParticipationRepository: Repository<QuizParticipation>,
+    private adminService: AdminService,
     private apiResponse: ApiResponseService
   ) {}
+
+  @Get("formations/performance")
+  async getFormationsPerformance(@Request() req) {
+    const data = await this.adminService.getFormateurFormations(req.user.id);
+    return this.apiResponse.success(data);
+  }
+
+  @Get("stagiaire/:id/formations")
+  async getStagiaireFormations(@Param("id") id: number) {
+    const data = await this.adminService.getStagiaireFormationPerformance(id);
+    return this.apiResponse.success(data);
+  }
 
   @Get("quiz-success-rate")
   async getQuizSuccessRate(
@@ -358,23 +374,47 @@ export class FormateurAnalyticsController {
       relations: ["stagiaires", "stagiaires.user"],
     });
 
-    const stagiaireIds = formateur.stagiaires.map((s: any) => s.id);
+    if (!formateur) {
+      return this.apiResponse.success({
+        performance: [],
+        rankings: {
+          most_quizzes: [],
+          most_active: [],
+        },
+      });
+    }
 
-    // Get Quiz Stats per Stagiaire
+    const userIds = formateur.stagiaires
+      ? formateur.stagiaires
+          .map((s: any) => s.user_id)
+          .filter((id) => id != null)
+      : [];
+
+    if (userIds.length === 0) {
+      return this.apiResponse.success({
+        performance: [],
+        rankings: {
+          most_quizzes: [],
+          most_active: [],
+        },
+      });
+    }
+
+    // Get Quiz Stats per User
     const quizStats = await this.quizParticipationRepository
       .createQueryBuilder("qp")
-      .select("qp.stagiaire_id", "stagiaire_id")
+      .select("qp.user_id", "user_id")
       .addSelect("COUNT(DISTINCT qp.quiz_id)", "total_quizzes")
       .addSelect("MAX(qp.created_at)", "last_quiz_at")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+      .where("qp.user_id IN (:...ids)", { ids: userIds })
       .andWhere("qp.status = :status", { status: "completed" })
-      .groupBy("qp.stagiaire_id")
+      .groupBy("qp.user_id")
       .getRawMany();
 
-    // Map stats to stagiaires
+    // Map stats to users
     const statsMap = new Map();
     quizStats.forEach((stat) => {
-      statsMap.set(stat.stagiaire_id, {
+      statsMap.set(parseInt(stat.user_id), {
         total_quizzes: parseInt(stat.total_quizzes),
         last_quiz_at: stat.last_quiz_at,
       });
@@ -382,16 +422,16 @@ export class FormateurAnalyticsController {
 
     // Build Performance Data
     const performanceData = formateur.stagiaires.map((stagiaire: any) => {
-      const stats = statsMap.get(stagiaire.id) || {
+      const stats = statsMap.get(stagiaire.user_id) || {
         total_quizzes: 0,
         last_quiz_at: null,
       };
 
       return {
         id: stagiaire.id,
-        name: `${stagiaire.user.prenom} ${stagiaire.user.nom}`,
-        email: stagiaire.user.email,
-        image: stagiaire.user.image,
+        name: stagiaire.user?.name || stagiaire.prenom || "Apprenant",
+        email: stagiaire.user?.email,
+        image: stagiaire.user?.image,
         last_quiz_at: stats.last_quiz_at,
         total_quizzes: stats.total_quizzes,
         total_logins: stagiaire.login_streak || 0,

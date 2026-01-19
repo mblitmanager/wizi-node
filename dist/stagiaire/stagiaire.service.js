@@ -61,7 +61,14 @@ let StagiaireService = class StagiaireService {
             ],
         });
         if (!stagiaire) {
-            throw new common_1.NotFoundException(`Stagiaire with user_id ${userId} not found`);
+            return {
+                user: { id: 0, prenom: "", image: null },
+                quiz_stats: { total_quizzes: 0, total_points: 0, average_score: 0 },
+                recent_history: [],
+                contacts: { formateurs: [], commerciaux: [], pole_relation: [] },
+                catalogue_formations: [],
+                categories: [],
+            };
         }
         const quizStats = await this.classementRepository
             .createQueryBuilder("classement")

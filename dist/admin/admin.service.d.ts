@@ -177,11 +177,22 @@ export declare class AdminService {
         period?: undefined;
     }>;
     getFormateurFormations(userId: number): Promise<{
-        id: any;
+        avg_score: number;
+        total_completions: number;
+        id: number;
         titre: any;
         image_url: any;
         tarif: any;
         student_count: number;
+    }[]>;
+    getStagiaireFormationPerformance(id: number): Promise<{
+        id: number;
+        titre: string;
+        image_url: string;
+        avg_score: number;
+        best_score: number;
+        completions: number;
+        last_activity: string;
     }[]>;
     getFormateurTrends(userId: number): Promise<{
         quiz_trends: {

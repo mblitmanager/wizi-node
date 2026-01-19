@@ -58,7 +58,15 @@ export class StagiaireService {
     });
 
     if (!stagiaire) {
-      throw new NotFoundException(`Stagiaire with user_id ${userId} not found`);
+      // Return empty default for trainers/admins to avoid 500s
+      return {
+        user: { id: 0, prenom: "", image: null },
+        quiz_stats: { total_quizzes: 0, total_points: 0, average_score: 0 },
+        recent_history: [],
+        contacts: { formateurs: [], commerciaux: [], pole_relation: [] },
+        catalogue_formations: [],
+        categories: [],
+      };
     }
 
     // 1. Get basic quiz stats

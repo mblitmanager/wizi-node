@@ -232,6 +232,17 @@ export declare class StagiaireService {
             image: string;
         };
         stats: {
+            stagiaire: any;
+            totalPoints: number;
+            quizCount: number;
+            averageScore: number;
+            completedQuizzes: number;
+            totalTimeSpent: number;
+            rang: number;
+            level: number;
+            categoryStats: any[];
+            levelProgress: {};
+        } | {
             stagiaire: {
                 id: string;
                 prenom: string;
