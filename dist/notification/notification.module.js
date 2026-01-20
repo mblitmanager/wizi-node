@@ -15,6 +15,7 @@ const notification_service_1 = require("./notification.service");
 const notification_entity_1 = require("../entities/notification.entity");
 const fcm_service_1 = require("./fcm.service");
 const config_1 = require("@nestjs/config");
+const bullmq_1 = require("@nestjs/bullmq");
 const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
 const notification_apis_controller_1 = require("./notification-apis.controller");
 const auto_reminders_api_controller_1 = require("./auto-reminders-api.controller");
@@ -27,6 +28,9 @@ exports.NotificationModule = NotificationModule = __decorate([
         imports: [
             config_1.ConfigModule,
             common_module_1.CommonModule,
+            bullmq_1.BullModule.registerQueue({
+                name: "notifications",
+            }),
             typeorm_1.TypeOrmModule.forFeature([notification_entity_1.Notification, user_entity_1.User, parrainage_event_entity_1.ParrainageEvent]),
         ],
         providers: [notification_service_1.NotificationService, fcm_service_1.FcmService],

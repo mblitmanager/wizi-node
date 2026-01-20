@@ -10,6 +10,8 @@ import {
   Request,
   Query,
   NotFoundException,
+  Headers,
+  HttpStatus, HttpException
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -35,6 +37,42 @@ export class AgendasApiController {
     private agendaRepository: Repository<Agenda>,
     private agendaService: AgendaService
   ) {}
+
+  @Post("/sync")
+  async syncGoogleCalendar(
+    @Body() body: any,
+    @Headers("x-sync-secret") secret: string
+  ) {
+    if (!process.env.SYNC_API_SECRET || secret !== process.env.SYNC_API_SECRET) {
+      throw new HttpException(
+        "Non autorisé. Clé secrète invalide ou manquante.",
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+
+    const { userId, calendars, events } = body;
+
+    if (!userId || !calendars || !events) {
+      throw new HttpException(
+        "Paramètres manquants. userId, calendars, et events sont requis.",
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    // Ici, vous appellerez une méthode du service pour gérer la sauvegarde
+    const result = await this.agendaService.syncGoogleCalendarData(
+      userId,
+      calendars,
+      events
+    );
+
+    return {
+      message: "Synchronisation Google Calendar réussie.",
+      userId: result.userId,\
+      calendarsSynced: result.calendarsSynced,
+      eventsSynced: result.eventsSynced,
+    };
+  }
 
   @Get()
   async getAll(

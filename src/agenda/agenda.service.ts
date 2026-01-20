@@ -4,6 +4,8 @@ import { Repository, MoreThanOrEqual } from "typeorm";
 import { Agenda } from "../entities/agenda.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { Notification } from "../entities/notification.entity";
+import { GoogleCalendar } from "../entities/google-calendar.entity";
+import { GoogleCalendarEvent } from "../entities/google-calendar-event.entity";
 
 @Injectable()
 export class AgendaService {
@@ -13,7 +15,11 @@ export class AgendaService {
     @InjectRepository(Stagiaire)
     private stagiaireRepository: Repository<Stagiaire>,
     @InjectRepository(Notification)
-    private notificationRepository: Repository<Notification>
+    private notificationRepository: Repository<Notification>,
+    @InjectRepository(GoogleCalendar)
+    private googleCalendarRepository: Repository<GoogleCalendar>,
+    @InjectRepository(GoogleCalendarEvent)
+    private googleCalendarEventRepository: Repository<GoogleCalendarEvent>
   ) {}
 
   async getStagiaireAgenda(userId: number) {
@@ -113,6 +119,84 @@ export class AgendaService {
   private formatDateForICS(date: Date): string {
     if (!date) return "";
     return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  }
+
+  async syncGoogleCalendarData(
+    userId: string,
+    calendars: any[],
+    events: any[]
+  ) {
+    let calendarsSyncedCount = 0;
+    let eventsSyncedCount = 0;
+
+    for (const calendarData of calendars) {
+      let googleCalendar = await this.googleCalendarRepository.findOne({
+        where: { googleId: calendarData.googleId, userId: parseInt(userId) },
+      });
+
+      if (googleCalendar) {
+        // Update existing calendar
+        Object.assign(googleCalendar, {
+          summary: calendarData.summary,
+          description: calendarData.description,
+          backgroundColor: calendarData.backgroundColor,
+          foregroundColor: calendarData.foregroundColor,
+          accessRole: calendarData.accessRole, // Assurez-vous que ce champ est envoyé par le front-end
+          timeZone: calendarData.timeZone,     // Assurez-vous que ce champ est envoyé par le front-end
+          syncedAt: new Date(),
+        });
+        await this.googleCalendarRepository.save(googleCalendar);
+      } else {
+        // Create new calendar
+        googleCalendar = this.googleCalendarRepository.create({
+          userId: parseInt(userId),
+          googleId: calendarData.googleId,
+          summary: calendarData.summary,
+          description: calendarData.description,
+          backgroundColor: calendarData.backgroundColor,
+          foregroundColor: calendarData.foregroundColor,
+          accessRole: calendarData.accessRole,
+          timeZone: calendarData.timeZone,
+          syncedAt: new Date(),
+        });
+        await this.googleCalendarRepository.save(googleCalendar);
+      }
+      calendarsSyncedCount++;
+
+      // Supprimer tous les événements existants pour ce calendrier et cette date
+      await this.googleCalendarEventRepository.delete({
+        googleCalendarId: googleCalendar.id,
+      });
+
+      for (const eventData of events) {
+        if (eventData.calendarId === googleCalendar.googleId) {
+          const googleCalendarEvent = this.googleCalendarEventRepository.create({
+            googleCalendarId: googleCalendar.id,
+            googleId: eventData.googleId,
+            summary: eventData.summary,
+            description: eventData.description,
+            location: eventData.location,
+            start: new Date(eventData.start),
+            end: new Date(eventData.end),
+            htmlLink: eventData.htmlLink,
+            hangoutLink: eventData.hangoutLink,
+            organizer: eventData.organizer,
+            attendees: eventData.attendees,
+            status: eventData.status,
+            recurrence: eventData.recurrence,
+            eventType: eventData.eventType,
+          });
+          await this.googleCalendarEventRepository.save(googleCalendarEvent);
+          eventsSyncedCount++;
+        }
+      }
+    }
+
+    return {
+      userId,
+      calendarsSynced: calendarsSyncedCount,
+      eventsSynced: eventsSyncedCount,
+    };
   }
 
   formatAgendaJsonLd(agenda: Agenda) {

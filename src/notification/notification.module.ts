@@ -7,6 +7,7 @@ import { NotificationService } from "./notification.service";
 import { Notification } from "../entities/notification.entity";
 import { FcmService } from "./fcm.service";
 import { ConfigModule } from "@nestjs/config";
+import { BullModule } from "@nestjs/bullmq";
 import { ParrainageEvent } from "../entities/parrainage-event.entity";
 import {
   NotificationsApiController,
@@ -25,6 +26,9 @@ import { BroadcastingApiController } from "./broadcasting-api.controller";
   imports: [
     ConfigModule,
     CommonModule,
+    BullModule.registerQueue({
+      name: "notifications",
+    }),
     TypeOrmModule.forFeature([Notification, User, ParrainageEvent]),
   ],
   providers: [NotificationService, FcmService],
