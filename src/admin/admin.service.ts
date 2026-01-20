@@ -1693,4 +1693,85 @@ export class AdminService {
 
     return comparison.sort((a, b) => b.total_points - a.total_points);
   }
+
+  /**
+   * Consolidated dashboard home endpoint for mobile optimization.
+   * Combines stats, inactive stagiaires, trends, and stagiaires progress
+   * into a single API call to reduce network latency.
+   */
+  async getFormateurDashboardHome(userId: number, days: number = 7) {
+    // Run all queries in parallel for maximum efficiency
+    const [stats, inactiveResult, trends, progressResult] = await Promise.all([
+      this.getFormateurDashboardStats(userId),
+      this.getFormateurInactiveStagiaires(userId, days, "mine"),
+      this.getFormateurTrends(userId),
+      this.getFormateurStagiairesProgress(userId),
+    ]);
+
+    return {
+      stats: stats || {
+        total_stagiaires: 0,
+        active_this_week: 0,
+        inactive_count: 0,
+        never_connected: 0,
+        avg_quiz_score: 0,
+        total_formations: 0,
+        total_quizzes_taken: 0,
+      },
+      inactive_stagiaires: inactiveResult?.inactive_stagiaires || [],
+      inactive_count: inactiveResult?.count || 0,
+      trends: trends || { quiz_trends: [], activity_trends: [] },
+      stagiaires: progressResult?.stagiaires || [],
+      stagiaires_count: progressResult?.total || 0,
+    };
+  }
+
+  /**
+   * Get stagiaires progress for the formateur dashboard.
+   */
+  async getFormateurStagiairesProgress(userId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+      relations: ["stagiaires", "stagiaires.user"],
+    });
+
+    if (!formateur) {
+      return { stagiaires: [], total: 0 };
+    }
+
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+
+    const stagiaires = formateur.stagiaires.map((s) => {
+      const isActive =
+        s.user?.last_activity_at && s.user.last_activity_at > weekAgo;
+      const neverConnected = !s.user?.last_login_at;
+
+      return {
+        id: s.id,
+        prenom: s.prenom || "",
+        nom: s.user?.name || "",
+        email: s.user?.email || "",
+        avatar: s.user?.image || null,
+        is_active: isActive,
+        never_connected: neverConnected,
+        in_formation: true, // All students from formateur.stagiaires are in formation
+        progress: 0, // TODO: Calculate actual progress from progressions table
+        avg_score: 0, // TODO: Calculate from quiz participations
+        modules_count: 0,
+        formation: null, // TODO: Get primary formation name
+        last_activity_at: s.user?.last_activity_at
+          ? new Date(s.user.last_activity_at)
+              .toISOString()
+              .replace("T", " ")
+              .substring(0, 19)
+          : null,
+      };
+    });
+
+    return {
+      stagiaires,
+      total: stagiaires.length,
+    };
+  }
 }

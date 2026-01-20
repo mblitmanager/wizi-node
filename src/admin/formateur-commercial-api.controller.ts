@@ -32,6 +32,20 @@ export class FormateurApiController {
     private quizParticipationRepository: Repository<QuizParticipation>
   ) {}
 
+  /**
+   * Consolidated dashboard home endpoint for mobile optimization.
+   * Combines stats, inactive stagiaires, trends, and stagiaires progress
+   * into a single API call to reduce network latency.
+   */
+  @Get("dashboard/home")
+  async dashboardHome(@Request() req: any, @Query("days") days: number = 7) {
+    const data = await this.adminService.getFormateurDashboardHome(
+      req.user.id,
+      days
+    );
+    return this.apiResponse.success(data);
+  }
+
   @Get("dashboard/stats")
   async dashboardStats(@Request() req: any) {
     const stats = await this.adminService.getFormateurDashboardStats(
@@ -59,13 +73,15 @@ export class FormateurApiController {
   @Get("stagiaires/online")
   async onlineStagiaires(@Request() req: any) {
     try {
-      const data = await this.adminService.getFormateurOnlineStagiaires(req.user.id);
+      const data = await this.adminService.getFormateurOnlineStagiaires(
+        req.user.id
+      );
       return this.apiResponse.success({
         stagiaires: data,
         total: data.length,
       });
     } catch (error) {
-      console.error('Error fetching online stagiaires:', error);
+      console.error("Error fetching online stagiaires:", error);
       return this.apiResponse.success({
         stagiaires: [],
         total: 0,
