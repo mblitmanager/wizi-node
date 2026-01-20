@@ -9,6 +9,7 @@ export declare class FormateurApiController {
     private formateurRepository;
     private quizParticipationRepository;
     constructor(apiResponse: ApiResponseService, adminService: AdminService, formateurRepository: Repository<Formateur>, quizParticipationRepository: Repository<QuizParticipation>);
+    dashboardHome(req: any, days?: number): Promise<any>;
     dashboardStats(req: any): Promise<any>;
     formations(req: any): Promise<any>;
     stagiaires(req: any): Promise<any>;
@@ -19,6 +20,7 @@ export declare class FormateurApiController {
     disconnect(data: {
         stagiaire_ids: number[];
     }): Promise<any>;
+    stagiaireProfile(id: number): Promise<any>;
     stagiaireStats(id: number): Promise<any>;
     videoStats(id: number): Promise<any>;
     videos(): Promise<any>;

@@ -1774,4 +1774,137 @@ export class AdminService {
       total: stagiaires.length,
     };
   }
+
+  /**
+   * Get complete student profile for the formateur.
+   * Provides stats, activity, formations and quiz history in one call.
+   */
+  async getStagiaireProfileById(id: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { id },
+      relations: [
+        "user",
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation",
+      ],
+    });
+
+    if (!stagiaire) {
+      throw new NotFoundException("Stagiaire non trouvé");
+    }
+
+    const userId = stagiaire.user_id;
+
+    // 1. Fetch Quiz Participations
+    const quizParticipations = await this.quizParticipationRepository.find({
+      where: { user_id: userId },
+      relations: ["quiz"],
+      order: { created_at: "DESC" },
+    });
+
+    const completedQuizzes = quizParticipations.filter(
+      (p) => p.status === "completed"
+    );
+
+    // Stats Calculation
+    const totalScore = completedQuizzes.reduce(
+      (acc, p) => acc + (p.score || 0),
+      0
+    );
+    const avgScore =
+      completedQuizzes.length > 0 ? totalScore / completedQuizzes.length : 0;
+    const totalTime = completedQuizzes.reduce(
+      (acc, p) => acc + (p.time_spent || 0),
+      0
+    );
+
+    // Formations Stats
+    const formationsCompleted = stagiaire.stagiaire_catalogue_formations.filter(
+      (scf) => scf.statut === 1
+    ).length;
+    const formationsInProgress =
+      stagiaire.stagiaire_catalogue_formations.filter(
+        (scf) => scf.statut === 0
+      ).length;
+
+    // Simple Badge Logic
+    let badge = "BRONZE";
+    if (totalScore >= 1000) badge = "OR";
+    else if (totalScore >= 500) badge = "ARGENT";
+
+    // 2. Activity Heatmap (Last 30 Days)
+    const now = new Date();
+    const last30Days = [];
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split("T")[0];
+
+      const dailyActions = quizParticipations.filter(
+        (p) => p.created_at.toISOString().split("T")[0] === dateStr
+      ).length;
+
+      last30Days.push({
+        date: dateStr,
+        actions: dailyActions,
+      });
+    }
+
+    const recentActivities = quizParticipations.slice(0, 10).map((p) => ({
+      type: "quiz",
+      title: p.quiz?.titre || "Quiz",
+      score: p.score,
+      timestamp: p.created_at.toISOString(),
+    }));
+
+    // 3. Formations Progress
+    const formations = stagiaire.stagiaire_catalogue_formations.map((scf) => ({
+      id: scf.catalogue_formation?.id,
+      title: scf.catalogue_formation?.titre || "Formation",
+      category: scf.catalogue_formation?.formation?.categorie || "Général",
+      started_at: scf.created_at.toISOString(),
+      completed_at: scf.statut === 1 ? scf.updated_at.toISOString() : null,
+      progress: scf.statut === 1 ? 100 : 0,
+    }));
+
+    // 4. Quiz History
+    const quizHistory = completedQuizzes.map((p) => ({
+      quiz_id: p.quiz_id,
+      title: p.quiz?.titre || "Quiz",
+      category: p.quiz?.categorie || "Général",
+      score: p.score,
+      max_score: 100, // Node default max score
+      completed_at: p.completed_at?.toISOString() || p.created_at.toISOString(),
+      time_spent: p.time_spent || 0,
+    }));
+
+    return {
+      stagiaire: {
+        id: stagiaire.id,
+        prenom: stagiaire.prenom,
+        nom: stagiaire.user?.name || "",
+        email: stagiaire.user?.email || "",
+        image: stagiaire.user?.image,
+        created_at: stagiaire.created_at.toISOString(),
+        last_login: stagiaire.user?.last_login_at?.toISOString() || null,
+      },
+      stats: {
+        total_points: Math.round(totalScore),
+        current_badge: badge,
+        formations_completed: formationsCompleted,
+        formations_in_progress: formationsInProgress,
+        quizzes_completed: completedQuizzes.length,
+        average_score: Math.round(avgScore * 10) / 10,
+        total_time_minutes: Math.round(totalTime / 60),
+        login_streak: stagiaire.login_streak || 0,
+      },
+      activity: {
+        last_30_days: last30Days,
+        recent_activities: recentActivities,
+      },
+      formations,
+      quiz_history: quizHistory,
+    };
+  }
 }

@@ -1325,6 +1325,162 @@ let AdminService = class AdminService {
         }
         return comparison.sort((a, b) => b.total_points - a.total_points);
     }
+    async getFormateurDashboardHome(userId, days = 7) {
+        const [stats, inactiveResult, trends, progressResult] = await Promise.all([
+            this.getFormateurDashboardStats(userId),
+            this.getFormateurInactiveStagiaires(userId, days, "mine"),
+            this.getFormateurTrends(userId),
+            this.getFormateurStagiairesProgress(userId),
+        ]);
+        return {
+            stats: stats || {
+                total_stagiaires: 0,
+                active_this_week: 0,
+                inactive_count: 0,
+                never_connected: 0,
+                avg_quiz_score: 0,
+                total_formations: 0,
+                total_quizzes_taken: 0,
+            },
+            inactive_stagiaires: inactiveResult?.inactive_stagiaires || [],
+            inactive_count: inactiveResult?.count || 0,
+            trends: trends || { quiz_trends: [], activity_trends: [] },
+            stagiaires: progressResult?.stagiaires || [],
+            stagiaires_count: progressResult?.total || 0,
+        };
+    }
+    async getFormateurStagiairesProgress(userId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["stagiaires", "stagiaires.user"],
+        });
+        if (!formateur) {
+            return { stagiaires: [], total: 0 };
+        }
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const stagiaires = formateur.stagiaires.map((s) => {
+            const isActive = s.user?.last_activity_at && s.user.last_activity_at > weekAgo;
+            const neverConnected = !s.user?.last_login_at;
+            return {
+                id: s.id,
+                prenom: s.prenom || "",
+                nom: s.user?.name || "",
+                email: s.user?.email || "",
+                avatar: s.user?.image || null,
+                is_active: isActive,
+                never_connected: neverConnected,
+                in_formation: true,
+                progress: 0,
+                avg_score: 0,
+                modules_count: 0,
+                formation: null,
+                last_activity_at: s.user?.last_activity_at
+                    ? new Date(s.user.last_activity_at)
+                        .toISOString()
+                        .replace("T", " ")
+                        .substring(0, 19)
+                    : null,
+            };
+        });
+        return {
+            stagiaires,
+            total: stagiaires.length,
+        };
+    }
+    async getStagiaireProfileById(id) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { id },
+            relations: [
+                "user",
+                "stagiaire_catalogue_formations",
+                "stagiaire_catalogue_formations.catalogue_formation",
+                "stagiaire_catalogue_formations.catalogue_formation.formation",
+            ],
+        });
+        if (!stagiaire) {
+            throw new NotFoundException("Stagiaire non trouvé");
+        }
+        const userId = stagiaire.user_id;
+        const quizParticipations = await this.quizParticipationRepository.find({
+            where: { user_id: userId },
+            relations: ["quiz"],
+            order: { created_at: "DESC" },
+        });
+        const completedQuizzes = quizParticipations.filter((p) => p.status === "completed");
+        const totalScore = completedQuizzes.reduce((acc, p) => acc + (p.score || 0), 0);
+        const avgScore = completedQuizzes.length > 0 ? totalScore / completedQuizzes.length : 0;
+        const totalTime = completedQuizzes.reduce((acc, p) => acc + (p.time_spent || 0), 0);
+        const formationsCompleted = stagiaire.stagiaire_catalogue_formations.filter((scf) => scf.statut === 1).length;
+        const formationsInProgress = stagiaire.stagiaire_catalogue_formations.filter((scf) => scf.statut === 0).length;
+        let badge = "BRONZE";
+        if (totalScore >= 1000)
+            badge = "OR";
+        else if (totalScore >= 500)
+            badge = "ARGENT";
+        const now = new Date();
+        const last30Days = [];
+        for (let i = 29; i >= 0; i--) {
+            const date = new Date(now);
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split("T")[0];
+            const dailyActions = quizParticipations.filter((p) => p.created_at.toISOString().split("T")[0] === dateStr).length;
+            last30Days.push({
+                date: dateStr,
+                actions: dailyActions,
+            });
+        }
+        const recentActivities = quizParticipations.slice(0, 10).map((p) => ({
+            type: "quiz",
+            title: p.quiz?.titre || "Quiz",
+            score: p.score,
+            timestamp: p.created_at.toISOString(),
+        }));
+        const formations = stagiaire.stagiaire_catalogue_formations.map((scf) => ({
+            id: scf.catalogue_formation?.id,
+            title: scf.catalogue_formation?.titre || "Formation",
+            category: scf.catalogue_formation?.formation?.categorie || "Général",
+            started_at: scf.created_at.toISOString(),
+            completed_at: scf.statut === 1 ? scf.updated_at.toISOString() : null,
+            progress: scf.statut === 1 ? 100 : 0,
+        }));
+        const quizHistory = completedQuizzes.map((p) => ({
+            quiz_id: p.quiz_id,
+            title: p.quiz?.titre || "Quiz",
+            category: p.quiz?.categorie || "Général",
+            score: p.score,
+            max_score: 100,
+            completed_at: p.completed_at?.toISOString() || p.created_at.toISOString(),
+            time_spent: p.time_spent || 0,
+        }));
+        return {
+            stagiaire: {
+                id: stagiaire.id,
+                prenom: stagiaire.prenom,
+                nom: stagiaire.user?.name || "",
+                email: stagiaire.user?.email || "",
+                image: stagiaire.user?.image,
+                created_at: stagiaire.created_at.toISOString(),
+                last_login: stagiaire.user?.last_login_at?.toISOString() || null,
+            },
+            stats: {
+                total_points: Math.round(totalScore),
+                current_badge: badge,
+                formations_completed: formationsCompleted,
+                formations_in_progress: formationsInProgress,
+                quizzes_completed: completedQuizzes.length,
+                average_score: Math.round(avgScore * 10) / 10,
+                total_time_minutes: Math.round(totalTime / 60),
+                login_streak: stagiaire.login_streak || 0,
+            },
+            activity: {
+                last_30_days: last30Days,
+                recent_activities: recentActivities,
+            },
+            formations,
+            quiz_history: quizHistory,
+        };
+    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([

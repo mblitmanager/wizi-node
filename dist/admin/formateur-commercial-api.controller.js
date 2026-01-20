@@ -30,6 +30,10 @@ let FormateurApiController = class FormateurApiController {
         this.formateurRepository = formateurRepository;
         this.quizParticipationRepository = quizParticipationRepository;
     }
+    async dashboardHome(req, days = 7) {
+        const data = await this.adminService.getFormateurDashboardHome(req.user.id, days);
+        return this.apiResponse.success(data);
+    }
     async dashboardStats(req) {
         const stats = await this.adminService.getFormateurDashboardStats(req.user.id);
         return this.apiResponse.success(stats);
@@ -53,7 +57,7 @@ let FormateurApiController = class FormateurApiController {
             });
         }
         catch (error) {
-            console.error('Error fetching online stagiaires:', error);
+            console.error("Error fetching online stagiaires:", error);
             return this.apiResponse.success({
                 stagiaires: [],
                 total: 0,
@@ -80,6 +84,10 @@ let FormateurApiController = class FormateurApiController {
             message: `${updatedCount} stagiaire(s) déconnecté(s)`,
             disconnected_count: updatedCount,
         });
+    }
+    async stagiaireProfile(id) {
+        const data = await this.adminService.getStagiaireProfileById(id);
+        return this.apiResponse.success(data);
     }
     async stagiaireStats(id) {
         const stats = await this.adminService.getStagiaireStats(id);
@@ -279,6 +287,14 @@ let FormateurApiController = class FormateurApiController {
 };
 exports.FormateurApiController = FormateurApiController;
 __decorate([
+    (0, common_1.Get)("dashboard/home"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("days")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:returntype", Promise)
+], FormateurApiController.prototype, "dashboardHome", null);
+__decorate([
     (0, common_1.Get)("dashboard/stats"),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -336,6 +352,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "disconnect", null);
+__decorate([
+    (0, common_1.Get)("stagiaire/:id/profile"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], FormateurApiController.prototype, "stagiaireProfile", null);
 __decorate([
     (0, common_1.Get)("stagiaire/:id/stats"),
     __param(0, (0, common_1.Param)("id")),

@@ -494,7 +494,7 @@ export class StagiaireService {
     });
 
     if (!stagiaire) {
-      throw new NotFoundException(`Stagiaire not found`);
+      return null;
     }
 
     return {

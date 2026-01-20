@@ -413,7 +413,7 @@ let StagiaireService = class StagiaireService {
             relations: ["user"],
         });
         if (!stagiaire) {
-            throw new common_1.NotFoundException(`Stagiaire not found`);
+            return null;
         }
         return {
             id: stagiaire.id,

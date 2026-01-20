@@ -134,6 +134,12 @@ export class FormateurApiController {
     });
   }
 
+  @Get("stagiaire/:id/profile")
+  async stagiaireProfile(@Param("id") id: number) {
+    const data = await this.adminService.getStagiaireProfileById(id);
+    return this.apiResponse.success(data);
+  }
+
   @Get("stagiaire/:id/stats")
   async stagiaireStats(@Param("id") id: number) {
     const stats = await this.adminService.getStagiaireStats(id);

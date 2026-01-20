@@ -317,4 +317,168 @@ export declare class AdminService {
     }>;
     getFormateurFormationsPerformance(userId: number): Promise<any[]>;
     getFormateurStudentsComparison(userId: number, formationId?: number): Promise<any[]>;
+    getFormateurDashboardHome(userId: number, days?: number): Promise<{
+        stats: {
+            total_stagiaires: number;
+            active_this_week: number;
+            inactive_count: number;
+            never_connected: number;
+            avg_quiz_score: number;
+            total_formations: number;
+            total_quizzes_taken: number;
+            total_video_hours: number;
+            formations: {
+                data: {
+                    id: any;
+                    nom: any;
+                    total_stagiaires: number;
+                    stagiaires_actifs: number;
+                    score_moyen: string;
+                }[];
+                current_page: number;
+                first_page_url: string;
+                from: number;
+                last_page: number;
+                last_page_url: string;
+                links: any[];
+                next_page_url: string;
+                path: string;
+                per_page: number;
+                prev_page_url: any;
+                to: number;
+                total: number;
+            };
+            formateurs: {
+                data: {
+                    id: any;
+                    prenom: any;
+                    nom: any;
+                    total_stagiaires: number;
+                }[];
+                current_page: number;
+                first_page_url: string;
+                from: number;
+                last_page: number;
+                last_page_url: string;
+                links: any[];
+                next_page_url: string;
+                path: string;
+                per_page: number;
+                prev_page_url: any;
+                to: number;
+                total: number;
+            };
+        } | {
+            total_stagiaires: number;
+            active_this_week: number;
+            inactive_count: number;
+            never_connected: number;
+            avg_quiz_score: number;
+            total_formations: number;
+            total_quizzes_taken: number;
+        };
+        inactive_stagiaires: {
+            id: number;
+            prenom: string;
+            nom: string;
+            email: string;
+            last_activity_at: string;
+            days_since_activity: number;
+            never_connected: boolean;
+            last_client: string;
+        }[];
+        inactive_count: number;
+        trends: {
+            quiz_trends: {
+                date: any;
+                count: number;
+                avg_score: number;
+            }[];
+            activity_trends: {
+                date: any;
+                count: number;
+            }[];
+        };
+        stagiaires: {
+            id: any;
+            prenom: any;
+            nom: any;
+            email: any;
+            avatar: any;
+            is_active: boolean;
+            never_connected: boolean;
+            in_formation: boolean;
+            progress: number;
+            avg_score: number;
+            modules_count: number;
+            formation: any;
+            last_activity_at: string;
+        }[];
+        stagiaires_count: number;
+    }>;
+    getFormateurStagiairesProgress(userId: number): Promise<{
+        stagiaires: {
+            id: any;
+            prenom: any;
+            nom: any;
+            email: any;
+            avatar: any;
+            is_active: boolean;
+            never_connected: boolean;
+            in_formation: boolean;
+            progress: number;
+            avg_score: number;
+            modules_count: number;
+            formation: any;
+            last_activity_at: string;
+        }[];
+        total: number;
+    }>;
+    getStagiaireProfileById(id: number): Promise<{
+        stagiaire: {
+            id: number;
+            prenom: string;
+            nom: string;
+            email: string;
+            image: string;
+            created_at: string;
+            last_login: string;
+        };
+        stats: {
+            total_points: number;
+            current_badge: string;
+            formations_completed: number;
+            formations_in_progress: number;
+            quizzes_completed: number;
+            average_score: number;
+            total_time_minutes: number;
+            login_streak: number;
+        };
+        activity: {
+            last_30_days: any[];
+            recent_activities: {
+                type: string;
+                title: string;
+                score: number;
+                timestamp: string;
+            }[];
+        };
+        formations: {
+            id: number;
+            title: string;
+            category: string;
+            started_at: string;
+            completed_at: string;
+            progress: number;
+        }[];
+        quiz_history: {
+            quiz_id: number;
+            title: string;
+            category: any;
+            score: number;
+            max_score: number;
+            completed_at: string;
+            time_spent: number;
+        }[];
+    }>;
 }
