@@ -10,6 +10,7 @@ exports.AdminModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const mail_module_1 = require("../mail/mail.module");
+const notification_module_1 = require("../notification/notification.module");
 const common_module_1 = require("../common/common.module");
 const api_response_service_1 = require("../common/services/api-response.service");
 const admin_service_1 = require("./admin.service");
@@ -68,6 +69,7 @@ exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mail_module_1.MailModule,
+            notification_module_1.NotificationModule,
             common_module_1.CommonModule,
             typeorm_1.TypeOrmModule.forFeature([
                 stagiaire_entity_1.Stagiaire,
