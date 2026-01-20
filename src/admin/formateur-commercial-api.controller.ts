@@ -194,65 +194,15 @@ export class FormateurApiController {
   @Get("analytics/quiz-success-rate")
   async getQuizSuccessRate(
     @Query("period") period: number = 30,
+    @Query("formation_id") formationId: number,
     @Request() req
   ) {
-    const formateur = await this.formateurRepository.findOne({
-      where: { user_id: req.user.id },
-      relations: ["stagiaires"],
-    });
-
-    const stagiaireIds = formateur.stagiaires.map((s: any) => s.id);
-
-    const participations = await this.quizParticipationRepository
-      .createQueryBuilder("qp")
-      .leftJoinAndSelect("qp.quiz", "quiz")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-      .andWhere("qp.status = :status", { status: "completed" })
-      .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
-        days: period,
-      })
-      .getMany();
-
-    const quizStatsMap = new Map();
-
-    participations.forEach((p: any) => {
-      if (!quizStatsMap.has(p.quiz_id)) {
-        quizStatsMap.set(p.quiz_id, {
-          quiz_id: p.quiz_id,
-          quiz_name: p.quiz.titre,
-          category: p.quiz.categorie || "Général",
-          participations: [],
-        });
-      }
-      quizStatsMap.get(p.quiz_id).participations.push(p);
-    });
-
-    const quizStats = Array.from(quizStatsMap.values()).map((stat) => {
-      const total = stat.participations.length;
-      const successful = stat.participations.filter((p: any) => {
-        const maxScore = p.quiz.nb_points_total || 100;
-        return p.score / maxScore >= 0.5;
-      }).length;
-
-      const avgScore =
-        stat.participations.reduce((sum: number, p: any) => sum + p.score, 0) /
-        total;
-
-      return {
-        quiz_id: stat.quiz_id,
-        quiz_name: stat.quiz_name,
-        category: stat.category,
-        total_attempts: total,
-        successful_attempts: successful,
-        success_rate: Math.round((successful / total) * 1000) / 10,
-        average_score: Math.round(avgScore * 10) / 10,
-      };
-    });
-
-    return this.apiResponse.success({
-      period_days: period,
-      quiz_stats: quizStats,
-    });
+    const data = await this.adminService.getFormateurQuizSuccessRate(
+      req.user.id,
+      period,
+      formationId
+    );
+    return this.apiResponse.success(data);
   }
 
   @Get("analytics/completion-time")
@@ -322,196 +272,61 @@ export class FormateurApiController {
   @Get("analytics/activity-heatmap")
   async getActivityHeatmap(
     @Query("period") period: number = 30,
+    @Query("formation_id") formationId: number,
     @Request() req
   ) {
-    const formateur = await this.formateurRepository.findOne({
-      where: { user_id: req.user.id },
-      relations: ["stagiaires"],
-    });
-
-    const stagiaireIds = formateur.stagiaires.map((s: any) => s.id);
-
-    // By day of week
-    const byDay = await this.quizParticipationRepository
-      .createQueryBuilder("qp")
-      .select("DAYOFWEEK(qp.created_at)", "day_of_week")
-      .addSelect("COUNT(*)", "activity_count")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-      .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
-        days: period,
-      })
-      .groupBy("day_of_week")
-      .orderBy("day_of_week", "ASC")
-      .getRawMany();
-
-    const days = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
-    const activityByDay = byDay.map((bd) => ({
-      day: days[bd.day_of_week - 1] || "Unknown",
-      activity_count: parseInt(bd.activity_count),
-    }));
-
-    // By hour
-    const byHour = await this.quizParticipationRepository
-      .createQueryBuilder("qp")
-      .select("HOUR(qp.created_at)", "hour")
-      .addSelect("COUNT(*)", "activity_count")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-      .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
-        days: period,
-      })
-      .groupBy("hour")
-      .orderBy("hour", "ASC")
-      .getRawMany();
-
-    const activityByHour = byHour.map((bh) => ({
-      hour: parseInt(bh.hour),
-      activity_count: parseInt(bh.activity_count),
-    }));
-
-    return this.apiResponse.success({
-      period_days: period,
-      activity_by_day: activityByDay,
-      activity_by_hour: activityByHour,
-    });
+    const data = await this.adminService.getFormateurActivityHeatmap(
+      req.user.id,
+      period,
+      formationId
+    );
+    return this.apiResponse.success(data);
   }
 
   @Get("analytics/dropout-rate")
-  async getDropoutRate(@Request() req) {
-    const formateur = await this.formateurRepository.findOne({
-      where: { user_id: req.user.id },
-      relations: ["stagiaires"],
-    });
-
-    const stagiaireIds = formateur.stagiaires.map((s: any) => s.id);
-
-    const quizDropout = await this.quizParticipationRepository
-      .createQueryBuilder("qp")
-      .leftJoinAndSelect("qp.quiz", "quiz")
-      .select("qp.quiz_id", "quiz_id")
-      .addSelect("quiz.titre", "quiz_name")
-      .addSelect("quiz.categorie", "category")
-      .addSelect("COUNT(*)", "total_attempts")
-      .addSelect(
-        'SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)',
-        "completed"
-      )
-      .addSelect(
-        'SUM(CASE WHEN qp.status != "completed" THEN 1 ELSE 0 END)',
-        "abandoned"
-      )
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-      .groupBy("qp.quiz_id")
-      .getRawMany();
-
-    const dropoutStats = quizDropout
-      .map((qd) => {
-        const total = parseInt(qd.total_attempts);
-        const completed = parseInt(qd.completed);
-        const abandoned = parseInt(qd.abandoned);
-        const dropoutRate =
-          total > 0 ? Math.round((abandoned / total) * 1000) / 10 : 0;
-
-        return {
-          quiz_name: qd.quiz_name || "Unknown",
-          category: qd.category || "Général",
-          total_attempts: total,
-          completed,
-          abandoned,
-          dropout_rate: dropoutRate,
-        };
-      })
-      .sort((a, b) => b.dropout_rate - a.dropout_rate);
-
-    const totalAttempts = dropoutStats.reduce(
-      (sum, d) => sum + d.total_attempts,
-      0
+  async getDropoutRate(
+    @Query("formation_id") formationId: number,
+    @Request() req
+  ) {
+    const data = await this.adminService.getFormateurDropoutRate(
+      req.user.id,
+      formationId
     );
-    const totalCompleted = dropoutStats.reduce(
-      (sum, d) => sum + d.completed,
-      0
-    );
-    const totalAbandoned = dropoutStats.reduce(
-      (sum, d) => sum + d.abandoned,
-      0
-    );
-
-    return this.apiResponse.success({
-      overall: {
-        total_attempts: totalAttempts,
-        completed: totalCompleted,
-        abandoned: totalAbandoned,
-        dropout_rate:
-          totalAttempts > 0
-            ? Math.round((totalAbandoned / totalAttempts) * 1000) / 10
-            : 0,
-      },
-      quiz_dropout: dropoutStats,
-    });
+    return this.apiResponse.success(data);
   }
 
   @Get("analytics/dashboard")
-  async getDashboard(@Query("period") period: number = 30, @Request() req) {
-    const formateur = await this.formateurRepository.findOne({
-      where: { user_id: req.user.id },
-      relations: ["stagiaires"],
-    });
+  async getDashboard(
+    @Query("period") period: number = 30,
+    @Query("formation_id") formationId: number,
+    @Request() req
+  ) {
+    const data = await this.adminService.getFormateurAnalyticsDashboard(
+      req.user.id,
+      period,
+      formationId
+    );
+    return this.apiResponse.success(data);
+  }
 
-    const stagiaireIds = formateur.stagiaires.map((s: any) => s.id);
-    const totalStagiaires = stagiaireIds.length;
+  @Get("analytics/formations-performance")
+  async getFormationsOverview(@Request() req) {
+    const data = await this.adminService.getFormateurFormationsPerformance(
+      req.user.id
+    );
+    return this.apiResponse.success(data);
+  }
 
-    // Active stagiaires (last 7 days)
-    const activeStagiaires = await this.quizParticipationRepository
-      .createQueryBuilder("qp")
-      .select("DISTINCT qp.stagiaire_id")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-      .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)")
-      .getRawMany();
-
-    // Total completions
-    const totalCompletions = await this.quizParticipationRepository.count({
-      where: {
-        stagiaire_id: stagiaireIds as any,
-        status: "completed",
-      } as any,
-    });
-
-    // Average score
-    const avgScoreResult = await this.quizParticipationRepository
-      .createQueryBuilder("qp")
-      .select("AVG(qp.score)", "avg_score")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-      .andWhere("qp.status = :status", { status: "completed" })
-      .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
-        days: period,
-      })
-      .getRawOne();
-
-    // Previous period completions for trend
-    const previousCompletions = await this.quizParticipationRepository.count({
-      where: {
-        stagiaire_id: stagiaireIds as any,
-        status: "completed",
-      } as any,
-    });
-
-    const trend =
-      previousCompletions > 0
-        ? Math.round(
-            ((totalCompletions - previousCompletions) / previousCompletions) *
-              1000
-          ) / 10
-        : 0;
-
-    return this.apiResponse.success({
-      period_days: period,
-      summary: {
-        total_stagiaires: totalStagiaires,
-        active_stagiaires: activeStagiaires.length,
-        total_completions: totalCompletions,
-        average_score: Math.round((avgScoreResult?.avg_score || 0) * 10) / 10,
-        trend_percentage: trend,
-      },
-    });
+  @Get("analytics/students-comparison")
+  async getStudentsComparison(
+    @Query("formation_id") formationId: number,
+    @Request() req
+  ) {
+    const data = await this.adminService.getFormateurStudentsComparison(
+      req.user.id,
+      formationId
+    );
+    return this.apiResponse.success(data);
   }
 
   @Get("analytics/performance")
