@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { Stagiaire } from "./stagiaire.entity";
+import { GoogleCalendar } from "./google-calendar.entity";
 
 @Entity("users")
 export class User {
@@ -57,4 +58,7 @@ export class User {
 
   @OneToOne(() => Stagiaire, (stagiaire) => stagiaire.user)
   stagiaire: Stagiaire;
+
+  @OneToMany(() => GoogleCalendar, (calendar) => calendar.user)
+  googleCalendars: GoogleCalendar[];
 }

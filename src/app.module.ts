@@ -58,6 +58,8 @@ import { ParticipationModule } from "./participation/participation.module";
 import { PoleRelationClientModule } from "./pole-relation-client/pole-relation-client.module";
 import { ProgressionModule } from "./progression/progression.module";
 import { WorkersModule } from "./workers/workers.module";
+import { GoogleCalendar } from "./entities/google-calendar.entity";
+import { GoogleCalendarEvent } from "./entities/google-calendar-event.entity";
 
 @Module({
   imports: [
