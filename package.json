@@ -46,7 +46,9 @@
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.1",
     "bullmq": "^5.41.0",
-    "@nestjs/bullmq": "^11.1.1"
+    "@nestjs/bullmq": "^11.1.1",
+    "@nestjs/schedule": "^5.0.1",
+    "cron": "^3.5.0"
   },
   "overrides": {
     "nodemailer": "^7.0.12",

@@ -25,12 +25,17 @@ let UserPresenceInterceptor = class UserPresenceInterceptor {
         const request = context.switchToHttp().getRequest();
         const user = request.user;
         if (user && user.id) {
+            console.log(`[DEBUG] Updating presence for user ${user.id} (${user.email || "no email"})`);
             this.userRepository
                 .update(user.id, {
                 is_online: true,
                 last_activity_at: new Date(),
             })
-                .catch((err) => console.error(`Failed to update presence for user ${user.id}:`, err));
+                .then(() => {
+            })
+                .catch((err) => console.error(`[ERROR] Failed to update presence for user ${user.id}:`, err));
+        }
+        else {
         }
         return next.handle();
     }

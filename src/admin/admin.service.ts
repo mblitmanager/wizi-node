@@ -435,14 +435,13 @@ export class AdminService {
   }
 
   async getOnlineStagiaires() {
-    const stagiaires = await this.stagiaireRepository.find({
-      where: { user: { is_online: true } },
-      relations: [
-        "user",
-        "stagiaire_catalogue_formations",
-        "stagiaire_catalogue_formations.catalogue_formation",
-      ],
-    });
+    const stagiaires = await this.stagiaireRepository
+      .createQueryBuilder("stagiaire")
+      .innerJoinAndSelect("stagiaire.user", "user")
+      .leftJoinAndSelect("stagiaire.stagiaire_catalogue_formations", "scf")
+      .leftJoinAndSelect("scf.catalogue_formation", "cf")
+      .where("user.is_online = :isOnline", { isOnline: true })
+      .getMany();
 
     return stagiaires.map((s) => {
       const formatDate = (date: Date | null) => {

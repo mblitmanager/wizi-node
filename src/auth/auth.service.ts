@@ -40,6 +40,14 @@ export class AuthService {
 
   async login(user: any) {
     const payload = { email: user.email, sub: user.id, role: user.role };
+
+    // Persist login time and online status
+    await this.userRepository.update(user.id, {
+      last_login_at: new Date(),
+      is_online: true,
+      last_activity_at: new Date(),
+    });
+
     return {
       token: this.jwtService.sign(payload),
       refresh_token: "dummy-refresh-token",
@@ -188,7 +196,10 @@ export class AuthService {
     // Clear last_activity_at or fcm_token if needed
     // In a stateless JWT system, client just deletes the token
     // But we can clear the fcm_token if the user logs out
-    await this.userRepository.update(userId, { fcm_token: null });
+    await this.userRepository.update(userId, {
+      fcm_token: null,
+      is_online: false,
+    });
     return true;
   }
 

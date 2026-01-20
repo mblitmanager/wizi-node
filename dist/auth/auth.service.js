@@ -44,6 +44,11 @@ let AuthService = class AuthService {
     }
     async login(user) {
         const payload = { email: user.email, sub: user.id, role: user.role };
+        await this.userRepository.update(user.id, {
+            last_login_at: new Date(),
+            is_online: true,
+            last_activity_at: new Date(),
+        });
         return {
             token: this.jwtService.sign(payload),
             refresh_token: "dummy-refresh-token",
@@ -174,7 +179,10 @@ let AuthService = class AuthService {
         await this.userRepository.update(userId, { fcm_token: token });
     }
     async logout(userId) {
-        await this.userRepository.update(userId, { fcm_token: null });
+        await this.userRepository.update(userId, {
+            fcm_token: null,
+            is_online: false,
+        });
         return true;
     }
     async logoutAll(userId) {

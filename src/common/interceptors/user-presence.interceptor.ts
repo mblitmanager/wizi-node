@@ -22,15 +22,26 @@ export class UserPresenceInterceptor implements NestInterceptor {
     const user = request.user;
 
     if (user && user.id) {
+      console.log(
+        `[DEBUG] Updating presence for user ${user.id} (${user.email || "no email"})`
+      );
       // Update user status asynchronously (don't block the request)
       this.userRepository
         .update(user.id, {
           is_online: true,
           last_activity_at: new Date(),
         })
+        .then(() => {
+          // console.log(`[DEBUG] Presence updated for user ${user.id}`);
+        })
         .catch((err) =>
-          console.error(`Failed to update presence for user ${user.id}:`, err)
+          console.error(
+            `[ERROR] Failed to update presence for user ${user.id}:`,
+            err
+          )
         );
+    } else {
+      // console.log('[DEBUG] No user in request for presence tracking');
     }
 
     return next.handle();
