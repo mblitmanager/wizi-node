@@ -6,6 +6,7 @@ import { User } from "../entities/user.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { Formateur } from "../entities/formateur.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { Classement } from "../entities/classement.entity";
 import { NotificationService } from "../notification/notification.service";
 
 @Injectable()
@@ -610,15 +611,11 @@ export class AdminService {
       .innerJoin("f.user", "u")
       .leftJoin("f.stagiaires", "s")
       .leftJoin("s.user", "su")
-      .leftJoin(
-        QuizParticipation,
-        "qp",
-        "su.id = qp.user_id AND qp.status = 'completed'"
-      );
+      .leftJoin(Classement, "c", "s.id = c.stagiaire_id");
 
     if (formationId) {
       query.andWhere(
-        "qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :formationId)",
+        "c.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :formationId)",
         { formationId }
       );
     }
@@ -626,11 +623,11 @@ export class AdminService {
     if (period === "week") {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
-      query.andWhere("qp.created_at >= :weekAgo", { weekAgo });
+      query.andWhere("c.updated_at >= :weekAgo", { weekAgo });
     } else if (period === "month") {
       const monthAgo = new Date();
       monthAgo.setMonth(monthAgo.getMonth() - 1);
-      query.andWhere("qp.created_at >= :monthAgo", { monthAgo });
+      query.andWhere("c.updated_at >= :monthAgo", { monthAgo });
     }
 
     query
@@ -640,7 +637,7 @@ export class AdminService {
         "u.name AS nom",
         "u.image AS image",
         "COUNT(DISTINCT s.id) AS total_stagiaires",
-        "COALESCE(SUM(qp.score), 0) AS total_points",
+        "COALESCE(SUM(c.points), 0) AS total_points",
       ])
       .groupBy("f.id")
       .addGroupBy("f.prenom")
@@ -659,17 +656,13 @@ export class AdminService {
         .innerJoin("s.formateurs", "f", "f.id = :formateurId", {
           formateurId: trainer.id,
         })
-        .leftJoin(
-          QuizParticipation,
-          "qp",
-          "su.id = qp.user_id AND qp.status = 'completed'"
-        )
+        .leftJoin(Classement, "c", "s.id = c.stagiaire_id")
         .select([
           "s.id AS id",
           "s.prenom AS prenom",
           "su.name AS nom",
           "su.image AS image",
-          "COALESCE(SUM(qp.score), 0) AS points",
+          "COALESCE(SUM(c.points), 0) AS points",
         ])
         .groupBy("s.id")
         .addGroupBy("s.prenom")
@@ -680,11 +673,11 @@ export class AdminService {
       if (period === "week") {
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
-        stagiairesQuery.andWhere("qp.created_at >= :weekAgo", { weekAgo });
+        stagiairesQuery.andWhere("c.updated_at >= :weekAgo", { weekAgo });
       } else if (period === "month") {
         const monthAgo = new Date();
         monthAgo.setMonth(monthAgo.getMonth() - 1);
-        stagiairesQuery.andWhere("qp.created_at >= :monthAgo", { monthAgo });
+        stagiairesQuery.andWhere("c.updated_at >= :monthAgo", { monthAgo });
       }
 
       const stagiaires = await stagiairesQuery.getRawMany();
@@ -1020,5 +1013,61 @@ export class AdminService {
 
     await Promise.all(promises);
     return { success: true, count: recipientIds.length };
+  }
+
+  async getMyStagiairesRanking(userId: number, period: string = "all") {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!formateur) return [];
+
+    const query = this.stagiaireRepository
+      .createQueryBuilder("s")
+      .innerJoin("s.user", "su")
+      .innerJoin("s.formateurs", "f", "f.id = :formateurId", {
+        formateurId: formateur.id,
+      })
+      .leftJoin(Classement, "c", "s.id = c.stagiaire_id")
+      .select([
+        "s.id AS id",
+        "s.prenom AS prenom",
+        "su.name AS nom",
+        "su.email AS email",
+        "su.image AS image",
+        "COALESCE(SUM(c.points), 0) AS total_points",
+        "COUNT(DISTINCT c.id) AS total_quiz",
+        "COALESCE(AVG(c.points), 0) AS avg_score",
+      ])
+      .groupBy("s.id")
+      .addGroupBy("s.prenom")
+      .addGroupBy("su.name")
+      .addGroupBy("su.email")
+      .addGroupBy("su.image")
+      .orderBy("total_points", "DESC");
+
+    if (period === "week") {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      query.andWhere("c.updated_at >= :weekAgo", { weekAgo });
+    } else if (period === "month") {
+      const monthAgo = new Date();
+      monthAgo.setMonth(monthAgo.getMonth() - 1);
+      query.andWhere("c.updated_at >= :monthAgo", { monthAgo });
+    }
+
+    const stagiaires = await query.getRawMany();
+
+    return stagiaires.map((s, index) => ({
+      rank: index + 1,
+      id: parseInt(s.id),
+      prenom: s.prenom,
+      nom: s.nom,
+      email: s.email,
+      image: s.image,
+      total_points: parseInt(s.total_points),
+      total_quiz: parseInt(s.total_quiz),
+      avg_score: Math.round(parseFloat(s.avg_score) * 10) / 10,
+    }));
   }
 }

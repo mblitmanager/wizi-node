@@ -238,4 +238,15 @@ export declare class AdminService {
         success: boolean;
         count: number;
     }>;
+    getMyStagiairesRanking(userId: number, period?: string): Promise<{
+        rank: number;
+        id: number;
+        prenom: any;
+        nom: any;
+        email: any;
+        image: any;
+        total_points: number;
+        total_quiz: number;
+        avg_score: number;
+    }[]>;
 }

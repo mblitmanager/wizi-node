@@ -11,7 +11,8 @@ import {
   Query,
   NotFoundException,
   Headers,
-  HttpStatus, HttpException
+  HttpStatus,
+  HttpException,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -43,7 +44,10 @@ export class AgendasApiController {
     @Body() body: any,
     @Headers("x-sync-secret") secret: string
   ) {
-    if (!process.env.SYNC_API_SECRET || secret !== process.env.SYNC_API_SECRET) {
+    if (
+      !process.env.SYNC_API_SECRET ||
+      secret !== process.env.SYNC_API_SECRET
+    ) {
       throw new HttpException(
         "Non autorisé. Clé secrète invalide ou manquante.",
         HttpStatus.UNAUTHORIZED
@@ -68,7 +72,7 @@ export class AgendasApiController {
 
     return {
       message: "Synchronisation Google Calendar réussie.",
-      userId: result.userId,\
+      userId: result.userId,
       calendarsSynced: result.calendarsSynced,
       eventsSynced: result.eventsSynced,
     };

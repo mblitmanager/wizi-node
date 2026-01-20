@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const typeorm_1 = require("typeorm");
 const stagiaire_entity_1 = require("./stagiaire.entity");
+const google_calendar_entity_1 = require("./google-calendar.entity");
 let User = class User {
 };
 exports.User = User;
@@ -79,6 +80,10 @@ __decorate([
     (0, typeorm_1.OneToOne)(() => stagiaire_entity_1.Stagiaire, (stagiaire) => stagiaire.user),
     __metadata("design:type", stagiaire_entity_1.Stagiaire)
 ], User.prototype, "stagiaire", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => google_calendar_entity_1.GoogleCalendar, (calendar) => calendar.user),
+    __metadata("design:type", Array)
+], User.prototype, "googleCalendars", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)("users")
 ], User);

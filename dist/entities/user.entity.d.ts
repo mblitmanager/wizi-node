@@ -1,4 +1,5 @@
 import { Stagiaire } from "./stagiaire.entity";
+import { GoogleCalendar } from "./google-calendar.entity";
 export declare class User {
     id: number;
     name: string;
@@ -16,4 +17,5 @@ export declare class User {
     created_at: Date;
     updated_at: Date;
     stagiaire: Stagiaire;
+    googleCalendars: GoogleCalendar[];
 }

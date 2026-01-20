@@ -26,6 +26,23 @@ let AgendasApiController = class AgendasApiController {
         this.agendaRepository = agendaRepository;
         this.agendaService = agendaService;
     }
+    async syncGoogleCalendar(body, secret) {
+        if (!process.env.SYNC_API_SECRET ||
+            secret !== process.env.SYNC_API_SECRET) {
+            throw new common_1.HttpException("Non autorisé. Clé secrète invalide ou manquante.", common_1.HttpStatus.UNAUTHORIZED);
+        }
+        const { userId, calendars, events } = body;
+        if (!userId || !calendars || !events) {
+            throw new common_1.HttpException("Paramètres manquants. userId, calendars, et events sont requis.", common_1.HttpStatus.BAD_REQUEST);
+        }
+        const result = await this.agendaService.syncGoogleCalendarData(userId, calendars, events);
+        return {
+            message: "Synchronisation Google Calendar réussie.",
+            userId: result.userId,
+            calendarsSynced: result.calendarsSynced,
+            eventsSynced: result.eventsSynced,
+        };
+    }
     async getAll(req, page = 1, limit = 30) {
         const pageNum = typeof page === "string" ? parseInt(page, 10) : page || 1;
         const limitNum = typeof limit === "string" ? parseInt(limit, 10) : limit || 30;
@@ -116,6 +133,14 @@ let AgendasApiController = class AgendasApiController {
     }
 };
 exports.AgendasApiController = AgendasApiController;
+__decorate([
+    (0, common_1.Post)("/sync"),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)("x-sync-secret")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], AgendasApiController.prototype, "syncGoogleCalendar", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Request)()),

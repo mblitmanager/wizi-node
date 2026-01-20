@@ -142,6 +142,18 @@ export class FormateurApiController {
     return this.apiResponse.success(data);
   }
 
+  @Get("classement/mes-stagiaires")
+  async mesStagiairesRanking(
+    @Request() req,
+    @Query("period") period: string = "all"
+  ) {
+    const data = await this.adminService.getMyStagiairesRanking(
+      req.user.id,
+      period
+    );
+    return this.apiResponse.success(data);
+  }
+
   @Post("send-email")
   async sendEmail(@Body() data: any) {
     return this.apiResponse.success();
