@@ -1,0 +1,54 @@
+import { Repository } from "typeorm";
+import { Progression } from "../entities/progression.entity";
+export declare class ProgressionService {
+    private progressionRepository;
+    constructor(progressionRepository: Repository<Progression>);
+    findAll(page?: number, perPage?: number, baseUrl?: string): Promise<{
+        member: {
+            "@id": string;
+            "@type": string;
+            id: number;
+            termine: boolean;
+            stagiaire_id: string;
+            quiz_id: string;
+            formation_id: string;
+            pourcentage: number;
+            explication: string;
+            score: number;
+            correct_answers: number;
+            total_questions: number;
+            time_spent: number;
+            completion_time: string;
+            created_at: string;
+            updated_at: string;
+        }[];
+        totalItems: number;
+        view: {
+            "@id": string;
+            "@type": string;
+            first: string;
+            last: string;
+            next: string;
+            previous: string;
+        };
+    }>;
+    findOne(id: number): Promise<{
+        "@context": string;
+        "@id": string;
+        "@type": string;
+        id: number;
+        termine: boolean;
+        stagiaire_id: string;
+        quiz_id: string;
+        formation_id: string;
+        pourcentage: number;
+        explication: string;
+        score: number;
+        correct_answers: number;
+        total_questions: number;
+        time_spent: number;
+        completion_time: string;
+        created_at: string;
+        updated_at: string;
+    }>;
+}

@@ -1,0 +1,46 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ParrainageModule = void 0;
+const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const parrainage_service_1 = require("./parrainage.service");
+const parrainage_controller_1 = require("./parrainage.controller");
+const parrainage_entity_1 = require("../entities/parrainage.entity");
+const parrainage_token_entity_1 = require("../entities/parrainage-token.entity");
+const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
+const user_entity_1 = require("../entities/user.entity");
+const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
+const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const mail_module_1 = require("../mail/mail.module");
+const formation_module_1 = require("../formation/formation.module");
+let ParrainageModule = class ParrainageModule {
+};
+exports.ParrainageModule = ParrainageModule;
+exports.ParrainageModule = ParrainageModule = __decorate([
+    (0, common_1.Module)({
+        imports: [
+            mail_module_1.MailModule,
+            formation_module_1.FormationModule,
+            typeorm_1.TypeOrmModule.forFeature([
+                parrainage_entity_1.Parrainage,
+                parrainage_token_entity_1.ParrainageToken,
+                parrainage_event_entity_1.ParrainageEvent,
+                user_entity_1.User,
+                stagiaire_entity_1.Stagiaire,
+                demande_inscription_entity_1.DemandeInscription,
+                catalogue_formation_entity_1.CatalogueFormation,
+            ]),
+        ],
+        providers: [parrainage_service_1.ParrainageService],
+        controllers: [parrainage_controller_1.ParrainageController],
+        exports: [parrainage_service_1.ParrainageService],
+    })
+], ParrainageModule);
+//# sourceMappingURL=parrainage.module.js.map
