@@ -71,8 +71,11 @@ export class QuizApiController {
   }
 
   @Get("classement/global")
-  async globalClassement(@Query("period") period: string = "all") {
-    const data = await this.rankingService.getGlobalRanking(period);
+  async globalClassement(
+    @Query("period") period: string = "all",
+    @Query("quarter") quarter?: string
+  ) {
+    const data = await this.rankingService.getGlobalRanking(period, quarter);
     // Note: Returning raw list without success() wrapper for parity
     return data.map(({ level, ...item }) => item);
   }

@@ -130,9 +130,6 @@ export class FormateurApiController {
     return this.apiResponse.success([]);
   }
 
-    return this.apiResponse.success(data);
-  }
-
   @Get("classement/arena")
   async arenaRanking(
     @Query("period") period: string = "all",
