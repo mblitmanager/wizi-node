@@ -108,7 +108,13 @@ import { Reponse } from "../entities/reponse.entity";
   ],
   providers: [AdminService, ApiResponseService],
   controllers: [
-    // Existing
+    // API Controllers (Placed first to avoid shadowing)
+    FormateurApiController,
+    CommercialApiController,
+    // Web Controllers
+    FormateurWebController,
+    CommercialWebController,
+    // Existing Admin
     AdminController,
     AdminDashboardController,
     CommercialController,
@@ -138,12 +144,6 @@ import { Reponse } from "../entities/reponse.entity";
     AdminInactivityController,
     AdminDemandeHistoriqueController,
     AdminParrainageEventController,
-    // Web Controllers
-    FormateurWebController,
-    CommercialWebController,
-    // API Controllers
-    FormateurApiController,
-    CommercialApiController,
     // Formateur Specific Controllers
     FormateurFormationController,
     FormateurQuizController,
