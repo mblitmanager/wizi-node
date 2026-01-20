@@ -11,6 +11,14 @@ async function bootstrap() {
   const expressApp = app.getHttpAdapter().getInstance();
   expressApp.set("etag", false);
 
+  // Add middleware to disable caching headers on all responses
+  app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '-1');
+    next();
+  });
+
   app.setGlobalPrefix("api", { exclude: ["/", "/admin", "/administrateur"] });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new AllExceptionsFilter());
