@@ -48,7 +48,6 @@ import {
   FormateurApiController,
   CommercialApiController,
 } from "./formateur-commercial-api.controller";
-import { FormateurAnalyticsController } from "./formateur-analytics.controller";
 import { FormateurFormationController } from "./formateur-formation.controller";
 import { FormateurQuizController } from "./formateur-quiz.controller";
 import { FormateurAlertsController } from "./formateur-alerts.controller";
