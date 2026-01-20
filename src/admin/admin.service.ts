@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, Between, LessThan, In } from "typeorm";
 import { Stagiaire } from "../entities/stagiaire.entity";
@@ -22,7 +22,7 @@ export class AdminService {
     private formateurRepository: Repository<Formateur>,
     @InjectRepository(CatalogueFormation)
     private formationRepository: Repository<CatalogueFormation>,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
   ) {}
 
   async getFormateurDashboardStats(userId: number) {
@@ -40,11 +40,11 @@ export class AdminService {
     weekAgo.setDate(weekAgo.getDate() - 7);
 
     const activeThisWeek = stagiaires.filter(
-      (s) => s.user?.last_activity_at && s.user.last_activity_at > weekAgo
+      (s) => s.user?.last_activity_at && s.user.last_activity_at > weekAgo,
     ).length;
 
     const neverConnected = stagiaires.filter(
-      (s) => !s.user?.last_login_at
+      (s) => !s.user?.last_login_at,
     ).length;
     const inactiveCount = totalStagiaires - activeThisWeek;
 
@@ -192,7 +192,7 @@ export class AdminService {
   async getFormateurStagiairesPerformance(userId: number) {
     console.log(
       "getFormateurStagiairesPerformance called with userId:",
-      userId
+      userId,
     );
 
     // 1. Get Formateur ID first (Mirroring Laravel: Formateur::where('user_id', $user->id)->first())
@@ -234,7 +234,7 @@ export class AdminService {
     const stagiaires = await qb.getMany();
 
     console.log(
-      `Found ${stagiaires.length} stagiaires for formateur ${formateurId}`
+      `Found ${stagiaires.length} stagiaires for formateur ${formateurId}`,
     );
 
     if (stagiaires.length === 0) {
@@ -314,7 +314,7 @@ export class AdminService {
   async getFormateurInactiveStagiaires(
     userId: number,
     days: number = 7,
-    scope: string = "all"
+    scope: string = "all",
   ) {
     const thresholdDays = days;
     // Debug: Check total stagiaires in DB
@@ -323,7 +323,7 @@ export class AdminService {
 
     const now = new Date();
     const weekAgo = new Date(
-      now.getTime() - thresholdDays * 24 * 60 * 60 * 1000
+      now.getTime() - thresholdDays * 24 * 60 * 60 * 1000,
     );
 
     // 1. Get Formateur ID
@@ -372,7 +372,7 @@ export class AdminService {
       ];
 
       console.log(
-        `[DEBUG] Formateur ${formateurId}: Direct Students: ${directStagiaireIds.length}, Formation Students: ${formationStagiaireIds.length}, Total Unique: ${allMyStagiaireIds.length}`
+        `[DEBUG] Formateur ${formateurId}: Direct Students: ${directStagiaireIds.length}, Formation Students: ${formationStagiaireIds.length}, Total Unique: ${allMyStagiaireIds.length}`,
       );
       console.log(`[DEBUG] IDs: ${JSON.stringify(allMyStagiaireIds)}`);
 
@@ -393,7 +393,7 @@ export class AdminService {
 
     const stagiaires = await query.getMany();
     console.log(
-      `[DEBUG] Found ${stagiaires.length} potential stagiaires for scope ${scope}`
+      `[DEBUG] Found ${stagiaires.length} potential stagiaires for scope ${scope}`,
     );
 
     // 3. Filter and Format
@@ -433,7 +433,7 @@ export class AdminService {
       .filter(
         (s) =>
           s.never_connected ||
-          (s.days_since_activity && s.days_since_activity > thresholdDays)
+          (s.days_since_activity && s.days_since_activity > thresholdDays),
       );
 
     return {
@@ -449,7 +449,7 @@ export class AdminService {
       relations: ["user"],
     });
     console.log(
-      `[DEBUG] AdminService: Found ${stagiaires.length} stagiaires in DB`
+      `[DEBUG] AdminService: Found ${stagiaires.length} stagiaires in DB`,
     );
 
     return stagiaires.map((s) => {
@@ -498,7 +498,7 @@ export class AdminService {
         avatar: s.user?.image || null,
         last_activity_at: formatDate(s.user?.last_activity_at),
         formations: (s.stagiaire_catalogue_formations || []).map(
-          (scf) => scf.catalogue_formation?.titre
+          (scf) => scf.catalogue_formation?.titre,
         ),
       };
     });
@@ -528,7 +528,7 @@ export class AdminService {
           "stagiaire.formateurs",
           "formateur",
           "formateur.id = :formateurId",
-          { formateurId: formateur.id }
+          { formateurId: formateur.id },
         )
         .where("user.is_online = :isOnline", { isOnline: true })
         .orderBy("stagiaire.prenom", "ASC")
@@ -553,7 +553,7 @@ export class AdminService {
           avatar: s.user?.image || null,
           last_activity_at: formatDate(s.user?.last_activity_at),
           formations: (s.stagiaire_catalogue_formations || []).map(
-            (scf) => scf.catalogue_formation?.titre
+            (scf) => scf.catalogue_formation?.titre,
           ),
         };
       });
@@ -632,7 +632,7 @@ export class AdminService {
 
   async getFormateurMesStagiairesRanking(
     userId: number,
-    period: string = "all"
+    period: string = "all",
   ) {
     // 1. Get Formateur ID
     const formateur = await this.formateurRepository.findOne({
@@ -715,7 +715,7 @@ export class AdminService {
       .innerJoin(
         "f.formations",
         "f_cf",
-        "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL"
+        "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL",
       );
 
     if (formationId) {
@@ -764,7 +764,7 @@ export class AdminService {
         .innerJoin(
           "f.formations",
           "f_cf",
-          "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL"
+          "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL",
         )
         .select([
           "s.id AS id",
@@ -875,7 +875,7 @@ export class AdminService {
           student_count: parseInt(f.student_count),
           ...analytics,
         };
-      })
+      }),
     );
 
     return enrichedFormations;
@@ -923,7 +923,7 @@ export class AdminService {
             ? new Date(stats.last_activity).toISOString()
             : null,
         };
-      })
+      }),
     );
 
     return performance.filter((p) => p !== null);
@@ -1015,7 +1015,7 @@ export class AdminService {
       .createQueryBuilder("cf")
       .loadRelationCountAndMap(
         "cf.enrollments",
-        "cf.stagiaire_catalogue_formations"
+        "cf.stagiaire_catalogue_formations",
       )
       .orderBy("cf.enrollments", "DESC") // This might be tricky with virtual fields, let's use raw query style if needed
       .limit(5)
@@ -1092,7 +1092,7 @@ export class AdminService {
     // 2. Update is_online to 0 for those users
     const result = await this.userRepository.update(
       { id: In(userIds) },
-      { is_online: false }
+      { is_online: false },
     );
 
     return result.affected || 0;
@@ -1102,10 +1102,10 @@ export class AdminService {
     senderId: number,
     recipientIds: number[],
     title: string,
-    message: string
+    message: string,
   ) {
     console.log(
-      `[DEBUG] AdminService: Sending notification to ${recipientIds.length} recipients...`
+      `[DEBUG] AdminService: Sending notification to ${recipientIds.length} recipients...`,
     );
 
     const promises = recipientIds.map(async (id) => {
@@ -1121,7 +1121,7 @@ export class AdminService {
           "system",
           message,
           { type: "custom", sender_id: senderId },
-          title
+          title,
         );
       }
     });
@@ -1149,7 +1149,7 @@ export class AdminService {
       .innerJoin(
         "f.formations",
         "f_cf",
-        "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL"
+        "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL",
       )
       .select([
         "s.id AS id",
@@ -1196,7 +1196,7 @@ export class AdminService {
   async getFormateurAnalyticsDashboard(
     userId: number,
     period: number = 30,
-    formationId?: number
+    formationId?: number,
   ) {
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },
@@ -1253,7 +1253,7 @@ export class AdminService {
     if (formationId) {
       totalCompletionsQuery.andWhere(
         "qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid))",
-        { cid: formationId }
+        { cid: formationId },
       );
     }
 
@@ -1272,7 +1272,7 @@ export class AdminService {
     if (formationId) {
       avgScoreQuery.andWhere(
         "qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid))",
-        { cid: formationId }
+        { cid: formationId },
       );
     }
 
@@ -1285,13 +1285,13 @@ export class AdminService {
       .andWhere("qp.status = :status", { status: "completed" })
       .andWhere(
         "qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY) AND qp.created_at < DATE_SUB(NOW(), INTERVAL :prevDays DAY)",
-        { days: period * 2, prevDays: period }
+        { days: period * 2, prevDays: period },
       );
 
     if (formationId) {
       previousCompletionsQuery.andWhere(
         "qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid))",
-        { cid: formationId }
+        { cid: formationId },
       );
     }
 
@@ -1301,7 +1301,7 @@ export class AdminService {
       previousCompletions > 0
         ? Math.round(
             ((totalCompletions - previousCompletions) / previousCompletions) *
-              1000
+              1000,
           ) / 10
         : 0;
 
@@ -1320,7 +1320,7 @@ export class AdminService {
   async getFormateurQuizSuccessRate(
     userId: number,
     period: number = 30,
-    formationId?: number
+    formationId?: number,
   ) {
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },
@@ -1358,7 +1358,7 @@ export class AdminService {
     if (formationId) {
       query.andWhere(
         "quiz.formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid)",
-        { cid: formationId }
+        { cid: formationId },
       );
     }
 
@@ -1409,7 +1409,7 @@ export class AdminService {
   async getFormateurActivityHeatmap(
     userId: number,
     period: number = 30,
-    formationId?: number
+    formationId?: number,
   ) {
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },
@@ -1445,7 +1445,7 @@ export class AdminService {
     if (formationId) {
       query.andWhere(
         "qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid))",
-        { cid: formationId }
+        { cid: formationId },
       );
     }
 
@@ -1517,18 +1517,18 @@ export class AdminService {
       .addSelect("COUNT(*)", "total_attempts")
       .addSelect(
         'SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)',
-        "completed"
+        "completed",
       )
       .addSelect(
         'SUM(CASE WHEN qp.status != "completed" THEN 1 ELSE 0 END)',
-        "abandoned"
+        "abandoned",
       )
       .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds });
 
     if (formationId) {
       query.andWhere(
         "quiz.formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid)",
-        { cid: formationId }
+        { cid: formationId },
       );
     }
 
@@ -1555,15 +1555,15 @@ export class AdminService {
 
     const totalAttempts = dropoutStats.reduce(
       (sum, d) => sum + d.total_attempts,
-      0
+      0,
     );
     const totalCompleted = dropoutStats.reduce(
       (sum, d) => sum + d.completed,
-      0
+      0,
     );
     const totalAbandoned = dropoutStats.reduce(
       (sum, d) => sum + d.abandoned,
-      0
+      0,
     );
 
     return {
@@ -1592,7 +1592,7 @@ export class AdminService {
 
     for (const formation of formateur.formations) {
       const stagiaireIds = formation.stagiaire_catalogue_formations.map(
-        (scf: any) => scf.stagiaire_id
+        (scf: any) => scf.stagiaire_id,
       );
 
       if (stagiaireIds.length === 0) {
@@ -1611,13 +1611,13 @@ export class AdminService {
         .select("COUNT(*)", "total")
         .addSelect(
           'SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)',
-          "completed"
+          "completed",
         )
         .addSelect("AVG(qp.score)", "avg_score")
         .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
         .andWhere(
           "qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :fid)",
-          { fid: formation.formation_id }
+          { fid: formation.formation_id },
         )
         .getRawOne();
 
@@ -1669,7 +1669,7 @@ export class AdminService {
         .select("COUNT(*)", "total")
         .addSelect(
           'SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)',
-          "completed"
+          "completed",
         )
         .addSelect("AVG(qp.score)", "avg_score")
         .addSelect("SUM(qp.score)", "total_points")
@@ -1804,28 +1804,28 @@ export class AdminService {
     });
 
     const completedQuizzes = quizParticipations.filter(
-      (p) => p.status === "completed"
+      (p) => p.status === "completed",
     );
 
     // Stats Calculation
     const totalScore = completedQuizzes.reduce(
       (acc, p) => acc + (p.score || 0),
-      0
+      0,
     );
     const avgScore =
       completedQuizzes.length > 0 ? totalScore / completedQuizzes.length : 0;
     const totalTime = completedQuizzes.reduce(
       (acc, p) => acc + (p.time_spent || 0),
-      0
+      0,
     );
 
     // Formations Stats
     const formationsCompleted = stagiaire.stagiaire_catalogue_formations.filter(
-      (scf) => scf.statut === 1
+      (scf) => scf.date_fin != null,
     ).length;
     const formationsInProgress =
       stagiaire.stagiaire_catalogue_formations.filter(
-        (scf) => scf.statut === 0
+        (scf) => scf.date_fin == null,
       ).length;
 
     // Simple Badge Logic
@@ -1842,7 +1842,7 @@ export class AdminService {
       const dateStr = date.toISOString().split("T")[0];
 
       const dailyActions = quizParticipations.filter(
-        (p) => p.created_at.toISOString().split("T")[0] === dateStr
+        (p) => p.created_at.toISOString().split("T")[0] === dateStr,
       ).length;
 
       last30Days.push({
@@ -1864,15 +1864,15 @@ export class AdminService {
       title: scf.catalogue_formation?.titre || "Formation",
       category: scf.catalogue_formation?.formation?.categorie || "Général",
       started_at: scf.created_at.toISOString(),
-      completed_at: scf.statut === 1 ? scf.updated_at.toISOString() : null,
-      progress: scf.statut === 1 ? 100 : 0,
+      completed_at: scf.date_fin ? scf.date_fin.toISOString() : null,
+      progress: scf.date_fin ? 100 : 0,
     }));
 
     // 4. Quiz History
     const quizHistory = completedQuizzes.map((p) => ({
       quiz_id: p.quiz_id,
       title: p.quiz?.titre || "Quiz",
-      category: p.quiz?.categorie || "Général",
+      category: p.quiz?.formation?.categorie || "Général",
       score: p.score,
       max_score: 100, // Node default max score
       completed_at: p.completed_at?.toISOString() || p.created_at.toISOString(),
