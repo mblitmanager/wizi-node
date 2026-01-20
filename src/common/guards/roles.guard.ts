@@ -30,9 +30,13 @@ export class RolesGuard implements CanActivate {
 
     const userRole = user.role;
     const hasRole = requiredRoles.some((role) => {
-      // Treat formatrice and formateur as equivalent for access control
+      // Treat formatrice and formateur as equivalent
       if (role === "formateur" && userRole === "formatrice") return true;
       if (role === "formatrice" && userRole === "formateur") return true;
+
+      // Treat commerciale and commercial as equivalent
+      if (role === "commercial" && userRole === "commerciale") return true;
+      if (role === "commerciale" && userRole === "commercial") return true;
 
       return userRole?.includes(role);
     });

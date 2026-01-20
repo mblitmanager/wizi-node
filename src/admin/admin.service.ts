@@ -344,32 +344,65 @@ export class AdminService {
     // 2. Fetch stagiaires
     const query = this.stagiaireRepository
       .createQueryBuilder("s")
-      .innerJoin("s.user", "u");
+      .innerJoinAndSelect("s.user", "u");
 
     if (scope !== "all") {
-      query
+      // Get IDs of students linked directly OR via formations
+      const directStagiaireIds = await this.stagiaireRepository
+        .createQueryBuilder("s")
         .innerJoin("s.formateurs", "f")
-        .where("f.id = :formateurId", { formateurId });
+        .where("f.id = :formateurId", { formateurId })
+        .select("s.id")
+        .getMany()
+        .then((list) => list.map((item) => item.id));
+
+      const formationStagiaireIds = await this.stagiaireRepository
+        .createQueryBuilder("s")
+        .innerJoin("s.stagiaire_catalogue_formations", "scf")
+        .innerJoin("scf.catalogue_formation", "cf")
+        .innerJoin("cf.formateurs", "f")
+        .where("f.id = :formateurId", { formateurId })
+        .select("s.id")
+        .getMany()
+        .then((list) => list.map((item) => item.id));
+
+      const allMyStagiaireIds = [
+        ...new Set([...directStagiaireIds, ...formationStagiaireIds]),
+      ];
+
+      if (allMyStagiaireIds.length > 0) {
+        query.andWhere("s.id IN (:...allMyStagiaireIds)", {
+          allMyStagiaireIds,
+        });
+      } else {
+        // If no students linked at all, return empty results early
+        return {
+          inactive_stagiaires: [],
+          count: 0,
+          threshold_days: thresholdDays,
+        };
+      }
     }
 
-    const stagiaires = await query
-      .select([
-        "s.id",
-        "s.prenom",
-        "s.user_id", // Needed for mapping
-        "u.name",
-        "u.email",
-        "u.last_activity_at",
-        "u.last_client",
-      ])
-      .getMany();
+    const stagiaires = await query.getMany();
+    console.log(
+      `[DEBUG] Found ${stagiaires.length} potential stagiaires for scope ${scope}`
+    );
 
     // 3. Filter and Format
     const inactiveStagiaires = stagiaires
       .map((s) => {
-        const lastActivityAt = s.user?.last_activity_at
-          ? new Date(s.user.last_activity_at)
-          : null;
+        // Use the most recent of last_activity_at or last_login_at
+        const timestamps = [
+          s.user?.last_activity_at
+            ? new Date(s.user.last_activity_at).getTime()
+            : 0,
+          s.user?.last_login_at ? new Date(s.user.last_login_at).getTime() : 0,
+        ].filter((t) => t > 0);
+
+        const lastActiveTime =
+          timestamps.length > 0 ? Math.max(...timestamps) : null;
+        const lastActivityAt = lastActiveTime ? new Date(lastActiveTime) : null;
 
         let daysSinceActivity: number | null = null;
         if (lastActivityAt) {
@@ -441,6 +474,49 @@ export class AdminService {
       .innerJoinAndSelect("stagiaire.user", "user")
       .leftJoinAndSelect("stagiaire.stagiaire_catalogue_formations", "scf")
       .leftJoinAndSelect("scf.catalogue_formation", "cf")
+      .where("user.is_online = :isOnline", { isOnline: true })
+      .getMany();
+
+    return stagiaires.map((s) => {
+      const formatDate = (date: Date | null) => {
+        if (!date) return null;
+        return new Date(date).toISOString().replace("T", " ").substring(0, 19);
+      };
+
+      return {
+        id: s.id,
+        prenom: s.prenom,
+        nom: s.user?.name || "",
+        email: s.user?.email || "",
+        avatar: s.user?.image || null,
+        last_activity_at: formatDate(s.user?.last_activity_at),
+        formations: (s.stagiaire_catalogue_formations || []).map(
+          (scf) => scf.catalogue_formation?.titre
+        ),
+      };
+    });
+  }
+
+  async getFormateurOnlineStagiaires(userId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!formateur) {
+      return [];
+    }
+
+    const stagiaires = await this.stagiaireRepository
+      .createQueryBuilder("stagiaire")
+      .innerJoinAndSelect("stagiaire.user", "user")
+      .leftJoinAndSelect("stagiaire.stagiaire_catalogue_formations", "scf")
+      .leftJoinAndSelect("scf.catalogue_formation", "cf")
+      .innerJoin(
+        "stagiaire.formateurs",
+        "formateur",
+        "formateur.id = :formateurId",
+        { formateurId: formateur.id }
+      )
       .where("user.is_online = :isOnline", { isOnline: true })
       .getMany();
 

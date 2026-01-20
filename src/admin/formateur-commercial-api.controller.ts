@@ -57,8 +57,8 @@ export class FormateurApiController {
   }
 
   @Get("stagiaires/online")
-  async onlineStagiaires() {
-    const data = await this.adminService.getOnlineStagiaires();
+  async onlineStagiaires(@Request() req: any) {
+    const data = await this.adminService.getFormateurOnlineStagiaires(req.user.id);
     return this.apiResponse.success({
       stagiaires: data,
       total: data.length,
@@ -75,6 +75,10 @@ export class FormateurApiController {
       req.user.id,
       days,
       scope
+    );
+    console.log(
+      "[DEBUG] Inactive Stagiaires Stats:",
+      JSON.stringify(stats).substring(0, 500)
     );
     return this.apiResponse.success(stats);
   }
