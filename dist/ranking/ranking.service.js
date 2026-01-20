@@ -102,7 +102,7 @@ let RankingService = class RankingService {
         });
         return { items, total };
     }
-    async getGlobalRanking(period = "all") {
+    async getGlobalRanking(period = "all", quarter) {
         let query = this.classementRepository
             .createQueryBuilder("c")
             .leftJoinAndSelect("c.stagiaire", "stagiaire")
@@ -127,6 +127,32 @@ let RankingService = class RankingService {
             const quarterAgo = new Date();
             quarterAgo.setMonth(quarterAgo.getMonth() - 3);
             query = query.where("c.updated_at >= :quarterAgo", { quarterAgo });
+        }
+        else if (period === "all" && quarter && quarter !== "all") {
+            const year = new Date().getFullYear();
+            let startMonth = 0;
+            let endMonth = 2;
+            if (quarter === "1") {
+                startMonth = 0;
+                endMonth = 2;
+            }
+            else if (quarter === "2") {
+                startMonth = 3;
+                endMonth = 5;
+            }
+            else if (quarter === "3") {
+                startMonth = 6;
+                endMonth = 8;
+            }
+            else if (quarter === "4") {
+                startMonth = 9;
+                endMonth = 11;
+            }
+            const qStart = new Date(year, startMonth, 1);
+            const qEnd = new Date(year, endMonth + 1, 0, 23, 59, 59);
+            query = query
+                .where("c.updated_at >= :qStart", { qStart })
+                .andWhere("c.updated_at <= :qEnd", { qEnd });
         }
         const allClassements = await query.getMany();
         const groupedByStagiaire = {};

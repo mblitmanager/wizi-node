@@ -59,7 +59,7 @@ export declare class QuizApiController {
         correctAnswers: number;
     }[]>;
     byCategory(categoryId: string, req: any): Promise<any>;
-    globalClassement(period?: string): Promise<{
+    globalClassement(period?: string, quarter?: string): Promise<{
         rang: number;
         stagiaire: {
             id: any;

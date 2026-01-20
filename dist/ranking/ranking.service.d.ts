@@ -26,7 +26,7 @@ export declare class RankingService {
         items: Classement[];
         total: number;
     }>;
-    getGlobalRanking(period?: string): Promise<{
+    getGlobalRanking(period?: string, quarter?: string): Promise<{
         rang: number;
         level: string;
         stagiaire: {

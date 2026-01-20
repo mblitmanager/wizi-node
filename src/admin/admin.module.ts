@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { MailModule } from "../mail/mail.module";
+import { NotificationModule } from "../notification/notification.module";
 import { CommonModule } from "../common/common.module";
 import { ApiResponseService } from "../common/services/api-response.service";
 import { AdminService } from "./admin.service";
@@ -78,6 +79,7 @@ import { Reponse } from "../entities/reponse.entity";
 @Module({
   imports: [
     MailModule,
+    NotificationModule,
     CommonModule,
     TypeOrmModule.forFeature([
       Stagiaire,
