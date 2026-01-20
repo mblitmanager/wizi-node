@@ -367,18 +367,21 @@ export class AdminService {
         .then((list) => list.map((item) => item.id));
 
       const allMyStagiaireIds = [
-        ...new Set([...directStagiaireIds, ...formationStagiaireIds]),
+        ...new Set([...directStagiaireIds]), // Strict parity: Direct students only
+        // ...new Set([...directStagiaireIds, ...formationStagiaireIds]),
       ];
 
       console.log(
         `[DEBUG] Formateur ${formateurId}: Direct Students: ${directStagiaireIds.length}, Formation Students: ${formationStagiaireIds.length}, Total Unique: ${allMyStagiaireIds.length}`
       );
+      console.log(`[DEBUG] IDs: ${JSON.stringify(allMyStagiaireIds)}`);
 
       if (allMyStagiaireIds.length > 0) {
         query.andWhere("s.id IN (:...allMyStagiaireIds)", {
           allMyStagiaireIds,
         });
       } else {
+        console.log("[DEBUG] No students found, returning empty object.");
         // If no students linked at all, return empty results early
         return {
           inactive_stagiaires: [],
@@ -509,41 +512,44 @@ export class AdminService {
       });
 
       if (!formateur) {
-        console.log('Formateur not found for userId:', userId);
+        console.log("Formateur not found for userId:", userId);
         return [];
       }
 
-      console.log('Found formateur:', formateur.id);
+      console.log("Found formateur:", formateur.id);
 
       // Query all stagiaires that belong to this formateur and are online
       const stagiaires = await this.stagiaireRepository
-        .createQueryBuilder('stagiaire')
-        .innerJoinAndSelect('stagiaire.user', 'user')
-        .leftJoinAndSelect('stagiaire.stagiaire_catalogue_formations', 'scf')
-        .leftJoinAndSelect('scf.catalogue_formation', 'cf')
+        .createQueryBuilder("stagiaire")
+        .innerJoinAndSelect("stagiaire.user", "user")
+        .leftJoinAndSelect("stagiaire.stagiaire_catalogue_formations", "scf")
+        .leftJoinAndSelect("scf.catalogue_formation", "cf")
         .innerJoin(
-          'stagiaire.formateurs',
-          'formateur',
-          'formateur.id = :formateurId',
+          "stagiaire.formateurs",
+          "formateur",
+          "formateur.id = :formateurId",
           { formateurId: formateur.id }
         )
-        .where('user.is_online = :isOnline', { isOnline: true })
-        .orderBy('stagiaire.prenom', 'ASC')
+        .where("user.is_online = :isOnline", { isOnline: true })
+        .orderBy("stagiaire.prenom", "ASC")
         .getMany();
 
-      console.log('Found online stagiaires:', stagiaires.length);
+      console.log("Found online stagiaires:", stagiaires.length);
 
       return stagiaires.map((s) => {
         const formatDate = (date: Date | null) => {
           if (!date) return null;
-          return new Date(date).toISOString().replace('T', ' ').substring(0, 19);
+          return new Date(date)
+            .toISOString()
+            .replace("T", " ")
+            .substring(0, 19);
         };
 
         return {
           id: s.id,
           prenom: s.prenom,
-          nom: s.user?.name || '',
-          email: s.user?.email || '',
+          nom: s.user?.name || "",
+          email: s.user?.email || "",
           avatar: s.user?.image || null,
           last_activity_at: formatDate(s.user?.last_activity_at),
           formations: (s.stagiaire_catalogue_formations || []).map(
@@ -552,7 +558,7 @@ export class AdminService {
         };
       });
     } catch (error) {
-      console.error('Error fetching formateur online stagiaires:', error);
+      console.error("Error fetching formateur online stagiaires:", error);
       return [];
     }
   }
