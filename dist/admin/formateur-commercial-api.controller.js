@@ -115,55 +115,9 @@ let FormateurApiController = class FormateurApiController {
         const data = await this.adminService.getStagiaireFormationPerformance(id);
         return this.apiResponse.success(data);
     }
-    async getQuizSuccessRate(period = 30, req) {
-        const formateur = await this.formateurRepository.findOne({
-            where: { user_id: req.user.id },
-            relations: ["stagiaires"],
-        });
-        const stagiaireIds = formateur.stagiaires.map((s) => s.id);
-        const participations = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .leftJoinAndSelect("qp.quiz", "quiz")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-            .andWhere("qp.status = :status", { status: "completed" })
-            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
-            days: period,
-        })
-            .getMany();
-        const quizStatsMap = new Map();
-        participations.forEach((p) => {
-            if (!quizStatsMap.has(p.quiz_id)) {
-                quizStatsMap.set(p.quiz_id, {
-                    quiz_id: p.quiz_id,
-                    quiz_name: p.quiz.titre,
-                    category: p.quiz.categorie || "Général",
-                    participations: [],
-                });
-            }
-            quizStatsMap.get(p.quiz_id).participations.push(p);
-        });
-        const quizStats = Array.from(quizStatsMap.values()).map((stat) => {
-            const total = stat.participations.length;
-            const successful = stat.participations.filter((p) => {
-                const maxScore = p.quiz.nb_points_total || 100;
-                return p.score / maxScore >= 0.5;
-            }).length;
-            const avgScore = stat.participations.reduce((sum, p) => sum + p.score, 0) /
-                total;
-            return {
-                quiz_id: stat.quiz_id,
-                quiz_name: stat.quiz_name,
-                category: stat.category,
-                total_attempts: total,
-                successful_attempts: successful,
-                success_rate: Math.round((successful / total) * 1000) / 10,
-                average_score: Math.round(avgScore * 10) / 10,
-            };
-        });
-        return this.apiResponse.success({
-            period_days: period,
-            quiz_stats: quizStats,
-        });
+    async getQuizSuccessRate(period = 30, formationId, req) {
+        const data = await this.adminService.getFormateurQuizSuccessRate(req.user.id, period, formationId);
+        return this.apiResponse.success(data);
     }
     async getCompletionTime(period = 30, req) {
         const formateur = await this.formateurRepository.findOne({
@@ -216,146 +170,25 @@ let FormateurApiController = class FormateurApiController {
             quiz_avg_times: quizAvgTimes,
         });
     }
-    async getActivityHeatmap(period = 30, req) {
-        const formateur = await this.formateurRepository.findOne({
-            where: { user_id: req.user.id },
-            relations: ["stagiaires"],
-        });
-        const stagiaireIds = formateur.stagiaires.map((s) => s.id);
-        const byDay = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .select("DAYOFWEEK(qp.created_at)", "day_of_week")
-            .addSelect("COUNT(*)", "activity_count")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
-            days: period,
-        })
-            .groupBy("day_of_week")
-            .orderBy("day_of_week", "ASC")
-            .getRawMany();
-        const days = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
-        const activityByDay = byDay.map((bd) => ({
-            day: days[bd.day_of_week - 1] || "Unknown",
-            activity_count: parseInt(bd.activity_count),
-        }));
-        const byHour = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .select("HOUR(qp.created_at)", "hour")
-            .addSelect("COUNT(*)", "activity_count")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
-            days: period,
-        })
-            .groupBy("hour")
-            .orderBy("hour", "ASC")
-            .getRawMany();
-        const activityByHour = byHour.map((bh) => ({
-            hour: parseInt(bh.hour),
-            activity_count: parseInt(bh.activity_count),
-        }));
-        return this.apiResponse.success({
-            period_days: period,
-            activity_by_day: activityByDay,
-            activity_by_hour: activityByHour,
-        });
+    async getActivityHeatmap(period = 30, formationId, req) {
+        const data = await this.adminService.getFormateurActivityHeatmap(req.user.id, period, formationId);
+        return this.apiResponse.success(data);
     }
-    async getDropoutRate(req) {
-        const formateur = await this.formateurRepository.findOne({
-            where: { user_id: req.user.id },
-            relations: ["stagiaires"],
-        });
-        const stagiaireIds = formateur.stagiaires.map((s) => s.id);
-        const quizDropout = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .leftJoinAndSelect("qp.quiz", "quiz")
-            .select("qp.quiz_id", "quiz_id")
-            .addSelect("quiz.titre", "quiz_name")
-            .addSelect("quiz.categorie", "category")
-            .addSelect("COUNT(*)", "total_attempts")
-            .addSelect('SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)', "completed")
-            .addSelect('SUM(CASE WHEN qp.status != "completed" THEN 1 ELSE 0 END)', "abandoned")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-            .groupBy("qp.quiz_id")
-            .getRawMany();
-        const dropoutStats = quizDropout
-            .map((qd) => {
-            const total = parseInt(qd.total_attempts);
-            const completed = parseInt(qd.completed);
-            const abandoned = parseInt(qd.abandoned);
-            const dropoutRate = total > 0 ? Math.round((abandoned / total) * 1000) / 10 : 0;
-            return {
-                quiz_name: qd.quiz_name || "Unknown",
-                category: qd.category || "Général",
-                total_attempts: total,
-                completed,
-                abandoned,
-                dropout_rate: dropoutRate,
-            };
-        })
-            .sort((a, b) => b.dropout_rate - a.dropout_rate);
-        const totalAttempts = dropoutStats.reduce((sum, d) => sum + d.total_attempts, 0);
-        const totalCompleted = dropoutStats.reduce((sum, d) => sum + d.completed, 0);
-        const totalAbandoned = dropoutStats.reduce((sum, d) => sum + d.abandoned, 0);
-        return this.apiResponse.success({
-            overall: {
-                total_attempts: totalAttempts,
-                completed: totalCompleted,
-                abandoned: totalAbandoned,
-                dropout_rate: totalAttempts > 0
-                    ? Math.round((totalAbandoned / totalAttempts) * 1000) / 10
-                    : 0,
-            },
-            quiz_dropout: dropoutStats,
-        });
+    async getDropoutRate(formationId, req) {
+        const data = await this.adminService.getFormateurDropoutRate(req.user.id, formationId);
+        return this.apiResponse.success(data);
     }
-    async getDashboard(period = 30, req) {
-        const formateur = await this.formateurRepository.findOne({
-            where: { user_id: req.user.id },
-            relations: ["stagiaires"],
-        });
-        const stagiaireIds = formateur.stagiaires.map((s) => s.id);
-        const totalStagiaires = stagiaireIds.length;
-        const activeStagiaires = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .select("DISTINCT qp.stagiaire_id")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)")
-            .getRawMany();
-        const totalCompletions = await this.quizParticipationRepository.count({
-            where: {
-                stagiaire_id: stagiaireIds,
-                status: "completed",
-            },
-        });
-        const avgScoreResult = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .select("AVG(qp.score)", "avg_score")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-            .andWhere("qp.status = :status", { status: "completed" })
-            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
-            days: period,
-        })
-            .getRawOne();
-        const previousCompletions = await this.quizParticipationRepository.count({
-            where: {
-                stagiaire_id: stagiaireIds,
-                status: "completed",
-            },
-        });
-        const trend = previousCompletions > 0
-            ? Math.round(((totalCompletions - previousCompletions) / previousCompletions) *
-                1000) / 10
-            : 0;
-        return this.apiResponse.success({
-            period_days: period,
-            summary: {
-                total_stagiaires: totalStagiaires,
-                active_stagiaires: activeStagiaires.length,
-                total_completions: totalCompletions,
-                average_score: Math.round((avgScoreResult?.avg_score || 0) * 10) / 10,
-                trend_percentage: trend,
-            },
-        });
+    async getDashboard(period = 30, formationId, req) {
+        const data = await this.adminService.getFormateurAnalyticsDashboard(req.user.id, period, formationId);
+        return this.apiResponse.success(data);
+    }
+    async getFormationsOverview(req) {
+        const data = await this.adminService.getFormateurFormationsPerformance(req.user.id);
+        return this.apiResponse.success(data);
+    }
+    async getStudentsComparison(formationId, req) {
+        const data = await this.adminService.getFormateurStudentsComparison(req.user.id, formationId);
+        return this.apiResponse.success(data);
     }
     async getStudentPerformance(req) {
         const formateur = await this.formateurRepository.findOne({
@@ -574,9 +407,10 @@ __decorate([
 __decorate([
     (0, common_1.Get)("analytics/quiz-success-rate"),
     __param(0, (0, common_1.Query)("period")),
-    __param(1, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("formation_id")),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, Number, Object]),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "getQuizSuccessRate", null);
 __decorate([
@@ -590,26 +424,44 @@ __decorate([
 __decorate([
     (0, common_1.Get)("analytics/activity-heatmap"),
     __param(0, (0, common_1.Query)("period")),
-    __param(1, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("formation_id")),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, Number, Object]),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "getActivityHeatmap", null);
 __decorate([
     (0, common_1.Get)("analytics/dropout-rate"),
-    __param(0, (0, common_1.Request)()),
+    __param(0, (0, common_1.Query)("formation_id")),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "getDropoutRate", null);
 __decorate([
     (0, common_1.Get)("analytics/dashboard"),
     __param(0, (0, common_1.Query)("period")),
+    __param(1, (0, common_1.Query)("formation_id")),
+    __param(2, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Object]),
+    __metadata("design:returntype", Promise)
+], FormateurApiController.prototype, "getDashboard", null);
+__decorate([
+    (0, common_1.Get)("analytics/formations-performance"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FormateurApiController.prototype, "getFormationsOverview", null);
+__decorate([
+    (0, common_1.Get)("analytics/students-comparison"),
+    __param(0, (0, common_1.Query)("formation_id")),
     __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
-], FormateurApiController.prototype, "getDashboard", null);
+], FormateurApiController.prototype, "getStudentsComparison", null);
 __decorate([
     (0, common_1.Get)("analytics/performance"),
     __param(0, (0, common_1.Request)()),

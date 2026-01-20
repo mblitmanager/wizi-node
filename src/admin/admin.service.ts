@@ -610,14 +610,17 @@ export class AdminService {
       .createQueryBuilder("f")
       .innerJoin("f.user", "u")
       .leftJoin("f.stagiaires", "s")
-      .leftJoin("s.user", "su")
-      .leftJoin(Classement, "c", "s.id = c.stagiaire_id");
+      .leftJoin(Classement, "c", "s.id = c.stagiaire_id")
+      .leftJoin("c.quiz", "q")
+      // Ensure the quiz belongs to a formation assigned to this trainer
+      .innerJoin(
+        "f.formations",
+        "f_cf",
+        "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL"
+      );
 
     if (formationId) {
-      query.andWhere(
-        "c.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :formationId)",
-        { formationId }
-      );
+      query.andWhere("q.formation_id = :formationId", { formationId });
     }
 
     if (period === "week") {
@@ -657,6 +660,13 @@ export class AdminService {
           formateurId: trainer.id,
         })
         .leftJoin(Classement, "c", "s.id = c.stagiaire_id")
+        .leftJoin("c.quiz", "q")
+        // Filter student points by the trainer's assigned formations
+        .innerJoin(
+          "f.formations",
+          "f_cf",
+          "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL"
+        )
         .select([
           "s.id AS id",
           "s.prenom AS prenom",
@@ -669,6 +679,12 @@ export class AdminService {
         .addGroupBy("su.name")
         .addGroupBy("su.image")
         .orderBy("points", "DESC");
+
+      if (formationId) {
+        stagiairesQuery.andWhere("q.formation_id = :formationId", {
+          formationId,
+        });
+      }
 
       if (period === "week") {
         const weekAgo = new Date();
@@ -1029,6 +1045,13 @@ export class AdminService {
         formateurId: formateur.id,
       })
       .leftJoin(Classement, "c", "s.id = c.stagiaire_id")
+      .leftJoin("c.quiz", "q")
+      // Filter points by the trainer's assigned formations
+      .innerJoin(
+        "f.formations",
+        "f_cf",
+        "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL"
+      )
       .select([
         "s.id AS id",
         "s.prenom AS prenom",

@@ -249,4 +249,63 @@ export declare class AdminService {
         total_quiz: number;
         avg_score: number;
     }[]>;
+    getFormateurAnalyticsDashboard(userId: number, period?: number, formationId?: number): Promise<{
+        period_days: number;
+        summary: {
+            total_stagiaires: number;
+            active_stagiaires: number;
+            total_completions: number;
+            average_score: number;
+            trend_percentage: number;
+        };
+    }>;
+    getFormateurQuizSuccessRate(userId: number, period?: number, formationId?: number): Promise<{
+        period_days: number;
+        quiz_stats: {
+            quiz_id: any;
+            quiz_name: any;
+            category: any;
+            total_attempts: any;
+            successful_attempts: any;
+            success_rate: number;
+            average_score: number;
+        }[];
+    }>;
+    getFormateurActivityHeatmap(userId: number, period?: number, formationId?: number): Promise<{
+        period_days: number;
+        activity_by_day: {
+            day: string;
+            activity_count: number;
+        }[];
+        activity_by_hour: {
+            hour: number;
+            activity_count: number;
+        }[];
+    }>;
+    getFormateurDropoutRate(userId: number, formationId?: number): Promise<{
+        overall: {
+            total_attempts?: undefined;
+            completed?: undefined;
+            abandoned?: undefined;
+            dropout_rate?: undefined;
+        };
+        quiz_dropout: any[];
+    } | {
+        overall: {
+            total_attempts: number;
+            completed: number;
+            abandoned: number;
+            dropout_rate: number;
+        };
+        quiz_dropout: {
+            quiz_name: any;
+            category: any;
+            total_attempts: number;
+            completed: number;
+            abandoned: number;
+            dropout_rate: number;
+        }[];
+    }>;
+    getFormateurFormationsPerformance(userId: number): Promise<any[]>;
+    getFormateurStudentsComparison(userId: number, formationId?: number): Promise<any[]>;
 }

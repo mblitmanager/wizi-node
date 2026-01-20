@@ -7,6 +7,8 @@ const swagger_1 = require("@nestjs/swagger");
 const all_exceptions_filter_1 = require("./common/filters/all-exceptions.filter");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const expressApp = app.getHttpAdapter().getInstance();
+    expressApp.set("etag", false);
     app.setGlobalPrefix("api", { exclude: ["/", "/admin", "/administrateur"] });
     app.useGlobalPipes(new common_1.ValidationPipe({ whitelist: true, transform: true }));
     app.useGlobalFilters(new all_exceptions_filter_1.AllExceptionsFilter());
@@ -19,6 +21,13 @@ async function bootstrap() {
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup("api/docs", app, document);
     app.enableCors();
+    app.use((req, res, next) => {
+        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+        res.setHeader("Pragma", "no-cache");
+        res.setHeader("Expires", "0");
+        res.setHeader("Surrogate-Control", "no-store");
+        next();
+    });
     await app.listen(3000);
     console.log(`Application is running on: ${await app.getUrl()}`);
 }

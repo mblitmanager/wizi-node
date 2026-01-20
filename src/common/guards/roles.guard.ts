@@ -28,7 +28,14 @@ export class RolesGuard implements CanActivate {
       });
     }
 
-    const hasRole = requiredRoles.some((role) => user.role?.includes(role));
+    const userRole = user.role;
+    const hasRole = requiredRoles.some((role) => {
+      // Treat formatrice and formateur as equivalent for access control
+      if (role === "formateur" && userRole === "formatrice") return true;
+      if (role === "formatrice" && userRole === "formateur") return true;
+
+      return userRole?.includes(role);
+    });
 
     if (!hasRole) {
       throw new ForbiddenException({

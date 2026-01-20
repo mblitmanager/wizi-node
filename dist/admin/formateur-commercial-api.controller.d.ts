@@ -30,11 +30,13 @@ export declare class FormateurApiController {
     trends(req: any): Promise<any>;
     getFormationsPerformance(req: any): Promise<any>;
     getStagiaireFormations(id: number): Promise<any>;
-    getQuizSuccessRate(period: number, req: any): Promise<any>;
+    getQuizSuccessRate(period: number, formationId: number, req: any): Promise<any>;
     getCompletionTime(period: number, req: any): Promise<any>;
-    getActivityHeatmap(period: number, req: any): Promise<any>;
-    getDropoutRate(req: any): Promise<any>;
-    getDashboard(period: number, req: any): Promise<any>;
+    getActivityHeatmap(period: number, formationId: number, req: any): Promise<any>;
+    getDropoutRate(formationId: number, req: any): Promise<any>;
+    getDashboard(period: number, formationId: number, req: any): Promise<any>;
+    getFormationsOverview(req: any): Promise<any>;
+    getStudentsComparison(formationId: number, req: any): Promise<any>;
     getStudentPerformance(req: any): Promise<any>;
     stats(): Promise<any>;
 }

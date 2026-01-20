@@ -6,13 +6,14 @@ import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+  // Disable ETags to prevent 304 Not Modified responses
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set("etag", false);
+
   app.setGlobalPrefix("api", { exclude: ["/", "/admin", "/administrateur"] });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new AllExceptionsFilter());
-
-  // Direct use for simplicity as it requires Repository injection,
-  // better to use app.get but for now we'll stick to a manual interceptor instance if possible
-  // or better, use NestJS dependency injection by registering it in AppModule
 
   const config = new DocumentBuilder()
     .setTitle("Wizi-Learn API")
@@ -24,6 +25,7 @@ async function bootstrap() {
   SwaggerModule.setup("api/docs", app, document);
 
   app.enableCors();
+  
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

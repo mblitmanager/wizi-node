@@ -505,10 +505,11 @@ let AdminService = class AdminService {
             .createQueryBuilder("f")
             .innerJoin("f.user", "u")
             .leftJoin("f.stagiaires", "s")
-            .leftJoin("s.user", "su")
-            .leftJoin(classement_entity_1.Classement, "c", "s.id = c.stagiaire_id");
+            .leftJoin(classement_entity_1.Classement, "c", "s.id = c.stagiaire_id")
+            .leftJoin("c.quiz", "q")
+            .innerJoin("f.formations", "f_cf", "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL");
         if (formationId) {
-            query.andWhere("c.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :formationId)", { formationId });
+            query.andWhere("q.formation_id = :formationId", { formationId });
         }
         if (period === "week") {
             const weekAgo = new Date();
@@ -544,6 +545,8 @@ let AdminService = class AdminService {
                 formateurId: trainer.id,
             })
                 .leftJoin(classement_entity_1.Classement, "c", "s.id = c.stagiaire_id")
+                .leftJoin("c.quiz", "q")
+                .innerJoin("f.formations", "f_cf", "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL")
                 .select([
                 "s.id AS id",
                 "s.prenom AS prenom",
@@ -556,6 +559,11 @@ let AdminService = class AdminService {
                 .addGroupBy("su.name")
                 .addGroupBy("su.image")
                 .orderBy("points", "DESC");
+            if (formationId) {
+                stagiairesQuery.andWhere("q.formation_id = :formationId", {
+                    formationId,
+                });
+            }
             if (period === "week") {
                 const weekAgo = new Date();
                 weekAgo.setDate(weekAgo.getDate() - 7);
@@ -842,6 +850,8 @@ let AdminService = class AdminService {
             formateurId: formateur.id,
         })
             .leftJoin(classement_entity_1.Classement, "c", "s.id = c.stagiaire_id")
+            .leftJoin("c.quiz", "q")
+            .innerJoin("f.formations", "f_cf", "f_cf.formation_id = q.formation_id OR q.formation_id IS NULL")
             .select([
             "s.id AS id",
             "s.prenom AS prenom",
@@ -880,6 +890,368 @@ let AdminService = class AdminService {
             total_quiz: parseInt(s.total_quiz),
             avg_score: Math.round(parseFloat(s.avg_score) * 10) / 10,
         }));
+    }
+    async getFormateurAnalyticsDashboard(userId, period = 30, formationId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["stagiaires"],
+        });
+        if (!formateur)
+            return null;
+        let stagiaireIds = formateur.stagiaires.map((s) => s.id);
+        if (formationId) {
+            const formationStagiaires = await this.stagiaireRepository
+                .createQueryBuilder("s")
+                .innerJoin("s.stagiaire_catalogue_formations", "scf")
+                .where("scf.catalogue_formation_id = :formationId", { formationId })
+                .andWhere("s.id IN (:...ids)", { ids: stagiaireIds })
+                .select("s.id")
+                .getMany();
+            stagiaireIds = formationStagiaires.map((s) => s.id);
+        }
+        if (stagiaireIds.length === 0) {
+            return {
+                period_days: period,
+                summary: {
+                    total_stagiaires: 0,
+                    active_stagiaires: 0,
+                    total_completions: 0,
+                    average_score: 0,
+                    trend_percentage: 0,
+                },
+            };
+        }
+        const activeStagiaires = await this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .select("DISTINCT qp.stagiaire_id")
+            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)")
+            .getRawMany();
+        const totalCompletionsQuery = this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .andWhere("qp.status = :status", { status: "completed" })
+            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
+            days: period,
+        });
+        if (formationId) {
+            totalCompletionsQuery.andWhere("qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid))", { cid: formationId });
+        }
+        const totalCompletions = await totalCompletionsQuery.getCount();
+        const avgScoreQuery = this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .select("AVG(qp.score)", "avg_score")
+            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .andWhere("qp.status = :status", { status: "completed" })
+            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
+            days: period,
+        });
+        if (formationId) {
+            avgScoreQuery.andWhere("qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid))", { cid: formationId });
+        }
+        const avgScoreResult = await avgScoreQuery.getRawOne();
+        const previousCompletionsQuery = this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .andWhere("qp.status = :status", { status: "completed" })
+            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY) AND qp.created_at < DATE_SUB(NOW(), INTERVAL :prevDays DAY)", { days: period * 2, prevDays: period });
+        if (formationId) {
+            previousCompletionsQuery.andWhere("qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid))", { cid: formationId });
+        }
+        const previousCompletions = await previousCompletionsQuery.getCount();
+        const trend = previousCompletions > 0
+            ? Math.round(((totalCompletions - previousCompletions) / previousCompletions) *
+                1000) / 10
+            : 0;
+        return {
+            period_days: period,
+            summary: {
+                total_stagiaires: stagiaireIds.length,
+                active_stagiaires: activeStagiaires.length,
+                total_completions: totalCompletions,
+                average_score: Math.round((avgScoreResult?.avg_score || 0) * 10) / 10,
+                trend_percentage: trend,
+            },
+        };
+    }
+    async getFormateurQuizSuccessRate(userId, period = 30, formationId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["stagiaires"],
+        });
+        if (!formateur)
+            return null;
+        let stagiaireIds = formateur.stagiaires.map((s) => s.id);
+        if (formationId) {
+            const formationStagiaires = await this.stagiaireRepository
+                .createQueryBuilder("s")
+                .innerJoin("s.stagiaire_catalogue_formations", "scf")
+                .where("scf.catalogue_formation_id = :formationId", { formationId })
+                .andWhere("s.id IN (:...ids)", { ids: stagiaireIds })
+                .select("s.id")
+                .getMany();
+            stagiaireIds = formationStagiaires.map((s) => s.id);
+        }
+        if (stagiaireIds.length === 0) {
+            return { period_days: period, quiz_stats: [] };
+        }
+        const query = this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .leftJoinAndSelect("qp.quiz", "quiz")
+            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .andWhere("qp.status = :status", { status: "completed" })
+            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
+            days: period,
+        });
+        if (formationId) {
+            query.andWhere("quiz.formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid)", { cid: formationId });
+        }
+        const participations = await query.getMany();
+        const quizStatsMap = new Map();
+        participations.forEach((p) => {
+            if (!quizStatsMap.has(p.quiz_id)) {
+                quizStatsMap.set(p.quiz_id, {
+                    quiz_id: p.quiz_id,
+                    quiz_name: p.quiz.titre,
+                    category: p.quiz.categorie || "Général",
+                    participations: [],
+                });
+            }
+            quizStatsMap.get(p.quiz_id).participations.push(p);
+        });
+        const quizStats = Array.from(quizStatsMap.values()).map((stat) => {
+            const total = stat.participations.length;
+            const successful = stat.participations.filter((p) => {
+                const maxScore = parseInt(p.quiz.nb_points_total) || 100;
+                return p.score / maxScore >= 0.5;
+            }).length;
+            const avgScore = stat.participations.reduce((sum, p) => sum + p.score, 0) /
+                total;
+            return {
+                quiz_id: stat.quiz_id,
+                quiz_name: stat.quiz_name,
+                category: stat.category,
+                total_attempts: total,
+                successful_attempts: successful,
+                success_rate: Math.round((successful / total) * 1000) / 10,
+                average_score: Math.round(avgScore * 10) / 10,
+            };
+        });
+        return {
+            period_days: period,
+            quiz_stats: quizStats,
+        };
+    }
+    async getFormateurActivityHeatmap(userId, period = 30, formationId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["stagiaires"],
+        });
+        if (!formateur)
+            return null;
+        let stagiaireIds = formateur.stagiaires.map((s) => s.id);
+        if (formationId) {
+            const formationStagiaires = await this.stagiaireRepository
+                .createQueryBuilder("s")
+                .innerJoin("s.stagiaire_catalogue_formations", "scf")
+                .where("scf.catalogue_formation_id = :formationId", { formationId })
+                .andWhere("s.id IN (:...ids)", { ids: stagiaireIds })
+                .select("s.id")
+                .getMany();
+            stagiaireIds = formationStagiaires.map((s) => s.id);
+        }
+        if (stagiaireIds.length === 0) {
+            return { period_days: period, activity_by_day: [], activity_by_hour: [] };
+        }
+        const query = this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
+            days: period,
+        });
+        if (formationId) {
+            query.andWhere("qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid))", { cid: formationId });
+        }
+        const byDay = await query
+            .clone()
+            .select("DAYOFWEEK(qp.created_at)", "day_of_week")
+            .addSelect("COUNT(*)", "activity_count")
+            .groupBy("day_of_week")
+            .orderBy("day_of_week", "ASC")
+            .getRawMany();
+        const daysLabel = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+        const activityByDay = byDay.map((bd) => ({
+            day: daysLabel[bd.day_of_week - 1] || "Unknown",
+            activity_count: parseInt(bd.activity_count),
+        }));
+        const byHour = await query
+            .clone()
+            .select("HOUR(qp.created_at)", "hour")
+            .addSelect("COUNT(*)", "activity_count")
+            .groupBy("hour")
+            .orderBy("hour", "ASC")
+            .getRawMany();
+        const activityByHour = byHour.map((bh) => ({
+            hour: parseInt(bh.hour),
+            activity_count: parseInt(bh.activity_count),
+        }));
+        return {
+            period_days: period,
+            activity_by_day: activityByDay,
+            activity_by_hour: activityByHour,
+        };
+    }
+    async getFormateurDropoutRate(userId, formationId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["stagiaires"],
+        });
+        if (!formateur)
+            return null;
+        let stagiaireIds = formateur.stagiaires.map((s) => s.id);
+        if (formationId) {
+            const formationStagiaires = await this.stagiaireRepository
+                .createQueryBuilder("s")
+                .innerJoin("s.stagiaire_catalogue_formations", "scf")
+                .where("scf.catalogue_formation_id = :formationId", { formationId })
+                .andWhere("s.id IN (:...ids)", { ids: stagiaireIds })
+                .select("s.id")
+                .getMany();
+            stagiaireIds = formationStagiaires.map((s) => s.id);
+        }
+        if (stagiaireIds.length === 0) {
+            return { overall: {}, quiz_dropout: [] };
+        }
+        const query = this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .leftJoinAndSelect("qp.quiz", "quiz")
+            .select("qp.quiz_id", "quiz_id")
+            .addSelect("quiz.titre", "quiz_name")
+            .addSelect("quiz.categorie", "category")
+            .addSelect("COUNT(*)", "total_attempts")
+            .addSelect('SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)', "completed")
+            .addSelect('SUM(CASE WHEN qp.status != "completed" THEN 1 ELSE 0 END)', "abandoned")
+            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds });
+        if (formationId) {
+            query.andWhere("quiz.formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid)", { cid: formationId });
+        }
+        const quizDropout = await query.groupBy("qp.quiz_id").getRawMany();
+        const dropoutStats = quizDropout
+            .map((qd) => {
+            const total = parseInt(qd.total_attempts);
+            const completed = parseInt(qd.completed);
+            const abandoned = parseInt(qd.abandoned);
+            const dropoutRate = total > 0 ? Math.round((abandoned / total) * 1000) / 10 : 0;
+            return {
+                quiz_name: qd.quiz_name || "Unknown",
+                category: qd.category || "Général",
+                total_attempts: total,
+                completed,
+                abandoned,
+                dropout_rate: dropoutRate,
+            };
+        })
+            .sort((a, b) => b.dropout_rate - a.dropout_rate);
+        const totalAttempts = dropoutStats.reduce((sum, d) => sum + d.total_attempts, 0);
+        const totalCompleted = dropoutStats.reduce((sum, d) => sum + d.completed, 0);
+        const totalAbandoned = dropoutStats.reduce((sum, d) => sum + d.abandoned, 0);
+        return {
+            overall: {
+                total_attempts: totalAttempts,
+                completed: totalCompleted,
+                abandoned: totalAbandoned,
+                dropout_rate: totalAttempts > 0
+                    ? Math.round((totalAbandoned / totalAttempts) * 1000) / 10
+                    : 0,
+            },
+            quiz_dropout: dropoutStats,
+        };
+    }
+    async getFormateurFormationsPerformance(userId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["formations", "formations.stagiaire_catalogue_formations"],
+        });
+        if (!formateur)
+            return [];
+        const performance = [];
+        for (const formation of formateur.formations) {
+            const stagiaireIds = formation.stagiaire_catalogue_formations.map((scf) => scf.stagiaire_id);
+            if (stagiaireIds.length === 0) {
+                performance.push({
+                    id: formation.id,
+                    nom: formation.titre,
+                    total_stagiaires: 0,
+                    completion_rate: 0,
+                    average_score: 0,
+                });
+                continue;
+            }
+            const stats = await this.quizParticipationRepository
+                .createQueryBuilder("qp")
+                .select("COUNT(*)", "total")
+                .addSelect('SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)', "completed")
+                .addSelect("AVG(qp.score)", "avg_score")
+                .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+                .andWhere("qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :fid)", { fid: formation.formation_id })
+                .getRawOne();
+            performance.push({
+                id: formation.id,
+                nom: formation.titre,
+                total_stagiaires: stagiaireIds.length,
+                completion_rate: stats.total > 0
+                    ? Math.round((stats.completed / stats.total) * 1000) / 10
+                    : 0,
+                average_score: Math.round((stats.avg_score || 0) * 10) / 10,
+            });
+        }
+        return performance;
+    }
+    async getFormateurStudentsComparison(userId, formationId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["stagiaires", "stagiaires.user"],
+        });
+        if (!formateur)
+            return [];
+        let stagiaires = formateur.stagiaires;
+        if (formationId) {
+            const formationStagiaires = await this.stagiaireRepository
+                .createQueryBuilder("s")
+                .innerJoin("s.stagiaire_catalogue_formations", "scf")
+                .where("scf.catalogue_formation_id = :formationId", { formationId })
+                .andWhere("s.id IN (:...ids)", {
+                ids: stagiaires.map((s) => s.id),
+            })
+                .select("s.id")
+                .getMany();
+            const filteredIds = formationStagiaires.map((s) => s.id);
+            stagiaires = stagiaires.filter((s) => filteredIds.includes(s.id));
+        }
+        const comparison = [];
+        for (const stagiaire of stagiaires) {
+            const stats = await this.quizParticipationRepository
+                .createQueryBuilder("qp")
+                .select("COUNT(*)", "total")
+                .addSelect('SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)', "completed")
+                .addSelect("AVG(qp.score)", "avg_score")
+                .addSelect("SUM(qp.score)", "total_points")
+                .where("qp.stagiaire_id = :sid", { sid: stagiaire.id })
+                .getRawOne();
+            comparison.push({
+                id: stagiaire.id,
+                name: stagiaire.user?.name || stagiaire.prenom,
+                image: stagiaire.user?.image,
+                total_quizzes: parseInt(stats.total),
+                completed_quizzes: parseInt(stats.completed),
+                avg_score: Math.round((stats.avg_score || 0) * 10) / 10,
+                total_points: parseInt(stats.total_points || 0),
+                completion_rate: stats.total > 0
+                    ? Math.round((stats.completed / stats.total) * 1000) / 10
+                    : 0,
+            });
+        }
+        return comparison.sort((a, b) => b.total_points - a.total_points);
     }
 };
 exports.AdminService = AdminService;

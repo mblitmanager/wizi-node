@@ -29,7 +29,14 @@ let RolesGuard = class RolesGuard {
                 message: "L'utilisateur n'a pas pu être identifié par le RolesGuard. Vérifiez que l'AuthGuard est bien placé avant.",
             });
         }
-        const hasRole = requiredRoles.some((role) => user.role?.includes(role));
+        const userRole = user.role;
+        const hasRole = requiredRoles.some((role) => {
+            if (role === "formateur" && userRole === "formatrice")
+                return true;
+            if (role === "formatrice" && userRole === "formateur")
+                return true;
+            return userRole?.includes(role);
+        });
         if (!hasRole) {
             throw new common_1.ForbiddenException({
                 error: "Accès refusé",
