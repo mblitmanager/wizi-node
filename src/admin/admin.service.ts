@@ -604,6 +604,107 @@ export class AdminService {
     };
   }
 
+  async getTrainerArenaRanking(period: string = "all", formationId?: number) {
+    const query = this.formateurRepository
+      .createQueryBuilder("f")
+      .innerJoin("f.user", "u")
+      .leftJoin("f.stagiaires", "s")
+      .leftJoin("s.user", "su")
+      .leftJoin(
+        QuizParticipation,
+        "qp",
+        "su.id = qp.user_id AND qp.status = 'completed'"
+      );
+
+    if (formationId) {
+      query.andWhere(
+        "qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :formationId)",
+        { formationId }
+      );
+    }
+
+    if (period === "week") {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      query.andWhere("qp.created_at >= :weekAgo", { weekAgo });
+    } else if (period === "month") {
+      const monthAgo = new Date();
+      monthAgo.setMonth(monthAgo.getMonth() - 1);
+      query.andWhere("qp.created_at >= :monthAgo", { monthAgo });
+    }
+
+    query
+      .select([
+        "f.id AS id",
+        "f.prenom AS prenom",
+        "u.name AS nom",
+        "u.image AS image",
+        "COUNT(DISTINCT s.id) AS total_stagiaires",
+        "COALESCE(SUM(qp.score), 0) AS total_points",
+      ])
+      .groupBy("f.id")
+      .addGroupBy("f.prenom")
+      .addGroupBy("u.name")
+      .addGroupBy("u.image")
+      .orderBy("total_points", "DESC");
+
+    const trainers = await query.getRawMany();
+
+    // Now get the stagiaires for each trainer
+    const result = [];
+    for (const trainer of trainers) {
+      const stagiairesQuery = this.stagiaireRepository
+        .createQueryBuilder("s")
+        .innerJoin("s.user", "su")
+        .innerJoin("s.formateurs", "f", "f.id = :formateurId", {
+          formateurId: trainer.id,
+        })
+        .leftJoin(
+          QuizParticipation,
+          "qp",
+          "su.id = qp.user_id AND qp.status = 'completed'"
+        )
+        .select([
+          "s.id AS id",
+          "s.prenom AS prenom",
+          "su.name AS nom",
+          "su.image AS image",
+          "COALESCE(SUM(qp.score), 0) AS points",
+        ])
+        .groupBy("s.id")
+        .addGroupBy("s.prenom")
+        .addGroupBy("su.name")
+        .addGroupBy("su.image")
+        .orderBy("points", "DESC");
+
+      if (period === "week") {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        stagiairesQuery.andWhere("qp.created_at >= :weekAgo", { weekAgo });
+      } else if (period === "month") {
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        stagiairesQuery.andWhere("qp.created_at >= :monthAgo", { monthAgo });
+      }
+
+      const stagiaires = await stagiairesQuery.getRawMany();
+
+      result.push({
+        ...trainer,
+        id: parseInt(trainer.id),
+        total_stagiaires: parseInt(trainer.total_stagiaires),
+        total_points: parseInt(trainer.total_points),
+        stagiaires: stagiaires.map((s) => ({
+          ...s,
+          id: parseInt(s.id),
+          points: parseInt(s.points),
+        })),
+      });
+    }
+
+    return result;
+  }
+
   async getFormateurFormations(userId: number) {
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },

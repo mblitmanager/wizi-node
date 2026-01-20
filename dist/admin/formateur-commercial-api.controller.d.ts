@@ -23,19 +23,6 @@ export declare class FormateurApiController {
     videoStats(id: number): Promise<any>;
     videos(): Promise<any>;
     formationRanking(formationId: number): Promise<any>;
-    mesStagiairesRanking(req: any, period?: string): Promise<any>;
-    sendEmail(data: any): Promise<any>;
-    sendNotification(req: any, data: any): Promise<any>;
-    trends(req: any): Promise<any>;
-    getFormationsPerformance(req: any): Promise<any>;
-    getStagiaireFormations(id: number): Promise<any>;
-    getQuizSuccessRate(period: number, req: any): Promise<any>;
-    getCompletionTime(period: number, req: any): Promise<any>;
-    getActivityHeatmap(period: number, req: any): Promise<any>;
-    getDropoutRate(req: any): Promise<any>;
-    getDashboard(period: number, req: any): Promise<any>;
-    getStudentPerformance(req: any): Promise<any>;
-    stats(): Promise<any>;
 }
 export declare class CommercialApiController {
     private apiResponse;

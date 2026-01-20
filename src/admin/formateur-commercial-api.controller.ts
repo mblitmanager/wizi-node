@@ -130,14 +130,17 @@ export class FormateurApiController {
     return this.apiResponse.success([]);
   }
 
-  @Get("classement/mes-stagiaires")
-  async mesStagiairesRanking(
-    @Request() req,
-    @Query("period") period: string = "all"
+    return this.apiResponse.success(data);
+  }
+
+  @Get("classement/arena")
+  async arenaRanking(
+    @Query("period") period: string = "all",
+    @Query("formation_id") formationId?: number
   ) {
-    const data = await this.adminService.getFormateurMesStagiairesRanking(
-      req.user.id,
-      period
+    const data = await this.adminService.getTrainerArenaRanking(
+      period,
+      formationId
     );
     return this.apiResponse.success(data);
   }

@@ -178,6 +178,7 @@ export declare class AdminService {
         total_stagiaires: number;
         period?: undefined;
     }>;
+    getTrainerArenaRanking(period?: string, formationId?: number): Promise<any[]>;
     getFormateurFormations(userId: number): Promise<{
         avg_score: number;
         total_completions: number;
