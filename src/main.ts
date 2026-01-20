@@ -33,4 +33,4 @@ async function bootstrap() {
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
-// Force restart - Verify Media Module
+// Last Update: 2026-01-20 14:15 - Forces refresh/restart for NoCacheInterceptor

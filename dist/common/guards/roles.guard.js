@@ -35,6 +35,10 @@ let RolesGuard = class RolesGuard {
                 return true;
             if (role === "formatrice" && userRole === "formateur")
                 return true;
+            if (role === "commercial" && userRole === "commerciale")
+                return true;
+            if (role === "commerciale" && userRole === "commercial")
+                return true;
             return userRole?.includes(role);
         });
         if (!hasRole) {

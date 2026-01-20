@@ -12,7 +12,7 @@ export declare class FormateurApiController {
     dashboardStats(req: any): Promise<any>;
     formations(req: any): Promise<any>;
     stagiaires(req: any): Promise<any>;
-    onlineStagiaires(): Promise<any>;
+    onlineStagiaires(req: any): Promise<any>;
     inactiveStagiaires(req: any, days?: number, scope?: string): Promise<any>;
     neverConnected(): Promise<any>;
     performance(req: any): Promise<any>;

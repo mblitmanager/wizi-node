@@ -44,8 +44,8 @@ let FormateurApiController = class FormateurApiController {
         console.log(`[DEBUG] Controller: Service returned ${data.length} stagiaires`);
         return this.apiResponse.success({ stagiaires: data });
     }
-    async onlineStagiaires() {
-        const data = await this.adminService.getOnlineStagiaires();
+    async onlineStagiaires(req) {
+        const data = await this.adminService.getFormateurOnlineStagiaires(req.user.id);
         return this.apiResponse.success({
             stagiaires: data,
             total: data.length,
@@ -53,6 +53,7 @@ let FormateurApiController = class FormateurApiController {
     }
     async inactiveStagiaires(req, days = 7, scope = "all") {
         const stats = await this.adminService.getFormateurInactiveStagiaires(req.user.id, days, scope);
+        console.log("[DEBUG] Inactive Stagiaires Stats:", JSON.stringify(stats).substring(0, 500));
         return this.apiResponse.success(stats);
     }
     async neverConnected() {
@@ -291,8 +292,9 @@ __decorate([
 ], FormateurApiController.prototype, "stagiaires", null);
 __decorate([
     (0, common_1.Get)("stagiaires/online"),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "onlineStagiaires", null);
 __decorate([

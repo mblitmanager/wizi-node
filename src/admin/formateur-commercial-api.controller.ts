@@ -58,11 +58,19 @@ export class FormateurApiController {
 
   @Get("stagiaires/online")
   async onlineStagiaires(@Request() req: any) {
-    const data = await this.adminService.getFormateurOnlineStagiaires(req.user.id);
-    return this.apiResponse.success({
-      stagiaires: data,
-      total: data.length,
-    });
+    try {
+      const data = await this.adminService.getFormateurOnlineStagiaires(req.user.id);
+      return this.apiResponse.success({
+        stagiaires: data,
+        total: data.length,
+      });
+    } catch (error) {
+      console.error('Error fetching online stagiaires:', error);
+      return this.apiResponse.success({
+        stagiaires: [],
+        total: 0,
+      });
+    }
   }
 
   @Get("stagiaires/inactive")

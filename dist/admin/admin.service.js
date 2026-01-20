@@ -277,28 +277,53 @@ let AdminService = class AdminService {
         const formateurId = formateur.id;
         const query = this.stagiaireRepository
             .createQueryBuilder("s")
-            .innerJoin("s.user", "u");
+            .innerJoinAndSelect("s.user", "u");
         if (scope !== "all") {
-            query
+            const directStagiaireIds = await this.stagiaireRepository
+                .createQueryBuilder("s")
                 .innerJoin("s.formateurs", "f")
-                .where("f.id = :formateurId", { formateurId });
+                .where("f.id = :formateurId", { formateurId })
+                .select("s.id")
+                .getMany()
+                .then((list) => list.map((item) => item.id));
+            const formationStagiaireIds = await this.stagiaireRepository
+                .createQueryBuilder("s")
+                .innerJoin("s.stagiaire_catalogue_formations", "scf")
+                .innerJoin("scf.catalogue_formation", "cf")
+                .innerJoin("cf.formateurs", "f")
+                .where("f.id = :formateurId", { formateurId })
+                .select("s.id")
+                .getMany()
+                .then((list) => list.map((item) => item.id));
+            const allMyStagiaireIds = [
+                ...new Set([...directStagiaireIds, ...formationStagiaireIds]),
+            ];
+            console.log(`[DEBUG] Formateur ${formateurId}: Direct Students: ${directStagiaireIds.length}, Formation Students: ${formationStagiaireIds.length}, Total Unique: ${allMyStagiaireIds.length}`);
+            if (allMyStagiaireIds.length > 0) {
+                query.andWhere("s.id IN (:...allMyStagiaireIds)", {
+                    allMyStagiaireIds,
+                });
+            }
+            else {
+                return {
+                    inactive_stagiaires: [],
+                    count: 0,
+                    threshold_days: thresholdDays,
+                };
+            }
         }
-        const stagiaires = await query
-            .select([
-            "s.id",
-            "s.prenom",
-            "s.user_id",
-            "u.name",
-            "u.email",
-            "u.last_activity_at",
-            "u.last_client",
-        ])
-            .getMany();
+        const stagiaires = await query.getMany();
+        console.log(`[DEBUG] Found ${stagiaires.length} potential stagiaires for scope ${scope}`);
         const inactiveStagiaires = stagiaires
             .map((s) => {
-            const lastActivityAt = s.user?.last_activity_at
-                ? new Date(s.user.last_activity_at)
-                : null;
+            const timestamps = [
+                s.user?.last_activity_at
+                    ? new Date(s.user.last_activity_at).getTime()
+                    : 0,
+                s.user?.last_login_at ? new Date(s.user.last_login_at).getTime() : 0,
+            ].filter((t) => t > 0);
+            const lastActiveTime = timestamps.length > 0 ? Math.max(...timestamps) : null;
+            const lastActivityAt = lastActiveTime ? new Date(lastActiveTime) : null;
             let daysSinceActivity = null;
             if (lastActivityAt) {
                 const diffTime = Math.abs(now.getTime() - lastActivityAt.getTime());
@@ -376,6 +401,38 @@ let AdminService = class AdminService {
                 formations: (s.stagiaire_catalogue_formations || []).map((scf) => scf.catalogue_formation?.titre),
             };
         });
+    }
+    async getFormateurOnlineStagiaires(userId) {
+        try {
+            const formateur = await this.formateurRepository.findOne({
+                where: { user_id: userId },
+                relations: ["stagiaires", "stagiaires.user", "stagiaires.stagiaire_catalogue_formations", "stagiaires.stagiaire_catalogue_formations.catalogue_formation"],
+            });
+            if (!formateur || !formateur.stagiaires) {
+                return [];
+            }
+            const onlineStagiaires = formateur.stagiaires.filter(s => s.user?.is_online === true);
+            return onlineStagiaires.map((s) => {
+                const formatDate = (date) => {
+                    if (!date)
+                        return null;
+                    return new Date(date).toISOString().replace("T", " ").substring(0, 19);
+                };
+                return {
+                    id: s.id,
+                    prenom: s.prenom,
+                    nom: s.user?.name || "",
+                    email: s.user?.email || "",
+                    avatar: s.user?.image || null,
+                    last_activity_at: formatDate(s.user?.last_activity_at),
+                    formations: (s.stagiaire_catalogue_formations || []).map((scf) => scf.catalogue_formation?.titre),
+                };
+            });
+        }
+        catch (error) {
+            console.error('Error fetching formateur online stagiaires:', error);
+            return [];
+        }
     }
     async getNeverConnected() {
         const stagiaires = await this.stagiaireRepository.find({
