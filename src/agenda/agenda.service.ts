@@ -6,6 +6,7 @@ import { Stagiaire } from "../entities/stagiaire.entity";
 import { Notification } from "../entities/notification.entity";
 import { GoogleCalendar } from "../entities/google-calendar.entity";
 import { GoogleCalendarEvent } from "../entities/google-calendar-event.entity";
+import { Formateur } from "../entities/formateur.entity";
 
 @Injectable()
 export class AgendaService {
@@ -19,7 +20,9 @@ export class AgendaService {
     @InjectRepository(GoogleCalendar)
     private googleCalendarRepository: Repository<GoogleCalendar>,
     @InjectRepository(GoogleCalendarEvent)
-    private googleCalendarEventRepository: Repository<GoogleCalendarEvent>
+    private googleCalendarEventRepository: Repository<GoogleCalendarEvent>,
+    @InjectRepository(Formateur)
+    private formateurRepository: Repository<Formateur>
   ) {}
 
   async getStagiaireAgenda(userId: number) {
@@ -54,6 +57,41 @@ export class AgendaService {
       formations,
       events,
       upcoming_events,
+    };
+  }
+
+  async getFormateurAgenda(userId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!formateur) {
+      throw new NotFoundException(
+        `Formateur avec l'utilisateur ID ${userId} introuvable`
+      );
+    }
+
+    const agendaEvents = await this.agendaRepository.find({
+      where: { formateur_id: formateur.id },
+      order: { date_debut: "ASC" },
+    });
+
+    const googleCalendars = await this.googleCalendarRepository.find({
+      where: { userId: userId },
+    });
+
+    const googleCalendarEvents = [];
+    for (const calendar of googleCalendars) {
+      const events = await this.googleCalendarEventRepository.find({
+        where: { googleCalendarId: calendar.id },
+        order: { start: "ASC" },
+      });
+      googleCalendarEvents.push(...events);
+    }
+
+    return {
+      agendaEvents,
+      googleCalendarEvents,
     };
   }
 

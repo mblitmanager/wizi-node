@@ -8,6 +8,7 @@ import {
   JoinColumn,
 } from "typeorm";
 import { Stagiaire } from "./stagiaire.entity";
+import { Formateur } from "./formateur.entity";
 
 @Entity("agendas")
 export class Agenda {
@@ -32,8 +33,11 @@ export class Agenda {
   @Column({ type: "text", nullable: true })
   commentaire: string;
 
-  @Column()
+  @Column({ nullable: true })
   stagiaire_id: number;
+
+  @Column({ nullable: true })
+  formateur_id: number;
 
   @CreateDateColumn()
   created_at: Date;
@@ -44,4 +48,8 @@ export class Agenda {
   @ManyToOne(() => Stagiaire, (stagiaire) => stagiaire.agendas)
   @JoinColumn({ name: "stagiaire_id" })
   stagiaire: Stagiaire;
+
+  @ManyToOne(() => Formateur, (formateur) => formateur.agendas)
+  @JoinColumn({ name: "formateur_id" })
+  formateur: Formateur;
 }

@@ -8,8 +8,10 @@ import {
   JoinTable,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
 import { User } from "./user.entity";
+import { Agenda } from "./agenda.entity";
 
 @Entity("formateurs")
 export class Formateur {
@@ -56,6 +58,9 @@ export class Formateur {
     },
   })
   formations: any[];
+
+  @OneToMany(() => Agenda, (agenda) => agenda.formateur)
+  agendas: Agenda[];
 
   @CreateDateColumn()
   created_at: Date;
