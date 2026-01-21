@@ -17,6 +17,7 @@ const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const notification_entity_1 = require("../entities/notification.entity");
 const google_calendar_entity_1 = require("../entities/google-calendar.entity");
 const google_calendar_event_entity_1 = require("../entities/google-calendar-event.entity");
+const formateur_entity_1 = require("../entities/formateur.entity");
 let AgendaModule = class AgendaModule {
 };
 exports.AgendaModule = AgendaModule;
@@ -29,6 +30,7 @@ exports.AgendaModule = AgendaModule = __decorate([
                 notification_entity_1.Notification,
                 google_calendar_entity_1.GoogleCalendar,
                 google_calendar_event_entity_1.GoogleCalendarEvent,
+                formateur_entity_1.Formateur,
             ]),
         ],
         controllers: [agenda_controller_1.AgendaController, agendas_api_controller_1.AgendasApiController],

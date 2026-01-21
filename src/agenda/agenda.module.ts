@@ -8,6 +8,7 @@ import { Stagiaire } from "../entities/stagiaire.entity";
 import { Notification } from "../entities/notification.entity";
 import { GoogleCalendar } from "../entities/google-calendar.entity";
 import { GoogleCalendarEvent } from "../entities/google-calendar-event.entity";
+import { Formateur } from "../entities/formateur.entity";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { GoogleCalendarEvent } from "../entities/google-calendar-event.entity";
       Notification,
       GoogleCalendar,
       GoogleCalendarEvent,
+      Formateur,
     ]),
   ],
   controllers: [AgendaController, AgendasApiController],

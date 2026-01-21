@@ -75,4 +75,5 @@ export const AppDataSource = new DataSource({
     GoogleCalendarEvent,
   ],
   migrations: ["src/migrations/*.ts"],
+  migrationsTableName: "typeorm_migrations",
 });

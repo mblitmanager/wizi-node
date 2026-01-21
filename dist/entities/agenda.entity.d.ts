@@ -1,4 +1,5 @@
 import { Stagiaire } from "./stagiaire.entity";
+import { Formateur } from "./formateur.entity";
 export declare class Agenda {
     id: number;
     titre: string;
@@ -8,7 +9,9 @@ export declare class Agenda {
     evenement: string;
     commentaire: string;
     stagiaire_id: number;
+    formateur_id: number;
     created_at: Date;
     updated_at: Date;
     stagiaire: Stagiaire;
+    formateur: Formateur;
 }

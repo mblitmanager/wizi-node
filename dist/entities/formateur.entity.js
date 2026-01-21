@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Formateur = void 0;
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
+const agenda_entity_1 = require("./agenda.entity");
 let Formateur = class Formateur {
 };
 exports.Formateur = Formateur;
@@ -69,6 +70,10 @@ __decorate([
     }),
     __metadata("design:type", Array)
 ], Formateur.prototype, "formations", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => agenda_entity_1.Agenda, (agenda) => agenda.formateur),
+    __metadata("design:type", Array)
+], Formateur.prototype, "agendas", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

@@ -76,5 +76,6 @@ exports.AppDataSource = new typeorm_1.DataSource({
         google_calendar_event_entity_1.GoogleCalendarEvent,
     ],
     migrations: ["src/migrations/*.ts"],
+    migrationsTableName: "typeorm_migrations",
 });
 //# sourceMappingURL=data-source.js.map

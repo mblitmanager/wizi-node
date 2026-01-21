@@ -21,13 +21,15 @@ const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const notification_entity_1 = require("../entities/notification.entity");
 const google_calendar_entity_1 = require("../entities/google-calendar.entity");
 const google_calendar_event_entity_1 = require("../entities/google-calendar-event.entity");
+const formateur_entity_1 = require("../entities/formateur.entity");
 let AgendaService = class AgendaService {
-    constructor(agendaRepository, stagiaireRepository, notificationRepository, googleCalendarRepository, googleCalendarEventRepository) {
+    constructor(agendaRepository, stagiaireRepository, notificationRepository, googleCalendarRepository, googleCalendarEventRepository, formateurRepository) {
         this.agendaRepository = agendaRepository;
         this.stagiaireRepository = stagiaireRepository;
         this.notificationRepository = notificationRepository;
         this.googleCalendarRepository = googleCalendarRepository;
         this.googleCalendarEventRepository = googleCalendarEventRepository;
+        this.formateurRepository = formateurRepository;
     }
     async getStagiaireAgenda(userId) {
         const stagiaire = await this.stagiaireRepository.findOne({
@@ -54,6 +56,33 @@ let AgendaService = class AgendaService {
             formations,
             events,
             upcoming_events,
+        };
+    }
+    async getFormateurAgenda(userId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!formateur) {
+            throw new common_1.NotFoundException(`Formateur avec l'utilisateur ID ${userId} introuvable`);
+        }
+        const agendaEvents = await this.agendaRepository.find({
+            where: { formateur_id: formateur.id },
+            order: { date_debut: "ASC" },
+        });
+        const googleCalendars = await this.googleCalendarRepository.find({
+            where: { userId: userId },
+        });
+        const googleCalendarEvents = [];
+        for (const calendar of googleCalendars) {
+            const events = await this.googleCalendarEventRepository.find({
+                where: { googleCalendarId: calendar.id },
+                order: { start: "ASC" },
+            });
+            googleCalendarEvents.push(...events);
+        }
+        return {
+            agendaEvents,
+            googleCalendarEvents,
         };
     }
     async exportAgendaToICS(userId) {
@@ -199,7 +228,9 @@ exports.AgendaService = AgendaService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(notification_entity_1.Notification)),
     __param(3, (0, typeorm_1.InjectRepository)(google_calendar_entity_1.GoogleCalendar)),
     __param(4, (0, typeorm_1.InjectRepository)(google_calendar_event_entity_1.GoogleCalendarEvent)),
+    __param(5, (0, typeorm_1.InjectRepository)(formateur_entity_1.Formateur)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
