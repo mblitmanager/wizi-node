@@ -1349,14 +1349,20 @@ export class AdminService {
       stagiaireIds = formationStagiaires.map((s) => s.id);
     }
 
-    if (stagiaireIds.length === 0) {
+    const stagiaires = await this.stagiaireRepository.find({
+      where: { id: In(stagiaireIds) },
+      select: ["id", "user_id"],
+    });
+    const userIds = stagiaires.map((s) => s.user_id).filter((id) => id != null);
+
+    if (userIds.length === 0) {
       return { period_days: period, quiz_stats: [] };
     }
 
     const query = this.quizParticipationRepository
       .createQueryBuilder("qp")
       .leftJoinAndSelect("qp.quiz", "quiz")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+      .where("qp.user_id IN (:...ids)", { ids: userIds })
       .andWhere("qp.status = :status", { status: "completed" })
       .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
         days: period,
@@ -1438,13 +1444,19 @@ export class AdminService {
       stagiaireIds = formationStagiaires.map((s) => s.id);
     }
 
-    if (stagiaireIds.length === 0) {
+    const stagiaires = await this.stagiaireRepository.find({
+      where: { id: In(stagiaireIds) },
+      select: ["id", "user_id"],
+    });
+    const userIds = stagiaires.map((s) => s.user_id).filter((id) => id != null);
+
+    if (userIds.length === 0) {
       return { period_days: period, activity_by_day: [], activity_by_hour: [] };
     }
 
     const query = this.quizParticipationRepository
       .createQueryBuilder("qp")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+      .where("qp.user_id IN (:...ids)", { ids: userIds })
       .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
         days: period,
       });
@@ -1511,7 +1523,13 @@ export class AdminService {
       stagiaireIds = formationStagiaires.map((s) => s.id);
     }
 
-    if (stagiaireIds.length === 0) {
+    const stagiaires = await this.stagiaireRepository.find({
+      where: { id: In(stagiaireIds) },
+      select: ["id", "user_id"],
+    });
+    const userIds = stagiaires.map((s) => s.user_id).filter((id) => id != null);
+
+    if (userIds.length === 0) {
       return { overall: {}, quiz_dropout: [] };
     }
 
@@ -1530,7 +1548,7 @@ export class AdminService {
         'SUM(CASE WHEN qp.status != "completed" THEN 1 ELSE 0 END)',
         "abandoned",
       )
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds });
+      .where("qp.user_id IN (:...ids)", { ids: userIds });
 
     if (formationId) {
       query.andWhere(

@@ -142,7 +142,7 @@ export class FormateurApiController {
 
   @Get("stagiaire/:id/stats")
   async stagiaireStats(@Param("id") id: number) {
-    const stats = await this.adminService.getStagiaireStats(id);
+    const stats = await this.adminService.getStagiaireProfileById(id);
     if (!stats) {
       return this.apiResponse.error("Stagiaire non trouvé", 404);
     }

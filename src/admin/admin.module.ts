@@ -7,7 +7,6 @@ import { ApiResponseService } from "../common/services/api-response.service";
 import { AdminService } from "./admin.service";
 import { AdminController } from "./admin.controller";
 import { AdminDashboardController } from "./admin-dashboard.controller";
-import { FormateurController } from "./formateur.controller";
 import { CommercialController } from "./commercial.controller";
 import { AdminStagiaireController } from "./admin-stagiaire.controller";
 import { AdminFormateurController } from "./admin-formateur.controller";
