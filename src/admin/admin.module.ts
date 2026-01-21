@@ -40,17 +40,9 @@ import {
   AdminImportController,
   AdminInactivityController,
 } from "./admin-stats-import.controller";
-import {
-  FormateurWebController,
-  CommercialWebController,
-} from "./formateur-commercial-web.controller";
-import {
-  FormateurApiController,
-  CommercialApiController,
-} from "./formateur-commercial-api.controller";
-import { FormateurFormationController } from "./formateur-formation.controller";
-import { FormateurQuizController } from "./formateur-quiz.controller";
-import { FormateurAlertsController } from "./formateur-alerts.controller";
+import { FormateurController } from "./formateur.controller";
+import { CommercialWebController } from "./formateur-commercial-web.controller";
+import { CommercialApiController } from "./formateur-commercial-api.controller";
 // Import entities
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { User } from "../entities/user.entity";
@@ -108,10 +100,9 @@ import { Reponse } from "../entities/reponse.entity";
   providers: [AdminService, ApiResponseService],
   controllers: [
     // API Controllers (Placed first to avoid shadowing)
-    FormateurApiController,
+    FormateurController,
     CommercialApiController,
     // Web Controllers
-    FormateurWebController,
     CommercialWebController,
     // Existing Admin
     AdminController,
@@ -143,10 +134,6 @@ import { Reponse } from "../entities/reponse.entity";
     AdminInactivityController,
     AdminDemandeHistoriqueController,
     AdminParrainageEventController,
-    // Formateur Specific Controllers
-    FormateurFormationController,
-    FormateurQuizController,
-    FormateurAlertsController,
   ],
   exports: [AdminService],
 })

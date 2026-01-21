@@ -90,7 +90,7 @@ let FormateurApiController = class FormateurApiController {
         return this.apiResponse.success(data);
     }
     async stagiaireStats(id) {
-        const stats = await this.adminService.getStagiaireStats(id);
+        const stats = await this.adminService.getStagiaireProfileById(id);
         if (!stats) {
             return this.apiResponse.error("Stagiaire non trouvé", 404);
         }
@@ -101,6 +101,11 @@ let FormateurApiController = class FormateurApiController {
     }
     async videos() {
         return this.apiResponse.success([]);
+    }
+    async getFormateurVideosByFormations(req) {
+        const userId = req.user.id;
+        const formationsWithVideos = await this.adminService.getFormateurFormationsWithVideos(userId);
+        return this.apiResponse.success(formationsWithVideos, "Vidéos par formation récupérées avec succès");
     }
     async formationRanking(formationId) {
         return this.apiResponse.success([]);
@@ -379,6 +384,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FormateurApiController.prototype, "videos", null);
+__decorate([
+    (0, common_1.Get)("formations-videos"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FormateurApiController.prototype, "getFormateurVideosByFormations", null);
 __decorate([
     (0, common_1.Get)("classement/formation/:formationId"),
     __param(0, (0, common_1.Param)("formationId")),

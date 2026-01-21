@@ -35,11 +35,9 @@ const admin_prc_controller_1 = require("./admin-prc.controller");
 const admin_permission_role_controller_1 = require("./admin-permission-role.controller");
 const admin_misc_controller_1 = require("./admin-misc.controller");
 const admin_stats_import_controller_1 = require("./admin-stats-import.controller");
+const formateur_controller_1 = require("./formateur.controller");
 const formateur_commercial_web_controller_1 = require("./formateur-commercial-web.controller");
 const formateur_commercial_api_controller_1 = require("./formateur-commercial-api.controller");
-const formateur_formation_controller_1 = require("./formateur-formation.controller");
-const formateur_quiz_controller_1 = require("./formateur-quiz.controller");
-const formateur_alerts_controller_1 = require("./formateur-alerts.controller");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const user_entity_1 = require("../entities/user.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
@@ -98,9 +96,8 @@ exports.AdminModule = AdminModule = __decorate([
         ],
         providers: [admin_service_1.AdminService, api_response_service_1.ApiResponseService],
         controllers: [
-            formateur_commercial_api_controller_1.FormateurApiController,
+            formateur_controller_1.FormateurController,
             formateur_commercial_api_controller_1.CommercialApiController,
-            formateur_commercial_web_controller_1.FormateurWebController,
             formateur_commercial_web_controller_1.CommercialWebController,
             admin_controller_1.AdminController,
             admin_dashboard_controller_1.AdminDashboardController,
@@ -130,9 +127,6 @@ exports.AdminModule = AdminModule = __decorate([
             admin_stats_import_controller_1.AdminInactivityController,
             admin_demande_historique_controller_1.AdminDemandeHistoriqueController,
             admin_parrainage_event_controller_1.AdminParrainageEventController,
-            formateur_formation_controller_1.FormateurFormationController,
-            formateur_quiz_controller_1.FormateurQuizController,
-            formateur_alerts_controller_1.FormateurAlertsController,
         ],
         exports: [admin_service_1.AdminService],
     })

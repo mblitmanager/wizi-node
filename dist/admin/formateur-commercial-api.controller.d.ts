@@ -24,6 +24,7 @@ export declare class FormateurApiController {
     stagiaireStats(id: number): Promise<any>;
     videoStats(id: number): Promise<any>;
     videos(): Promise<any>;
+    getFormateurVideosByFormations(req: any): Promise<any>;
     formationRanking(formationId: number): Promise<any>;
     arenaRanking(period?: string, formationId?: number): Promise<any>;
     mesStagiairesRanking(req: any, period?: string): Promise<any>;

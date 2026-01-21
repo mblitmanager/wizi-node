@@ -23,13 +23,17 @@ const formateur_entity_1 = require("../entities/formateur.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const classement_entity_1 = require("../entities/classement.entity");
 const notification_service_1 = require("../notification/notification.service");
+const formation_entity_1 = require("../entities/formation.entity");
+const media_entity_1 = require("../entities/media.entity");
 let AdminService = class AdminService {
-    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, formationRepository, notificationService) {
+    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, notificationService) {
         this.stagiaireRepository = stagiaireRepository;
         this.userRepository = userRepository;
         this.quizParticipationRepository = quizParticipationRepository;
         this.formateurRepository = formateurRepository;
+        this.catalogueFormationRepository = catalogueFormationRepository;
         this.formationRepository = formationRepository;
+        this.mediaRepository = mediaRepository;
         this.notificationService = notificationService;
     }
     async getFormateurDashboardStats(userId) {
@@ -126,6 +130,7 @@ let AdminService = class AdminService {
                 data: formationsRaw.map((f) => ({
                     id: f.id,
                     nom: f.nom,
+                    title: f.nom,
                     total_stagiaires: parseInt(f.total_stagiaires),
                     stagiaires_actifs: parseInt(f.stagiaires_actifs),
                     score_moyen: parseFloat(f.score_moyen).toFixed(4),
@@ -1064,13 +1069,18 @@ let AdminService = class AdminService {
                 .getMany();
             stagiaireIds = formationStagiaires.map((s) => s.id);
         }
-        if (stagiaireIds.length === 0) {
+        const stagiaires = await this.stagiaireRepository.find({
+            where: { id: (0, typeorm_2.In)(stagiaireIds) },
+            select: ["id", "user_id"],
+        });
+        const userIds = stagiaires.map((s) => s.user_id).filter((id) => id != null);
+        if (userIds.length === 0) {
             return { period_days: period, quiz_stats: [] };
         }
         const query = this.quizParticipationRepository
             .createQueryBuilder("qp")
             .leftJoinAndSelect("qp.quiz", "quiz")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .where("qp.user_id IN (:...ids)", { ids: userIds })
             .andWhere("qp.status = :status", { status: "completed" })
             .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
             days: period,
@@ -1132,12 +1142,17 @@ let AdminService = class AdminService {
                 .getMany();
             stagiaireIds = formationStagiaires.map((s) => s.id);
         }
-        if (stagiaireIds.length === 0) {
+        const stagiaires = await this.stagiaireRepository.find({
+            where: { id: (0, typeorm_2.In)(stagiaireIds) },
+            select: ["id", "user_id"],
+        });
+        const userIds = stagiaires.map((s) => s.user_id).filter((id) => id != null);
+        if (userIds.length === 0) {
             return { period_days: period, activity_by_day: [], activity_by_hour: [] };
         }
         const query = this.quizParticipationRepository
             .createQueryBuilder("qp")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .where("qp.user_id IN (:...ids)", { ids: userIds })
             .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
             days: period,
         });
@@ -1191,7 +1206,12 @@ let AdminService = class AdminService {
                 .getMany();
             stagiaireIds = formationStagiaires.map((s) => s.id);
         }
-        if (stagiaireIds.length === 0) {
+        const stagiaires = await this.stagiaireRepository.find({
+            where: { id: (0, typeorm_2.In)(stagiaireIds) },
+            select: ["id", "user_id"],
+        });
+        const userIds = stagiaires.map((s) => s.user_id).filter((id) => id != null);
+        if (userIds.length === 0) {
             return { overall: {}, quiz_dropout: [] };
         }
         const query = this.quizParticipationRepository
@@ -1203,7 +1223,7 @@ let AdminService = class AdminService {
             .addSelect("COUNT(*)", "total_attempts")
             .addSelect('SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)', "completed")
             .addSelect('SUM(CASE WHEN qp.status != "completed" THEN 1 ELSE 0 END)', "abandoned")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds });
+            .where("qp.user_id IN (:...ids)", { ids: userIds });
         if (formationId) {
             query.andWhere("quiz.formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid)", { cid: formationId });
         }
@@ -1259,17 +1279,36 @@ let AdminService = class AdminService {
                 });
                 continue;
             }
+            const stagiaires = await this.stagiaireRepository.find({
+                where: { id: (0, typeorm_2.In)(stagiaireIds) },
+                select: ["id", "user_id"],
+            });
+            const userIds = stagiaires
+                .map((s) => s.user_id)
+                .filter((id) => id != null);
+            if (userIds.length === 0) {
+                performance.push({
+                    id: formation.id,
+                    nom: formation.titre,
+                    title: formation.titre,
+                    total_stagiaires: stagiaireIds.length,
+                    completion_rate: 0,
+                    average_score: 0,
+                });
+                continue;
+            }
             const stats = await this.quizParticipationRepository
                 .createQueryBuilder("qp")
                 .select("COUNT(*)", "total")
                 .addSelect('SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)', "completed")
                 .addSelect("AVG(qp.score)", "avg_score")
-                .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+                .where("qp.user_id IN (:...ids)", { ids: userIds })
                 .andWhere("qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :fid)", { fid: formation.formation_id })
                 .getRawOne();
             performance.push({
                 id: formation.id,
                 nom: formation.titre,
+                title: formation.titre,
                 total_stagiaires: stagiaireIds.length,
                 completion_rate: stats.total > 0
                     ? Math.round((stats.completed / stats.total) * 1000) / 10
@@ -1308,7 +1347,7 @@ let AdminService = class AdminService {
                 .addSelect('SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)', "completed")
                 .addSelect("AVG(qp.score)", "avg_score")
                 .addSelect("SUM(qp.score)", "total_points")
-                .where("qp.stagiaire_id = :sid", { sid: stagiaire.id })
+                .where("qp.user_id = :uid", { uid: stagiaire.user_id })
                 .getRawOne();
             comparison.push({
                 id: stagiaire.id,
@@ -1348,6 +1387,30 @@ let AdminService = class AdminService {
             stagiaires: progressResult?.stagiaires || [],
             stagiaires_count: progressResult?.total || 0,
         };
+    }
+    async getFormateurFormationsWithVideos(userId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["formations", "formations.medias"],
+        });
+        if (!formateur) {
+            throw new common_1.NotFoundException(`Formateur avec l'utilisateur ID ${userId} introuvable`);
+        }
+        const formationsWithVideos = formateur.formations.map((formation) => ({
+            formation_id: formation.id,
+            formation_titre: formation.titre,
+            videos: formation.medias
+                .filter((media) => media.type === "video")
+                .map((media) => ({
+                id: media.id,
+                titre: media.titre,
+                description: media.description,
+                url: media.video_url || media.url,
+                type: media.type,
+                created_at: media.created_at.toISOString(),
+            })),
+        }));
+        return formationsWithVideos;
     }
     async getFormateurStagiairesProgress(userId) {
         const formateur = await this.formateurRepository.findOne({
@@ -1490,7 +1553,11 @@ exports.AdminService = AdminService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(quiz_participation_entity_1.QuizParticipation)),
     __param(3, (0, typeorm_1.InjectRepository)(formateur_entity_1.Formateur)),
     __param(4, (0, typeorm_1.InjectRepository)(catalogue_formation_entity_1.CatalogueFormation)),
+    __param(5, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
+    __param(6, (0, typeorm_1.InjectRepository)(media_entity_1.Media)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

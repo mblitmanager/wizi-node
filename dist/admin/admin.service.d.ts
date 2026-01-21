@@ -5,14 +5,18 @@ import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { Formateur } from "../entities/formateur.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { NotificationService } from "../notification/notification.service";
+import { Formation } from "../entities/formation.entity";
+import { Media } from "../entities/media.entity";
 export declare class AdminService {
     private stagiaireRepository;
     private userRepository;
     private quizParticipationRepository;
     private formateurRepository;
+    private catalogueFormationRepository;
     private formationRepository;
+    private mediaRepository;
     private notificationService;
-    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, formationRepository: Repository<CatalogueFormation>, notificationService: NotificationService);
+    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, notificationService: NotificationService);
     getFormateurDashboardStats(userId: number): Promise<{
         total_stagiaires: number;
         active_this_week: number;
@@ -26,6 +30,7 @@ export declare class AdminService {
             data: {
                 id: any;
                 nom: any;
+                title: any;
                 total_stagiaires: number;
                 stagiaires_actifs: number;
                 score_moyen: string;
@@ -331,6 +336,7 @@ export declare class AdminService {
                 data: {
                     id: any;
                     nom: any;
+                    title: any;
                     total_stagiaires: number;
                     stagiaires_actifs: number;
                     score_moyen: string;
@@ -416,6 +422,11 @@ export declare class AdminService {
         }[];
         stagiaires_count: number;
     }>;
+    getFormateurFormationsWithVideos(userId: number): Promise<{
+        formation_id: any;
+        formation_titre: any;
+        videos: any;
+    }[]>;
     getFormateurStagiairesProgress(userId: number): Promise<{
         stagiaires: {
             id: any;
