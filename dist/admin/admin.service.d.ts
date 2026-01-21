@@ -253,16 +253,24 @@ export declare class AdminService {
         count: number;
     }>;
     getMyStagiairesRanking(userId: number, period?: string): Promise<{
-        rank: number;
-        id: number;
-        prenom: any;
-        nom: any;
-        email: any;
-        image: any;
-        total_points: number;
-        total_quiz: number;
-        avg_score: number;
-    }[]>;
+        ranking: any[];
+        total_stagiaires: number;
+        period: string;
+    } | {
+        ranking: {
+            rank: number;
+            id: number;
+            prenom: any;
+            nom: any;
+            email: any;
+            image: any;
+            total_points: number;
+            total_quiz: number;
+            avg_score: number;
+        }[];
+        total_stagiaires: number;
+        period?: undefined;
+    }>;
     getFormateurAnalyticsDashboard(userId: number, period?: number, formationId?: number): Promise<{
         period_days: number;
         summary: {
