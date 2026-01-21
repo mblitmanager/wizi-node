@@ -29,7 +29,7 @@ export class FormateurApiController {
     @InjectRepository(Formateur)
     private formateurRepository: Repository<Formateur>,
     @InjectRepository(QuizParticipation)
-    private quizParticipationRepository: Repository<QuizParticipation>
+    private quizParticipationRepository: Repository<QuizParticipation>,
   ) {}
 
   /**
@@ -41,7 +41,7 @@ export class FormateurApiController {
   async dashboardHome(@Request() req: any, @Query("days") days: number = 7) {
     const data = await this.adminService.getFormateurDashboardHome(
       req.user.id,
-      days
+      days,
     );
     return this.apiResponse.success(data);
   }
@@ -49,7 +49,7 @@ export class FormateurApiController {
   @Get("dashboard/stats")
   async dashboardStats(@Request() req: any) {
     const stats = await this.adminService.getFormateurDashboardStats(
-      req.user.id
+      req.user.id,
     );
     return this.apiResponse.success(stats);
   }
@@ -65,7 +65,7 @@ export class FormateurApiController {
     console.log("[DEBUG] Controller: GET /api/formateur/stagiaires hit");
     const data = await this.adminService.getFormateurStagiaires();
     console.log(
-      `[DEBUG] Controller: Service returned ${data.length} stagiaires`
+      `[DEBUG] Controller: Service returned ${data.length} stagiaires`,
     );
     return this.apiResponse.success({ stagiaires: data });
   }
@@ -74,7 +74,7 @@ export class FormateurApiController {
   async onlineStagiaires(@Request() req: any) {
     try {
       const data = await this.adminService.getFormateurOnlineStagiaires(
-        req.user.id
+        req.user.id,
       );
       return this.apiResponse.success({
         stagiaires: data,
@@ -93,16 +93,16 @@ export class FormateurApiController {
   async inactiveStagiaires(
     @Request() req,
     @Query("days") days: number = 7,
-    @Query("scope") scope: string = "all"
+    @Query("scope") scope: string = "all",
   ) {
     const stats = await this.adminService.getFormateurInactiveStagiaires(
       req.user.id,
       days,
-      scope
+      scope,
     );
     console.log(
       "[DEBUG] Inactive Stagiaires Stats:",
-      JSON.stringify(stats).substring(0, 500)
+      JSON.stringify(stats).substring(0, 500),
     );
     return this.apiResponse.success(stats);
   }
@@ -116,7 +116,7 @@ export class FormateurApiController {
   @Get("stagiaires/performance")
   async performance(@Request() req) {
     const stats = await this.adminService.getFormateurStagiairesPerformance(
-      req.user.id
+      req.user.id,
     );
     return this.apiResponse.success(stats);
   }
@@ -125,7 +125,7 @@ export class FormateurApiController {
   @HttpCode(200)
   async disconnect(@Body() data: { stagiaire_ids: number[] }) {
     const updatedCount = await this.adminService.disconnectStagiaires(
-      data.stagiaire_ids
+      data.stagiaire_ids,
     );
     return this.apiResponse.success({
       success: true,
@@ -159,6 +159,17 @@ export class FormateurApiController {
     return this.apiResponse.success([]);
   }
 
+  @Get("formations-videos")
+  async getFormateurVideosByFormations(@Request() req: any) {
+    const userId = req.user.id;
+    const formationsWithVideos =
+      await this.adminService.getFormateurFormationsWithVideos(userId);
+    return this.apiResponse.success(
+      formationsWithVideos,
+      "Vidéos par formation récupérées avec succès",
+    );
+  }
+
   @Get("classement/formation/:formationId")
   async formationRanking(@Param("formationId") formationId: number) {
     return this.apiResponse.success([]);
@@ -167,11 +178,11 @@ export class FormateurApiController {
   @Get("classement/arena")
   async arenaRanking(
     @Query("period") period: string = "all",
-    @Query("formation_id") formationId?: number
+    @Query("formation_id") formationId?: number,
   ) {
     const data = await this.adminService.getTrainerArenaRanking(
       period,
-      formationId
+      formationId,
     );
     return this.apiResponse.success(data);
   }
@@ -179,11 +190,11 @@ export class FormateurApiController {
   @Get("classement/mes-stagiaires")
   async mesStagiairesRanking(
     @Request() req,
-    @Query("period") period: string = "all"
+    @Query("period") period: string = "all",
   ) {
     const data = await this.adminService.getMyStagiairesRanking(
       req.user.id,
-      period
+      period,
     );
     return this.apiResponse.success(data);
   }
@@ -200,7 +211,7 @@ export class FormateurApiController {
       req.user.id,
       recipient_ids,
       title,
-      body
+      body,
     );
     return this.apiResponse.success(result);
   }
@@ -229,12 +240,12 @@ export class FormateurApiController {
   async getQuizSuccessRate(
     @Query("period") period: number = 30,
     @Query("formation_id") formationId: number,
-    @Request() req
+    @Request() req,
   ) {
     const data = await this.adminService.getFormateurQuizSuccessRate(
       req.user.id,
       period,
-      formationId
+      formationId,
     );
     return this.apiResponse.success(data);
   }
@@ -242,7 +253,7 @@ export class FormateurApiController {
   @Get("analytics/completion-time")
   async getCompletionTime(
     @Query("period") period: number = 30,
-    @Request() req
+    @Request() req,
   ) {
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: req.user.id },
@@ -307,12 +318,12 @@ export class FormateurApiController {
   async getActivityHeatmap(
     @Query("period") period: number = 30,
     @Query("formation_id") formationId: number,
-    @Request() req
+    @Request() req,
   ) {
     const data = await this.adminService.getFormateurActivityHeatmap(
       req.user.id,
       period,
-      formationId
+      formationId,
     );
     return this.apiResponse.success(data);
   }
@@ -320,11 +331,11 @@ export class FormateurApiController {
   @Get("analytics/dropout-rate")
   async getDropoutRate(
     @Query("formation_id") formationId: number,
-    @Request() req
+    @Request() req,
   ) {
     const data = await this.adminService.getFormateurDropoutRate(
       req.user.id,
-      formationId
+      formationId,
     );
     return this.apiResponse.success(data);
   }
@@ -333,12 +344,12 @@ export class FormateurApiController {
   async getDashboard(
     @Query("period") period: number = 30,
     @Query("formation_id") formationId: number,
-    @Request() req
+    @Request() req,
   ) {
     const data = await this.adminService.getFormateurAnalyticsDashboard(
       req.user.id,
       period,
-      formationId
+      formationId,
     );
     return this.apiResponse.success(data);
   }
@@ -346,7 +357,7 @@ export class FormateurApiController {
   @Get("analytics/formations-performance")
   async getFormationsOverview(@Request() req) {
     const data = await this.adminService.getFormateurFormationsPerformance(
-      req.user.id
+      req.user.id,
     );
     return this.apiResponse.success(data);
   }
@@ -354,11 +365,11 @@ export class FormateurApiController {
   @Get("analytics/students-comparison")
   async getStudentsComparison(
     @Query("formation_id") formationId: number,
-    @Request() req
+    @Request() req,
   ) {
     const data = await this.adminService.getFormateurStudentsComparison(
       req.user.id,
-      formationId
+      formationId,
     );
     return this.apiResponse.success(data);
   }
@@ -464,7 +475,7 @@ export class FormateurApiController {
 export class CommercialApiController {
   constructor(
     private apiResponse: ApiResponseService,
-    private adminService: AdminService
+    private adminService: AdminService,
   ) {}
 
   @Get("dashboard")

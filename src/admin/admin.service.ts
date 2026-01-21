@@ -8,6 +8,8 @@ import { Formateur } from "../entities/formateur.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { Classement } from "../entities/classement.entity";
 import { NotificationService } from "../notification/notification.service";
+import { Formation } from "../entities/formation.entity";
+import { Media } from "../entities/media.entity";
 
 @Injectable()
 export class AdminService {
@@ -21,7 +23,11 @@ export class AdminService {
     @InjectRepository(Formateur)
     private formateurRepository: Repository<Formateur>,
     @InjectRepository(CatalogueFormation)
-    private formationRepository: Repository<CatalogueFormation>,
+    private catalogueFormationRepository: Repository<CatalogueFormation>,
+    @InjectRepository(Formation)
+    private formationRepository: Repository<Formation>,
+    @InjectRepository(Media)
+    private mediaRepository: Repository<Media>,
     private notificationService: NotificationService,
   ) {}
 
@@ -141,6 +147,7 @@ export class AdminService {
         data: formationsRaw.map((f) => ({
           id: f.id,
           nom: f.nom,
+          title: f.nom, // Add title alias
           total_stagiaires: parseInt(f.total_stagiaires),
           stagiaires_actifs: parseInt(f.stagiaires_actifs),
           score_moyen: parseFloat(f.score_moyen).toFixed(4),
@@ -1606,6 +1613,26 @@ export class AdminService {
         continue;
       }
 
+      const stagiaires = await this.stagiaireRepository.find({
+        where: { id: In(stagiaireIds) },
+        select: ["id", "user_id"],
+      });
+      const userIds = stagiaires
+        .map((s) => s.user_id)
+        .filter((id) => id != null);
+
+      if (userIds.length === 0) {
+        performance.push({
+          id: formation.id,
+          nom: formation.titre,
+          title: formation.titre,
+          total_stagiaires: stagiaireIds.length,
+          completion_rate: 0,
+          average_score: 0,
+        });
+        continue;
+      }
+
       const stats = await this.quizParticipationRepository
         .createQueryBuilder("qp")
         .select("COUNT(*)", "total")
@@ -1614,7 +1641,7 @@ export class AdminService {
           "completed",
         )
         .addSelect("AVG(qp.score)", "avg_score")
-        .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+        .where("qp.user_id IN (:...ids)", { ids: userIds })
         .andWhere(
           "qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :fid)",
           { fid: formation.formation_id },
@@ -1624,6 +1651,7 @@ export class AdminService {
       performance.push({
         id: formation.id,
         nom: formation.titre,
+        title: formation.titre, // For Flutter compatibility
         total_stagiaires: stagiaireIds.length,
         completion_rate:
           stats.total > 0
@@ -1673,7 +1701,7 @@ export class AdminService {
         )
         .addSelect("AVG(qp.score)", "avg_score")
         .addSelect("SUM(qp.score)", "total_points")
-        .where("qp.stagiaire_id = :sid", { sid: stagiaire.id })
+        .where("qp.user_id = :uid", { uid: stagiaire.user_id })
         .getRawOne();
 
       comparison.push({
@@ -1724,6 +1752,36 @@ export class AdminService {
       stagiaires: progressResult?.stagiaires || [],
       stagiaires_count: progressResult?.total || 0,
     };
+  }
+
+  async getFormateurFormationsWithVideos(userId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+      relations: ["formations", "formations.medias"], // Charger les relations formations et medias
+    });
+
+    if (!formateur) {
+      throw new NotFoundException(
+        `Formateur avec l'utilisateur ID ${userId} introuvable`,
+      );
+    }
+
+    const formationsWithVideos = formateur.formations.map((formation) => ({
+      formation_id: formation.id,
+      formation_titre: formation.titre,
+      videos: formation.medias
+        .filter((media) => media.type === "video")
+        .map((media) => ({
+          id: media.id,
+          titre: media.titre,
+          description: media.description,
+          url: media.video_url || media.url, // Utiliser video_url si disponible (propriété virtuelle AfterLoad)
+          type: media.type,
+          created_at: media.created_at.toISOString(),
+        })),
+    }));
+
+    return formationsWithVideos;
   }
 
   /**

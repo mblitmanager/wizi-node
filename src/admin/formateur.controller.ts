@@ -13,4 +13,11 @@ export class FormateurController {
     private readonly adminService: AdminService,
     private apiResponse: ApiResponseService
   ) {}
+
+  @Get("formations-videos")
+  async getFormateurVideosByFormations(@Request() req: any) {
+    const userId = req.user.id; // L'ID de l'utilisateur est disponible via le jeton JWT
+    const formationsWithVideos = await this.adminService.getFormateurFormationsWithVideos(userId);
+    return this.apiResponse.success(formationsWithVideos, "Vidéos par formation récupérées avec succès");
+  }
 }
