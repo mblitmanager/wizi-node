@@ -37,7 +37,6 @@ const admin_misc_controller_1 = require("./admin-misc.controller");
 const admin_stats_import_controller_1 = require("./admin-stats-import.controller");
 const formateur_controller_1 = require("./formateur.controller");
 const formateur_commercial_web_controller_1 = require("./formateur-commercial-web.controller");
-const formateur_commercial_api_controller_1 = require("./formateur-commercial-api.controller");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const user_entity_1 = require("../entities/user.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
@@ -97,7 +96,6 @@ exports.AdminModule = AdminModule = __decorate([
         providers: [admin_service_1.AdminService, api_response_service_1.ApiResponseService],
         controllers: [
             formateur_controller_1.FormateurController,
-            formateur_commercial_api_controller_1.CommercialApiController,
             formateur_commercial_web_controller_1.CommercialWebController,
             admin_controller_1.AdminController,
             admin_dashboard_controller_1.AdminDashboardController,

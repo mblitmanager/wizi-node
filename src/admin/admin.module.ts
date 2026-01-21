@@ -42,7 +42,6 @@ import {
 } from "./admin-stats-import.controller";
 import { FormateurController } from "./formateur.controller";
 import { CommercialWebController } from "./formateur-commercial-web.controller";
-import { CommercialApiController } from "./formateur-commercial-api.controller";
 // Import entities
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { User } from "../entities/user.entity";
@@ -101,7 +100,6 @@ import { Reponse } from "../entities/reponse.entity";
   controllers: [
     // API Controllers (Placed first to avoid shadowing)
     FormateurController,
-    CommercialApiController,
     // Web Controllers
     CommercialWebController,
     // Existing Admin
