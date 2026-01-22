@@ -457,38 +457,6 @@ export class AdminService {
     };
   }
 
-  async getFormateurStagiaires() {
-    console.log("[DEBUG] AdminService: Fetching stagiaires...");
-    const stagiaires = await this.stagiaireRepository.find({
-      relations: ["user"],
-    });
-    console.log(
-      `[DEBUG] AdminService: Found ${stagiaires.length} stagiaires in DB`,
-    );
-
-    return stagiaires.map((s) => {
-      const formatDate = (date: Date | null) => {
-        if (!date) return null;
-        // Simple YYYY-MM-DD HH:mm:ss format
-        return new Date(date).toISOString().replace("T", " ").substring(0, 19);
-      };
-
-      return {
-        id: s.id,
-        prenom: s.prenom,
-        nom: s.user?.name || "",
-        email: s.user?.email || "",
-        telephone: s.telephone,
-        ville: s.ville,
-        last_login_at: formatDate(s.user?.last_login_at),
-        last_activity_at: formatDate(s.user?.last_activity_at),
-        is_online: s.user?.is_online ? 1 : 0,
-        last_client: s.user?.last_client || null,
-        image: s.user?.image || null,
-      };
-    });
-  }
-
   async getOnlineStagiaires() {
     const stagiaires = await this.stagiaireRepository
       .createQueryBuilder("stagiaire")
@@ -706,42 +674,58 @@ export class AdminService {
 
     const formateurId = formateur.id;
 
-    // 2. Query stagiaires with aggregated points
-    const query = this.stagiaireRepository
-      .createQueryBuilder("s")
-      .innerJoin("s.user", "u")
-      .innerJoin("s.formateurs", "f", "f.id = :formateurId", { formateurId })
-      .leftJoin(QuizParticipation, "qp", "u.id = qp.user_id");
+    // 2. Build subquery for best scores per quiz
+    let periodCondition = "";
+    const parameters: any = { formateurId };
 
     if (period === "week") {
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
-      query.andWhere("qp.created_at >= :weekAgo", { weekAgo });
+      parameters.weekAgo = weekAgo;
+      periodCondition = "AND qp2.created_at >= :weekAgo";
     } else if (period === "month") {
       const monthAgo = new Date();
       monthAgo.setMonth(monthAgo.getMonth() - 1);
-      query.andWhere("qp.created_at >= :monthAgo", { monthAgo });
+      parameters.monthAgo = monthAgo;
+      periodCondition = "AND qp2.created_at >= :monthAgo";
     }
 
-    query
+    // 3. Query with best scores subquery
+    const rawRanking = await this.stagiaireRepository
+      .createQueryBuilder("s")
+      .innerJoin("s.user", "u")
+      .innerJoin("s.formateurs", "f", "f.id = :formateurId", { formateurId })
+      .leftJoin(
+        `(
+          SELECT 
+            qp2.user_id as user_id,
+            qp2.quiz_id as quiz_id,
+            MAX(qp2.score) as best_score
+          FROM quiz_participations qp2
+          WHERE 1=1 ${periodCondition}
+          GROUP BY qp2.user_id, qp2.quiz_id
+        )`,
+        "best_attempts",
+        "u.id = best_attempts.user_id",
+      )
       .select([
         "s.id as id",
         "s.prenom as prenom",
         "u.name as nom",
         "u.email as email",
         "u.image as image",
-        "COALESCE(SUM(qp.score), 0) as total_points",
-        "COUNT(DISTINCT qp.id) as total_quiz",
-        "COALESCE(AVG(qp.score), 0) as avg_score",
+        "COALESCE(SUM(best_attempts.best_score), 0) as total_points",
+        "COUNT(DISTINCT best_attempts.quiz_id) as total_quiz",
+        "COALESCE(AVG(best_attempts.best_score), 0) as avg_score",
       ])
       .groupBy("s.id")
       .addGroupBy("s.prenom")
       .addGroupBy("u.name")
       .addGroupBy("u.email")
       .addGroupBy("u.image")
-      .orderBy("total_points", "DESC");
-
-    const rawRanking = await query.getRawMany();
+      .orderBy("total_points", "DESC")
+      .setParameters(parameters)
+      .getRawMany();
 
     const ranking = rawRanking.map((item, index) => ({
       rank: index + 1,
@@ -1832,38 +1816,50 @@ export class AdminService {
       throw new NotFoundException(`Vidéo avec l'ID ${videoId} introuvable`);
     }
 
-    const trackings = await this.mediaStagiaireRepository.find({
-      where: { media_id: videoId },
-      relations: ["stagiaire", "stagiaire.user"],
-    });
+    try {
+      const trackings = await this.mediaStagiaireRepository.find({
+        where: { media_id: videoId },
+        relations: ["stagiaire", "stagiaire.user"],
+      });
 
-    const totalViews = trackings.length;
-    const totalDurationWatched = trackings.reduce(
-      (acc, t) => acc + (t.current_time || 0),
-      0,
-    );
-    const avgCompletion =
-      totalViews > 0
-        ? Math.round(
-            trackings.reduce((acc, t) => acc + (t.percentage || 0), 0) /
-              totalViews,
-          )
-        : 0;
+      const totalViews = trackings.length;
+      const totalDurationWatched = trackings.reduce(
+        (acc, t) => acc + (t.current_time || 0),
+        0,
+      );
+      const avgCompletion =
+        totalViews > 0
+          ? Math.round(
+              trackings.reduce((acc, t) => acc + (t.percentage || 0), 0) /
+                totalViews,
+            )
+          : 0;
 
-    return {
-      video_id: videoId,
-      total_views: totalViews,
-      total_duration_watched: totalDurationWatched,
-      completion_rate: avgCompletion,
-      views_by_stagiaire: trackings.map((t) => ({
-        id: t.stagiaire?.id || 0,
-        prenom: t.stagiaire?.prenom || "Stagiaire",
-        nom: t.stagiaire?.user?.name || "Inconnu",
-        completed: !!t.is_watched,
-        total_watched: t.current_time || 0,
-        percentage: t.percentage || 0,
-      })),
-    };
+      return {
+        video_id: videoId,
+        total_views: totalViews,
+        total_duration_watched: totalDurationWatched,
+        completion_rate: avgCompletion,
+        views_by_stagiaire: trackings.map((t) => ({
+          id: t.stagiaire?.id || 0,
+          prenom: t.stagiaire?.prenom || "Stagiaire",
+          nom: t.stagiaire?.user?.name || "Inconnu",
+          completed: !!t.is_watched,
+          total_watched: t.current_time || 0,
+          percentage: t.percentage || 0,
+        })),
+      };
+    } catch (error) {
+      console.error("Error fetching video stats:", error);
+      // Return empty stats if tracking data fails to load
+      return {
+        video_id: videoId,
+        total_views: 0,
+        total_duration_watched: 0,
+        completion_rate: 0,
+        views_by_stagiaire: [],
+      };
+    }
   }
 
   /**

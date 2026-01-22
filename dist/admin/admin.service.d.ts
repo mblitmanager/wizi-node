@@ -134,6 +134,15 @@ export declare class AdminService {
         last_activity_at: string;
         formations: string[];
     }[]>;
+    getFormateurStagiaires(userId: number): Promise<{
+        id: number;
+        prenom: string;
+        nom: string;
+        email: string;
+        avatar: string;
+        last_activity_at: string;
+        formations: string[];
+    }[]>;
     getNeverConnected(): Promise<{
         id: number;
         prenom: string;
