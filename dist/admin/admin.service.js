@@ -1600,7 +1600,7 @@ let AdminService = class AdminService {
                 formateurs: { id: formateur.id },
                 stagiaire_catalogue_formations: { catalogue_formation_id: formationId },
             },
-            relations: ["user", "watchedVideos", "stagiaire_catalogue_formations"],
+            relations: ["user", "medias", "stagiaire_catalogue_formations"],
         });
         const totalVideos = formation.formation?.medias?.filter((m) => m.type === "video").length ||
             0;
@@ -1611,7 +1611,7 @@ let AdminService = class AdminService {
                 categorie: formation.formation?.categorie,
             },
             stagiaires: stagiaires.map((stagiaire) => {
-                const watchedCount = stagiaire.watchedVideos?.filter((w) => formation.formation?.medias?.some((m) => m.id === w.media_id)).length || 0;
+                const watchedCount = stagiaire.medias?.filter((w) => formation.formation?.medias?.some((m) => m.id === w.id)).length || 0;
                 const progress = totalVideos > 0 ? Math.round((watchedCount / totalVideos) * 100) : 0;
                 const scf = stagiaire.stagiaire_catalogue_formations.find((s) => s.catalogue_formation_id == formationId);
                 return {

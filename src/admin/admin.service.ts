@@ -2064,7 +2064,7 @@ export class AdminService {
         formateurs: { id: formateur.id },
         stagiaire_catalogue_formations: { catalogue_formation_id: formationId },
       },
-      relations: ["user", "watchedVideos", "stagiaire_catalogue_formations"],
+      relations: ["user", "medias", "stagiaire_catalogue_formations"],
     });
 
     const totalVideos =
@@ -2079,8 +2079,8 @@ export class AdminService {
       },
       stagiaires: stagiaires.map((stagiaire) => {
         const watchedCount =
-          stagiaire.watchedVideos?.filter((w) =>
-            formation.formation?.medias?.some((m) => m.id === w.media_id),
+          stagiaire.medias?.filter((w) =>
+            formation.formation?.medias?.some((m) => m.id === w.id),
           ).length || 0;
 
         const progress =
