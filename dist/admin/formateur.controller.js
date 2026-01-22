@@ -114,7 +114,7 @@ let FormateurController = class FormateurController {
         });
     }
     async stagiaires(req) {
-        const data = await this.adminService.getFormateurStagiaires();
+        const data = await this.adminService.getFormateurStagiaires(req.user.id);
         return this.apiResponse.success({ stagiaires: data });
     }
     async onlineStagiaires(req) {
@@ -317,6 +317,21 @@ let FormateurController = class FormateurController {
         const data = await this.adminService.getFormateurAnalyticsDashboard(req.user.id, period, formationId);
         return this.apiResponse.success(data);
     }
+    async quizSuccessRate(req, period = 30, formationId) {
+        const data = await this.adminService.getFormateurQuizSuccessRate(req.user.id, period, formationId);
+        return this.apiResponse.success(data);
+    }
+    async completionTime() {
+        return this.apiResponse.success({ completion_trends: [] });
+    }
+    async activityHeatmap(req, period = 30, formationId) {
+        const data = await this.adminService.getFormateurActivityHeatmap(req.user.id, period, formationId);
+        return this.apiResponse.success(data);
+    }
+    async dropoutRate(req, formationId) {
+        const data = await this.adminService.getFormateurDropoutRate(req.user.id, formationId);
+        return this.apiResponse.success(data);
+    }
     async sendNotification(req, data) {
         const { recipient_ids, title, body } = data;
         const result = await this.adminService.sendNotification(req.user.id, recipient_ids, title, body);
@@ -516,6 +531,38 @@ __decorate([
     __metadata("design:paramtypes", [Object, Number, Number]),
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "analyticsDashboard", null);
+__decorate([
+    (0, common_1.Get)("analytics/quiz-success-rate"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("period")),
+    __param(2, (0, common_1.Query)("formation_id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number, Number]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "quizSuccessRate", null);
+__decorate([
+    (0, common_1.Get)("analytics/completion-time"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "completionTime", null);
+__decorate([
+    (0, common_1.Get)("analytics/activity-heatmap"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("period")),
+    __param(2, (0, common_1.Query)("formation_id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number, Number]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "activityHeatmap", null);
+__decorate([
+    (0, common_1.Get)("analytics/dropout-rate"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("formation_id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "dropoutRate", null);
 __decorate([
     (0, common_1.Post)("send-notification"),
     __param(0, (0, common_1.Request)()),

@@ -156,7 +156,7 @@ export class FormateurController {
 
   @Get("stagiaires")
   async stagiaires(@Request() req: any) {
-    const data = await this.adminService.getFormateurStagiaires();
+    const data = await this.adminService.getFormateurStagiaires(req.user.id);
     return this.apiResponse.success({ stagiaires: data });
   }
 
@@ -454,6 +454,51 @@ export class FormateurController {
     const data = await this.adminService.getFormateurAnalyticsDashboard(
       req.user.id,
       period,
+      formationId,
+    );
+    return this.apiResponse.success(data);
+  }
+
+  @Get("analytics/quiz-success-rate")
+  async quizSuccessRate(
+    @Request() req: any,
+    @Query("period") period: number = 30,
+    @Query("formation_id") formationId?: number,
+  ) {
+    const data = await this.adminService.getFormateurQuizSuccessRate(
+      req.user.id,
+      period,
+      formationId,
+    );
+    return this.apiResponse.success(data);
+  }
+
+  @Get("analytics/completion-time")
+  async completionTime() {
+    return this.apiResponse.success({ completion_trends: [] });
+  }
+
+  @Get("analytics/activity-heatmap")
+  async activityHeatmap(
+    @Request() req: any,
+    @Query("period") period: number = 30,
+    @Query("formation_id") formationId?: number,
+  ) {
+    const data = await this.adminService.getFormateurActivityHeatmap(
+      req.user.id,
+      period,
+      formationId,
+    );
+    return this.apiResponse.success(data);
+  }
+
+  @Get("analytics/dropout-rate")
+  async dropoutRate(
+    @Request() req: any,
+    @Query("formation_id") formationId?: number,
+  ) {
+    const data = await this.adminService.getFormateurDropoutRate(
+      req.user.id,
       formationId,
     );
     return this.apiResponse.success(data);

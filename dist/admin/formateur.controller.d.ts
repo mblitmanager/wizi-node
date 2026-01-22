@@ -49,5 +49,9 @@ export declare class FormateurController {
     formationsPerformance(req: any): Promise<any>;
     formationsPerformanceLegacy(req: any): Promise<any>;
     analyticsDashboard(req: any, period?: number, formationId?: number): Promise<any>;
+    quizSuccessRate(req: any, period?: number, formationId?: number): Promise<any>;
+    completionTime(): Promise<any>;
+    activityHeatmap(req: any, period?: number, formationId?: number): Promise<any>;
+    dropoutRate(req: any, formationId?: number): Promise<any>;
     sendNotification(req: any, data: any): Promise<any>;
 }

@@ -577,6 +577,49 @@ export class AdminService {
     }
   }
 
+  async getFormateurStagiaires(userId: number) {
+    // Get formateur
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+    });
+
+    if (!formateur) {
+      return [];
+    }
+
+    // Query all stagiaires that belong to this formateur (not just online)
+    const stagiaires = await this.stagiaireRepository
+      .createQueryBuilder("stagiaire")
+      .innerJoinAndSelect("stagiaire.user", "user")
+      .leftJoinAndSelect("stagiaire.stagiaire_catalogue_formations", "scf")
+      .leftJoinAndSelect("scf.catalogue_formation", "cf")
+      .innerJoin(
+        "stagiaire.formateurs",
+        "formateur",
+        "formateur.id = :formateurId",
+        { formateurId: formateur.id },
+      )
+      .orderBy("stagiaire.prenom", "ASC")
+      .getMany();
+
+    return stagiaires.map((s) => ({
+      id: s.id,
+      prenom: s.prenom,
+      nom: s.user?.name || "",
+      email: s.user?.email || "",
+      avatar: s.user?.image || null,
+      last_activity_at: s.user?.last_activity_at
+        ? new Date(s.user.last_activity_at)
+            .toISOString()
+            .replace("T", " ")
+            .substring(0, 19)
+        : null,
+      formations: (s.stagiaire_catalogue_formations || []).map(
+        (scf) => scf.catalogue_formation?.titre,
+      ),
+    }));
+  }
+
   async getNeverConnected() {
     const stagiaires = await this.stagiaireRepository.find({
       where: { user: { last_login_at: null } },
