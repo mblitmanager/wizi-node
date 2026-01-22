@@ -1,4 +1,13 @@
-import { Controller, Get, UseGuards, Query, Req, Param } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Query,
+  Req,
+  Param,
+} from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { MediaService } from "./media.service";
 import { Request } from "express";
@@ -32,7 +41,7 @@ export class MediaController {
       pageNum,
       10,
       baseUrl,
-      userId
+      userId,
     );
   }
 
@@ -48,7 +57,7 @@ export class MediaController {
       pageNum,
       10,
       baseUrl,
-      userId
+      userId,
     );
   }
 
@@ -57,7 +66,7 @@ export class MediaController {
   async getTutorielsByFormation(
     @Param("formationId") formationId: number,
     @Req() req: any,
-    @Query("page") page: string = "1"
+    @Query("page") page: string = "1",
   ) {
     const pageNum = parseInt(page) || 1;
     const userId = req.user?.id;
@@ -69,7 +78,7 @@ export class MediaController {
       pageNum,
       10,
       baseUrl,
-      userId
+      userId,
     );
   }
 
@@ -78,7 +87,7 @@ export class MediaController {
   async getAstucesByFormation(
     @Param("formationId") formationId: number,
     @Req() req: any,
-    @Query("page") page: string = "1"
+    @Query("page") page: string = "1",
   ) {
     const pageNum = parseInt(page) || 1;
     const userId = req.user?.id;
@@ -90,7 +99,7 @@ export class MediaController {
       pageNum,
       10,
       baseUrl,
-      userId
+      userId,
     );
   }
 
@@ -102,5 +111,19 @@ export class MediaController {
   @Get("formations-with-status")
   async getFormationsWithStatus() {
     return this.mediaService.getFormationsWithStatus();
+  }
+
+  @Post("progress")
+  @UseGuards(AuthGuard("jwt"))
+  async updateProgress(
+    @Req() req: any,
+    @Body() data: { media_id: number; current_time: number; duration: number },
+  ) {
+    return this.mediaService.updateProgress(
+      data.media_id,
+      req.user.id,
+      data.current_time,
+      data.duration,
+    );
   }
 }

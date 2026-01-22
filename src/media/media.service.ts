@@ -18,13 +18,13 @@ export class MediaService {
     private stagiaireRepository: Repository<Stagiaire>,
     @InjectRepository(Formation)
     private formationRepository: Repository<Formation>,
-    private achievementService: AchievementService
+    private achievementService: AchievementService,
   ) {}
 
   async getServerMediasPaginated(
     page: number = 1,
     perPage: number = 20,
-    baseUrl: string = ""
+    baseUrl: string = "",
   ) {
     const [data, total] = await this.mediaRepository
       .createQueryBuilder("m")
@@ -69,7 +69,7 @@ export class MediaService {
         "m.mediaStagiaires",
         "ms",
         "ms.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
-        { userId }
+        { userId },
       );
     }
 
@@ -82,7 +82,7 @@ export class MediaService {
     page: number = 1,
     perPage: number = 10,
     baseUrl: string = "https://localhost:3000/api/medias/astuces",
-    userId?: number
+    userId?: number,
   ) {
     const query = this.mediaRepository
       .createQueryBuilder("m")
@@ -94,7 +94,7 @@ export class MediaService {
         "m.mediaStagiaires",
         "ms",
         "ms.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
-        { userId }
+        { userId },
       );
     }
 
@@ -111,7 +111,7 @@ export class MediaService {
   private generateLinks(
     currentPage: number,
     lastPage: number,
-    baseUrl: string
+    baseUrl: string,
   ) {
     const links: any[] = [];
     links.push({
@@ -146,7 +146,7 @@ export class MediaService {
     page: number = 1,
     perPage: number = 10,
     baseUrl: string = "",
-    userId?: number
+    userId?: number,
   ) {
     const query = this.mediaRepository
       .createQueryBuilder("m")
@@ -175,7 +175,7 @@ export class MediaService {
     total: number,
     page: number,
     perPage: number,
-    baseUrl: string
+    baseUrl: string,
   ) {
     const lastPage = Math.max(1, Math.ceil(total / perPage));
 
@@ -241,7 +241,12 @@ export class MediaService {
     }));
   }
 
-  async markAsWatched(mediaId: number, userId: number) {
+  async updateProgress(
+    mediaId: number,
+    userId: number,
+    currentTime: number,
+    duration: number,
+  ) {
     const stagiaire = await this.stagiaireRepository.findOne({
       where: { user_id: userId },
     });
@@ -253,29 +258,42 @@ export class MediaService {
       where: { media_id: mediaId, stagiaire_id: stagiaire.id },
     });
 
+    const percentage =
+      duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
+    const isWatched = percentage >= 90;
+
     if (mediaStagiaire) {
-      mediaStagiaire.is_watched = true;
-      mediaStagiaire.watched_at = new Date();
+      mediaStagiaire.current_time = currentTime;
+      mediaStagiaire.duration = duration;
+      mediaStagiaire.percentage = percentage;
+      if (isWatched) {
+        mediaStagiaire.is_watched = true;
+        mediaStagiaire.watched_at = new Date();
+      }
       await this.mediaStagiaireRepository.save(mediaStagiaire);
     } else {
       mediaStagiaire = this.mediaStagiaireRepository.create({
         media_id: mediaId,
         stagiaire_id: stagiaire.id,
-        is_watched: true,
-        watched_at: new Date(),
+        current_time: currentTime,
+        duration: duration,
+        percentage: percentage,
+        is_watched: isWatched,
+        watched_at: isWatched ? new Date() : null,
       });
       await this.mediaStagiaireRepository.save(mediaStagiaire);
     }
 
-    // Check for achievements
-    const newAchievements = await this.achievementService.checkAchievements(
-      stagiaire.id
-    );
+    // Check for achievements if just finished
+    if (isWatched) {
+      await this.achievementService.checkAchievements(stagiaire.id);
+    }
 
-    return {
-      message: "Media marked as watched",
-      new_achievements: newAchievements,
-    };
+    return mediaStagiaire;
+  }
+
+  async markAsWatched(mediaId: number, userId: number) {
+    return this.updateProgress(mediaId, userId, 100, 100);
   }
 
   private formatMedia(media: Media, includeStagiaires: boolean = true) {

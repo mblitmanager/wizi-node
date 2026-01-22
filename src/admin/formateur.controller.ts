@@ -418,7 +418,7 @@ export class FormateurController {
     return this.apiResponse.success(data);
   }
 
-  @Get("analytics/formations-performance")
+  @Get(["analytics/formations-performance", "analytics/performance"])
   async formationsPerformance(@Request() req) {
     const data = await this.adminService.getFormateurFormationsPerformance(
       req.user.id,

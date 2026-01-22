@@ -65,6 +65,7 @@ import { Classement } from "../entities/classement.entity";
 import { Progression } from "../entities/progression.entity";
 import { StagiaireAchievement } from "../entities/stagiaire-achievement.entity";
 import { Reponse } from "../entities/reponse.entity";
+import { MediaStagiaire } from "../entities/media-stagiaire.entity";
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { Reponse } from "../entities/reponse.entity";
       Progression,
       StagiaireAchievement,
       Reponse,
+      MediaStagiaire,
     ]),
   ],
   providers: [AdminService, ApiResponseService],

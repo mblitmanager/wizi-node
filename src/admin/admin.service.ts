@@ -10,6 +10,7 @@ import { Classement } from "../entities/classement.entity";
 import { NotificationService } from "../notification/notification.service";
 import { Formation } from "../entities/formation.entity";
 import { Media } from "../entities/media.entity";
+import { MediaStagiaire } from "../entities/media-stagiaire.entity";
 
 @Injectable()
 export class AdminService {
@@ -28,6 +29,8 @@ export class AdminService {
     private formationRepository: Repository<Formation>,
     @InjectRepository(Media)
     private mediaRepository: Repository<Media>,
+    @InjectRepository(MediaStagiaire)
+    private mediaStagiaireRepository: Repository<MediaStagiaire>,
     private notificationService: NotificationService,
   ) {}
 
@@ -1785,28 +1788,37 @@ export class AdminService {
       throw new NotFoundException(`Vidéo avec l'ID ${videoId} introuvable`);
     }
 
-    // Simulated stats for now
+    const trackings = await this.mediaStagiaireRepository.find({
+      where: { media_id: videoId },
+      relations: ["stagiaire", "stagiaire.user"],
+    });
+
+    const totalViews = trackings.length;
+    const totalDurationWatched = trackings.reduce(
+      (acc, t) => acc + (t.current_time || 0),
+      0,
+    );
+    const avgCompletion =
+      totalViews > 0
+        ? Math.round(
+            trackings.reduce((acc, t) => acc + (t.percentage || 0), 0) /
+              totalViews,
+          )
+        : 0;
+
     return {
       video_id: videoId,
-      total_views: Math.floor(Math.random() * 500) + 100,
-      total_duration_watched: Math.floor(Math.random() * 10000) + 5000,
-      completion_rate: Math.floor(Math.random() * 40) + 60,
-      views_by_stagiaire: [
-        {
-          id: 1,
-          prenom: "Marie",
-          nom: "Dupont",
-          completed: true,
-          total_watched: 300,
-        },
-        {
-          id: 2,
-          prenom: "Jean",
-          nom: "Durand",
-          completed: false,
-          total_watched: 120,
-        },
-      ],
+      total_views: totalViews,
+      total_duration_watched: totalDurationWatched,
+      completion_rate: avgCompletion,
+      views_by_stagiaire: trackings.map((t) => ({
+        id: t.stagiaire?.id || 0,
+        prenom: t.stagiaire?.prenom || "Stagiaire",
+        nom: t.stagiaire?.user?.name || "Inconnu",
+        completed: !!t.is_watched,
+        total_watched: t.current_time || 0,
+        percentage: t.percentage || 0,
+      })),
     };
   }
 

@@ -28,6 +28,15 @@ export class MediaStagiaire {
   @CreateDateColumn()
   created_at: Date;
 
+  @Column({ type: "int", default: 0 })
+  current_time: number;
+
+  @Column({ type: "int", default: 0 })
+  duration: number;
+
+  @Column({ type: "float", default: 0 })
+  percentage: number;
+
   @UpdateDateColumn()
   updated_at: Date;
 
