@@ -209,6 +209,9 @@ export class FormateurController {
   async quizzes(
     @Query("formation_id") formationId?: number,
     @Query("status") status?: string,
+    @Query("search") search?: string,
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 10,
   ) {
     const queryBuilder = this.quizRepository
       .createQueryBuilder("quiz")
@@ -216,17 +219,42 @@ export class FormateurController {
       .leftJoinAndSelect("quiz.questions", "questions");
 
     if (formationId) {
-      queryBuilder.andWhere("quiz.formation_id = :formationId", {
-        formationId,
-      });
+      // FIX: The frontend might send a CatalogueFormation ID (from the trainer's list).
+      // We must check if this ID corresponds to a CatalogueFormation and use its real `formation_id`
+      // for filtering Quizzes (which are linked to content).
+      const legacyCatalogueFormation =
+        await this.catalogueFormationRepository.findOne({
+          where: { id: formationId },
+          select: ["id", "formation_id"],
+        });
+
+      if (legacyCatalogueFormation && legacyCatalogueFormation.formation_id) {
+        // It matches a CatalogueFormation, use the real content ID
+        queryBuilder.andWhere("quiz.formation_id = :formationId", {
+          formationId: legacyCatalogueFormation.formation_id,
+        });
+      } else {
+        // Fallback: Use the provided ID as is (direct Formation ID)
+        queryBuilder.andWhere("quiz.formation_id = :formationId", {
+          formationId,
+        });
+      }
     }
     if (status) {
       queryBuilder.andWhere("quiz.status = :status", { status });
     }
+    if (search) {
+      queryBuilder.andWhere(
+        "(quiz.titre LIKE :search OR quiz.description LIKE :search)",
+        { search: `%${search}%` },
+      );
+    }
 
-    const items = await queryBuilder
+    const [items, total] = await queryBuilder
       .orderBy("quiz.created_at", "DESC")
-      .getMany();
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
 
     const data = items.map((q) => ({
       id: q.id,
@@ -247,7 +275,15 @@ export class FormateurController {
       created_at: q.created_at,
     }));
 
-    return this.apiResponse.success({ quizzes: data });
+    return this.apiResponse.success({
+      data,
+      meta: {
+        total,
+        page: Number(page),
+        last_page: Math.ceil(total / limit),
+      },
+      quizzes: data, // Keep legacy key for compatibility during migration
+    });
   }
 
   @Get("quizzes/:id")

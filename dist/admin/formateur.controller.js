@@ -138,22 +138,38 @@ let FormateurController = class FormateurController {
             message: `${updatedCount} stagiaire(s) déconnecté(s)`,
         });
     }
-    async quizzes(formationId, status) {
+    async quizzes(formationId, status, search, page = 1, limit = 10) {
         const queryBuilder = this.quizRepository
             .createQueryBuilder("quiz")
             .leftJoinAndSelect("quiz.formation", "formation")
             .leftJoinAndSelect("quiz.questions", "questions");
         if (formationId) {
-            queryBuilder.andWhere("quiz.formation_id = :formationId", {
-                formationId,
+            const legacyCatalogueFormation = await this.catalogueFormationRepository.findOne({
+                where: { id: formationId },
+                select: ["id", "formation_id"],
             });
+            if (legacyCatalogueFormation && legacyCatalogueFormation.formation_id) {
+                queryBuilder.andWhere("quiz.formation_id = :formationId", {
+                    formationId: legacyCatalogueFormation.formation_id,
+                });
+            }
+            else {
+                queryBuilder.andWhere("quiz.formation_id = :formationId", {
+                    formationId,
+                });
+            }
         }
         if (status) {
             queryBuilder.andWhere("quiz.status = :status", { status });
         }
-        const items = await queryBuilder
+        if (search) {
+            queryBuilder.andWhere("(quiz.titre LIKE :search OR quiz.description LIKE :search)", { search: `%${search}%` });
+        }
+        const [items, total] = await queryBuilder
             .orderBy("quiz.created_at", "DESC")
-            .getMany();
+            .skip((page - 1) * limit)
+            .take(limit)
+            .getManyAndCount();
         const data = items.map((q) => ({
             id: q.id,
             titre: q.titre,
@@ -172,7 +188,15 @@ let FormateurController = class FormateurController {
             nb_questions: q.questions?.length || 0,
             created_at: q.created_at,
         }));
-        return this.apiResponse.success({ quizzes: data });
+        return this.apiResponse.success({
+            data,
+            meta: {
+                total,
+                page: Number(page),
+                last_page: Math.ceil(total / limit),
+            },
+            quizzes: data,
+        });
     }
     async quizDetail(id) {
         const quiz = await this.quizRepository.findOne({
@@ -426,8 +450,11 @@ __decorate([
     (0, common_1.Get)("quizzes"),
     __param(0, (0, common_1.Query)("formation_id")),
     __param(1, (0, common_1.Query)("status")),
+    __param(2, (0, common_1.Query)("search")),
+    __param(3, (0, common_1.Query)("page")),
+    __param(4, (0, common_1.Query)("limit")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:paramtypes", [Number, String, String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "quizzes", null);
 __decorate([
