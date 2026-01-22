@@ -2426,3 +2426,7 @@
 [2026-01-21T14:02:44.621Z] Stagiaire not found for userId: 18
 [2026-01-21T14:02:45.592Z] Starting getQuizHistory for userId: 18
 [2026-01-21T14:02:45.825Z] Stagiaire not found for userId: 18
+[2026-01-22T10:19:04.489Z] Starting getQuizHistory for userId: 18
+[2026-01-22T10:19:04.514Z] Stagiaire not found for userId: 18
+[2026-01-22T10:19:04.724Z] Starting getQuizHistory for userId: 18
+[2026-01-22T10:19:04.753Z] Stagiaire not found for userId: 18

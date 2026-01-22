@@ -528,42 +528,42 @@ let AdminService = class AdminService {
     async getFormateurMesStagiairesRanking(userId, period = "all") {
         const formateur = await this.formateurRepository.findOne({
             where: { user_id: userId },
+            relations: ["formations"],
         });
         if (!formateur) {
-            return {
-                ranking: [],
-                total_stagiaires: 0,
-                period,
-            };
+            return { ranking: [], total_stagiaires: 0, period };
         }
         const formateurId = formateur.id;
-        let periodCondition = "";
-        const parameters = { formateurId };
-        if (period === "week") {
-            const weekAgo = new Date();
-            weekAgo.setDate(weekAgo.getDate() - 7);
-            parameters.weekAgo = weekAgo;
-            periodCondition = "AND qp2.created_at >= :weekAgo";
-        }
-        else if (period === "month") {
-            const monthAgo = new Date();
-            monthAgo.setMonth(monthAgo.getMonth() - 1);
-            parameters.monthAgo = monthAgo;
-            periodCondition = "AND qp2.created_at >= :monthAgo";
-        }
+        const formationIds = (formateur.formations || [])
+            .map((cf) => cf.formation_id)
+            .filter((id) => id != null);
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
         const rawRanking = await this.stagiaireRepository
             .createQueryBuilder("s")
             .innerJoin("s.user", "u")
             .innerJoin("s.formateurs", "f", "f.id = :formateurId", { formateurId })
-            .leftJoin(`(
-          SELECT 
-            qp2.user_id as user_id,
-            qp2.quiz_id as quiz_id,
-            MAX(qp2.score) as best_score
-          FROM quiz_participations qp2
-          WHERE 1=1 ${periodCondition}
-          GROUP BY qp2.user_id, qp2.quiz_id
-        )`, "best_attempts", "u.id = best_attempts.user_id")
+            .leftJoin((subQuery) => {
+            const sq = subQuery
+                .select("qp_sub.user_id", "user_id")
+                .addSelect("qp_sub.quiz_id", "quiz_id")
+                .addSelect("MAX(qp_sub.score)", "best_score")
+                .from(quiz_participation_entity_1.QuizParticipation, "qp_sub")
+                .innerJoin("quizzes", "q_sub", "q_sub.id = qp_sub.quiz_id")
+                .where("qp_sub.status = :status", { status: "completed" });
+            if (formationIds.length > 0) {
+                sq.andWhere("(q_sub.formation_id IN (:...fids) OR q_sub.formation_id IS NULL)", { fids: formationIds });
+            }
+            if (period === "week") {
+                sq.andWhere("qp_sub.created_at >= :weekAgo", { weekAgo });
+            }
+            else if (period === "month") {
+                sq.andWhere("qp_sub.created_at >= :monthAgo", { monthAgo });
+            }
+            return sq.groupBy("qp_sub.user_id").addGroupBy("qp_sub.quiz_id");
+        }, "best_attempts", "u.id = best_attempts.user_id")
             .select([
             "s.id as id",
             "s.prenom as prenom",
@@ -580,7 +580,6 @@ let AdminService = class AdminService {
             .addGroupBy("u.email")
             .addGroupBy("u.image")
             .orderBy("total_points", "DESC")
-            .setParameters(parameters)
             .getRawMany();
         const ranking = rawRanking.map((item, index) => ({
             rank: index + 1,
@@ -604,6 +603,9 @@ let AdminService = class AdminService {
         });
         const result = [];
         for (const f of trainers) {
+            const trainerFormationIds = (f.formations || [])
+                .map((cf) => cf.formation_id)
+                .filter((id) => id != null);
             const stagiairesQuery = this.stagiaireRepository
                 .createQueryBuilder("s")
                 .innerJoin("s.user", "su")
@@ -611,42 +613,31 @@ let AdminService = class AdminService {
                 formateurId: f.id,
             })
                 .leftJoin((subQuery) => {
-                return subQuery
+                const sq = subQuery
                     .select("qp_sub.user_id", "user_id")
                     .addSelect("qp_sub.quiz_id", "quiz_id")
                     .addSelect("MAX(qp_sub.score)", "best_score")
-                    .addSelect("MAX(qp_sub.created_at)", "last_attempt")
                     .from(quiz_participation_entity_1.QuizParticipation, "qp_sub")
-                    .groupBy("qp_sub.user_id")
-                    .addGroupBy("qp_sub.quiz_id");
-            }, "best_attempts", "su.id = best_attempts.user_id")
-                .leftJoin(quiz_participation_entity_1.QuizParticipation, "qp", "su.id = qp.user_id AND qp.quiz_id = best_attempts.quiz_id AND qp.score = best_attempts.best_score")
-                .leftJoin("quizzes", "q", "q.id = best_attempts.quiz_id");
-            if (formationId) {
-                stagiairesQuery.andWhere("q.formation_id = :formationId", {
-                    formationId,
-                });
-            }
-            else {
-                const trainerFormationIds = f.formations.map((cf) => cf.id);
-                if (trainerFormationIds.length > 0) {
-                    stagiairesQuery.andWhere("(q.formation_id IN (:...fids) OR q.formation_id IS NULL)", { fids: trainerFormationIds });
+                    .innerJoin("quizzes", "q_sub", "q_sub.id = qp_sub.quiz_id")
+                    .where("qp_sub.status = :status", { status: "completed" });
+                if (formationId) {
+                    sq.andWhere("q_sub.formation_id = :formationId", { formationId });
                 }
-            }
-            if (period === "week") {
-                const weekAgo = new Date();
-                weekAgo.setDate(weekAgo.getDate() - 7);
-                stagiairesQuery.andWhere("best_attempts.last_attempt >= :weekAgo", {
-                    weekAgo,
-                });
-            }
-            else if (period === "month") {
-                const monthAgo = new Date();
-                monthAgo.setMonth(monthAgo.getMonth() - 1);
-                stagiairesQuery.andWhere("best_attempts.last_attempt >= :monthAgo", {
-                    monthAgo,
-                });
-            }
+                else if (trainerFormationIds.length > 0) {
+                    sq.andWhere("(q_sub.formation_id IN (:...fids) OR q_sub.formation_id IS NULL)", { fids: trainerFormationIds });
+                }
+                if (period === "week") {
+                    const weekAgo = new Date();
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    sq.andWhere("qp_sub.created_at >= :weekAgo", { weekAgo });
+                }
+                else if (period === "month") {
+                    const monthAgo = new Date();
+                    monthAgo.setMonth(monthAgo.getMonth() - 1);
+                    sq.andWhere("qp_sub.created_at >= :monthAgo", { monthAgo });
+                }
+                return sq.groupBy("qp_sub.user_id").addGroupBy("qp_sub.quiz_id");
+            }, "best_attempts", "su.id = best_attempts.user_id");
             stagiairesQuery
                 .select([
                 "s.id AS id",
@@ -1058,6 +1049,7 @@ let AdminService = class AdminService {
         const query = this.quizParticipationRepository
             .createQueryBuilder("qp")
             .leftJoinAndSelect("qp.quiz", "quiz")
+            .leftJoinAndSelect("quiz.formation", "formation")
             .where("qp.user_id IN (:...ids)", { ids: userIds })
             .andWhere("qp.status = :status", { status: "completed" })
             .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
@@ -1073,7 +1065,7 @@ let AdminService = class AdminService {
                 quizStatsMap.set(p.quiz_id, {
                     quiz_id: p.quiz_id,
                     quiz_name: p.quiz.titre,
-                    category: p.quiz.categorie || "Général",
+                    category: p.quiz.formation?.categorie || "Général",
                     participations: [],
                 });
             }
@@ -1194,10 +1186,11 @@ let AdminService = class AdminService {
         }
         const query = this.quizParticipationRepository
             .createQueryBuilder("qp")
-            .leftJoinAndSelect("qp.quiz", "quiz")
+            .leftJoin("qp.quiz", "quiz")
+            .leftJoin("quiz.formation", "formation")
             .select("qp.quiz_id", "quiz_id")
             .addSelect("quiz.titre", "quiz_name")
-            .addSelect("quiz.categorie", "category")
+            .addSelect("formation.categorie", "category")
             .addSelect("COUNT(*)", "total_attempts")
             .addSelect('SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)', "completed")
             .addSelect('SUM(CASE WHEN qp.status != "completed" THEN 1 ELSE 0 END)', "abandoned")
@@ -1513,7 +1506,11 @@ let AdminService = class AdminService {
             const date = new Date(now);
             date.setDate(date.getDate() - i);
             const dateStr = date.toISOString().split("T")[0];
-            const dailyActions = quizParticipations.filter((p) => p.created_at.toISOString().split("T")[0] === dateStr).length;
+            const dailyActions = quizParticipations.filter((p) => {
+                if (!p.created_at)
+                    return false;
+                return p.created_at.toISOString().split("T")[0] === dateStr;
+            }).length;
             last30Days.push({
                 date: dateStr,
                 actions: dailyActions,
@@ -1523,13 +1520,13 @@ let AdminService = class AdminService {
             type: "quiz",
             title: p.quiz?.titre || "Quiz",
             score: p.score,
-            timestamp: p.created_at.toISOString(),
+            timestamp: p.created_at ? p.created_at.toISOString() : null,
         }));
         const formations = stagiaire.stagiaire_catalogue_formations.map((scf) => ({
             id: scf.catalogue_formation?.id,
             title: scf.catalogue_formation?.titre || "Formation",
             category: scf.catalogue_formation?.formation?.categorie || "Général",
-            started_at: scf.created_at.toISOString(),
+            started_at: scf.created_at ? scf.created_at.toISOString() : null,
             completed_at: scf.date_fin ? scf.date_fin.toISOString() : null,
             progress: scf.date_fin ? 100 : 0,
         }));
@@ -1539,7 +1536,7 @@ let AdminService = class AdminService {
             category: p.quiz?.formation?.categorie || "Général",
             score: p.score,
             max_score: 100,
-            completed_at: p.completed_at?.toISOString() || p.created_at.toISOString(),
+            completed_at: p.completed_at?.toISOString() || p.created_at?.toISOString() || null,
             time_spent: p.time_spent || 0,
         }));
         return {
@@ -1549,7 +1546,9 @@ let AdminService = class AdminService {
                 nom: stagiaire.user?.name || "",
                 email: stagiaire.user?.email || "",
                 image: stagiaire.user?.image,
-                created_at: stagiaire.created_at.toISOString(),
+                created_at: stagiaire.created_at
+                    ? stagiaire.created_at.toISOString()
+                    : null,
                 last_login: stagiaire.user?.last_login_at?.toISOString() || null,
             },
             stats: {

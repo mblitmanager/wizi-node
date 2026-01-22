@@ -662,36 +662,26 @@ export class AdminService {
     userId: number,
     period: string = "all",
   ) {
-    // 1. Get Formateur ID
+    // 1. Get Formateur and their formations
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },
+      relations: ["formations"],
     });
 
     if (!formateur) {
-      return {
-        ranking: [],
-        total_stagiaires: 0,
-        period,
-      };
+      return { ranking: [], total_stagiaires: 0, period };
     }
 
     const formateurId = formateur.id;
+    const formationIds = (formateur.formations || [])
+      .map((cf) => cf.formation_id)
+      .filter((id) => id != null);
 
-    // 2. Build subquery for best scores per quiz
-    let periodCondition = "";
-    const parameters: any = { formateurId };
-
-    if (period === "week") {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      parameters.weekAgo = weekAgo;
-      periodCondition = "AND qp2.created_at >= :weekAgo";
-    } else if (period === "month") {
-      const monthAgo = new Date();
-      monthAgo.setMonth(monthAgo.getMonth() - 1);
-      parameters.monthAgo = monthAgo;
-      periodCondition = "AND qp2.created_at >= :monthAgo";
-    }
+    // 2. Setup period filters
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const monthAgo = new Date();
+    monthAgo.setMonth(monthAgo.getMonth() - 1);
 
     // 3. Query with best scores subquery
     const rawRanking = await this.stagiaireRepository
@@ -699,15 +689,30 @@ export class AdminService {
       .innerJoin("s.user", "u")
       .innerJoin("s.formateurs", "f", "f.id = :formateurId", { formateurId })
       .leftJoin(
-        `(
-          SELECT 
-            qp2.user_id as user_id,
-            qp2.quiz_id as quiz_id,
-            MAX(qp2.score) as best_score
-          FROM quiz_participations qp2
-          WHERE 1=1 ${periodCondition}
-          GROUP BY qp2.user_id, qp2.quiz_id
-        )`,
+        (subQuery) => {
+          const sq = subQuery
+            .select("qp_sub.user_id", "user_id")
+            .addSelect("qp_sub.quiz_id", "quiz_id")
+            .addSelect("MAX(qp_sub.score)", "best_score")
+            .from(QuizParticipation, "qp_sub")
+            .innerJoin("quizzes", "q_sub", "q_sub.id = qp_sub.quiz_id")
+            .where("qp_sub.status = :status", { status: "completed" });
+
+          if (formationIds.length > 0) {
+            sq.andWhere(
+              "(q_sub.formation_id IN (:...fids) OR q_sub.formation_id IS NULL)",
+              { fids: formationIds },
+            );
+          }
+
+          if (period === "week") {
+            sq.andWhere("qp_sub.created_at >= :weekAgo", { weekAgo });
+          } else if (period === "month") {
+            sq.andWhere("qp_sub.created_at >= :monthAgo", { monthAgo });
+          }
+
+          return sq.groupBy("qp_sub.user_id").addGroupBy("qp_sub.quiz_id");
+        },
         "best_attempts",
         "u.id = best_attempts.user_id",
       )
@@ -727,7 +732,6 @@ export class AdminService {
       .addGroupBy("u.email")
       .addGroupBy("u.image")
       .orderBy("total_points", "DESC")
-      .setParameters(parameters)
       .getRawMany();
 
     const ranking = rawRanking.map((item, index) => ({
@@ -757,8 +761,10 @@ export class AdminService {
     const result = [];
 
     for (const f of trainers) {
-      // 2. Query stagiaires for each trainer with real points from QuizParticipation
-      // FIX: Use MAX(score) per quiz instead of SUM(score) to avoid dubling points for retries
+      const trainerFormationIds = (f.formations || [])
+        .map((cf: any) => cf.formation_id)
+        .filter((id) => id != null);
+
       const stagiairesQuery = this.stagiaireRepository
         .createQueryBuilder("s")
         .innerJoin("s.user", "su")
@@ -767,76 +773,38 @@ export class AdminService {
         })
         .leftJoin(
           (subQuery) => {
-            return subQuery
+            const sq = subQuery
               .select("qp_sub.user_id", "user_id")
               .addSelect("qp_sub.quiz_id", "quiz_id")
               .addSelect("MAX(qp_sub.score)", "best_score")
-              .addSelect("MAX(qp_sub.created_at)", "last_attempt") // Keep track of latest for date filtering if needed
               .from(QuizParticipation, "qp_sub")
-              .groupBy("qp_sub.user_id")
-              .addGroupBy("qp_sub.quiz_id");
+              .innerJoin("quizzes", "q_sub", "q_sub.id = qp_sub.quiz_id")
+              .where("qp_sub.status = :status", { status: "completed" });
+
+            if (formationId) {
+              sq.andWhere("q_sub.formation_id = :formationId", { formationId });
+            } else if (trainerFormationIds.length > 0) {
+              sq.andWhere(
+                "(q_sub.formation_id IN (:...fids) OR q_sub.formation_id IS NULL)",
+                { fids: trainerFormationIds },
+              );
+            }
+
+            if (period === "week") {
+              const weekAgo = new Date();
+              weekAgo.setDate(weekAgo.getDate() - 7);
+              sq.andWhere("qp_sub.created_at >= :weekAgo", { weekAgo });
+            } else if (period === "month") {
+              const monthAgo = new Date();
+              monthAgo.setMonth(monthAgo.getMonth() - 1);
+              sq.andWhere("qp_sub.created_at >= :monthAgo", { monthAgo });
+            }
+
+            return sq.groupBy("qp_sub.user_id").addGroupBy("qp_sub.quiz_id");
           },
           "best_attempts",
           "su.id = best_attempts.user_id",
-        )
-        .leftJoin(
-          QuizParticipation,
-          "qp",
-          "su.id = qp.user_id AND qp.quiz_id = best_attempts.quiz_id AND qp.score = best_attempts.best_score",
-        ) // Join back to get quiz relation if needed, or join quiz directly on id
-        // Simpler: Join quiz on best_attempts.quiz_id
-        .leftJoin("quizzes", "q", "q.id = best_attempts.quiz_id");
-
-      if (formationId) {
-        stagiairesQuery.andWhere("q.formation_id = :formationId", {
-          formationId,
-        });
-      } else {
-        // Filter student points by the trainer's assigned formations
-        const trainerFormationIds = f.formations.map((cf: any) => cf.id);
-        if (trainerFormationIds.length > 0) {
-          // This logic is tricky because 'f.formations' are CatalogueFormations (cf.id), but 'q.formation_id' is Formation ID.
-          // We need to map Trainer -> CatalogueFormation -> Formation ID.
-          // Assuming f.formations is loaded with relations, we can extract formation_ids.
-          // But here f.formations might just be the Catalogue items without the nested Formation relation loaded in the previous `find`?
-          // The previous `find` (line 753) was `relations: ["user", "formations"]`. In NestJS/TypeORM, relations usually need to be explicit.
-          // If `formations` (CatalogueFormation) doesn't load `formation`, we can't get the ID easily here without a join.
-
-          // However, let's look at the original code:
-          // `const trainerFormationIds = f.formations.map((cf: any) => cf.id);`
-          // `stagiairesQuery.andWhere("(q.formation_id IN (:...fids) OR q.formation_id IS NULL)", ...)`
-          // Wait. `q.formation_id` is a link to `Formation`. `cf.id` is `CatalogueFormation` ID.
-          // They are NOT the same. This is likely a BUG in the original code too if `q.formation_id` was compared to `cf.id`.
-          // Or maybe `formation_id` in Quiz refers to CatalogueFormation?
-          // Let's check Quiz entity. `formation_id` usually links to `Formation`.
-          // So yes, we need to Dissociate here too or fix the comparison.
-
-          // For now, I will fix the SUM bug first. The comparison logic I will leave as is unless I'm sure (it uses fids).
-          // If `flds` are Catalogue IDs and `q.formation_id` is Formation ID, this filter is checking the wrong thing.
-          // But let's assume for the "Arena" fix we focus on the SUM.
-
-          // Actually, correcting the query:
-          stagiairesQuery.andWhere(
-            "(q.formation_id IN (:...fids) OR q.formation_id IS NULL)",
-            { fids: trainerFormationIds },
-          );
-        }
-      }
-
-      if (period === "week") {
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        // Filter on the best_attempt date or the participation date
-        stagiairesQuery.andWhere("best_attempts.last_attempt >= :weekAgo", {
-          weekAgo,
-        });
-      } else if (period === "month") {
-        const monthAgo = new Date();
-        monthAgo.setMonth(monthAgo.getMonth() - 1);
-        stagiairesQuery.andWhere("best_attempts.last_attempt >= :monthAgo", {
-          monthAgo,
-        });
-      }
+        );
 
       stagiairesQuery
         .select([
@@ -1381,6 +1349,7 @@ export class AdminService {
     const query = this.quizParticipationRepository
       .createQueryBuilder("qp")
       .leftJoinAndSelect("qp.quiz", "quiz")
+      .leftJoinAndSelect("quiz.formation", "formation")
       .where("qp.user_id IN (:...ids)", { ids: userIds })
       .andWhere("qp.status = :status", { status: "completed" })
       .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
@@ -1403,7 +1372,7 @@ export class AdminService {
         quizStatsMap.set(p.quiz_id, {
           quiz_id: p.quiz_id,
           quiz_name: p.quiz.titre,
-          category: p.quiz.categorie || "Général",
+          category: p.quiz.formation?.categorie || "Général",
           participations: [],
         });
       }
@@ -1554,10 +1523,11 @@ export class AdminService {
 
     const query = this.quizParticipationRepository
       .createQueryBuilder("qp")
-      .leftJoinAndSelect("qp.quiz", "quiz")
+      .leftJoin("qp.quiz", "quiz")
+      .leftJoin("quiz.formation", "formation")
       .select("qp.quiz_id", "quiz_id")
       .addSelect("quiz.titre", "quiz_name")
-      .addSelect("quiz.categorie", "category")
+      .addSelect("formation.categorie", "category")
       .addSelect("COUNT(*)", "total_attempts")
       .addSelect(
         'SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)',
@@ -1996,9 +1966,10 @@ export class AdminService {
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split("T")[0];
 
-      const dailyActions = quizParticipations.filter(
-        (p) => p.created_at.toISOString().split("T")[0] === dateStr,
-      ).length;
+      const dailyActions = quizParticipations.filter((p) => {
+        if (!p.created_at) return false;
+        return p.created_at.toISOString().split("T")[0] === dateStr;
+      }).length;
 
       last30Days.push({
         date: dateStr,
@@ -2010,7 +1981,7 @@ export class AdminService {
       type: "quiz",
       title: p.quiz?.titre || "Quiz",
       score: p.score,
-      timestamp: p.created_at.toISOString(),
+      timestamp: p.created_at ? p.created_at.toISOString() : null,
     }));
 
     // 3. Formations Progress
@@ -2018,7 +1989,7 @@ export class AdminService {
       id: scf.catalogue_formation?.id,
       title: scf.catalogue_formation?.titre || "Formation",
       category: scf.catalogue_formation?.formation?.categorie || "Général",
-      started_at: scf.created_at.toISOString(),
+      started_at: scf.created_at ? scf.created_at.toISOString() : null,
       completed_at: scf.date_fin ? scf.date_fin.toISOString() : null,
       progress: scf.date_fin ? 100 : 0,
     }));
@@ -2030,7 +2001,8 @@ export class AdminService {
       category: p.quiz?.formation?.categorie || "Général",
       score: p.score,
       max_score: 100, // Node default max score
-      completed_at: p.completed_at?.toISOString() || p.created_at.toISOString(),
+      completed_at:
+        p.completed_at?.toISOString() || p.created_at?.toISOString() || null,
       time_spent: p.time_spent || 0,
     }));
 
@@ -2041,7 +2013,9 @@ export class AdminService {
         nom: stagiaire.user?.name || "",
         email: stagiaire.user?.email || "",
         image: stagiaire.user?.image,
-        created_at: stagiaire.created_at.toISOString(),
+        created_at: stagiaire.created_at
+          ? stagiaire.created_at.toISOString()
+          : null,
         last_login: stagiaire.user?.last_login_at?.toISOString() || null,
       },
       stats: {
