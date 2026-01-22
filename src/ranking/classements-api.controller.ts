@@ -10,14 +10,16 @@ export class ClassementsApiController {
   @Get()
   async getAll(
     @Query("page") page: string = "1",
-    @Query("limit") limit: string = "10"
+    @Query("limit") limit: string = "10",
+    @Query("formation_id") formationId?: number,
   ) {
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
 
     const { items, total } = await this.rankingService.findAllPaginated(
       pageNum,
-      limitNum
+      limitNum,
+      formationId,
     );
 
     const members = items.map((c) => ({

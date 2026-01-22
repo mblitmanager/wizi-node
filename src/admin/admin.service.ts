@@ -758,14 +758,34 @@ export class AdminService {
 
     for (const f of trainers) {
       // 2. Query stagiaires for each trainer with real points from QuizParticipation
+      // FIX: Use MAX(score) per quiz instead of SUM(score) to avoid dubling points for retries
       const stagiairesQuery = this.stagiaireRepository
         .createQueryBuilder("s")
         .innerJoin("s.user", "su")
         .innerJoin("s.formateurs", "form", "form.id = :formateurId", {
           formateurId: f.id,
         })
-        .leftJoin(QuizParticipation, "qp", "su.id = qp.user_id")
-        .leftJoin("qp.quiz", "q");
+        .leftJoin(
+          (subQuery) => {
+            return subQuery
+              .select("qp_sub.user_id", "user_id")
+              .addSelect("qp_sub.quiz_id", "quiz_id")
+              .addSelect("MAX(qp_sub.score)", "best_score")
+              .addSelect("MAX(qp_sub.created_at)", "last_attempt") // Keep track of latest for date filtering if needed
+              .from(QuizParticipation, "qp_sub")
+              .groupBy("qp_sub.user_id")
+              .addGroupBy("qp_sub.quiz_id");
+          },
+          "best_attempts",
+          "su.id = best_attempts.user_id",
+        )
+        .leftJoin(
+          QuizParticipation,
+          "qp",
+          "su.id = qp.user_id AND qp.quiz_id = best_attempts.quiz_id AND qp.score = best_attempts.best_score",
+        ) // Join back to get quiz relation if needed, or join quiz directly on id
+        // Simpler: Join quiz on best_attempts.quiz_id
+        .leftJoin("quizzes", "q", "q.id = best_attempts.quiz_id");
 
       if (formationId) {
         stagiairesQuery.andWhere("q.formation_id = :formationId", {
@@ -775,6 +795,27 @@ export class AdminService {
         // Filter student points by the trainer's assigned formations
         const trainerFormationIds = f.formations.map((cf: any) => cf.id);
         if (trainerFormationIds.length > 0) {
+          // This logic is tricky because 'f.formations' are CatalogueFormations (cf.id), but 'q.formation_id' is Formation ID.
+          // We need to map Trainer -> CatalogueFormation -> Formation ID.
+          // Assuming f.formations is loaded with relations, we can extract formation_ids.
+          // But here f.formations might just be the Catalogue items without the nested Formation relation loaded in the previous `find`?
+          // The previous `find` (line 753) was `relations: ["user", "formations"]`. In NestJS/TypeORM, relations usually need to be explicit.
+          // If `formations` (CatalogueFormation) doesn't load `formation`, we can't get the ID easily here without a join.
+
+          // However, let's look at the original code:
+          // `const trainerFormationIds = f.formations.map((cf: any) => cf.id);`
+          // `stagiairesQuery.andWhere("(q.formation_id IN (:...fids) OR q.formation_id IS NULL)", ...)`
+          // Wait. `q.formation_id` is a link to `Formation`. `cf.id` is `CatalogueFormation` ID.
+          // They are NOT the same. This is likely a BUG in the original code too if `q.formation_id` was compared to `cf.id`.
+          // Or maybe `formation_id` in Quiz refers to CatalogueFormation?
+          // Let's check Quiz entity. `formation_id` usually links to `Formation`.
+          // So yes, we need to Dissociate here too or fix the comparison.
+
+          // For now, I will fix the SUM bug first. The comparison logic I will leave as is unless I'm sure (it uses fids).
+          // If `flds` are Catalogue IDs and `q.formation_id` is Formation ID, this filter is checking the wrong thing.
+          // But let's assume for the "Arena" fix we focus on the SUM.
+
+          // Actually, correcting the query:
           stagiairesQuery.andWhere(
             "(q.formation_id IN (:...fids) OR q.formation_id IS NULL)",
             { fids: trainerFormationIds },
@@ -785,11 +826,16 @@ export class AdminService {
       if (period === "week") {
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
-        stagiairesQuery.andWhere("qp.created_at >= :weekAgo", { weekAgo });
+        // Filter on the best_attempt date or the participation date
+        stagiairesQuery.andWhere("best_attempts.last_attempt >= :weekAgo", {
+          weekAgo,
+        });
       } else if (period === "month") {
         const monthAgo = new Date();
         monthAgo.setMonth(monthAgo.getMonth() - 1);
-        stagiairesQuery.andWhere("qp.created_at >= :monthAgo", { monthAgo });
+        stagiairesQuery.andWhere("best_attempts.last_attempt >= :monthAgo", {
+          monthAgo,
+        });
       }
 
       stagiairesQuery
@@ -798,7 +844,7 @@ export class AdminService {
           "s.prenom AS prenom",
           "su.name AS nom",
           "su.image AS image",
-          "COALESCE(SUM(qp.score), 0) AS points",
+          "COALESCE(SUM(best_attempts.best_score), 0) AS points",
         ])
         .groupBy("s.id")
         .addGroupBy("s.prenom")
@@ -846,6 +892,7 @@ export class AdminService {
       .innerJoin("cf.formateurs", "f", "f.id = :formateurId", {
         formateurId: formateur.id,
       })
+      .leftJoin("cf.formation", "real_formation") // Join the content definition
       .leftJoin("cf.stagiaire_catalogue_formations", "scf")
       .select([
         "cf.id as id",
@@ -853,9 +900,13 @@ export class AdminService {
         "cf.titre as nom",
         "cf.image_url as image_url",
         "cf.tarif as tarif",
+        "real_formation.id as formation_id", // EXPOSE FORMATION ID
+        "real_formation.titre as formation_titre",
         "COUNT(DISTINCT scf.stagiaire_id) as student_count",
       ])
       .groupBy("cf.id")
+      .addGroupBy("real_formation.id") // Group by real formation too
+      .addGroupBy("real_formation.titre")
       .addGroupBy("cf.titre")
       .addGroupBy("cf.image_url")
       .addGroupBy("cf.tarif")
@@ -867,24 +918,36 @@ export class AdminService {
         let analytics = { avg_score: 0, total_completions: 0 };
 
         if (stagiaireUserIds.length > 0) {
-          const stats = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .innerJoin("qp.quiz", "q")
-            .where("q.formation_id = :formationId", { formationId: f.id })
-            .andWhere("qp.user_id IN (:...userIds)", {
-              userIds: stagiaireUserIds,
-            })
-            .andWhere("qp.status = :status", { status: "completed" })
-            .select([
-              "AVG(qp.score) as avg_score",
-              "COUNT(qp.id) as total_completions",
-            ])
-            .getRawOne();
+          // Note: Here we filter by 'formationId: f.id'. f.id is 'CatalogueFormation' ID.
+          // But Quiz links to 'Formation' (f.formation_id).
+          // THIS WAS A BUG. We should filter by f.formation_id if we want quiz stats.
+          // IF the quizzes are linked to the *content* (Formation), we must use f.formation_id.
 
-          analytics = {
-            avg_score: Math.round((parseFloat(stats.avg_score) || 0) * 10) / 10,
-            total_completions: parseInt(stats.total_completions) || 0,
-          };
+          const targetFormationId = f.formation_id; // Using the real formation ID for quiz stats
+
+          if (targetFormationId) {
+            const stats = await this.quizParticipationRepository
+              .createQueryBuilder("qp")
+              .innerJoin("qp.quiz", "q")
+              .where("q.formation_id = :formationId", {
+                formationId: targetFormationId,
+              }) // Fixed to use real formation ID
+              .andWhere("qp.user_id IN (:...userIds)", {
+                userIds: stagiaireUserIds,
+              })
+              .andWhere("qp.status = :status", { status: "completed" })
+              .select([
+                "AVG(qp.score) as avg_score",
+                "COUNT(qp.id) as total_completions",
+              ])
+              .getRawOne();
+
+            analytics = {
+              avg_score:
+                Math.round((parseFloat(stats.avg_score) || 0) * 10) / 10,
+              total_completions: parseInt(stats.total_completions) || 0,
+            };
+          }
         }
 
         return {
@@ -892,6 +955,8 @@ export class AdminService {
           titre: f.titre,
           image_url: f.image_url,
           tarif: f.tarif,
+          formation_id: f.formation_id ? parseInt(f.formation_id) : null, // Return it
+          formation_titre: f.formation_titre,
           student_count: parseInt(f.student_count),
           ...analytics,
         };

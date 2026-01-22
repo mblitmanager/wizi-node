@@ -33,7 +33,7 @@ export class RankingService {
     @InjectRepository(Question)
     private questionRepository: Repository<Question>,
     @InjectRepository(Reponse)
-    private reponseRepository: Repository<Reponse>
+    private reponseRepository: Repository<Reponse>,
   ) {}
 
   async getFormationsRankingSummary(period: string = "all") {
@@ -50,7 +50,7 @@ export class RankingService {
         .leftJoinAndSelect("stagiaire.user", "user")
         .where(
           "c.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = :formationId)",
-          { formationId: formation.id }
+          { formationId: formation.id },
         );
 
       // Apply period filter
@@ -106,17 +106,34 @@ export class RankingService {
     return { formations: summary };
   }
 
-  async findAllPaginated(page: number = 1, limit: number = 10) {
-    const [items, total] = await this.classementRepository.findAndCount({
-      take: limit,
-      skip: (page - 1) * limit,
-      order: { id: "ASC" },
-    });
+  async findAllPaginated(
+    page: number = 1,
+    limit: number = 10,
+    formationId?: number,
+  ) {
+    const query = this.classementRepository
+      .createQueryBuilder("c")
+      .leftJoinAndSelect("c.quiz", "quiz");
+
+    if (formationId) {
+      query.where("quiz.formation_id = :formationId", { formationId });
+    }
+
+    query
+      .orderBy("c.id", "ASC")
+      .take(limit)
+      .skip((page - 1) * limit);
+
+    const [items, total] = await query.getManyAndCount();
 
     return { items, total };
   }
 
-  async getGlobalRanking(period: string = "all", quarter?: string) {
+  async getGlobalRanking(
+    period: string = "all",
+    quarter?: string,
+    formationId?: number,
+  ) {
     let query = this.classementRepository
       .createQueryBuilder("c")
       .leftJoinAndSelect("c.stagiaire", "stagiaire")
@@ -126,7 +143,15 @@ export class RankingService {
       .leftJoinAndSelect("stagiaire.stagiaire_catalogue_formations", "scf")
       .leftJoinAndSelect("scf.catalogue_formation", "catalogueFormation")
       .leftJoinAndSelect("catalogueFormation.formation", "formation")
+      .leftJoinAndSelect("catalogueFormation.formation", "formation")
       .leftJoinAndSelect("c.quiz", "quiz");
+
+    // Apply formation filter if provided
+    if (formationId) {
+      query = query.andWhere("quiz.formation_id = :formationId", {
+        formationId,
+      });
+    }
 
     // Apply period filter if needed
     if (period === "week") {
@@ -186,7 +211,7 @@ export class RankingService {
         const group = groupedByStagiaire[stagiaireId];
         const totalPoints = group.reduce(
           (sum, item) => sum + (item.points || 0),
-          0
+          0,
         );
         const quizCount = group.length;
         const averageScore = quizCount > 0 ? totalPoints / quizCount : 0;
@@ -233,7 +258,7 @@ export class RankingService {
 
         // Filter formateurs that have at least one formation assigned
         const filteredFormateurs = formateurs.filter(
-          (f) => f.formations && f.formations.length > 0
+          (f) => f.formations && f.formations.length > 0,
         );
 
         return {
@@ -270,7 +295,7 @@ export class RankingService {
     }
 
     const myRanking = globalRanking.find(
-      (item) => item.stagiaire.id === stagiaire.id.toString()
+      (item) => item.stagiaire.id === stagiaire.id.toString(),
     );
 
     if (!myRanking) {
@@ -358,20 +383,20 @@ export class RankingService {
 
     const totalQuizzes = participations.length;
     const completedQuizzes = participations.filter(
-      (p) => p.status === "completed"
+      (p) => p.status === "completed",
     ).length;
     const totalPoints = participations.reduce(
       (sum, p) => sum + (p.score || 0),
-      0
+      0,
     );
     const totalTimeSpent = participations.reduce(
       (sum, p) => sum + (p.time_spent || 0),
-      0
+      0,
     );
 
     const globalRanking = await this.getGlobalRanking();
     const myRanking = globalRanking.find(
-      (item) => item.stagiaire.id === stagiaireId.toString()
+      (item) => item.stagiaire.id === stagiaireId.toString(),
     );
 
     const quizStats = await this.getQuizStats(userId);
@@ -443,11 +468,11 @@ export class RankingService {
 
     const totalPoints = stagiaire.classements.reduce(
       (sum, c) => sum + (c.points || 0),
-      0
+      0,
     );
     const globalRanking = await this.getGlobalRanking();
     const myRanking = globalRanking.find(
-      (item) => item.stagiaire.id === stagiaireId.toString()
+      (item) => item.stagiaire.id === stagiaireId.toString(),
     );
 
     const successPercentage =
@@ -470,7 +495,7 @@ export class RankingService {
         (scf) => ({
           id: scf.catalogue_formation.id,
           titre: scf.catalogue_formation.titre,
-        })
+        }),
       ),
       formateurs: (stagiaire.formateurs || []).map((f) => ({
         id: f.id,
@@ -501,7 +526,7 @@ export class RankingService {
 
     const totalPoints = stagiaire.classements.reduce(
       (sum, c) => sum + (c.points || 0),
-      0
+      0,
     );
 
     const accessibleLevels = ["debutant"];
@@ -675,7 +700,7 @@ export class RankingService {
     const totalQuizzes = classements.length;
     const totalPoints = classements.reduce(
       (sum, c) => sum + (c.points || 0),
-      0
+      0,
     );
     const averageScore = totalQuizzes > 0 ? totalPoints / totalQuizzes : 0;
 
@@ -721,7 +746,7 @@ export class RankingService {
       quizCount: categoryMap[cat].count,
       averageScore:
         Math.round(
-          (categoryMap[cat].totalScore / categoryMap[cat].count) * 100
+          (categoryMap[cat].totalScore / categoryMap[cat].count) * 100,
         ) / 100,
     }));
 
@@ -738,7 +763,7 @@ export class RankingService {
               ? Math.round(
                   (levelProgress.débutant.totalScore /
                     levelProgress.débutant.completed) *
-                    100
+                    100,
                 ) / 100
               : null,
         },
@@ -749,7 +774,7 @@ export class RankingService {
               ? Math.round(
                   (levelProgress.intermédiaire.totalScore /
                     levelProgress.intermédiaire.completed) *
-                    100
+                    100,
                 ) / 100
               : null,
         },
@@ -760,7 +785,7 @@ export class RankingService {
               ? Math.round(
                   (levelProgress.avancé.totalScore /
                     levelProgress.avancé.completed) *
-                    100
+                    100,
                 ) / 100
               : null,
         },
@@ -824,7 +849,7 @@ export class RankingService {
   private groupBy(array: any[], key: string) {
     return array.reduce((result, currentValue) => {
       (result[currentValue[key]] = result[currentValue[key]] || []).push(
-        currentValue
+        currentValue,
       );
       return result;
     }, {});
