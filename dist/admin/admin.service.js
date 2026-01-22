@@ -25,8 +25,9 @@ const notification_service_1 = require("../notification/notification.service");
 const formation_entity_1 = require("../entities/formation.entity");
 const media_entity_1 = require("../entities/media.entity");
 const media_stagiaire_entity_1 = require("../entities/media-stagiaire.entity");
+const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
 let AdminService = class AdminService {
-    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, notificationService) {
+    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, stagiaireCatalogueFormationRepository, notificationService) {
         this.stagiaireRepository = stagiaireRepository;
         this.userRepository = userRepository;
         this.quizParticipationRepository = quizParticipationRepository;
@@ -35,6 +36,7 @@ let AdminService = class AdminService {
         this.formationRepository = formationRepository;
         this.mediaRepository = mediaRepository;
         this.mediaStagiaireRepository = mediaStagiaireRepository;
+        this.stagiaireCatalogueFormationRepository = stagiaireCatalogueFormationRepository;
         this.notificationService = notificationService;
     }
     async getFormateurDashboardStats(userId) {
@@ -1542,6 +1544,142 @@ let AdminService = class AdminService {
             quiz_history: quizHistory,
         };
     }
+    async getFormateurStudentsPerformance(userId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["stagiaires", "stagiaires.user"],
+        });
+        if (!formateur)
+            return [];
+        const stagiaireUserIds = formateur.stagiaires
+            .map((s) => s.user?.id)
+            .filter((id) => id != null);
+        if (stagiaireUserIds.length === 0)
+            return [];
+        const quizStats = await this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .select("qp.user_id", "user_id")
+            .addSelect("COUNT(DISTINCT qp.id)", "total_quizzes")
+            .addSelect("MAX(qp.created_at)", "last_quiz_at")
+            .where("qp.user_id IN (:...ids)", { ids: stagiaireUserIds })
+            .groupBy("qp.user_id")
+            .getRawMany();
+        const quizStatsMap = new Map(quizStats.map((s) => [s.user_id, s]));
+        const performance = formateur.stagiaires
+            .map((stagiaire) => {
+            if (!stagiaire.user)
+                return null;
+            const stats = quizStatsMap.get(stagiaire.user.id);
+            return {
+                id: stagiaire.id,
+                name: stagiaire.user.name || `${stagiaire.prenom}`,
+                email: stagiaire.user.email,
+                image: stagiaire.user.image,
+                last_quiz_at: stats ? stats.last_quiz_at : null,
+                total_quizzes: stats ? parseInt(stats.total_quizzes) : 0,
+                total_logins: stagiaire.login_streak || 0,
+            };
+        })
+            .filter((p) => p !== null);
+        return performance;
+    }
+    async getFormateurFormationStagiaires(userId, formationId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!formateur)
+            throw new common_1.NotFoundException("Formateur non trouvé");
+        const formation = await this.catalogueFormationRepository.findOne({
+            where: { id: formationId },
+            relations: ["formation", "formation.medias"],
+        });
+        if (!formation)
+            throw new common_1.NotFoundException("Formation introuvable");
+        const stagiaires = await this.stagiaireRepository.find({
+            where: {
+                formateurs: { id: formateur.id },
+                stagiaire_catalogue_formations: { catalogue_formation_id: formationId },
+            },
+            relations: ["user", "watchedVideos", "stagiaire_catalogue_formations"],
+        });
+        const totalVideos = formation.formation?.medias?.filter((m) => m.type === "video").length ||
+            0;
+        return {
+            formation: {
+                id: formation.id,
+                titre: formation.titre,
+                categorie: formation.formation?.categorie,
+            },
+            stagiaires: stagiaires.map((stagiaire) => {
+                const watchedCount = stagiaire.watchedVideos?.filter((w) => formation.formation?.medias?.some((m) => m.id === w.media_id)).length || 0;
+                const progress = totalVideos > 0 ? Math.round((watchedCount / totalVideos) * 100) : 0;
+                const scf = stagiaire.stagiaire_catalogue_formations.find((s) => s.catalogue_formation_id == formationId);
+                return {
+                    id: stagiaire.id,
+                    prenom: stagiaire.prenom,
+                    nom: stagiaire.user?.name || "",
+                    email: stagiaire.user?.email || "",
+                    date_debut: scf?.date_debut,
+                    date_fin: scf?.date_fin,
+                    progress,
+                    status: stagiaire.statut,
+                };
+            }),
+        };
+    }
+    async assignFormateurFormationStagiaires(userId, formationId, stagiaireIds, dateDebut, dateFin) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+        });
+        if (!formateur)
+            throw new common_1.NotFoundException("Formateur non trouvé");
+        const formation = await this.catalogueFormationRepository.findOne({
+            where: { id: formationId },
+        });
+        if (!formation)
+            throw new common_1.NotFoundException("Formation introuvable");
+        const stagiaires = await this.stagiaireRepository.find({
+            where: {
+                id: (0, typeorm_2.In)(stagiaireIds),
+                formateurs: { id: formateur.id },
+            },
+        });
+        if (stagiaires.length !== stagiaireIds.length) {
+            throw new Error("Certains stagiaires n'appartiennent pas à ce formateur");
+        }
+        let assigned = 0;
+        for (const stagiaire of stagiaires) {
+            const existing = await this.stagiaireCatalogueFormationRepository.findOne({
+                where: {
+                    stagiaire_id: stagiaire.id,
+                    catalogue_formation_id: formationId,
+                },
+            });
+            if (!existing) {
+                const assignment = this.stagiaireCatalogueFormationRepository.create({
+                    stagiaire_id: stagiaire.id,
+                    catalogue_formation_id: formationId,
+                    date_debut: dateDebut || new Date(),
+                    date_fin: dateFin,
+                    formateur_id: formateur.id,
+                });
+                await this.stagiaireCatalogueFormationRepository.save(assignment);
+                assigned++;
+            }
+            else {
+                if (dateDebut)
+                    existing.date_debut = dateDebut;
+                if (dateFin)
+                    existing.date_fin = dateFin;
+                await this.stagiaireCatalogueFormationRepository.save(existing);
+            }
+        }
+        return {
+            success: true,
+            message: `${assigned} stagiaire(s) assigné(s) à la formation ${formation.titre}`,
+            assigned_count: assigned,
+        };
+    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
@@ -1554,7 +1692,9 @@ exports.AdminService = AdminService = __decorate([
     __param(5, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
     __param(6, (0, typeorm_1.InjectRepository)(media_entity_1.Media)),
     __param(7, (0, typeorm_1.InjectRepository)(media_stagiaire_entity_1.MediaStagiaire)),
+    __param(8, (0, typeorm_1.InjectRepository)(stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

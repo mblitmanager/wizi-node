@@ -11,6 +11,7 @@ import { NotificationService } from "../notification/notification.service";
 import { Formation } from "../entities/formation.entity";
 import { Media } from "../entities/media.entity";
 import { MediaStagiaire } from "../entities/media-stagiaire.entity";
+import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 
 @Injectable()
 export class AdminService {
@@ -31,6 +32,8 @@ export class AdminService {
     private mediaRepository: Repository<Media>,
     @InjectRepository(MediaStagiaire)
     private mediaStagiaireRepository: Repository<MediaStagiaire>,
+    @InjectRepository(StagiaireCatalogueFormation)
+    private stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>,
     private notificationService: NotificationService,
   ) {}
 
@@ -1992,6 +1995,176 @@ export class AdminService {
       },
       formations,
       quiz_history: quizHistory,
+    };
+  }
+
+  async getFormateurStudentsPerformance(userId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+      relations: ["stagiaires", "stagiaires.user"],
+    });
+
+    if (!formateur) return [];
+
+    // Get all user IDs of stagiaires
+    const stagiaireUserIds = formateur.stagiaires
+      .map((s) => s.user?.id)
+      .filter((id) => id != null);
+
+    if (stagiaireUserIds.length === 0) return [];
+
+    // 1. Get Quiz Stats per User
+    const quizStats = await this.quizParticipationRepository
+      .createQueryBuilder("qp")
+      .select("qp.user_id", "user_id")
+      .addSelect("COUNT(DISTINCT qp.id)", "total_quizzes")
+      .addSelect("MAX(qp.created_at)", "last_quiz_at")
+      .where("qp.user_id IN (:...ids)", { ids: stagiaireUserIds })
+      .groupBy("qp.user_id")
+      .getRawMany();
+
+    const quizStatsMap = new Map(quizStats.map((s) => [s.user_id, s]));
+
+    const performance = formateur.stagiaires
+      .map((stagiaire) => {
+        if (!stagiaire.user) return null;
+
+        const stats = quizStatsMap.get(stagiaire.user.id);
+
+        return {
+          id: stagiaire.id,
+          name: stagiaire.user.name || `${stagiaire.prenom}`,
+          email: stagiaire.user.email,
+          image: stagiaire.user.image,
+          last_quiz_at: stats ? stats.last_quiz_at : null,
+          total_quizzes: stats ? parseInt(stats.total_quizzes) : 0,
+          total_logins: stagiaire.login_streak || 0, // Using login_streak as proxy for activity level if total_logins unavailable
+        };
+      })
+      .filter((p) => p !== null);
+
+    return performance;
+  }
+
+  async getFormateurFormationStagiaires(userId: number, formationId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+    });
+    if (!formateur) throw new NotFoundException("Formateur non trouvé");
+
+    const formation = await this.catalogueFormationRepository.findOne({
+      where: { id: formationId },
+      relations: ["formation", "formation.medias"],
+    });
+
+    if (!formation) throw new NotFoundException("Formation introuvable");
+
+    const stagiaires = await this.stagiaireRepository.find({
+      where: {
+        formateurs: { id: formateur.id },
+        stagiaire_catalogue_formations: { catalogue_formation_id: formationId },
+      },
+      relations: ["user", "watchedVideos", "stagiaire_catalogue_formations"],
+    });
+
+    const totalVideos =
+      formation.formation?.medias?.filter((m) => m.type === "video").length ||
+      0;
+
+    return {
+      formation: {
+        id: formation.id,
+        titre: formation.titre,
+        categorie: formation.formation?.categorie,
+      },
+      stagiaires: stagiaires.map((stagiaire) => {
+        const watchedCount =
+          stagiaire.watchedVideos?.filter((w) =>
+            formation.formation?.medias?.some((m) => m.id === w.media_id),
+          ).length || 0;
+
+        const progress =
+          totalVideos > 0 ? Math.round((watchedCount / totalVideos) * 100) : 0;
+        const scf = stagiaire.stagiaire_catalogue_formations.find(
+          (s) => s.catalogue_formation_id == formationId,
+        );
+
+        return {
+          id: stagiaire.id,
+          prenom: stagiaire.prenom,
+          nom: stagiaire.user?.name || "",
+          email: stagiaire.user?.email || "",
+          date_debut: scf?.date_debut,
+          date_fin: scf?.date_fin,
+          progress,
+          status: stagiaire.statut,
+        };
+      }),
+    };
+  }
+
+  async assignFormateurFormationStagiaires(
+    userId: number,
+    formationId: number,
+    stagiaireIds: number[],
+    dateDebut?: Date,
+    dateFin?: Date,
+  ) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+    });
+    if (!formateur) throw new NotFoundException("Formateur non trouvé");
+
+    const formation = await this.catalogueFormationRepository.findOne({
+      where: { id: formationId },
+    });
+    if (!formation) throw new NotFoundException("Formation introuvable");
+
+    // Verify stagiaires belong to formateur
+    const stagiaires = await this.stagiaireRepository.find({
+      where: {
+        id: In(stagiaireIds),
+        formateurs: { id: formateur.id },
+      },
+    });
+
+    if (stagiaires.length !== stagiaireIds.length) {
+      throw new Error("Certains stagiaires n'appartiennent pas à ce formateur");
+    }
+
+    let assigned = 0;
+    for (const stagiaire of stagiaires) {
+      const existing = await this.stagiaireCatalogueFormationRepository.findOne(
+        {
+          where: {
+            stagiaire_id: stagiaire.id,
+            catalogue_formation_id: formationId,
+          },
+        },
+      );
+
+      if (!existing) {
+        const assignment = this.stagiaireCatalogueFormationRepository.create({
+          stagiaire_id: stagiaire.id,
+          catalogue_formation_id: formationId,
+          date_debut: dateDebut || new Date(),
+          date_fin: dateFin,
+          formateur_id: formateur.id,
+        });
+        await this.stagiaireCatalogueFormationRepository.save(assignment);
+        assigned++;
+      } else {
+        // Update dates if needed
+        if (dateDebut) existing.date_debut = dateDebut;
+        if (dateFin) existing.date_fin = dateFin;
+        await this.stagiaireCatalogueFormationRepository.save(existing);
+      }
+    }
+
+    return {
+      success: true,
+      message: `${assigned} stagiaire(s) assigné(s) à la formation ${formation.titre}`,
+      assigned_count: assigned,
     };
   }
 }

@@ -273,6 +273,15 @@ let FormateurController = class FormateurController {
         const data = await this.adminService.getFormateurFormations(req.user.id);
         return this.apiResponse.success(data);
     }
+    async formationStagiaires(req, id) {
+        const data = await this.adminService.getFormateurFormationStagiaires(req.user.id, id);
+        return this.apiResponse.success(data);
+    }
+    async assignFormation(req, id, body) {
+        const { stagiaire_ids, date_debut, date_fin } = body;
+        const result = await this.adminService.assignFormateurFormationStagiaires(req.user.id, id, stagiaire_ids, date_debut, date_fin);
+        return this.apiResponse.success(result);
+    }
     async formationsVideos(req) {
         const data = await this.adminService.getFormateurFormationsWithVideos(req.user.id);
         return this.apiResponse.success(data);
@@ -300,12 +309,18 @@ let FormateurController = class FormateurController {
         return this.formationsPerformance(req);
     }
     async formationsPerformance(req) {
-        const performance = await this.adminService.getFormateurFormationsPerformance(req.user.id);
+        const performance = await this.adminService.getFormateurStudentsPerformance(req.user.id);
+        const mostQuizzes = [...performance]
+            .sort((a, b) => b.total_quizzes - a.total_quizzes)
+            .slice(0, 3);
+        const mostActive = [...performance]
+            .sort((a, b) => b.total_logins - a.total_logins)
+            .slice(0, 3);
         return this.apiResponse.success({
             performance,
             rankings: {
-                most_quizzes: [],
-                most_active: [],
+                most_quizzes: mostQuizzes,
+                most_active: mostActive,
             },
         });
     }
@@ -393,6 +408,7 @@ __decorate([
 ], FormateurController.prototype, "inactiveStagiaires", null);
 __decorate([
     (0, common_1.Get)("stagiaire/:id/stats"),
+    (0, common_1.Get)("stagiaire/:id/profile"),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -466,6 +482,23 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "formations", null);
 __decorate([
+    (0, common_1.Get)("formations/:id/stagiaires"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "formationStagiaires", null);
+__decorate([
+    (0, common_1.Post)("formations/:id/assign"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)("id")),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number, Object]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "assignFormation", null);
+__decorate([
     (0, common_1.Get)("formations-videos"),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -509,6 +542,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "formationsPerformanceSlash", null);
 __decorate([
+    (0, common_1.Get)("analytics/performance"),
     (0, common_1.Get)("analytics/performance"),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),

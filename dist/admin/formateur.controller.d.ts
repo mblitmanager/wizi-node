@@ -40,6 +40,8 @@ export declare class FormateurController {
     addQuestion(id: number, data: any): Promise<any>;
     deleteQuestion(quizId: number, questionId: number): Promise<any>;
     formations(req: any): Promise<any>;
+    formationStagiaires(req: any, id: number): Promise<any>;
+    assignFormation(req: any, id: number, body: any): Promise<any>;
     formationsVideos(req: any): Promise<any>;
     formationsList(): Promise<any>;
     videoStats(id: number): Promise<any>;

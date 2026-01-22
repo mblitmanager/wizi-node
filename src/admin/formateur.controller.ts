@@ -183,6 +183,7 @@ export class FormateurController {
   }
 
   @Get("stagiaire/:id/stats")
+  @Get("stagiaire/:id/profile")
   async stagiaireStats(@Param("id") id: number) {
     const stats = await this.adminService.getStagiaireProfileById(id);
     if (!stats)
@@ -369,6 +370,32 @@ export class FormateurController {
     return this.apiResponse.success(data);
   }
 
+  @Get("formations/:id/stagiaires")
+  async formationStagiaires(@Request() req: any, @Param("id") id: number) {
+    const data = await this.adminService.getFormateurFormationStagiaires(
+      req.user.id,
+      id,
+    );
+    return this.apiResponse.success(data);
+  }
+
+  @Post("formations/:id/assign")
+  async assignFormation(
+    @Request() req: any,
+    @Param("id") id: number,
+    @Body() body: any,
+  ) {
+    const { stagiaire_ids, date_debut, date_fin } = body;
+    const result = await this.adminService.assignFormateurFormationStagiaires(
+      req.user.id,
+      id,
+      stagiaire_ids,
+      date_debut,
+      date_fin,
+    );
+    return this.apiResponse.success(result);
+  }
+
   @Get("formations-videos")
   async formationsVideos(@Request() req: any) {
     const data = await this.adminService.getFormateurFormationsWithVideos(
@@ -424,15 +451,25 @@ export class FormateurController {
   }
 
   @Get("analytics/performance")
+  @Get("analytics/performance")
   async formationsPerformance(@Request() req) {
-    const performance =
-      await this.adminService.getFormateurFormationsPerformance(req.user.id);
-    // Wrap in Map for Flutter students comparison compatibility
+    const performance = await this.adminService.getFormateurStudentsPerformance(
+      req.user.id,
+    );
+
+    // Calculate rankings based on the performance data
+    const mostQuizzes = [...performance]
+      .sort((a, b) => b.total_quizzes - a.total_quizzes)
+      .slice(0, 3);
+    const mostActive = [...performance]
+      .sort((a, b) => b.total_logins - a.total_logins)
+      .slice(0, 3);
+
     return this.apiResponse.success({
       performance,
       rankings: {
-        most_quizzes: [],
-        most_active: [],
+        most_quizzes: mostQuizzes,
+        most_active: mostActive,
       },
     });
   }

@@ -8,6 +8,7 @@ import { NotificationService } from "../notification/notification.service";
 import { Formation } from "../entities/formation.entity";
 import { Media } from "../entities/media.entity";
 import { MediaStagiaire } from "../entities/media-stagiaire.entity";
+import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 export declare class AdminService {
     private stagiaireRepository;
     private userRepository;
@@ -17,8 +18,9 @@ export declare class AdminService {
     private formationRepository;
     private mediaRepository;
     private mediaStagiaireRepository;
+    private stagiaireCatalogueFormationRepository;
     private notificationService;
-    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, notificationService: NotificationService);
+    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>, notificationService: NotificationService);
     getFormateurDashboardStats(userId: number): Promise<{
         total_stagiaires: number;
         active_this_week: number;
@@ -511,5 +513,36 @@ export declare class AdminService {
             completed_at: string;
             time_spent: number;
         }[];
+    }>;
+    getFormateurStudentsPerformance(userId: number): Promise<{
+        id: any;
+        name: any;
+        email: any;
+        image: any;
+        last_quiz_at: any;
+        total_quizzes: number;
+        total_logins: any;
+    }[]>;
+    getFormateurFormationStagiaires(userId: number, formationId: number): Promise<{
+        formation: {
+            id: number;
+            titre: string;
+            categorie: string;
+        };
+        stagiaires: {
+            id: number;
+            prenom: string;
+            nom: string;
+            email: string;
+            date_debut: Date;
+            date_fin: Date;
+            progress: number;
+            status: string;
+        }[];
+    }>;
+    assignFormateurFormationStagiaires(userId: number, formationId: number, stagiaireIds: number[], dateDebut?: Date, dateFin?: Date): Promise<{
+        success: boolean;
+        message: string;
+        assigned_count: number;
     }>;
 }
