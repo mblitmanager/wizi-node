@@ -284,6 +284,10 @@ let FormateurController = class FormateurController {
         });
         return this.apiResponse.success({ formations });
     }
+    async videoStats(id) {
+        const stats = await this.adminService.getVideoStats(id);
+        return this.apiResponse.success(stats);
+    }
     async arenaRanking(period = "all", formationId) {
         const data = await this.adminService.getTrainerArenaRanking(period, formationId);
         return this.apiResponse.success(data);
@@ -446,6 +450,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "formationsList", null);
+__decorate([
+    (0, common_1.Get)("video/:id/stats"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "videoStats", null);
 __decorate([
     (0, common_1.Get)("classement/arena"),
     __param(0, (0, common_1.Query)("period")),

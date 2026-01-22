@@ -453,6 +453,19 @@ export declare class AdminService {
         }[];
         total: number;
     }>;
+    getVideoStats(videoId: number): Promise<{
+        video_id: number;
+        total_views: number;
+        total_duration_watched: number;
+        completion_rate: number;
+        views_by_stagiaire: {
+            id: number;
+            prenom: string;
+            nom: string;
+            completed: boolean;
+            total_watched: number;
+        }[];
+    }>;
     getStagiaireProfileById(id: number): Promise<{
         stagiaire: {
             id: number;

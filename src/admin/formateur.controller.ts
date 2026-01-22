@@ -386,6 +386,12 @@ export class FormateurController {
     return this.apiResponse.success({ formations });
   }
 
+  @Get("video/:id/stats")
+  async videoStats(@Param("id") id: number) {
+    const stats = await this.adminService.getVideoStats(id);
+    return this.apiResponse.success(stats);
+  }
+
   // --- Ranking & Analytics ---
 
   @Get("classement/arena")

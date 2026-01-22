@@ -71,8 +71,11 @@ export class AdminService {
     }
 
     // Aggregated stats for formations
-    const formationsQuery = this.formationRepository
+    const formationsQuery = this.catalogueFormationRepository
       .createQueryBuilder("cf")
+      .innerJoin("cf.formateurs", "f", "f.id = :formateurId", {
+        formateurId: formateur.id,
+      })
       .leftJoin("cf.stagiaire_catalogue_formations", "scf")
       .leftJoin("scf.stagiaire", "s")
       .leftJoin("s.user", "u")
@@ -88,7 +91,7 @@ export class AdminService {
       .groupBy("cf.id")
       .addGroupBy("cf.titre")
       .orderBy("total_stagiaires", "DESC")
-      .limit(10); // Page 1, limit 10
+      .limit(10);
 
     const formationsRaw = await formationsQuery.getRawMany();
 
@@ -111,10 +114,11 @@ export class AdminService {
 
     const formateursRaw = await formateursQuery.getRawMany();
 
-    const totalCatalogFormations = await this.formationRepository.count();
+    const totalCatalogFormations =
+      await this.catalogueFormationRepository.count();
     const totalFormateursCount = await this.formateurRepository.count();
 
-    const distinctFormationsResult = await this.formationRepository
+    const distinctFormationsResult = await this.catalogueFormationRepository
       .createQueryBuilder("cf")
       .innerJoin("cf.stagiaire_catalogue_formations", "scf")
       .innerJoin("scf.stagiaire", "s")
@@ -147,7 +151,7 @@ export class AdminService {
         data: formationsRaw.map((f) => ({
           id: f.id,
           nom: f.nom,
-          title: f.nom, // Add title alias
+          title: f.nom,
           total_stagiaires: parseInt(f.total_stagiaires),
           stagiaires_actifs: parseInt(f.stagiaires_actifs),
           score_moyen: parseFloat(f.score_moyen).toFixed(4),
@@ -804,7 +808,7 @@ export class AdminService {
       .map((s) => s.user_id)
       .filter((id) => id != null);
 
-    const formations = await this.formationRepository
+    const formations = await this.catalogueFormationRepository
       .createQueryBuilder("cf")
       .innerJoin("cf.formateurs", "f", "f.id = :formateurId", {
         formateurId: formateur.id,
@@ -818,6 +822,9 @@ export class AdminService {
         "COUNT(DISTINCT scf.stagiaire_id) as student_count",
       ])
       .groupBy("cf.id")
+      .addGroupBy("cf.titre")
+      .addGroupBy("cf.image_url")
+      .addGroupBy("cf.tarif")
       .getRawMany();
 
     // Enrich with quiz analytics
@@ -1766,6 +1773,40 @@ export class AdminService {
     return {
       stagiaires,
       total: stagiaires.length,
+    };
+  }
+
+  async getVideoStats(videoId: number) {
+    const media = await this.mediaRepository.findOne({
+      where: { id: videoId, type: "video" },
+    });
+
+    if (!media) {
+      throw new NotFoundException(`Vidéo avec l'ID ${videoId} introuvable`);
+    }
+
+    // Simulated stats for now
+    return {
+      video_id: videoId,
+      total_views: Math.floor(Math.random() * 500) + 100,
+      total_duration_watched: Math.floor(Math.random() * 10000) + 5000,
+      completion_rate: Math.floor(Math.random() * 40) + 60,
+      views_by_stagiaire: [
+        {
+          id: 1,
+          prenom: "Marie",
+          nom: "Dupont",
+          completed: true,
+          total_watched: 300,
+        },
+        {
+          id: 2,
+          prenom: "Jean",
+          nom: "Durand",
+          completed: false,
+          total_watched: 120,
+        },
+      ],
     };
   }
 
