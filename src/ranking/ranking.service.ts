@@ -143,14 +143,14 @@ export class RankingService {
       .leftJoinAndSelect("stagiaire.stagiaire_catalogue_formations", "scf")
       .leftJoinAndSelect("scf.catalogue_formation", "catalogueFormation")
       .leftJoinAndSelect("catalogueFormation.formation", "formation")
-      .leftJoinAndSelect("catalogueFormation.formation", "formation")
       .leftJoinAndSelect("c.quiz", "quiz");
 
     // Apply formation filter if provided
     if (formationId) {
-      query = query.andWhere("quiz.formation_id = :formationId", {
-        formationId,
-      });
+      query = query.andWhere(
+        "quiz.formation_id = COALESCE((SELECT formation_id FROM catalogue_formations WHERE id = :fic), :fic)",
+        { fic: formationId },
+      );
     }
 
     // Apply period filter if needed

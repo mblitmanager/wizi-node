@@ -782,7 +782,10 @@ export class AdminService {
               .where("qp_sub.status = :status", { status: "completed" });
 
             if (formationId) {
-              sq.andWhere("q_sub.formation_id = :formationId", { formationId });
+              sq.andWhere(
+                "q_sub.formation_id = COALESCE((SELECT formation_id FROM catalogue_formations WHERE id = :cid), :cid)",
+                { cid: formationId },
+              );
             } else if (trainerFormationIds.length > 0) {
               sq.andWhere(
                 "(q_sub.formation_id IN (:...fids) OR q_sub.formation_id IS NULL)",
@@ -1358,7 +1361,7 @@ export class AdminService {
 
     if (formationId) {
       query.andWhere(
-        "quiz.formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid)",
+        "quiz.formation_id = COALESCE((SELECT formation_id FROM catalogue_formations WHERE id = :cid), :cid)",
         { cid: formationId },
       );
     }
@@ -1451,7 +1454,7 @@ export class AdminService {
 
     if (formationId) {
       query.andWhere(
-        "qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid))",
+        "qp.quiz_id IN (SELECT id FROM quizzes WHERE formation_id = COALESCE((SELECT formation_id FROM catalogue_formations WHERE id = :cid), :cid))",
         { cid: formationId },
       );
     }
@@ -1541,7 +1544,7 @@ export class AdminService {
 
     if (formationId) {
       query.andWhere(
-        "quiz.formation_id = (SELECT formation_id FROM catalogue_formations WHERE id = :cid)",
+        "quiz.formation_id = COALESCE((SELECT formation_id FROM catalogue_formations WHERE id = :cid), :cid)",
         { cid: formationId },
       );
     }
