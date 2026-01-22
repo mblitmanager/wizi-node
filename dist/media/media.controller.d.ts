@@ -256,4 +256,9 @@ export declare class MediaController {
             subtitle_url: string;
         }[];
     }[]>;
+    updateProgress(req: any, data: {
+        media_id: number;
+        current_time: number;
+        duration: number;
+    }): Promise<import("../entities/media-stagiaire.entity").MediaStagiaire>;
 }

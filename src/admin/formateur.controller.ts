@@ -418,8 +418,27 @@ export class FormateurController {
     return this.apiResponse.success(data);
   }
 
-  @Get(["analytics/formations-performance", "analytics/performance"])
+  @Get("analytics/formations/performance")
+  async formationsPerformanceSlash(@Request() req) {
+    return this.formationsPerformance(req);
+  }
+
+  @Get("analytics/performance")
   async formationsPerformance(@Request() req) {
+    const performance =
+      await this.adminService.getFormateurFormationsPerformance(req.user.id);
+    // Wrap in Map for Flutter students comparison compatibility
+    return this.apiResponse.success({
+      performance,
+      rankings: {
+        most_quizzes: [],
+        most_active: [],
+      },
+    });
+  }
+
+  @Get("analytics/formations-performance")
+  async formationsPerformanceLegacy(@Request() req) {
     const data = await this.adminService.getFormateurFormationsPerformance(
       req.user.id,
     );

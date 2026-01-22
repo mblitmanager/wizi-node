@@ -296,7 +296,20 @@ let FormateurController = class FormateurController {
         const data = await this.adminService.getMyStagiairesRanking(req.user.id, period);
         return this.apiResponse.success(data);
     }
+    async formationsPerformanceSlash(req) {
+        return this.formationsPerformance(req);
+    }
     async formationsPerformance(req) {
+        const performance = await this.adminService.getFormateurFormationsPerformance(req.user.id);
+        return this.apiResponse.success({
+            performance,
+            rankings: {
+                most_quizzes: [],
+                most_active: [],
+            },
+        });
+    }
+    async formationsPerformanceLegacy(req) {
         const data = await this.adminService.getFormateurFormationsPerformance(req.user.id);
         return this.apiResponse.success(data);
     }
@@ -474,12 +487,26 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "mesStagiairesRanking", null);
 __decorate([
-    (0, common_1.Get)("analytics/formations-performance"),
+    (0, common_1.Get)("analytics/formations/performance"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "formationsPerformanceSlash", null);
+__decorate([
+    (0, common_1.Get)("analytics/performance"),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "formationsPerformance", null);
+__decorate([
+    (0, common_1.Get)("analytics/formations-performance"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "formationsPerformanceLegacy", null);
 __decorate([
     (0, common_1.Get)("analytics/dashboard"),
     __param(0, (0, common_1.Request)()),

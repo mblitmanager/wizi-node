@@ -24,8 +24,9 @@ const catalogue_formation_entity_1 = require("../entities/catalogue-formation.en
 const notification_service_1 = require("../notification/notification.service");
 const formation_entity_1 = require("../entities/formation.entity");
 const media_entity_1 = require("../entities/media.entity");
+const media_stagiaire_entity_1 = require("../entities/media-stagiaire.entity");
 let AdminService = class AdminService {
-    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, notificationService) {
+    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, notificationService) {
         this.stagiaireRepository = stagiaireRepository;
         this.userRepository = userRepository;
         this.quizParticipationRepository = quizParticipationRepository;
@@ -33,6 +34,7 @@ let AdminService = class AdminService {
         this.catalogueFormationRepository = catalogueFormationRepository;
         this.formationRepository = formationRepository;
         this.mediaRepository = mediaRepository;
+        this.mediaStagiaireRepository = mediaStagiaireRepository;
         this.notificationService = notificationService;
     }
     async getFormateurDashboardStats(userId) {
@@ -665,6 +667,7 @@ let AdminService = class AdminService {
             .select([
             "cf.id as id",
             "cf.titre as titre",
+            "cf.titre as nom",
             "cf.image_url as image_url",
             "cf.tarif as tarif",
             "COUNT(DISTINCT scf.stagiaire_id) as student_count",
@@ -1394,27 +1397,29 @@ let AdminService = class AdminService {
         if (!media) {
             throw new common_1.NotFoundException(`Vidéo avec l'ID ${videoId} introuvable`);
         }
+        const trackings = await this.mediaStagiaireRepository.find({
+            where: { media_id: videoId },
+            relations: ["stagiaire", "stagiaire.user"],
+        });
+        const totalViews = trackings.length;
+        const totalDurationWatched = trackings.reduce((acc, t) => acc + (t.current_time || 0), 0);
+        const avgCompletion = totalViews > 0
+            ? Math.round(trackings.reduce((acc, t) => acc + (t.percentage || 0), 0) /
+                totalViews)
+            : 0;
         return {
             video_id: videoId,
-            total_views: Math.floor(Math.random() * 500) + 100,
-            total_duration_watched: Math.floor(Math.random() * 10000) + 5000,
-            completion_rate: Math.floor(Math.random() * 40) + 60,
-            views_by_stagiaire: [
-                {
-                    id: 1,
-                    prenom: "Marie",
-                    nom: "Dupont",
-                    completed: true,
-                    total_watched: 300,
-                },
-                {
-                    id: 2,
-                    prenom: "Jean",
-                    nom: "Durand",
-                    completed: false,
-                    total_watched: 120,
-                },
-            ],
+            total_views: totalViews,
+            total_duration_watched: totalDurationWatched,
+            completion_rate: avgCompletion,
+            views_by_stagiaire: trackings.map((t) => ({
+                id: t.stagiaire?.id || 0,
+                prenom: t.stagiaire?.prenom || "Stagiaire",
+                nom: t.stagiaire?.user?.name || "Inconnu",
+                completed: !!t.is_watched,
+                total_watched: t.current_time || 0,
+                percentage: t.percentage || 0,
+            })),
         };
     }
     async getStagiaireProfileById(id) {
@@ -1521,7 +1526,9 @@ exports.AdminService = AdminService = __decorate([
     __param(4, (0, typeorm_1.InjectRepository)(catalogue_formation_entity_1.CatalogueFormation)),
     __param(5, (0, typeorm_1.InjectRepository)(formation_entity_1.Formation)),
     __param(6, (0, typeorm_1.InjectRepository)(media_entity_1.Media)),
+    __param(7, (0, typeorm_1.InjectRepository)(media_stagiaire_entity_1.MediaStagiaire)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

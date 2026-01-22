@@ -58,6 +58,9 @@ let MediaController = class MediaController {
     async getFormationsWithStatus() {
         return this.mediaService.getFormationsWithStatus();
     }
+    async updateProgress(req, data) {
+        return this.mediaService.updateProgress(data.media_id, req.user.id, data.current_time, data.duration);
+    }
 };
 exports.MediaController = MediaController;
 __decorate([
@@ -123,6 +126,15 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], MediaController.prototype, "getFormationsWithStatus", null);
+__decorate([
+    (0, common_1.Post)("progress"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], MediaController.prototype, "updateProgress", null);
 exports.MediaController = MediaController = __decorate([
     (0, common_1.Controller)("medias"),
     __metadata("design:paramtypes", [media_service_1.MediaService])

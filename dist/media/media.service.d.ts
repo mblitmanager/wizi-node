@@ -292,10 +292,8 @@ export declare class MediaService {
             subtitle_url: string;
         }[];
     }[]>;
-    markAsWatched(mediaId: number, userId: number): Promise<{
-        message: string;
-        new_achievements: import("../entities/achievement.entity").Achievement[];
-    }>;
+    updateProgress(mediaId: number, userId: number, currentTime: number, duration: number): Promise<MediaStagiaire>;
+    markAsWatched(mediaId: number, userId: number): Promise<MediaStagiaire>;
     private formatMedia;
     private formatIso;
     private formatDateOnly;

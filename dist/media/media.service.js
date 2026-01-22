@@ -186,7 +186,7 @@ let MediaService = class MediaService {
             medias: (f.medias || []).map((m) => this.formatMedia(m)),
         }));
     }
-    async markAsWatched(mediaId, userId) {
+    async updateProgress(mediaId, userId, currentTime, duration) {
         const stagiaire = await this.stagiaireRepository.findOne({
             where: { user_id: userId },
         });
@@ -196,25 +196,37 @@ let MediaService = class MediaService {
         let mediaStagiaire = await this.mediaStagiaireRepository.findOne({
             where: { media_id: mediaId, stagiaire_id: stagiaire.id },
         });
+        const percentage = duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
+        const isWatched = percentage >= 90;
         if (mediaStagiaire) {
-            mediaStagiaire.is_watched = true;
-            mediaStagiaire.watched_at = new Date();
+            mediaStagiaire.current_time = currentTime;
+            mediaStagiaire.duration = duration;
+            mediaStagiaire.percentage = percentage;
+            if (isWatched) {
+                mediaStagiaire.is_watched = true;
+                mediaStagiaire.watched_at = new Date();
+            }
             await this.mediaStagiaireRepository.save(mediaStagiaire);
         }
         else {
             mediaStagiaire = this.mediaStagiaireRepository.create({
                 media_id: mediaId,
                 stagiaire_id: stagiaire.id,
-                is_watched: true,
-                watched_at: new Date(),
+                current_time: currentTime,
+                duration: duration,
+                percentage: percentage,
+                is_watched: isWatched,
+                watched_at: isWatched ? new Date() : null,
             });
             await this.mediaStagiaireRepository.save(mediaStagiaire);
         }
-        const newAchievements = await this.achievementService.checkAchievements(stagiaire.id);
-        return {
-            message: "Media marked as watched",
-            new_achievements: newAchievements,
-        };
+        if (isWatched) {
+            await this.achievementService.checkAchievements(stagiaire.id);
+        }
+        return mediaStagiaire;
+    }
+    async markAsWatched(mediaId, userId) {
+        return this.updateProgress(mediaId, userId, 100, 100);
     }
     formatMedia(media, includeStagiaires = true) {
         return {

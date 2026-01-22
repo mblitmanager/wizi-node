@@ -7,6 +7,7 @@ import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { NotificationService } from "../notification/notification.service";
 import { Formation } from "../entities/formation.entity";
 import { Media } from "../entities/media.entity";
+import { MediaStagiaire } from "../entities/media-stagiaire.entity";
 export declare class AdminService {
     private stagiaireRepository;
     private userRepository;
@@ -15,8 +16,9 @@ export declare class AdminService {
     private catalogueFormationRepository;
     private formationRepository;
     private mediaRepository;
+    private mediaStagiaireRepository;
     private notificationService;
-    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, notificationService: NotificationService);
+    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, notificationService: NotificationService);
     getFormateurDashboardStats(userId: number): Promise<{
         total_stagiaires: number;
         active_this_week: number;
@@ -464,6 +466,7 @@ export declare class AdminService {
             nom: string;
             completed: boolean;
             total_watched: number;
+            percentage: number;
         }[];
     }>;
     getStagiaireProfileById(id: number): Promise<{

@@ -820,6 +820,7 @@ export class AdminService {
       .select([
         "cf.id as id",
         "cf.titre as titre",
+        "cf.titre as nom",
         "cf.image_url as image_url",
         "cf.tarif as tarif",
         "COUNT(DISTINCT scf.stagiaire_id) as student_count",
