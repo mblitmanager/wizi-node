@@ -69,6 +69,7 @@ export declare class QuizApiController {
         };
         formateurs: any;
         totalPoints: any;
+        score: any;
         quizCount: any;
         averageScore: number;
     }[]>;

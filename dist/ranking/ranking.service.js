@@ -222,6 +222,7 @@ let RankingService = class RankingService {
                 },
                 formateurs: filteredFormateurs,
                 totalPoints,
+                score: totalPoints,
                 quizCount,
                 averageScore: Math.round(averageScore * 100) / 100,
             };
@@ -280,9 +281,13 @@ let RankingService = class RankingService {
         }
         const progressions = await query.orderBy("p.score", "DESC").getMany();
         return progressions.map((p, index) => ({
-            id: p.stagiaire.user_id,
-            name: p.stagiaire.user?.name || "",
+            id: p.stagiaire_id,
+            name: `${p.stagiaire.prenom || ""} ${p.stagiaire.user?.name || ""}`.trim(),
+            firstname: p.stagiaire.prenom,
+            lastname: p.stagiaire.user?.name || "",
+            image: p.stagiaire.user?.image || null,
             points: p.score,
+            score: p.score,
             rang: index + 1,
         }));
     }
@@ -318,7 +323,16 @@ let RankingService = class RankingService {
         });
         const totalQuizzes = participations.length;
         const completedQuizzes = participations.filter((p) => p.status === "completed").length;
-        const totalPoints = participations.reduce((sum, p) => sum + (p.score || 0), 0);
+        const bestScoresMap = new Map();
+        participations.forEach((p) => {
+            if (p.status === "completed") {
+                const currentBest = bestScoresMap.get(p.quiz_id) || 0;
+                if ((p.score || 0) > currentBest) {
+                    bestScoresMap.set(p.quiz_id, p.score || 0);
+                }
+            }
+        });
+        const totalPoints = Array.from(bestScoresMap.values()).reduce((sum, score) => sum + score, 0);
         const totalTimeSpent = participations.reduce((sum, p) => sum + (p.time_spent || 0), 0);
         const globalRanking = await this.getGlobalRanking();
         const myRanking = globalRanking.find((item) => item.stagiaire.id === stagiaireId.toString());

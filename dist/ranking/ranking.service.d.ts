@@ -37,6 +37,7 @@ export declare class RankingService {
         };
         formateurs: any;
         totalPoints: any;
+        score: any;
         quizCount: any;
         averageScore: number;
     }[]>;
@@ -51,6 +52,7 @@ export declare class RankingService {
         };
         formateurs: any;
         totalPoints: any;
+        score: any;
         quizCount: any;
         averageScore: number;
     } | {
@@ -67,7 +69,11 @@ export declare class RankingService {
     getFormationRanking(formationId: number, period?: string): Promise<{
         id: number;
         name: string;
+        firstname: string;
+        lastname: string;
+        image: string;
         points: number;
+        score: number;
         rang: number;
     }[]>;
     getStagiaireProgress(userId: number): Promise<{

@@ -17,6 +17,7 @@ export declare class StagiaireController {
         };
         formateurs: any;
         totalPoints: any;
+        score: any;
         quizCount: any;
         averageScore: number;
     } | {

@@ -15,6 +15,7 @@ export declare class RankingController {
         };
         formateurs: any;
         totalPoints: any;
+        score: any;
         quizCount: any;
         averageScore: number;
     }[]>;
@@ -29,6 +30,7 @@ export declare class RankingController {
         };
         formateurs: any;
         totalPoints: any;
+        score: any;
         quizCount: any;
         averageScore: number;
     } | {
@@ -49,7 +51,11 @@ export declare class RankingController {
     getFormationRanking(formationId: number, period?: string): Promise<{
         id: number;
         name: string;
+        firstname: string;
+        lastname: string;
+        image: string;
         points: number;
+        score: number;
         rang: number;
     }[]>;
     getMyRewards(req: any): Promise<{
