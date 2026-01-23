@@ -79,6 +79,7 @@ export declare class AdminService {
         performance: {
             id: number;
             name: string;
+            prenom: string;
             email: string;
             image: string;
             last_quiz_at: string;
@@ -89,6 +90,7 @@ export declare class AdminService {
             most_quizzes: {
                 id: number;
                 name: string;
+                prenom: string;
                 email: string;
                 image: string;
                 last_quiz_at: string;
@@ -98,6 +100,7 @@ export declare class AdminService {
             most_active: {
                 id: number;
                 name: string;
+                prenom: string;
                 email: string;
                 image: string;
                 last_quiz_at: string;

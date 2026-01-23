@@ -295,7 +295,7 @@ let FormateurController = class FormateurController {
     }
     async formations(req) {
         const data = await this.adminService.getFormateurFormations(req.user.id);
-        return this.apiResponse.success(data);
+        return this.apiResponse.success({ formations: data });
     }
     async formationStagiaires(req, id) {
         const data = await this.adminService.getFormateurFormationStagiaires(req.user.id, id);

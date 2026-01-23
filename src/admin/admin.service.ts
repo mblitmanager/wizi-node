@@ -295,6 +295,7 @@ export class AdminService {
         // Laravel response: "id": 11 (This is Stagiaire ID, but note Laravel query does 'stagiaires.id')
         // Laravel mapped name: "{$student->prenom} {$student->nom}"
         name: s.user.name || `${s.prenom}`,
+        prenom: s.prenom,
         email: s.user.email,
         image: s.user.image || null,
         last_quiz_at: stats.last_at

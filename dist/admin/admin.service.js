@@ -242,6 +242,7 @@ let AdminService = class AdminService {
             return {
                 id: s.id,
                 name: s.user.name || `${s.prenom}`,
+                prenom: s.prenom,
                 email: s.user.email,
                 image: s.user.image || null,
                 last_quiz_at: stats.last_at

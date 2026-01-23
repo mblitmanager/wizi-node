@@ -403,7 +403,7 @@ export class FormateurController {
   @Get("formations")
   async formations(@Request() req: any) {
     const data = await this.adminService.getFormateurFormations(req.user.id);
-    return this.apiResponse.success(data);
+    return this.apiResponse.success({ formations: data });
   }
 
   @Get("formations/:id/stagiaires")
@@ -467,6 +467,20 @@ export class FormateurController {
       formationId,
     );
     return this.apiResponse.success(data);
+  }
+
+  @Get("classement/formation/:id")
+  async rankingByFormation(
+    @Param("id") id: number,
+    @Query("period") period: string = "all",
+  ) {
+    const data = await this.adminService.getTrainerArenaRanking(period, id);
+    // The frontend expects the ranking directly in the response if it's an array,
+    // or under a key. AdminService.getTrainerArenaRanking returns an array of formateurs.
+    // WAIT: In FormateurClassementPage.tsx, it's NOT the arena ranking (formateur comparison).
+    // It's a ranking of STAGIAIRES for that specific formation.
+    const ranking = await this.adminService.getRankingByFormation(id, period);
+    return this.apiResponse.success(ranking);
   }
 
   @Get("classement/mes-stagiaires")
