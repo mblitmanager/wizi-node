@@ -27,8 +27,9 @@ const formation_entity_1 = require("../entities/formation.entity");
 const media_entity_1 = require("../entities/media.entity");
 const media_stagiaire_entity_1 = require("../entities/media-stagiaire.entity");
 const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
+const quiz_entity_1 = require("../entities/quiz.entity");
 let AdminService = class AdminService {
-    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, stagiaireCatalogueFormationRepository, classementRepository, notificationService) {
+    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, stagiaireCatalogueFormationRepository, classementRepository, quizRepository, notificationService) {
         this.stagiaireRepository = stagiaireRepository;
         this.userRepository = userRepository;
         this.quizParticipationRepository = quizParticipationRepository;
@@ -39,6 +40,7 @@ let AdminService = class AdminService {
         this.mediaStagiaireRepository = mediaStagiaireRepository;
         this.stagiaireCatalogueFormationRepository = stagiaireCatalogueFormationRepository;
         this.classementRepository = classementRepository;
+        this.quizRepository = quizRepository;
         this.notificationService = notificationService;
     }
     async getFormateurDashboardStats(userId) {
@@ -654,7 +656,11 @@ let AdminService = class AdminService {
             .filter((id) => id != null);
         const formations = await this.catalogueFormationRepository
             .createQueryBuilder("cf")
-            .innerJoin("cf.formateurs", "f", "f.id = :formateurId", {
+            .leftJoin("cf.formateurs", "f_direct")
+            .leftJoin("cf.stagiaire_catalogue_formations", "scf_any")
+            .leftJoin("scf_any.stagiaire", "s_any")
+            .leftJoin("s_any.formateurs", "f_indirect")
+            .where("(f_direct.id = :formateurId OR f_indirect.id = :formateurId)", {
             formateurId: formateur.id,
         })
             .leftJoin("cf.formation", "real_formation")
@@ -908,6 +914,51 @@ let AdminService = class AdminService {
     }
     async getMyStagiairesRanking(userId, period = "all") {
         return this.getFormateurMesStagiairesRanking(userId, period);
+    }
+    async getRankingByFormation(catalogueFormationId, period = "all") {
+        const cf = await this.catalogueFormationRepository.findOne({
+            where: { id: catalogueFormationId },
+        });
+        if (!cf || !cf.formation_id)
+            return [];
+        const quizzes = await this.quizRepository.find({
+            where: { formation_id: cf.formation_id },
+            select: ["id"],
+        });
+        const quizIds = quizzes.map((q) => q.id);
+        if (quizIds.length === 0)
+            return [];
+        const qb = this.classementRepository
+            .createQueryBuilder("c")
+            .innerJoin("c.stagiaire", "s")
+            .innerJoin("s.user", "u")
+            .select([
+            "s.id as id",
+            "s.prenom as prenom",
+            "u.name as nom",
+            "u.email as email",
+            "SUM(c.points) as total_points",
+            "COUNT(c.id) as total_quiz",
+            "AVG(c.points) as avg_score",
+        ])
+            .where("c.quiz_id IN (:...quizIds)", { quizIds });
+        const ranking = await qb
+            .groupBy("s.id")
+            .addGroupBy("s.prenom")
+            .addGroupBy("u.name")
+            .addGroupBy("u.email")
+            .orderBy("total_points", "DESC")
+            .getRawMany();
+        return ranking.map((r, index) => ({
+            rank: index + 1,
+            id: parseInt(r.id),
+            prenom: r.prenom,
+            nom: r.nom,
+            email: r.email,
+            total_points: parseInt(r.total_points),
+            total_quiz: parseInt(r.total_quiz),
+            avg_score: Math.round(parseFloat(r.avg_score)),
+        }));
     }
     async getFormateurAnalyticsDashboard(userId, period = 30, formationId) {
         const formateur = await this.formateurRepository.findOne({
@@ -1691,7 +1742,9 @@ exports.AdminService = AdminService = __decorate([
     __param(7, (0, typeorm_1.InjectRepository)(media_stagiaire_entity_1.MediaStagiaire)),
     __param(8, (0, typeorm_1.InjectRepository)(stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation)),
     __param(9, (0, typeorm_1.InjectRepository)(classement_entity_1.Classement)),
+    __param(10, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

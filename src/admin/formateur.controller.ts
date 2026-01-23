@@ -474,7 +474,6 @@ export class FormateurController {
     @Param("id") id: number,
     @Query("period") period: string = "all",
   ) {
-    const data = await this.adminService.getTrainerArenaRanking(period, id);
     // The frontend expects the ranking directly in the response if it's an array,
     // or under a key. AdminService.getTrainerArenaRanking returns an array of formateurs.
     // WAIT: In FormateurClassementPage.tsx, it's NOT the arena ranking (formateur comparison).

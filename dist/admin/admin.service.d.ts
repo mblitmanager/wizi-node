@@ -10,6 +10,7 @@ import { Formation } from "../entities/formation.entity";
 import { Media } from "../entities/media.entity";
 import { MediaStagiaire } from "../entities/media-stagiaire.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
+import { Quiz } from "../entities/quiz.entity";
 export declare class AdminService {
     private stagiaireRepository;
     private userRepository;
@@ -21,8 +22,9 @@ export declare class AdminService {
     private mediaStagiaireRepository;
     private stagiaireCatalogueFormationRepository;
     private classementRepository;
+    private quizRepository;
     private notificationService;
-    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>, classementRepository: Repository<Classement>, notificationService: NotificationService);
+    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>, classementRepository: Repository<Classement>, quizRepository: Repository<Quiz>, notificationService: NotificationService);
     getFormateurDashboardStats(userId: number): Promise<{
         total_stagiaires: number;
         active_this_week: number;
@@ -278,6 +280,16 @@ export declare class AdminService {
         total_stagiaires: number;
         period?: undefined;
     }>;
+    getRankingByFormation(catalogueFormationId: number, period?: string): Promise<{
+        rank: number;
+        id: number;
+        prenom: any;
+        nom: any;
+        email: any;
+        total_points: number;
+        total_quiz: number;
+        avg_score: number;
+    }[]>;
     getFormateurAnalyticsDashboard(userId: number, period?: number, formationId?: number): Promise<{
         period_days: number;
         summary: {

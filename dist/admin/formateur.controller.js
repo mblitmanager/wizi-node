@@ -325,6 +325,10 @@ let FormateurController = class FormateurController {
         const data = await this.adminService.getTrainerArenaRanking(period, formationId);
         return this.apiResponse.success(data);
     }
+    async rankingByFormation(id, period = "all") {
+        const ranking = await this.adminService.getRankingByFormation(id, period);
+        return this.apiResponse.success(ranking);
+    }
     async mesStagiairesRanking(req, period = "all") {
         const data = await this.adminService.getMyStagiairesRanking(req.user.id, period);
         return this.apiResponse.success(data);
@@ -553,6 +557,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Number]),
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "arenaRanking", null);
+__decorate([
+    (0, common_1.Get)("classement/formation/:id"),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Query)("period")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "rankingByFormation", null);
 __decorate([
     (0, common_1.Get)("classement/mes-stagiaires"),
     __param(0, (0, common_1.Request)()),

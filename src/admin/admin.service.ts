@@ -12,6 +12,7 @@ import { Formation } from "../entities/formation.entity";
 import { Media } from "../entities/media.entity";
 import { MediaStagiaire } from "../entities/media-stagiaire.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
+import { Quiz } from "../entities/quiz.entity";
 
 @Injectable()
 export class AdminService {
@@ -36,6 +37,8 @@ export class AdminService {
     private stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>,
     @InjectRepository(Classement)
     private classementRepository: Repository<Classement>,
+    @InjectRepository(Quiz)
+    private quizRepository: Repository<Quiz>,
     private notificationService: NotificationService,
   ) {}
 
@@ -821,7 +824,11 @@ export class AdminService {
 
     const formations = await this.catalogueFormationRepository
       .createQueryBuilder("cf")
-      .innerJoin("cf.formateurs", "f", "f.id = :formateurId", {
+      .leftJoin("cf.formateurs", "f_direct") // Direct link
+      .leftJoin("cf.stagiaire_catalogue_formations", "scf_any") // Via students link
+      .leftJoin("scf_any.stagiaire", "s_any")
+      .leftJoin("s_any.formateurs", "f_indirect")
+      .where("(f_direct.id = :formateurId OR f_indirect.id = :formateurId)", {
         formateurId: formateur.id,
       })
       .leftJoin("cf.formation", "real_formation") // Join the content definition
@@ -1149,6 +1156,65 @@ export class AdminService {
 
   async getMyStagiairesRanking(userId: number, period: string = "all") {
     return this.getFormateurMesStagiairesRanking(userId, period);
+  }
+
+  async getRankingByFormation(
+    catalogueFormationId: number,
+    period: string = "all",
+  ) {
+    // 1. Get all quizzes linked to this CatalogueFormation
+    const cf = await this.catalogueFormationRepository.findOne({
+      where: { id: catalogueFormationId },
+    });
+
+    if (!cf || !cf.formation_id) return [];
+
+    const quizzes = await this.quizRepository.find({
+      where: { formation_id: cf.formation_id },
+      select: ["id"],
+    });
+
+    const quizIds = quizzes.map((q) => q.id);
+    if (quizIds.length === 0) return [];
+
+    // 2. Get ranking from Classement filtered by these quizzes
+    const qb = this.classementRepository
+      .createQueryBuilder("c")
+      .innerJoin("c.stagiaire", "s")
+      .innerJoin("s.user", "u")
+      .select([
+        "s.id as id",
+        "s.prenom as prenom",
+        "u.name as nom",
+        "u.email as email",
+        "SUM(c.points) as total_points",
+        "COUNT(c.id) as total_quiz",
+        "AVG(c.points) as avg_score",
+      ])
+
+      .where("c.quiz_id IN (:...quizIds)", { quizIds });
+
+    // Note: We're ignoring 'period' for now to keep it consistent with Formation scope
+    // But could add .andWhere("c.updated_at >= ...") if needed
+
+    const ranking = await qb
+      .groupBy("s.id")
+      .addGroupBy("s.prenom")
+      .addGroupBy("u.name")
+      .addGroupBy("u.email")
+      .orderBy("total_points", "DESC")
+      .getRawMany();
+
+    return ranking.map((r, index) => ({
+      rank: index + 1,
+      id: parseInt(r.id),
+      prenom: r.prenom,
+      nom: r.nom,
+      email: r.email,
+      total_points: parseInt(r.total_points),
+      total_quiz: parseInt(r.total_quiz),
+      avg_score: Math.round(parseFloat(r.avg_score)),
+    }));
   }
 
   async getFormateurAnalyticsDashboard(
