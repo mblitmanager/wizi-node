@@ -34,6 +34,8 @@ export class AdminService {
     private mediaStagiaireRepository: Repository<MediaStagiaire>,
     @InjectRepository(StagiaireCatalogueFormation)
     private stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>,
+    @InjectRepository(Classement)
+    private classementRepository: Repository<Classement>,
     private notificationService: NotificationService,
   ) {}
 
@@ -65,14 +67,16 @@ export class AdminService {
       .filter((id) => id !== null);
 
     let avgScore = 0;
+    let totalQuizzesTaken = 0;
     if (userIds.length > 0) {
-      const participations = await this.quizParticipationRepository.find({
-        where: { user_id: In(userIds) },
+      const classements = await this.classementRepository.find({
+        where: { stagiaire: { user_id: In(userIds) } },
       });
-      if (participations.length > 0) {
+      if (classements.length > 0) {
         avgScore =
-          participations.reduce((acc, p) => acc + (p.score || 0), 0) /
-          participations.length;
+          classements.reduce((acc, c) => acc + (c.points || 0), 0) /
+          classements.length;
+        totalQuizzesTaken = classements.length;
       }
     }
 
@@ -85,13 +89,13 @@ export class AdminService {
       .leftJoin("cf.stagiaire_catalogue_formations", "scf")
       .leftJoin("scf.stagiaire", "s")
       .leftJoin("s.user", "u")
-      .leftJoin(QuizParticipation, "qp", "u.id = qp.user_id")
+      .leftJoin(Classement, "c", "s.id = c.stagiaire_id")
       .select([
         "cf.id AS id",
         "cf.titre AS nom",
         "COUNT(DISTINCT s.id) AS total_stagiaires",
         "COUNT(DISTINCT CASE WHEN u.last_activity_at >= :weekAgo THEN s.id END) AS stagiaires_actifs",
-        "COALESCE(AVG(qp.score), 0) AS score_moyen",
+        "COALESCE(AVG(c.points), 0) AS score_moyen",
       ])
       .setParameter("weekAgo", weekAgo)
       .groupBy("cf.id")
@@ -136,13 +140,7 @@ export class AdminService {
 
     const totalFormations = parseInt(distinctFormationsResult.cnt);
 
-    // Calculate total quizzes taken by formateur's stagiaires
-    let totalQuizzesTaken = 0;
-    if (userIds.length > 0) {
-      totalQuizzesTaken = await this.quizParticipationRepository.count({
-        where: { user_id: In(userIds) },
-      });
-    }
+    // totalQuizzesTaken already calculated using Classement
 
     return {
       total_stagiaires: totalStagiaires,
@@ -263,18 +261,18 @@ export class AdminService {
 
     const userIds = stagiaires.map((s) => s.user.id);
 
-    // 3. Aggregate quiz stats
+    // 3. Aggregate quiz stats using Classement table (best scores)
     let quizStats = new Map<number, { count: number; last_at: Date | null }>();
 
     if (userIds.length > 0) {
-      const stats = await this.quizParticipationRepository
-        .createQueryBuilder("qp")
-        .select("qp.user_id", "user_id")
-        .addSelect("COUNT(qp.id)", "count")
-        .addSelect("MAX(qp.created_at)", "last_at")
-        .where("qp.user_id IN (:...userIds)", { userIds })
-        //.andWhere("qp.status = 'completed'") // Uncomment if strictly needed, but getting any activity is safer for now
-        .groupBy("qp.user_id")
+      const stats = await this.classementRepository
+        .createQueryBuilder("c")
+        .innerJoin("c.stagiaire", "s")
+        .select("s.user_id", "user_id")
+        .addSelect("COUNT(c.id)", "count")
+        .addSelect("MAX(c.updated_at)", "last_at")
+        .where("s.user_id IN (:...userIds)", { userIds })
+        .groupBy("s.user_id")
         .getRawMany();
 
       stats.forEach((stat) => {
@@ -662,10 +660,9 @@ export class AdminService {
     userId: number,
     period: string = "all",
   ) {
-    // 1. Get Formateur and their formations
+    // 1. Get Formateur
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },
-      relations: ["formations"],
     });
 
     if (!formateur) {
@@ -673,9 +670,6 @@ export class AdminService {
     }
 
     const formateurId = formateur.id;
-    const formationIds = (formateur.formations || [])
-      .map((cf) => cf.formation_id)
-      .filter((id) => id != null);
 
     // 2. Setup period filters
     const weekAgo = new Date();
@@ -683,48 +677,30 @@ export class AdminService {
     const monthAgo = new Date();
     monthAgo.setMonth(monthAgo.getMonth() - 1);
 
-    // 3. Query with best scores subquery
-    const rawRanking = await this.stagiaireRepository
-      .createQueryBuilder("s")
+    // 3. Query using Classement table (same source as global ranking)
+    const queryBuilder = this.classementRepository
+      .createQueryBuilder("c")
+      .innerJoin("c.stagiaire", "s")
       .innerJoin("s.user", "u")
-      .innerJoin("s.formateurs", "f", "f.id = :formateurId", { formateurId })
-      .leftJoin(
-        (subQuery) => {
-          const sq = subQuery
-            .select("qp_sub.user_id", "user_id")
-            .addSelect("qp_sub.quiz_id", "quiz_id")
-            .addSelect("MAX(qp_sub.score)", "best_score")
-            .from(QuizParticipation, "qp_sub")
-            .innerJoin("quizzes", "q_sub", "q_sub.id = qp_sub.quiz_id")
-            .where("qp_sub.status = :status", { status: "completed" });
+      .innerJoin("s.formateurs", "f", "f.id = :formateurId", { formateurId });
 
-          if (formationIds.length > 0) {
-            sq.andWhere(
-              "(q_sub.formation_id IN (:...fids) OR q_sub.formation_id IS NULL)",
-              { fids: formationIds },
-            );
-          }
+    // Apply period filter
+    if (period === "week") {
+      queryBuilder.andWhere("c.updated_at >= :weekAgo", { weekAgo });
+    } else if (period === "month") {
+      queryBuilder.andWhere("c.updated_at >= :monthAgo", { monthAgo });
+    }
 
-          if (period === "week") {
-            sq.andWhere("qp_sub.created_at >= :weekAgo", { weekAgo });
-          } else if (period === "month") {
-            sq.andWhere("qp_sub.created_at >= :monthAgo", { monthAgo });
-          }
-
-          return sq.groupBy("qp_sub.user_id").addGroupBy("qp_sub.quiz_id");
-        },
-        "best_attempts",
-        "u.id = best_attempts.user_id",
-      )
+    const rawRanking = await queryBuilder
       .select([
         "s.id as id",
         "s.prenom as prenom",
         "u.name as nom",
         "u.email as email",
         "u.image as image",
-        "COALESCE(SUM(best_attempts.best_score), 0) as total_points",
-        "COUNT(DISTINCT best_attempts.quiz_id) as total_quiz",
-        "COALESCE(AVG(best_attempts.best_score), 0) as avg_score",
+        "COALESCE(SUM(c.points), 0) as total_points",
+        "COUNT(DISTINCT c.quiz_id) as total_quiz",
+        "COALESCE(AVG(c.points), 0) as avg_score",
       ])
       .groupBy("s.id")
       .addGroupBy("s.prenom")
