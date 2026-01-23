@@ -583,52 +583,39 @@ let AdminService = class AdminService {
     }
     async getTrainerArenaRanking(period = "all", formationId) {
         const trainers = await this.formateurRepository.find({
-            relations: ["user", "formations"],
+            relations: ["user"],
         });
         const result = [];
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
         for (const f of trainers) {
-            const trainerFormationIds = (f.formations || [])
-                .map((cf) => cf.formation_id)
-                .filter((id) => id != null);
-            const stagiairesQuery = this.stagiaireRepository
-                .createQueryBuilder("s")
+            const stagiairesQuery = this.classementRepository
+                .createQueryBuilder("c")
+                .innerJoin("c.stagiaire", "s")
                 .innerJoin("s.user", "su")
                 .innerJoin("s.formateurs", "form", "form.id = :formateurId", {
                 formateurId: f.id,
-            })
-                .leftJoin((subQuery) => {
-                const sq = subQuery
-                    .select("qp_sub.user_id", "user_id")
-                    .addSelect("qp_sub.quiz_id", "quiz_id")
-                    .addSelect("MAX(qp_sub.score)", "best_score")
-                    .from(quiz_participation_entity_1.QuizParticipation, "qp_sub")
-                    .innerJoin("quizzes", "q_sub", "q_sub.id = qp_sub.quiz_id")
-                    .where("qp_sub.status = :status", { status: "completed" });
-                if (formationId) {
-                    sq.andWhere("q_sub.formation_id = COALESCE((SELECT formation_id FROM catalogue_formations WHERE id = :cid), :cid)", { cid: formationId });
-                }
-                else if (trainerFormationIds.length > 0) {
-                    sq.andWhere("(q_sub.formation_id IN (:...fids) OR q_sub.formation_id IS NULL)", { fids: trainerFormationIds });
-                }
-                if (period === "week") {
-                    const weekAgo = new Date();
-                    weekAgo.setDate(weekAgo.getDate() - 7);
-                    sq.andWhere("qp_sub.created_at >= :weekAgo", { weekAgo });
-                }
-                else if (period === "month") {
-                    const monthAgo = new Date();
-                    monthAgo.setMonth(monthAgo.getMonth() - 1);
-                    sq.andWhere("qp_sub.created_at >= :monthAgo", { monthAgo });
-                }
-                return sq.groupBy("qp_sub.user_id").addGroupBy("qp_sub.quiz_id");
-            }, "best_attempts", "su.id = best_attempts.user_id");
+            });
+            if (formationId) {
+                stagiairesQuery
+                    .innerJoin("c.quiz", "q")
+                    .andWhere("q.formation_id = COALESCE((SELECT formation_id FROM catalogue_formations WHERE id = :cid), :cid)", { cid: formationId });
+            }
+            if (period === "week") {
+                stagiairesQuery.andWhere("c.updated_at >= :weekAgo", { weekAgo });
+            }
+            else if (period === "month") {
+                stagiairesQuery.andWhere("c.updated_at >= :monthAgo", { monthAgo });
+            }
             stagiairesQuery
                 .select([
                 "s.id AS id",
                 "s.prenom AS prenom",
                 "su.name AS nom",
                 "su.image AS image",
-                "COALESCE(SUM(best_attempts.best_score), 0) AS points",
+                "COALESCE(SUM(c.points), 0) AS points",
             ])
                 .groupBy("s.id")
                 .addGroupBy("s.prenom")
