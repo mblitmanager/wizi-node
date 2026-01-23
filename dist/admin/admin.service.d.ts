@@ -492,6 +492,7 @@ export declare class AdminService {
             prenom: string;
             nom: string;
             email: string;
+            telephone: string;
             image: string;
             created_at: string;
             last_login: string;

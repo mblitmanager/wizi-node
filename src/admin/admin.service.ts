@@ -1744,6 +1744,10 @@ export class AdminService {
       comparison.push({
         id: stagiaire.id,
         name: stagiaire.user?.name || stagiaire.prenom,
+        prenom: stagiaire.prenom,
+        nom: stagiaire.user?.name, // Assuming user.name stores the last name or full name
+        email: stagiaire.user?.email,
+        telephone: stagiaire.telephone,
         image: stagiaire.user?.image,
         total_quizzes: parseInt(stats.total),
         completed_quizzes: parseInt(stats.completed),
@@ -2042,7 +2046,9 @@ export class AdminService {
         prenom: stagiaire.prenom,
         nom: stagiaire.user?.name || "",
         email: stagiaire.user?.email || "",
+        telephone: stagiaire.telephone,
         image: stagiaire.user?.image,
+
         created_at: stagiaire.created_at
           ? stagiaire.created_at.toISOString()
           : null,
