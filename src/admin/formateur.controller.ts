@@ -183,8 +183,15 @@ export class FormateurController {
   }
 
   @Get("stagiaire/:id/stats")
-  @Get("stagiaire/:id/profile")
   async stagiaireStats(@Param("id") id: number) {
+    const stats = await this.adminService.getStagiaireProfileById(id);
+    if (!stats)
+      throw new HttpException("Stagiaire non trouvé", HttpStatus.NOT_FOUND);
+    return this.apiResponse.success(stats);
+  }
+
+  @Get("stagiaire/:id/profile")
+  async stagiaireProfile(@Param("id") id: number) {
     const stats = await this.adminService.getStagiaireProfileById(id);
     if (!stats)
       throw new HttpException("Stagiaire non trouvé", HttpStatus.NOT_FOUND);

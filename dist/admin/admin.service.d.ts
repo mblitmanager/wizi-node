@@ -510,7 +510,7 @@ export declare class AdminService {
             average_score: number;
             total_time_minutes: number;
             login_streak: number;
-            last_activity: Date;
+            last_activity: string;
         };
         quiz_stats: {
             total_quiz: number;

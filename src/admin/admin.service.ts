@@ -2021,7 +2021,7 @@ export class AdminService {
       type: "quiz",
       title: p.quiz?.titre || "Quiz",
       score: p.score,
-      timestamp: p.created_at ? p.created_at.toISOString() : null,
+      timestamp: p.created_at ? new Date(p.created_at).toISOString() : null,
     }));
 
     // 3. Formations Progress
@@ -2029,8 +2029,11 @@ export class AdminService {
       id: scf.catalogue_formation?.id,
       title: scf.catalogue_formation?.titre || "Formation",
       category: scf.catalogue_formation?.formation?.categorie || "Général",
-      started_at: scf.created_at ? scf.created_at.toISOString() : null,
-      completed_at: scf.date_fin ? scf.date_fin.toISOString() : null,
+      started_at: scf.created_at
+        ? new Date(scf.created_at).toISOString()
+        : null,
+      completed_at: scf.date_fin ? new Date(scf.date_fin).toISOString() : null,
+
       progress: scf.date_fin ? 100 : 0,
     }));
 
@@ -2041,8 +2044,12 @@ export class AdminService {
       category: p.quiz?.formation?.categorie || "Général",
       score: p.score,
       max_score: 100, // Node default max score
-      completed_at:
-        p.completed_at?.toISOString() || p.created_at?.toISOString() || null,
+      completed_at: p.completed_at
+        ? new Date(p.completed_at).toISOString()
+        : p.created_at
+          ? new Date(p.created_at).toISOString()
+          : null,
+
       time_spent: p.time_spent || 0,
     }));
 
@@ -2056,9 +2063,11 @@ export class AdminService {
         image: stagiaire.user?.image,
 
         created_at: stagiaire.created_at
-          ? stagiaire.created_at.toISOString()
+          ? new Date(stagiaire.created_at).toISOString()
           : null,
-        last_login: stagiaire.user?.last_login_at?.toISOString() || null,
+        last_login: stagiaire.user?.last_login_at
+          ? new Date(stagiaire.user.last_login_at).toISOString()
+          : null,
       },
       stats: {
         total_points: Math.round(totalScore),
@@ -2069,7 +2078,9 @@ export class AdminService {
         average_score: Math.round(avgScore * 10) / 10,
         total_time_minutes: Math.round(totalTime / 60),
         login_streak: stagiaire.login_streak || 0,
-        last_activity: stagiaire.user?.last_activity_at || null,
+        last_activity: stagiaire.user?.last_activity_at
+          ? new Date(stagiaire.user.last_activity_at).toISOString()
+          : null,
       },
       quiz_stats: {
         total_quiz: completedQuizzes.length,

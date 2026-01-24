@@ -11,7 +11,7 @@ import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/decorators/roles.decorator";
 import { ApiResponseService } from "../common/services/api-response.service";
 
-@Controller("formateur")
+@Controller("formateur-web")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
 @Roles("formateur", "formatrice")
 export class FormateurWebController {

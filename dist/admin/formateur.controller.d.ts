@@ -29,6 +29,7 @@ export declare class FormateurController {
     onlineStagiaires(req: any): Promise<any>;
     inactiveStagiaires(req: any, days?: number, scope?: string): Promise<any>;
     stagiaireStats(id: number): Promise<any>;
+    stagiaireProfile(id: number): Promise<any>;
     disconnect(data: {
         stagiaire_ids: number[];
     }): Promise<any>;
