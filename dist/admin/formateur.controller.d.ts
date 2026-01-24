@@ -33,7 +33,7 @@ export declare class FormateurController {
     disconnect(data: {
         stagiaire_ids: number[];
     }): Promise<any>;
-    quizzes(formationId?: number, status?: string, search?: string, page?: number, limit?: number): Promise<any>;
+    quizzes(req: any, formationId?: number, status?: string, search?: string, page?: number, limit?: number): Promise<any>;
     quizDetail(id: number): Promise<any>;
     storeQuiz(data: any): Promise<any>;
     publishQuiz(id: number): Promise<any>;

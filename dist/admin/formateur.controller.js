@@ -144,26 +144,44 @@ let FormateurController = class FormateurController {
             message: `${updatedCount} stagiaire(s) déconnecté(s)`,
         });
     }
-    async quizzes(formationId, status, search, page = 1, limit = 10) {
+    async quizzes(req, formationId, status, search, page = 1, limit = 10) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: req.user.id },
+        });
+        if (!formateur) {
+            throw new common_1.HttpException("Formateur non trouvé", common_1.HttpStatus.NOT_FOUND);
+        }
+        const stagiaireFormationIdsRaw = await this.stagiaireCatalogueFormationRepository
+            .createQueryBuilder("scf")
+            .innerJoin("scf.stagiaire", "s")
+            .innerJoin("s.formateurs", "f", "f.id = :formateurId", {
+            formateurId: formateur.id,
+        })
+            .innerJoin("scf.catalogue_formation", "cf")
+            .select("DISTINCT cf.formation_id", "fid")
+            .getRawMany();
+        const allowedFormationIds = stagiaireFormationIdsRaw
+            .map((row) => row.fid)
+            .filter((id) => id !== null);
         const queryBuilder = this.quizRepository
             .createQueryBuilder("quiz")
             .leftJoinAndSelect("quiz.formation", "formation")
             .leftJoinAndSelect("quiz.questions", "questions");
+        if (allowedFormationIds.length > 0) {
+            queryBuilder.andWhere("quiz.formation_id IN (:...allowedFormationIds)", {
+                allowedFormationIds,
+            });
+        }
+        else {
+            queryBuilder.andWhere("1 = 0");
+        }
         if (formationId) {
             const legacyCatalogueFormation = await this.catalogueFormationRepository.findOne({
                 where: { id: formationId },
                 select: ["id", "formation_id"],
             });
-            if (legacyCatalogueFormation && legacyCatalogueFormation.formation_id) {
-                queryBuilder.andWhere("quiz.formation_id = :formationId", {
-                    formationId: legacyCatalogueFormation.formation_id,
-                });
-            }
-            else {
-                queryBuilder.andWhere("quiz.formation_id = :formationId", {
-                    formationId,
-                });
-            }
+            const targetFid = legacyCatalogueFormation?.formation_id || formationId;
+            queryBuilder.andWhere("quiz.formation_id = :targetFid", { targetFid });
         }
         if (status) {
             queryBuilder.andWhere("quiz.status = :status", { status });
@@ -477,13 +495,14 @@ __decorate([
 ], FormateurController.prototype, "disconnect", null);
 __decorate([
     (0, common_1.Get)("quizzes"),
-    __param(0, (0, common_1.Query)("formation_id")),
-    __param(1, (0, common_1.Query)("status")),
-    __param(2, (0, common_1.Query)("search")),
-    __param(3, (0, common_1.Query)("page")),
-    __param(4, (0, common_1.Query)("limit")),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)("formation_id")),
+    __param(2, (0, common_1.Query)("status")),
+    __param(3, (0, common_1.Query)("search")),
+    __param(4, (0, common_1.Query)("page")),
+    __param(5, (0, common_1.Query)("limit")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, String, Number, Number]),
+    __metadata("design:paramtypes", [Object, Number, String, String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "quizzes", null);
 __decorate([

@@ -214,38 +214,63 @@ export class FormateurController {
 
   @Get("quizzes")
   async quizzes(
+    @Request() req: any,
     @Query("formation_id") formationId?: number,
     @Query("status") status?: string,
     @Query("search") search?: string,
     @Query("page") page: number = 1,
     @Query("limit") limit: number = 10,
   ) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: req.user.id },
+    });
+
+    if (!formateur) {
+      throw new HttpException("Formateur non trouvé", HttpStatus.NOT_FOUND);
+    }
+
+    // Get all formation IDs from the trainer's students' enrollments
+    const stagiaireFormationIdsRaw =
+      await this.stagiaireCatalogueFormationRepository
+        .createQueryBuilder("scf")
+        .innerJoin("scf.stagiaire", "s")
+        .innerJoin("s.formateurs", "f", "f.id = :formateurId", {
+          formateurId: formateur.id,
+        })
+        .innerJoin("scf.catalogue_formation", "cf")
+        .select("DISTINCT cf.formation_id", "fid")
+        .getRawMany();
+
+    const allowedFormationIds = stagiaireFormationIdsRaw
+      .map((row) => row.fid)
+      .filter((id) => id !== null);
+
     const queryBuilder = this.quizRepository
       .createQueryBuilder("quiz")
       .leftJoinAndSelect("quiz.formation", "formation")
       .leftJoinAndSelect("quiz.questions", "questions");
 
+    // Strictly filter by student formations (requirement: "uniquement les quiz en rapport avec les formations du stagiaires")
+    if (allowedFormationIds.length > 0) {
+      queryBuilder.andWhere("quiz.formation_id IN (:...allowedFormationIds)", {
+        allowedFormationIds,
+      });
+    } else {
+      // No student formations found? Return empty result set
+      queryBuilder.andWhere("1 = 0");
+    }
+
     if (formationId) {
-      // FIX: The frontend might send a CatalogueFormation ID (from the trainer's list).
-      // We must check if this ID corresponds to a CatalogueFormation and use its real `formation_id`
-      // for filtering Quizzes (which are linked to content).
+      // Further filter if UI selected a specific formation
+      // Ensure the selected formation is within the allowed ones
       const legacyCatalogueFormation =
         await this.catalogueFormationRepository.findOne({
           where: { id: formationId },
           select: ["id", "formation_id"],
         });
 
-      if (legacyCatalogueFormation && legacyCatalogueFormation.formation_id) {
-        // It matches a CatalogueFormation, use the real content ID
-        queryBuilder.andWhere("quiz.formation_id = :formationId", {
-          formationId: legacyCatalogueFormation.formation_id,
-        });
-      } else {
-        // Fallback: Use the provided ID as is (direct Formation ID)
-        queryBuilder.andWhere("quiz.formation_id = :formationId", {
-          formationId,
-        });
-      }
+      const targetFid = legacyCatalogueFormation?.formation_id || formationId;
+      queryBuilder.andWhere("quiz.formation_id = :targetFid", { targetFid });
     }
     if (status) {
       queryBuilder.andWhere("quiz.status = :status", { status });
