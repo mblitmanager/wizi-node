@@ -1521,7 +1521,7 @@ let AdminService = class AdminService {
         const userId = stagiaire.user_id;
         const quizParticipations = await this.quizParticipationRepository.find({
             where: { user_id: userId },
-            relations: ["quiz", "quiz.questions"],
+            relations: ["quiz", "quiz.questions", "quiz.formation"],
             order: { created_at: "DESC" },
         });
         const completedQuizzes = quizParticipations.filter((p) => p.status === "completed");
@@ -1571,17 +1571,25 @@ let AdminService = class AdminService {
             progress: scf.date_fin ? 100 : 0,
         }));
         const quizHistory = completedQuizzes.map((p) => ({
+            id: p.id,
             quiz_id: p.quiz_id,
-            title: p.quiz?.titre || "Quiz",
-            category: p.quiz?.formation?.categorie || "Général",
+            correctAnswers: p.correct_answers || 0,
+            totalQuestions: p.quiz?.questions?.length || 5,
             score: p.score,
-            max_score: 100,
-            completed_at: p.completed_at
+            completedAt: p.completed_at
                 ? new Date(p.completed_at).toISOString()
                 : p.created_at
                     ? new Date(p.created_at).toISOString()
                     : null,
-            time_spent: p.time_spent || 0,
+            timeSpent: p.time_spent || 0,
+            quiz: {
+                id: p.quiz?.id,
+                titre: p.quiz?.titre || "Quiz",
+                niveau: p.quiz?.niveau || "débutant",
+                formation: {
+                    categorie: p.quiz?.formation?.categorie || "Général",
+                },
+            },
         }));
         return {
             stagiaire: {

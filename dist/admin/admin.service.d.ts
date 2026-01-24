@@ -537,13 +537,21 @@ export declare class AdminService {
             progress: number;
         }[];
         quiz_history: {
+            id: number;
             quiz_id: number;
-            title: string;
-            category: string;
+            correctAnswers: number;
+            totalQuestions: number;
             score: number;
-            max_score: number;
-            completed_at: string;
-            time_spent: number;
+            completedAt: string;
+            timeSpent: number;
+            quiz: {
+                id: number;
+                titre: string;
+                niveau: string;
+                formation: {
+                    categorie: string;
+                };
+            };
         }[];
     }>;
     getStagiaireFullFormations(id: number): Promise<{
