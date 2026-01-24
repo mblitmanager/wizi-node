@@ -9,6 +9,7 @@ import { Formateur } from "../entities/formateur.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 export declare class FormateurController {
     private adminService;
     private apiResponse;
@@ -20,7 +21,8 @@ export declare class FormateurController {
     private stagiaireRepository;
     private quizParticipationRepository;
     private catalogueFormationRepository;
-    constructor(adminService: AdminService, apiResponse: ApiResponseService, quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, reponseRepository: Repository<Reponse>, formationRepository: Repository<Formation>, formateurRepository: Repository<Formateur>, stagiaireRepository: Repository<Stagiaire>, quizParticipationRepository: Repository<QuizParticipation>, catalogueFormationRepository: Repository<CatalogueFormation>);
+    private stagiaireCatalogueFormationRepository;
+    constructor(adminService: AdminService, apiResponse: ApiResponseService, quizRepository: Repository<Quiz>, questionRepository: Repository<Question>, reponseRepository: Repository<Reponse>, formationRepository: Repository<Formation>, formateurRepository: Repository<Formateur>, stagiaireRepository: Repository<Stagiaire>, quizParticipationRepository: Repository<QuizParticipation>, catalogueFormationRepository: Repository<CatalogueFormation>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>);
     dashboardHome(req: any, days?: number): Promise<any>;
     dashboardStats(req: any): Promise<any>;
     trends(req: any): Promise<any>;

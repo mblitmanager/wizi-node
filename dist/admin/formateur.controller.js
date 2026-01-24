@@ -29,8 +29,9 @@ const formateur_entity_1 = require("../entities/formateur.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
 const quiz_participation_entity_1 = require("../entities/quiz-participation.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
+const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
 let FormateurController = class FormateurController {
-    constructor(adminService, apiResponse, quizRepository, questionRepository, reponseRepository, formationRepository, formateurRepository, stagiaireRepository, quizParticipationRepository, catalogueFormationRepository) {
+    constructor(adminService, apiResponse, quizRepository, questionRepository, reponseRepository, formationRepository, formateurRepository, stagiaireRepository, quizParticipationRepository, catalogueFormationRepository, stagiaireCatalogueFormationRepository) {
         this.adminService = adminService;
         this.apiResponse = apiResponse;
         this.quizRepository = quizRepository;
@@ -41,6 +42,7 @@ let FormateurController = class FormateurController {
         this.stagiaireRepository = stagiaireRepository;
         this.quizParticipationRepository = quizParticipationRepository;
         this.catalogueFormationRepository = catalogueFormationRepository;
+        this.stagiaireCatalogueFormationRepository = stagiaireCatalogueFormationRepository;
     }
     async dashboardHome(req, days = 7) {
         const data = await this.adminService.getFormateurDashboardHome(req.user.id, days);
@@ -720,8 +722,10 @@ exports.FormateurController = FormateurController = __decorate([
     __param(7, (0, typeorm_1.InjectRepository)(stagiaire_entity_1.Stagiaire)),
     __param(8, (0, typeorm_1.InjectRepository)(quiz_participation_entity_1.QuizParticipation)),
     __param(9, (0, typeorm_1.InjectRepository)(catalogue_formation_entity_1.CatalogueFormation)),
+    __param(10, (0, typeorm_1.InjectRepository)(stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation)),
     __metadata("design:paramtypes", [admin_service_1.AdminService,
         api_response_service_1.ApiResponseService,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

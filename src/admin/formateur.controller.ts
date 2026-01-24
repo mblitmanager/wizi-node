@@ -28,6 +28,7 @@ import { Formateur } from "../entities/formateur.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
 import { QuizParticipation } from "../entities/quiz-participation.entity";
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
+import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 
 @Controller("formateur")
 @UseGuards(AuthGuard("jwt"), RolesGuard)
@@ -52,6 +53,8 @@ export class FormateurController {
     private quizParticipationRepository: Repository<QuizParticipation>,
     @InjectRepository(CatalogueFormation)
     private catalogueFormationRepository: Repository<CatalogueFormation>,
+    @InjectRepository(StagiaireCatalogueFormation)
+    private stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>,
   ) {}
 
   // --- Dashboard & General Stats ---
@@ -331,6 +334,7 @@ export class FormateurController {
       id: q.id,
       question: q.text,
       type: q.type,
+      astuce: q.astuce,
       reponses: (q.reponses || []).map((r) => ({
         id: r.id,
         reponse: r.text,
@@ -399,6 +403,7 @@ export class FormateurController {
       quiz_id: id,
       text: data.question,
       type: data.type || "qcm",
+      astuce: data.astuce,
       points: "1",
     });
     await this.questionRepository.save(question);
