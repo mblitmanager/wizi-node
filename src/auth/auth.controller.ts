@@ -14,22 +14,22 @@ import { ApiResponseService } from "../common/services/api-response.service";
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private apiResponse: ApiResponseService
+    private apiResponse: ApiResponseService,
   ) {}
 
   @Post("login")
-  async login(@Body() credentials: any) {
+  async login(@Request() req: any, @Body() credentials: any) {
     console.log("Login attempt:", credentials.email);
     const user = await this.authService.validateUser(
       credentials.email,
-      credentials.password
+      credentials.password,
     );
     if (!user) {
       console.log("Login failed for:", credentials.email);
       return this.apiResponse.error("Invalid credentials", 401);
     }
     console.log("Login success for:", credentials.email);
-    const result = await this.authService.login(user);
+    const result = await this.authService.login(user, req);
     console.log("Sending Login Response:", JSON.stringify(result, null, 2));
     return this.apiResponse.success(result);
   }

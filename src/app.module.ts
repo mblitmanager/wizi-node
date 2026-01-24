@@ -60,6 +60,7 @@ import { ProgressionModule } from "./progression/progression.module";
 import { WorkersModule } from "./workers/workers.module";
 import { GoogleCalendar } from "./entities/google-calendar.entity";
 import { GoogleCalendarEvent } from "./entities/google-calendar-event.entity";
+import { LoginHistory } from "./entities/login-history.entity";
 
 @Module({
   imports: [
@@ -106,6 +107,7 @@ import { GoogleCalendarEvent } from "./entities/google-calendar-event.entity";
           Participation,
           GoogleCalendar,
           GoogleCalendarEvent,
+          LoginHistory,
         ],
         synchronize: false,
         logging: ["query", "error"],
@@ -145,6 +147,7 @@ import { GoogleCalendarEvent } from "./entities/google-calendar-event.entity";
       Participation,
       GoogleCalendar,
       GoogleCalendarEvent,
+      LoginHistory,
     ]),
     AuthModule,
     StagiaireModule,

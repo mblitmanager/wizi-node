@@ -16,8 +16,10 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(LoginHistory)
+    private loginHistoryRepository: Repository<LoginHistory>,
     private jwtService: JwtService,
-    private mailService: MailService
+    private mailService: MailService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -38,15 +40,46 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
+  async login(user: any, req?: any) {
     const payload = { email: user.email, sub: user.id, role: user.role };
+    const now = new Date();
 
     // Persist login time and online status
     await this.userRepository.update(user.id, {
-      last_login_at: new Date(),
+      last_login_at: now,
       is_online: true,
-      last_activity_at: new Date(),
+      last_activity_at: now,
     });
+
+    // Create login history record
+    if (req) {
+      try {
+        const userAgent = req.headers["user-agent"] || "";
+        const ip =
+          req.headers["x-forwarded-for"] ||
+          req.connection.remoteAddress ||
+          req.ip;
+
+        await this.loginHistoryRepository.save({
+          user_id: user.id,
+          ip_address: typeof ip === "string" ? ip : JSON.stringify(ip),
+          device: userAgent.substring(0, 255), // Simple truncation
+          browser: userAgent.includes("Chrome")
+            ? "Chrome"
+            : userAgent.includes("Firefox")
+              ? "Firefox"
+              : "Other",
+          platform: userAgent.includes("Windows")
+            ? "Windows"
+            : userAgent.includes("Mac")
+              ? "MacOS"
+              : "Mobile",
+          login_at: now,
+        });
+      } catch (e) {
+        console.error("Failed to log login history:", e);
+      }
+    }
 
     return {
       token: this.jwtService.sign(payload),
@@ -64,7 +97,7 @@ export class AuthService {
       if (isNaN(d.getTime())) return null;
       const pad = (n: number) => n.toString().padStart(2, "0");
       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(
-        d.getDate()
+        d.getDate(),
       )} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     };
 
@@ -179,7 +212,7 @@ export class AuthService {
             path: join(process.cwd(), "src/mail/templates/assets/like.png"),
             cid: "like",
           },
-        ]
+        ],
       );
     } catch (mailError) {
       console.error("Failed to send welcome email:", mailError);

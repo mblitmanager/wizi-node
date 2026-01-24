@@ -3,6 +3,7 @@ import { AuthService } from "./auth.service";
 import { AuthController } from "./auth.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "../entities/user.entity";
+import { LoginHistory } from "../entities/login-history.entity";
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { PassportModule } from "@nestjs/passport";
@@ -14,7 +15,7 @@ import { CommonModule } from "../common/common.module";
   imports: [
     MailModule,
     CommonModule,
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, LoginHistory]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
