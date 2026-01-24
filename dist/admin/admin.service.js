@@ -1344,8 +1344,12 @@ let AdminService = class AdminService {
                 .select("COUNT(*)", "total")
                 .addSelect('SUM(CASE WHEN qp.status = "completed" THEN 1 ELSE 0 END)', "completed")
                 .addSelect("AVG(qp.score)", "avg_score")
-                .addSelect("SUM(qp.score)", "total_points")
                 .where("qp.user_id = :uid", { uid: stagiaire.user_id })
+                .getRawOne();
+            const rankingStats = await this.classementRepository
+                .createQueryBuilder("c")
+                .select("SUM(c.points)", "total_points")
+                .where("c.stagiaire_id = :sid", { sid: stagiaire.id })
                 .getRawOne();
             comparison.push({
                 id: stagiaire.id,
@@ -1358,7 +1362,7 @@ let AdminService = class AdminService {
                 total_quizzes: parseInt(stats.total),
                 completed_quizzes: parseInt(stats.completed),
                 avg_score: Math.round((stats.avg_score || 0) * 10) / 10,
-                total_points: parseInt(stats.total_points || 0),
+                total_points: parseInt(rankingStats.total_points || 0),
                 completion_rate: stats.total > 0
                     ? Math.round((stats.completed / stats.total) * 1000) / 10
                     : 0,
@@ -1521,7 +1525,10 @@ let AdminService = class AdminService {
             order: { created_at: "DESC" },
         });
         const completedQuizzes = quizParticipations.filter((p) => p.status === "completed");
-        const totalScore = completedQuizzes.reduce((acc, p) => acc + (p.score || 0), 0);
+        const classements = await this.classementRepository.find({
+            where: { stagiaire_id: id },
+        });
+        const totalScore = classements.reduce((acc, c) => acc + (c.points || 0), 0);
         const avgScore = completedQuizzes.length > 0 ? totalScore / completedQuizzes.length : 0;
         const totalTime = completedQuizzes.reduce((acc, p) => acc + (p.time_spent || 0), 0);
         const formationsCompleted = stagiaire.stagiaire_catalogue_formations.filter((scf) => scf.date_fin != null).length;
@@ -1658,26 +1665,24 @@ let AdminService = class AdminService {
         });
         if (!formateur)
             return [];
-        const stagiaireUserIds = formateur.stagiaires
-            .map((s) => s.user?.id)
-            .filter((id) => id != null);
-        if (stagiaireUserIds.length === 0)
+        const stagiaireIds = formateur.stagiaires.map((s) => s.id);
+        if (stagiaireIds.length === 0)
             return [];
-        const quizStats = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .select("qp.user_id", "user_id")
-            .addSelect("COUNT(DISTINCT qp.id)", "total_quizzes")
-            .addSelect("SUM(qp.score)", "total_points")
-            .addSelect("MAX(qp.created_at)", "last_quiz_at")
-            .where("qp.user_id IN (:...ids)", { ids: stagiaireUserIds })
-            .groupBy("qp.user_id")
+        const quizStats = await this.classementRepository
+            .createQueryBuilder("c")
+            .select("c.stagiaire_id", "stagiaire_id")
+            .addSelect("COUNT(c.id)", "total_quizzes")
+            .addSelect("SUM(c.points)", "total_points")
+            .addSelect("MAX(c.created_at)", "last_quiz_at")
+            .where("c.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .groupBy("c.stagiaire_id")
             .getRawMany();
-        const quizStatsMap = new Map(quizStats.map((s) => [s.user_id, s]));
+        const quizStatsMap = new Map(quizStats.map((s) => [parseInt(s.stagiaire_id), s]));
         const performance = formateur.stagiaires
             .map((stagiaire) => {
             if (!stagiaire.user)
                 return null;
-            const stats = quizStatsMap.get(stagiaire.user.id);
+            const stats = quizStatsMap.get(stagiaire.id);
             return {
                 id: stagiaire.id,
                 prenom: stagiaire.prenom,
