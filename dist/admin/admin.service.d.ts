@@ -591,7 +591,7 @@ export declare class AdminService {
         id: number;
         date: Date;
         statut: string;
-        formation: any;
+        formation: string;
         stagiaire: {
             name: string;
             prenom: string;

@@ -1783,7 +1783,7 @@ let AdminService = class AdminService {
             .createQueryBuilder("d")
             .leftJoinAndSelect("d.filleul", "filleul")
             .leftJoinAndSelect("filleul.stagiaire", "stagiaire")
-            .leftJoinAndSelect("d.catalogue_formation", "formation")
+            .leftJoinAndSelect("d.formation", "formation")
             .limit(100);
         if (role === "stagiaire") {
             query.andWhere("d.filleul_id = :userId", { userId });
@@ -1804,7 +1804,7 @@ let AdminService = class AdminService {
             id: d.id,
             date: d.date_demande,
             statut: d.statut,
-            formation: d.catalogue_formation?.titre || "Formation",
+            formation: d.formation?.titre || "Formation",
             stagiaire: d.filleul
                 ? { name: d.filleul.name, prenom: d.filleul.stagiaire?.prenom }
                 : null,
