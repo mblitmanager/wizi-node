@@ -49,8 +49,8 @@ export declare class FormateurController {
     arenaRanking(period?: string, formationId?: number): Promise<any>;
     rankingByFormation(id: number, period?: string): Promise<any>;
     mesStagiairesRanking(req: any, period?: string): Promise<any>;
-    formationsPerformanceSlash(req: any): Promise<any>;
     formationsPerformance(req: any): Promise<any>;
+    studentsPerformance(req: any): Promise<any>;
     stagiaireFormationDetails(id: number): Promise<any>;
     formationsPerformanceLegacy(req: any): Promise<any>;
     analyticsDashboard(req: any, period?: number, formationId?: number): Promise<any>;

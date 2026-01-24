@@ -78,14 +78,24 @@ export class AdminService {
     let avgScore = 0;
     let totalQuizzesTaken = 0;
     if (userIds.length > 0) {
-      const classements = await this.classementRepository.find({
-        where: { stagiaire: { user_id: In(userIds) } },
-      });
-      if (classements.length > 0) {
+      // Correction: Utiliser le meilleur score par quiz pour la moyenne (Parité Laravel)
+      const bestScores = await this.classementRepository
+        .createQueryBuilder("c")
+        .innerJoin("c.stagiaire", "s")
+        .where("s.user_id IN (:...userIds)", { userIds })
+        .select("c.quiz_id", "quiz_id")
+        .addSelect("MAX(c.points)", "best_points")
+        .groupBy("s.user_id")
+        .addGroupBy("c.quiz_id")
+        .getRawMany();
+
+      if (bestScores.length > 0) {
         avgScore =
-          classements.reduce((acc, c) => acc + (c.points || 0), 0) /
-          classements.length;
-        totalQuizzesTaken = classements.length;
+          bestScores.reduce(
+            (acc, c) => acc + (parseInt(c.best_points) || 0),
+            0,
+          ) / bestScores.length;
+        totalQuizzesTaken = bestScores.length;
       }
     }
 

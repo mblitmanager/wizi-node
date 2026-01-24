@@ -1305,13 +1305,11 @@ let AdminService = class AdminService {
                 .getRawOne();
             performance.push({
                 id: formation.id,
-                nom: formation.titre,
-                title: formation.titre,
-                total_stagiaires: stagiaireIds.length,
-                completion_rate: stats.total > 0
-                    ? Math.round((stats.completed / stats.total) * 1000) / 10
-                    : 0,
-                average_score: Math.round((stats.avg_score || 0) * 10) / 10,
+                titre: formation.titre,
+                image_url: formation.image_url,
+                student_count: stagiaireIds.length,
+                avg_score: Math.round((stats.avg_score || 0) * 10) / 10,
+                total_completions: Number(stats.completed || 0),
             });
         }
         return performance;

@@ -38,7 +38,7 @@ export class QuizService {
     @InjectRepository(Stagiaire)
     private stagiaireRepository: Repository<Stagiaire>,
     @InjectRepository(StagiaireCatalogueFormation)
-    private scfRepository: Repository<StagiaireCatalogueFormation>
+    private scfRepository: Repository<StagiaireCatalogueFormation>,
   ) {}
 
   async getAllQuizzes() {
@@ -60,7 +60,7 @@ export class QuizService {
           "stagiaire_catalogue_formations",
           "scf",
           "scf.catalogue_formation_id = cf.id AND scf.stagiaire_id = :stagiaireId",
-          { stagiaireId }
+          { stagiaireId },
         );
     }
 
@@ -68,7 +68,7 @@ export class QuizService {
 
     // Collect all quiz IDs to fetch questions with reponses in one query
     const quizIds = formations.flatMap((f) =>
-      (f.quizzes || []).map((q) => q.id)
+      (f.quizzes || []).map((q) => q.id),
     );
 
     // Fetch questions with reponses separately using find/In for better relation handling
@@ -82,7 +82,7 @@ export class QuizService {
 
       // Filter questions with at least one reponse
       allQuestions = allQuestions.filter(
-        (q) => q.reponses && q.reponses.length > 0
+        (q) => q.reponses && q.reponses.length > 0,
       );
 
       // Debug: Check a specific question that was problematic
@@ -90,12 +90,12 @@ export class QuizService {
       if (debugQ) {
         console.log(
           "DEBUG: Question 6914 reponses:",
-          JSON.stringify(debugQ.reponses)
+          JSON.stringify(debugQ.reponses),
         );
       } else if (allQuestions.length > 0) {
         console.log(
           "DEBUG: First question reponses:",
-          JSON.stringify(allQuestions[0].reponses)
+          JSON.stringify(allQuestions[0].reponses),
         );
       }
     }
@@ -395,7 +395,7 @@ export class QuizService {
         "catalogue.stagiaire_catalogue_formations",
         "scf",
         "scf.stagiaire_id = :stagiaireId",
-        { stagiaireId }
+        { stagiaireId },
       )
       .innerJoin("quiz.questions", "questions")
       .innerJoin("questions.reponses", "reponses")
@@ -448,7 +448,7 @@ export class QuizService {
       .addSelect("AVG(classement.points)", "average_score")
       .where(
         "classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
-        { userId }
+        { userId },
       )
       .getRawOne();
 
@@ -475,7 +475,7 @@ export class QuizService {
       .addSelect("AVG(classement.points)", "average_points")
       .where(
         "classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
-        { userId }
+        { userId },
       )
       .groupBy("formation.categorie")
       .getRawMany();
@@ -500,7 +500,7 @@ export class QuizService {
       .addSelect("AVG(classement.points)", "average_points")
       .where(
         "classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
-        { userId }
+        { userId },
       )
       .groupBy("DATE(classement.created_at)")
       .orderBy("DATE(classement.created_at)", "DESC")
@@ -517,7 +517,7 @@ export class QuizService {
       .addSelect("classement.created_at", "date")
       .where(
         "classement.stagiaire_id IN (SELECT id FROM stagiaires WHERE user_id = :userId)",
-        { userId }
+        { userId },
       )
       .orderBy("classement.created_at", "DESC")
       .take(20)
@@ -534,7 +534,7 @@ export class QuizService {
       .innerJoin(
         "stagiaire_catalogue_formations",
         "scf",
-        "scf.catalogue_formation_id = cf.id"
+        "scf.catalogue_formation_id = cf.id",
       )
       .where("formation.categorie = :category", { category })
       .andWhere("scf.stagiaire_id = :stagiaireId", { stagiaireId })
@@ -592,7 +592,7 @@ export class QuizService {
     const averageScore =
       totalAttempts > 0
         ? Math.round(
-            (scores.reduce((a, b) => a + b, 0) / totalAttempts) * 100
+            (scores.reduce((a, b) => a + b, 0) / totalAttempts) * 100,
           ) / 100
         : 0;
     const bestScore = totalAttempts > 0 ? Math.max(...scores) : 0;
@@ -620,7 +620,7 @@ export class QuizService {
 
   private async isAnswerCorrect(
     question: Question,
-    selectedAnswers: any
+    selectedAnswers: any,
   ): Promise<any> {
     const normalize = (value: any) => {
       if (Array.isArray(value)) {
@@ -641,7 +641,7 @@ export class QuizService {
       case "correspondance":
         // Node implementation using Reponse.match_pair instead of separate table
         const reponsesMap = new Map(
-          question.reponses.map((r) => [r.id.toString(), r.text])
+          question.reponses.map((r) => [r.id.toString(), r.text]),
         );
 
         const selectedPairs: Record<string, string> = {};
@@ -750,7 +750,7 @@ export class QuizService {
           // Simple array comparison if no groups? Unlikely for 'remplir le champ vide' but mirroring Laravel
           const userTexts = cleanedSelectedAnswers.map((v) => normalize(v));
           const correctTexts = Object.values(correctBlanks).map((v) =>
-            normalize(v)
+            normalize(v),
           );
           // Naive comparison
           isBlankCorrect =
@@ -812,7 +812,7 @@ export class QuizService {
     userId: number,
     stagiaireId: number,
     answers: Record<string, any>,
-    timeSpent: number
+    timeSpent: number,
   ) {
     const quiz = await this.quizRepository.findOne({
       where: { id: quizId },
@@ -1081,6 +1081,8 @@ export class QuizService {
           questions: [], // Laravel's getQuizHistory (Progression list) doesn't include questions
         },
         score: participation.score || 0,
+        points: participation.score || 0, // Robustness alias
+        totalPoints: participation.score || 0, // Robustness alias
         completedAt: participation.completed_at
           ? participation.completed_at.toISOString()
           : null,
