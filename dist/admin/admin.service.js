@@ -1667,6 +1667,7 @@ let AdminService = class AdminService {
             .createQueryBuilder("qp")
             .select("qp.user_id", "user_id")
             .addSelect("COUNT(DISTINCT qp.id)", "total_quizzes")
+            .addSelect("SUM(qp.score)", "total_points")
             .addSelect("MAX(qp.created_at)", "last_quiz_at")
             .where("qp.user_id IN (:...ids)", { ids: stagiaireUserIds })
             .groupBy("qp.user_id")
@@ -1685,6 +1686,9 @@ let AdminService = class AdminService {
                 image: stagiaire.user.image,
                 last_quiz_at: stats ? stats.last_quiz_at : null,
                 total_quizzes: stats ? parseInt(stats.total_quizzes) : 0,
+                total_points: stats
+                    ? Math.round(parseFloat(stats.total_points || "0"))
+                    : 0,
                 total_logins: stagiaire.login_streak || 0,
             };
         })

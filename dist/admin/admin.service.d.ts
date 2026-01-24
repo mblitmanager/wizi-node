@@ -563,6 +563,7 @@ export declare class AdminService {
         image: any;
         last_quiz_at: any;
         total_quizzes: number;
+        total_points: number;
         total_logins: any;
     }[]>;
     getFormateurFormationStagiaires(userId: number, formationId: number): Promise<{
