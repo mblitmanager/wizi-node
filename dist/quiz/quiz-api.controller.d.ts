@@ -53,6 +53,8 @@ export declare class QuizApiController {
             questions: any[];
         };
         score: number;
+        points: number;
+        totalPoints: number;
         completedAt: string;
         timeSpent: number;
         totalQuestions: number;

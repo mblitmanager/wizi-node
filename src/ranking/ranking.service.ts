@@ -539,7 +539,10 @@ export class RankingService {
     });
 
     if (!stagiaire) {
-      throw new NotFoundException("Stagiaire not found");
+      return {
+        totalPoints: 0,
+        accessibleLevels: ["debutant"],
+      };
     }
 
     const totalPoints = stagiaire.classements.reduce(

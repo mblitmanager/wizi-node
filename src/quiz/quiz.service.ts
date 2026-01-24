@@ -381,7 +381,7 @@ export class QuizService {
     });
 
     if (!user?.stagiaire) {
-      throw new NotFoundException("Aucun stagiaire associé à cet utilisateur");
+      return [];
     }
 
     const stagiaireId = user.stagiaire.id;

@@ -322,7 +322,7 @@ let QuizService = class QuizService {
             relations: ["stagiaire"],
         });
         if (!user?.stagiaire) {
-            throw new common_1.NotFoundException("Aucun stagiaire associé à cet utilisateur");
+            return [];
         }
         const stagiaireId = user.stagiaire.id;
         const quizzes = await this.quizRepository
@@ -870,6 +870,8 @@ let QuizService = class QuizService {
                     questions: [],
                 },
                 score: participation.score || 0,
+                points: participation.score || 0,
+                totalPoints: participation.score || 0,
                 completedAt: participation.completed_at
                     ? participation.completed_at.toISOString()
                     : null,

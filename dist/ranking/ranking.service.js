@@ -436,7 +436,10 @@ let RankingService = class RankingService {
             relations: ["classements"],
         });
         if (!stagiaire) {
-            throw new common_1.NotFoundException("Stagiaire not found");
+            return {
+                totalPoints: 0,
+                accessibleLevels: ["debutant"],
+            };
         }
         const totalPoints = stagiaire.classements.reduce((sum, c) => sum + (c.points || 0), 0);
         const accessibleLevels = ["debutant"];

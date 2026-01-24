@@ -281,6 +281,8 @@ export declare class QuizService {
             questions: any[];
         };
         score: number;
+        points: number;
+        totalPoints: number;
         completedAt: string;
         timeSpent: number;
         totalQuestions: number;
