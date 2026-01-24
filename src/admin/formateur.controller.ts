@@ -523,6 +523,12 @@ export class FormateurController {
     });
   }
 
+  @Get("analytics/stagiaire/:id/formations")
+  async stagiaireFormationDetails(@Param("id") id: number) {
+    const details = await this.adminService.getStagiaireFullFormations(id);
+    return this.apiResponse.success(details);
+  }
+
   @Get("analytics/formations-performance")
   async formationsPerformanceLegacy(@Request() req) {
     const data = await this.adminService.getFormateurFormationsPerformance(
@@ -602,5 +608,23 @@ export class FormateurController {
       body,
     );
     return this.apiResponse.success(result);
+  }
+
+  @Get("suivi/demandes")
+  async seguimientoDemandes(@Request() req: any) {
+    const data = await this.adminService.getDemandesSuivi(
+      req.user.id,
+      req.user.role,
+    );
+    return this.apiResponse.success(data);
+  }
+
+  @Get("suivi/parrainage")
+  async seguimientoParrainage(@Request() req: any) {
+    const data = await this.adminService.getParrainageSuivi(
+      req.user.id,
+      req.user.role,
+    );
+    return this.apiResponse.success(data);
   }
 }

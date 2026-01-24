@@ -13,6 +13,8 @@ import { Media } from "../entities/media.entity";
 import { MediaStagiaire } from "../entities/media-stagiaire.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 import { Quiz } from "../entities/quiz.entity";
+import { DemandeInscription } from "../entities/demande-inscription.entity";
+import { Parrainage } from "../entities/parrainage.entity";
 
 @Injectable()
 export class AdminService {
@@ -39,6 +41,10 @@ export class AdminService {
     private classementRepository: Repository<Classement>,
     @InjectRepository(Quiz)
     private quizRepository: Repository<Quiz>,
+    @InjectRepository(DemandeInscription)
+    private demandeInscriptionRepository: Repository<DemandeInscription>,
+    @InjectRepository(Parrainage)
+    private parrainageRepository: Repository<Parrainage>,
     private notificationService: NotificationService,
   ) {}
 
@@ -1958,7 +1964,7 @@ export class AdminService {
     // 1. Fetch Quiz Participations
     const quizParticipations = await this.quizParticipationRepository.find({
       where: { user_id: userId },
-      relations: ["quiz"],
+      relations: ["quiz", "quiz.questions"],
       order: { created_at: "DESC" },
     });
 
@@ -2063,7 +2069,25 @@ export class AdminService {
         average_score: Math.round(avgScore * 10) / 10,
         total_time_minutes: Math.round(totalTime / 60),
         login_streak: stagiaire.login_streak || 0,
+        last_activity: stagiaire.user?.last_activity_at || null,
       },
+      quiz_stats: {
+        total_quiz: completedQuizzes.length,
+        avg_score: Math.round(avgScore * 10) / 10,
+        best_score: completedQuizzes.reduce(
+          (max, p) => Math.max(max, p.score || 0),
+          0,
+        ),
+        total_correct: completedQuizzes.reduce(
+          (acc, p) => acc + (p.correct_answers || 0),
+          0,
+        ),
+        total_questions: completedQuizzes.reduce(
+          (acc, p) => acc + (p.quiz?.questions?.length || 10),
+          0,
+        ),
+      },
+
       activity: {
         last_30_days: last30Days,
         recent_activities: recentActivities,
@@ -2071,6 +2095,42 @@ export class AdminService {
       formations,
       quiz_history: quizHistory,
     };
+  }
+
+  async getStagiaireFullFormations(id: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { id },
+      relations: [
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation.medias",
+        "medias",
+      ],
+    });
+
+    if (!stagiaire) throw new NotFoundException("Stagiaire non trouvé");
+
+    return stagiaire.stagiaire_catalogue_formations.map((scf) => {
+      const formation = scf.catalogue_formation?.formation;
+      const videos = formation?.medias?.filter((m) => m.type === "video") || [];
+      const totalVideos = videos.length;
+      const watchedCount =
+        stagiaire.medias?.filter((wm) => videos.some((v) => v.id === wm.id))
+          .length || 0;
+
+      return {
+        id: scf.catalogue_formation?.id,
+        titre: scf.catalogue_formation?.titre || "Formation",
+        completions: watchedCount,
+        total_videos: totalVideos,
+        avg_score: scf.date_fin
+          ? 100
+          : Math.round((watchedCount / (totalVideos || 1)) * 100),
+        last_activity: scf.updated_at,
+        best_score: scf.date_fin ? 100 : 0,
+      };
+    });
   }
 
   async getFormateurStudentsPerformance(userId: number) {
@@ -2108,12 +2168,13 @@ export class AdminService {
 
         return {
           id: stagiaire.id,
+          prenom: stagiaire.prenom,
           name: stagiaire.user.name || `${stagiaire.prenom}`,
           email: stagiaire.user.email,
           image: stagiaire.user.image,
           last_quiz_at: stats ? stats.last_quiz_at : null,
           total_quizzes: stats ? parseInt(stats.total_quizzes) : 0,
-          total_logins: stagiaire.login_streak || 0, // Using login_streak as proxy for activity level if total_logins unavailable
+          total_logins: stagiaire.login_streak || 0,
         };
       })
       .filter((p) => p !== null);
@@ -2241,5 +2302,100 @@ export class AdminService {
       message: `${assigned} stagiaire(s) assigné(s) à la formation ${formation.titre}`,
       assigned_count: assigned,
     };
+  }
+
+  async getDemandesSuivi(userId: number, role: string) {
+    const query = this.demandeInscriptionRepository
+      .createQueryBuilder("d")
+      .leftJoinAndSelect("d.filleul", "filleul")
+      .leftJoinAndSelect("filleul.stagiaire", "stagiaire")
+      .leftJoinAndSelect("d.catalogue_formation", "formation")
+      .limit(100);
+
+    if (role === "stagiaire") {
+      query.andWhere("d.filleul_id = :userId", { userId });
+    } else if (role === "formateur" || role === "formatrice") {
+      const formateur = await this.formateurRepository.findOne({
+        where: { user_id: userId },
+      });
+      if (formateur) {
+        query.innerJoin(
+          "stagiaire",
+          "s",
+          "s.user_id = d.filleul_id AND s.formateur_id = :fId",
+          { fId: formateur.id },
+        );
+      }
+    } else if (role === "commercial") {
+      query.innerJoin(
+        "commercial",
+        "c",
+        "c.user_id = :userId AND d.filleul_id IN (SELECT user_id FROM stagiaire WHERE commercial_id = c.id)",
+        { userId },
+      );
+    }
+
+    const demandes = await query.orderBy("d.date_demande", "DESC").getMany();
+
+    return demandes.map((d) => ({
+      id: d.id,
+      date: d.date_demande,
+      statut: d.statut,
+      formation: d.catalogue_formation?.titre || "Formation",
+      stagiaire: d.filleul
+        ? { name: d.filleul.name, prenom: d.filleul.stagiaire?.prenom }
+        : null,
+      motif: d.motif,
+    }));
+  }
+
+  async getParrainageSuivi(userId: number, role: string) {
+    const query = this.parrainageRepository
+      .createQueryBuilder("p")
+      .leftJoinAndSelect("p.filleul", "filleul")
+      .leftJoinAndSelect("filleul.stagiaire", "stagiaire")
+      .leftJoinAndSelect("p.parrain", "parrain");
+
+    if (role === "stagiaire") {
+      query.andWhere("p.parrain_id = :userId", { userId });
+    } else if (role === "formateur" || role === "formatrice") {
+      const formateur = await this.formateurRepository.findOne({
+        where: { user_id: userId },
+      });
+      if (formateur) {
+        query.innerJoin(
+          "stagiaire",
+          "s",
+          "s.user_id = p.filleul_id AND s.formateur_id = :fId",
+          { fId: formateur.id },
+        );
+      }
+    } else if (role === "commercial") {
+      query.innerJoin(
+        "commercial",
+        "c",
+        "c.user_id = :userId AND p.filleul_id IN (SELECT user_id FROM stagiaire WHERE commercial_id = c.id)",
+        { userId },
+      );
+    }
+
+    const parrainages = await query
+      .orderBy("p.date_parrainage", "DESC")
+      .getMany();
+
+    return parrainages.map((p) => ({
+      id: p.id,
+      date: p.date_parrainage,
+      points: p.points,
+      gains: p.gains,
+      parrain: p.parrain ? { name: p.parrain.name } : null,
+      filleul: p.filleul
+        ? {
+            name: p.filleul.name,
+            prenom: p.filleul.stagiaire?.prenom,
+            statut: p.filleul.stagiaire?.statut,
+          }
+        : null,
+    }));
   }
 }

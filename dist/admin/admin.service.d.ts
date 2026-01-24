@@ -11,6 +11,8 @@ import { Media } from "../entities/media.entity";
 import { MediaStagiaire } from "../entities/media-stagiaire.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 import { Quiz } from "../entities/quiz.entity";
+import { DemandeInscription } from "../entities/demande-inscription.entity";
+import { Parrainage } from "../entities/parrainage.entity";
 export declare class AdminService {
     private stagiaireRepository;
     private userRepository;
@@ -23,8 +25,10 @@ export declare class AdminService {
     private stagiaireCatalogueFormationRepository;
     private classementRepository;
     private quizRepository;
+    private demandeInscriptionRepository;
+    private parrainageRepository;
     private notificationService;
-    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>, classementRepository: Repository<Classement>, quizRepository: Repository<Quiz>, notificationService: NotificationService);
+    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>, classementRepository: Repository<Classement>, quizRepository: Repository<Quiz>, demandeInscriptionRepository: Repository<DemandeInscription>, parrainageRepository: Repository<Parrainage>, notificationService: NotificationService);
     getFormateurDashboardStats(userId: number): Promise<{
         total_stagiaires: number;
         active_this_week: number;
@@ -506,6 +510,14 @@ export declare class AdminService {
             average_score: number;
             total_time_minutes: number;
             login_streak: number;
+            last_activity: Date;
+        };
+        quiz_stats: {
+            total_quiz: number;
+            avg_score: number;
+            best_score: number;
+            total_correct: number;
+            total_questions: number;
         };
         activity: {
             last_30_days: any[];
@@ -534,8 +546,18 @@ export declare class AdminService {
             time_spent: number;
         }[];
     }>;
+    getStagiaireFullFormations(id: number): Promise<{
+        id: number;
+        titre: string;
+        completions: number;
+        total_videos: number;
+        avg_score: number;
+        last_activity: Date;
+        best_score: number;
+    }[]>;
     getFormateurStudentsPerformance(userId: number): Promise<{
         id: any;
+        prenom: any;
         name: any;
         email: any;
         image: any;
@@ -565,4 +587,29 @@ export declare class AdminService {
         message: string;
         assigned_count: number;
     }>;
+    getDemandesSuivi(userId: number, role: string): Promise<{
+        id: number;
+        date: Date;
+        statut: string;
+        formation: any;
+        stagiaire: {
+            name: string;
+            prenom: string;
+        };
+        motif: string;
+    }[]>;
+    getParrainageSuivi(userId: number, role: string): Promise<{
+        id: number;
+        date: Date;
+        points: number;
+        gains: number;
+        parrain: {
+            name: string;
+        };
+        filleul: {
+            name: string;
+            prenom: string;
+            statut: string;
+        };
+    }[]>;
 }

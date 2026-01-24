@@ -352,6 +352,10 @@ let FormateurController = class FormateurController {
             },
         });
     }
+    async stagiaireFormationDetails(id) {
+        const details = await this.adminService.getStagiaireFullFormations(id);
+        return this.apiResponse.success(details);
+    }
     async formationsPerformanceLegacy(req) {
         const data = await this.adminService.getFormateurFormationsPerformance(req.user.id);
         return this.apiResponse.success(data);
@@ -379,6 +383,14 @@ let FormateurController = class FormateurController {
         const { recipient_ids, title, body } = data;
         const result = await this.adminService.sendNotification(req.user.id, recipient_ids, title, body);
         return this.apiResponse.success(result);
+    }
+    async seguimientoDemandes(req) {
+        const data = await this.adminService.getDemandesSuivi(req.user.id, req.user.role);
+        return this.apiResponse.success(data);
+    }
+    async seguimientoParrainage(req) {
+        const data = await this.adminService.getParrainageSuivi(req.user.id, req.user.role);
+        return this.apiResponse.success(data);
     }
 };
 exports.FormateurController = FormateurController;
@@ -589,6 +601,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "formationsPerformance", null);
 __decorate([
+    (0, common_1.Get)("analytics/stagiaire/:id/formations"),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "stagiaireFormationDetails", null);
+__decorate([
     (0, common_1.Get)("analytics/formations-performance"),
     __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
@@ -644,6 +663,20 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "sendNotification", null);
+__decorate([
+    (0, common_1.Get)("suivi/demandes"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "seguimientoDemandes", null);
+__decorate([
+    (0, common_1.Get)("suivi/parrainage"),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "seguimientoParrainage", null);
 exports.FormateurController = FormateurController = __decorate([
     (0, common_1.Controller)("formateur"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),

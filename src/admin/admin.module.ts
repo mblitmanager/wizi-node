@@ -60,7 +60,9 @@ import { PoleRelationClient } from "../entities/pole-relation-client.entity";
 import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-formation.entity";
 import { Partenaire } from "../entities/partenaire.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
+import { Parrainage } from "../entities/parrainage.entity";
 import { ParrainageEvent } from "../entities/parrainage-event.entity";
+
 import { Classement } from "../entities/classement.entity";
 import { Progression } from "../entities/progression.entity";
 import { StagiaireAchievement } from "../entities/stagiaire-achievement.entity";
@@ -90,7 +92,9 @@ import { MediaStagiaire } from "../entities/media-stagiaire.entity";
       StagiaireCatalogueFormation,
       Partenaire,
       DemandeInscription,
+      Parrainage,
       ParrainageEvent,
+
       Classement,
       Progression,
       StagiaireAchievement,

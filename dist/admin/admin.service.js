@@ -28,8 +28,10 @@ const media_entity_1 = require("../entities/media.entity");
 const media_stagiaire_entity_1 = require("../entities/media-stagiaire.entity");
 const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-catalogue-formation.entity");
 const quiz_entity_1 = require("../entities/quiz.entity");
+const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
+const parrainage_entity_1 = require("../entities/parrainage.entity");
 let AdminService = class AdminService {
-    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, stagiaireCatalogueFormationRepository, classementRepository, quizRepository, notificationService) {
+    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, stagiaireCatalogueFormationRepository, classementRepository, quizRepository, demandeInscriptionRepository, parrainageRepository, notificationService) {
         this.stagiaireRepository = stagiaireRepository;
         this.userRepository = userRepository;
         this.quizParticipationRepository = quizParticipationRepository;
@@ -41,6 +43,8 @@ let AdminService = class AdminService {
         this.stagiaireCatalogueFormationRepository = stagiaireCatalogueFormationRepository;
         this.classementRepository = classementRepository;
         this.quizRepository = quizRepository;
+        this.demandeInscriptionRepository = demandeInscriptionRepository;
+        this.parrainageRepository = parrainageRepository;
         this.notificationService = notificationService;
     }
     async getFormateurDashboardStats(userId) {
@@ -1513,7 +1517,7 @@ let AdminService = class AdminService {
         const userId = stagiaire.user_id;
         const quizParticipations = await this.quizParticipationRepository.find({
             where: { user_id: userId },
-            relations: ["quiz"],
+            relations: ["quiz", "quiz.questions"],
             order: { created_at: "DESC" },
         });
         const completedQuizzes = quizParticipations.filter((p) => p.status === "completed");
@@ -1588,6 +1592,14 @@ let AdminService = class AdminService {
                 average_score: Math.round(avgScore * 10) / 10,
                 total_time_minutes: Math.round(totalTime / 60),
                 login_streak: stagiaire.login_streak || 0,
+                last_activity: stagiaire.user?.last_activity_at || null,
+            },
+            quiz_stats: {
+                total_quiz: completedQuizzes.length,
+                avg_score: Math.round(avgScore * 10) / 10,
+                best_score: completedQuizzes.reduce((max, p) => Math.max(max, p.score || 0), 0),
+                total_correct: completedQuizzes.reduce((acc, p) => acc + (p.correct_answers || 0), 0),
+                total_questions: completedQuizzes.reduce((acc, p) => acc + (p.quiz?.questions?.length || 10), 0),
             },
             activity: {
                 last_30_days: last30Days,
@@ -1596,6 +1608,38 @@ let AdminService = class AdminService {
             formations,
             quiz_history: quizHistory,
         };
+    }
+    async getStagiaireFullFormations(id) {
+        const stagiaire = await this.stagiaireRepository.findOne({
+            where: { id },
+            relations: [
+                "stagiaire_catalogue_formations",
+                "stagiaire_catalogue_formations.catalogue_formation",
+                "stagiaire_catalogue_formations.catalogue_formation.formation",
+                "stagiaire_catalogue_formations.catalogue_formation.formation.medias",
+                "medias",
+            ],
+        });
+        if (!stagiaire)
+            throw new common_1.NotFoundException("Stagiaire non trouvé");
+        return stagiaire.stagiaire_catalogue_formations.map((scf) => {
+            const formation = scf.catalogue_formation?.formation;
+            const videos = formation?.medias?.filter((m) => m.type === "video") || [];
+            const totalVideos = videos.length;
+            const watchedCount = stagiaire.medias?.filter((wm) => videos.some((v) => v.id === wm.id))
+                .length || 0;
+            return {
+                id: scf.catalogue_formation?.id,
+                titre: scf.catalogue_formation?.titre || "Formation",
+                completions: watchedCount,
+                total_videos: totalVideos,
+                avg_score: scf.date_fin
+                    ? 100
+                    : Math.round((watchedCount / (totalVideos || 1)) * 100),
+                last_activity: scf.updated_at,
+                best_score: scf.date_fin ? 100 : 0,
+            };
+        });
     }
     async getFormateurStudentsPerformance(userId) {
         const formateur = await this.formateurRepository.findOne({
@@ -1625,6 +1669,7 @@ let AdminService = class AdminService {
             const stats = quizStatsMap.get(stagiaire.user.id);
             return {
                 id: stagiaire.id,
+                prenom: stagiaire.prenom,
                 name: stagiaire.user.name || `${stagiaire.prenom}`,
                 email: stagiaire.user.email,
                 image: stagiaire.user.image,
@@ -1733,6 +1778,77 @@ let AdminService = class AdminService {
             assigned_count: assigned,
         };
     }
+    async getDemandesSuivi(userId, role) {
+        const query = this.demandeInscriptionRepository
+            .createQueryBuilder("d")
+            .leftJoinAndSelect("d.filleul", "filleul")
+            .leftJoinAndSelect("filleul.stagiaire", "stagiaire")
+            .leftJoinAndSelect("d.catalogue_formation", "formation")
+            .limit(100);
+        if (role === "stagiaire") {
+            query.andWhere("d.filleul_id = :userId", { userId });
+        }
+        else if (role === "formateur" || role === "formatrice") {
+            const formateur = await this.formateurRepository.findOne({
+                where: { user_id: userId },
+            });
+            if (formateur) {
+                query.innerJoin("stagiaire", "s", "s.user_id = d.filleul_id AND s.formateur_id = :fId", { fId: formateur.id });
+            }
+        }
+        else if (role === "commercial") {
+            query.innerJoin("commercial", "c", "c.user_id = :userId AND d.filleul_id IN (SELECT user_id FROM stagiaire WHERE commercial_id = c.id)", { userId });
+        }
+        const demandes = await query.orderBy("d.date_demande", "DESC").getMany();
+        return demandes.map((d) => ({
+            id: d.id,
+            date: d.date_demande,
+            statut: d.statut,
+            formation: d.catalogue_formation?.titre || "Formation",
+            stagiaire: d.filleul
+                ? { name: d.filleul.name, prenom: d.filleul.stagiaire?.prenom }
+                : null,
+            motif: d.motif,
+        }));
+    }
+    async getParrainageSuivi(userId, role) {
+        const query = this.parrainageRepository
+            .createQueryBuilder("p")
+            .leftJoinAndSelect("p.filleul", "filleul")
+            .leftJoinAndSelect("filleul.stagiaire", "stagiaire")
+            .leftJoinAndSelect("p.parrain", "parrain");
+        if (role === "stagiaire") {
+            query.andWhere("p.parrain_id = :userId", { userId });
+        }
+        else if (role === "formateur" || role === "formatrice") {
+            const formateur = await this.formateurRepository.findOne({
+                where: { user_id: userId },
+            });
+            if (formateur) {
+                query.innerJoin("stagiaire", "s", "s.user_id = p.filleul_id AND s.formateur_id = :fId", { fId: formateur.id });
+            }
+        }
+        else if (role === "commercial") {
+            query.innerJoin("commercial", "c", "c.user_id = :userId AND p.filleul_id IN (SELECT user_id FROM stagiaire WHERE commercial_id = c.id)", { userId });
+        }
+        const parrainages = await query
+            .orderBy("p.date_parrainage", "DESC")
+            .getMany();
+        return parrainages.map((p) => ({
+            id: p.id,
+            date: p.date_parrainage,
+            points: p.points,
+            gains: p.gains,
+            parrain: p.parrain ? { name: p.parrain.name } : null,
+            filleul: p.filleul
+                ? {
+                    name: p.filleul.name,
+                    prenom: p.filleul.stagiaire?.prenom,
+                    statut: p.filleul.stagiaire?.statut,
+                }
+                : null,
+        }));
+    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
@@ -1748,7 +1864,11 @@ exports.AdminService = AdminService = __decorate([
     __param(8, (0, typeorm_1.InjectRepository)(stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation)),
     __param(9, (0, typeorm_1.InjectRepository)(classement_entity_1.Classement)),
     __param(10, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),
+    __param(11, (0, typeorm_1.InjectRepository)(demande_inscription_entity_1.DemandeInscription)),
+    __param(12, (0, typeorm_1.InjectRepository)(parrainage_entity_1.Parrainage)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

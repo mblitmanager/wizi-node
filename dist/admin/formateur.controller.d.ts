@@ -50,6 +50,7 @@ export declare class FormateurController {
     mesStagiairesRanking(req: any, period?: string): Promise<any>;
     formationsPerformanceSlash(req: any): Promise<any>;
     formationsPerformance(req: any): Promise<any>;
+    stagiaireFormationDetails(id: number): Promise<any>;
     formationsPerformanceLegacy(req: any): Promise<any>;
     analyticsDashboard(req: any, period?: number, formationId?: number): Promise<any>;
     quizSuccessRate(req: any, period?: number, formationId?: number): Promise<any>;
@@ -57,4 +58,6 @@ export declare class FormateurController {
     activityHeatmap(req: any, period?: number, formationId?: number): Promise<any>;
     dropoutRate(req: any, formationId?: number): Promise<any>;
     sendNotification(req: any, data: any): Promise<any>;
+    seguimientoDemandes(req: any): Promise<any>;
+    seguimientoParrainage(req: any): Promise<any>;
 }
