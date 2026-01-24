@@ -1693,14 +1693,11 @@ export class AdminService {
 
       performance.push({
         id: formation.id,
-        nom: formation.titre,
-        title: formation.titre, // For Flutter compatibility
-        total_stagiaires: stagiaireIds.length,
-        completion_rate:
-          stats.total > 0
-            ? Math.round((stats.completed / stats.total) * 1000) / 10
-            : 0,
-        average_score: Math.round((stats.avg_score || 0) * 10) / 10,
+        titre: formation.titre,
+        image_url: formation.image_url,
+        student_count: stagiaireIds.length,
+        avg_score: Math.round((stats.avg_score || 0) * 10) / 10,
+        total_completions: Number(stats.completed || 0),
       });
     }
 
@@ -1957,6 +1954,13 @@ export class AdminService {
         "stagiaire_catalogue_formations",
         "stagiaire_catalogue_formations.catalogue_formation",
         "stagiaire_catalogue_formations.catalogue_formation.formation",
+        "formateurs",
+        "formateurs.user",
+        "poleRelationClients",
+        "poleRelationClients.user",
+        "commercials",
+        "commercials.user",
+        "partenaire",
       ],
     });
 
@@ -2079,8 +2083,45 @@ export class AdminService {
         created_at: stagiaire.created_at
           ? new Date(stagiaire.created_at).toISOString()
           : null,
+        date_inscription: stagiaire.date_inscription
+          ? new Date(stagiaire.date_inscription).toISOString()
+          : null,
+        date_debut_formation: stagiaire.date_debut_formation
+          ? new Date(stagiaire.date_debut_formation).toISOString()
+          : null,
         last_login: stagiaire.user?.last_login_at
           ? new Date(stagiaire.user.last_login_at).toISOString()
+          : null,
+      },
+      contacts: {
+        formateurs: (stagiaire.formateurs || []).map((f) => ({
+          id: f.id,
+          nom: `${f.prenom} ${f.user?.name || ""}`.trim(),
+          telephone: f.telephone,
+          email: f.user?.email,
+          image: f.user?.image,
+        })),
+        pole_relation: (stagiaire.poleRelationClients || []).map((p) => ({
+          id: p.id,
+          nom: p.user?.name || `${p.prenom || "Staff"}`,
+          telephone: p.telephone,
+          email: p.user?.email,
+        })),
+
+        commercials: (stagiaire.commercials || []).map((c) => ({
+          id: c.id,
+          nom: `${c.prenom} ${c.user?.name || ""}`.trim(),
+          telephone: c.telephone,
+          email: c.user?.email,
+          image: c.user?.image,
+        })),
+        partenaire: stagiaire.partenaire
+          ? {
+              id: stagiaire.partenaire.id,
+              nom: stagiaire.partenaire.identifiant || "Partenaire",
+              email: null,
+              telephone: null,
+            }
           : null,
       },
       stats: {
@@ -2349,18 +2390,16 @@ export class AdminService {
         where: { user_id: userId },
       });
       if (formateur) {
-        query.innerJoin(
-          "stagiaire",
-          "s",
-          "s.user_id = d.filleul_id AND s.formateur_id = :fId",
-          { fId: formateur.id },
-        );
+        query
+          .innerJoin(Stagiaire, "s", "s.user_id = d.filleul_id")
+          .innerJoin("s.formateurs", "f", "f.id = :fId", { fId: formateur.id });
       }
     } else if (role === "commercial") {
       query.innerJoin(
         "commercial",
         "c",
-        "c.user_id = :userId AND d.filleul_id IN (SELECT user_id FROM stagiaire WHERE commercial_id = c.id)",
+        "c.user_id = :userId AND d.filleul_id IN (SELECT user_id FROM stagiaires WHERE commercial_id = c.id)",
+
         { userId },
       );
     }
@@ -2373,8 +2412,13 @@ export class AdminService {
       statut: d.statut,
       formation: d.formation?.titre || "Formation",
       stagiaire: d.filleul
-        ? { name: d.filleul.name, prenom: d.filleul.stagiaire?.prenom }
+        ? {
+            id: d.filleul.stagiaire?.id,
+            name: d.filleul.name,
+            prenom: d.filleul.stagiaire?.prenom,
+          }
         : null,
+
       motif: d.motif,
     }));
   }
@@ -2393,18 +2437,19 @@ export class AdminService {
         where: { user_id: userId },
       });
       if (formateur) {
-        query.innerJoin(
-          "stagiaire",
-          "s",
-          "s.user_id = p.filleul_id AND s.formateur_id = :fId",
-          { fId: formateur.id },
-        );
+        query
+          .leftJoin(Stagiaire, "s_filter", "s_filter.user_id = p.filleul_id")
+          .leftJoin("s_filter.formateurs", "f_filter")
+          .andWhere("(p.parrain_id = :userId OR f_filter.id = :fId)", {
+            userId,
+            fId: formateur.id,
+          });
       }
     } else if (role === "commercial") {
       query.innerJoin(
         "commercial",
         "c",
-        "c.user_id = :userId AND p.filleul_id IN (SELECT user_id FROM stagiaire WHERE commercial_id = c.id)",
+        "c.user_id = :userId AND (p.filleul_id IN (SELECT user_id FROM stagiaires WHERE commercial_id = c.id) OR p.parrain_id IN (SELECT user_id FROM stagiaires WHERE commercial_id = c.id))",
         { userId },
       );
     }
@@ -2421,6 +2466,7 @@ export class AdminService {
       parrain: p.parrain ? { name: p.parrain.name } : null,
       filleul: p.filleul
         ? {
+            id: p.filleul.stagiaire?.id,
             name: p.filleul.name,
             prenom: p.filleul.stagiaire?.prenom,
             statut: p.filleul.stagiaire?.statut,

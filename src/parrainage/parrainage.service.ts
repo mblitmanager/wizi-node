@@ -10,7 +10,9 @@ import { ParrainageToken } from "../entities/parrainage-token.entity";
 import { ParrainageEvent } from "../entities/parrainage-event.entity";
 import { User } from "../entities/user.entity";
 import { Stagiaire } from "../entities/stagiaire.entity";
+import { Formateur } from "../entities/formateur.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
+
 import { CatalogueFormation } from "../entities/catalogue-formation.entity";
 import { MailService } from "../mail/mail.service";
 import * as crypto from "crypto";
@@ -35,7 +37,7 @@ export class ParrainageService {
     @InjectRepository(CatalogueFormation)
     private catalogueFormationRepository: Repository<CatalogueFormation>,
     private dataSource: DataSource,
-    private mailService: MailService
+    private mailService: MailService,
   ) {}
 
   async registerFilleul(data: any) {
@@ -54,7 +56,7 @@ export class ParrainageService {
 
       if (existingUser) {
         throw new BadRequestException(
-          "Cette adresse e-mail est déjà utilisée."
+          "Cette adresse e-mail est déjà utilisée.",
         );
       }
 
@@ -89,7 +91,7 @@ export class ParrainageService {
       });
       const savedStagiaire = await queryRunner.manager.save(
         Stagiaire,
-        stagiaire
+        stagiaire,
       );
 
       // Fetch parrain and formation details for email
@@ -97,13 +99,41 @@ export class ParrainageService {
         where: { id: data.parrain_id },
       });
 
+      // --- NEW: Inherit Trainers ---
+      // 1. Fetch parrain trainers if sponsor is a student
+      const parrainStagiaire = await queryRunner.manager.findOne(Stagiaire, {
+        where: { user_id: data.parrain_id },
+        relations: ["formateurs"],
+      });
+
+      // 2. Fetch parrain record if sponsor is a trainer
+      const parrainFormateur = await queryRunner.manager.findOne(Formateur, {
+        where: { user_id: data.parrain_id },
+      });
+
+      // 3. Assign trainers to the new student
+      if (parrainStagiaire && parrainStagiaire.formateurs?.length > 0) {
+        for (const f of parrainStagiaire.formateurs) {
+          await queryRunner.manager.insert("formateur_stagiaire", {
+            stagiaire_id: savedStagiaire.id,
+            formateur_id: f.id,
+          });
+        }
+      } else if (parrainFormateur) {
+        await queryRunner.manager.insert("formateur_stagiaire", {
+          stagiaire_id: savedStagiaire.id,
+          formateur_id: parrainFormateur.id,
+        });
+      }
+      // -----------------------------
+
       let catalogueFormation = null;
       if (data.catalogue_formation_id) {
         catalogueFormation = await queryRunner.manager.findOne(
           CatalogueFormation,
           {
             where: { id: data.catalogue_formation_id },
-          }
+          },
         );
       }
 
@@ -161,7 +191,7 @@ export class ParrainageService {
               formationDuration: catalogueFormation?.duree || "N/A",
               formationPrice: catalogueFormation?.tarif
                 ? new Intl.NumberFormat("fr-FR").format(
-                    catalogueFormation.tarif
+                    catalogueFormation.tarif,
                   )
                 : null,
             },
@@ -170,7 +200,7 @@ export class ParrainageService {
                 filename: "aopia.png",
                 path: join(
                   process.cwd(),
-                  "src/mail/templates/assets/aopia.png"
+                  "src/mail/templates/assets/aopia.png",
                 ),
                 cid: "aopia",
               },
@@ -179,14 +209,14 @@ export class ParrainageService {
                 path: join(process.cwd(), "src/mail/templates/assets/like.png"),
                 cid: "like",
               },
-            ]
+            ],
           )
           .catch((mailError) => {
             console.error(
               "Failed to send filleul confirmation email:",
-              mailError
+              mailError,
             );
-          })
+          }),
       );
 
       // Send notification email to Parrain
@@ -207,7 +237,7 @@ export class ParrainageService {
                   filename: "aopia.png",
                   path: join(
                     process.cwd(),
-                    "src/mail/templates/assets/aopia.png"
+                    "src/mail/templates/assets/aopia.png",
                   ),
                   cid: "aopia",
                 },
@@ -215,18 +245,18 @@ export class ParrainageService {
                   filename: "like.png",
                   path: join(
                     process.cwd(),
-                    "src/mail/templates/assets/like.png"
+                    "src/mail/templates/assets/like.png",
                   ),
                   cid: "like",
                 },
-              ]
+              ],
             )
             .catch((mailError) => {
               console.error(
                 "Failed to send parrain notification email:",
-                mailError
+                mailError,
               );
-            })
+            }),
         );
       }
 
@@ -306,11 +336,11 @@ export class ParrainageService {
     const nombreFilleuls = parrainages.length;
     const totalPoints = parrainages.reduce(
       (sum, p) => sum + (p.points || 0),
-      0
+      0,
     );
     const gains = parrainages.reduce(
       (sum, p) => sum + (Number(p.gains) || 0),
-      0
+      0,
     );
 
     return {
@@ -380,11 +410,11 @@ export class ParrainageService {
 
     const totalPoints = parrainages.reduce(
       (sum, p) => sum + (p.points || 0),
-      0
+      0,
     );
     const gains = parrainages.reduce(
       (sum, p) => sum + (Number(p.gains) || 0),
-      0
+      0,
     );
 
     return {

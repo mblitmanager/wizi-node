@@ -499,7 +499,37 @@ export declare class AdminService {
             telephone: string;
             image: string;
             created_at: string;
+            date_inscription: string;
+            date_debut_formation: string;
             last_login: string;
+        };
+        contacts: {
+            formateurs: {
+                id: any;
+                nom: string;
+                telephone: any;
+                email: any;
+                image: any;
+            }[];
+            pole_relation: {
+                id: number;
+                nom: string;
+                telephone: string;
+                email: string;
+            }[];
+            commercials: {
+                id: number;
+                nom: string;
+                telephone: string;
+                email: string;
+                image: string;
+            }[];
+            partenaire: {
+                id: number;
+                nom: string;
+                email: any;
+                telephone: any;
+            };
         };
         stats: {
             total_points: number;
@@ -602,6 +632,7 @@ export declare class AdminService {
         statut: string;
         formation: string;
         stagiaire: {
+            id: number;
             name: string;
             prenom: string;
         };
@@ -616,6 +647,7 @@ export declare class AdminService {
             name: string;
         };
         filleul: {
+            id: number;
             name: string;
             prenom: string;
             statut: string;

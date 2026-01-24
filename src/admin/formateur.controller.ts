@@ -502,13 +502,15 @@ export class FormateurController {
   }
 
   @Get("analytics/formations/performance")
-  async formationsPerformanceSlash(@Request() req) {
-    return this.formationsPerformance(req);
+  async formationsPerformance(@Request() req) {
+    const data = await this.adminService.getFormateurFormationsPerformance(
+      req.user.id,
+    );
+    return this.apiResponse.success(data);
   }
 
   @Get("analytics/performance")
-  @Get("analytics/performance")
-  async formationsPerformance(@Request() req) {
+  async studentsPerformance(@Request() req) {
     const performance = await this.adminService.getFormateurStudentsPerformance(
       req.user.id,
     );

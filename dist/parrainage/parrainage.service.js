@@ -21,6 +21,7 @@ const parrainage_token_entity_1 = require("../entities/parrainage-token.entity")
 const parrainage_event_entity_1 = require("../entities/parrainage-event.entity");
 const user_entity_1 = require("../entities/user.entity");
 const stagiaire_entity_1 = require("../entities/stagiaire.entity");
+const formateur_entity_1 = require("../entities/formateur.entity");
 const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
 const catalogue_formation_entity_1 = require("../entities/catalogue-formation.entity");
 const mail_service_1 = require("../mail/mail.service");
@@ -82,6 +83,27 @@ let ParrainageService = class ParrainageService {
             const parrain = await queryRunner.manager.findOne(user_entity_1.User, {
                 where: { id: data.parrain_id },
             });
+            const parrainStagiaire = await queryRunner.manager.findOne(stagiaire_entity_1.Stagiaire, {
+                where: { user_id: data.parrain_id },
+                relations: ["formateurs"],
+            });
+            const parrainFormateur = await queryRunner.manager.findOne(formateur_entity_1.Formateur, {
+                where: { user_id: data.parrain_id },
+            });
+            if (parrainStagiaire && parrainStagiaire.formateurs?.length > 0) {
+                for (const f of parrainStagiaire.formateurs) {
+                    await queryRunner.manager.insert("formateur_stagiaire", {
+                        stagiaire_id: savedStagiaire.id,
+                        formateur_id: f.id,
+                    });
+                }
+            }
+            else if (parrainFormateur) {
+                await queryRunner.manager.insert("formateur_stagiaire", {
+                    stagiaire_id: savedStagiaire.id,
+                    formateur_id: parrainFormateur.id,
+                });
+            }
             let catalogueFormation = null;
             if (data.catalogue_formation_id) {
                 catalogueFormation = await queryRunner.manager.findOne(catalogue_formation_entity_1.CatalogueFormation, {
