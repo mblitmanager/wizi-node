@@ -37,11 +37,11 @@ __decorate([
     __metadata("design:type", Date)
 ], MediaStagiaire.prototype, "created_at", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "int", default: 0 }),
+    (0, typeorm_1.Column)({ type: "int", default: 0, select: false }),
     __metadata("design:type", Number)
 ], MediaStagiaire.prototype, "current_time", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: "int", default: 0 }),
+    (0, typeorm_1.Column)({ type: "int", default: 0, select: false }),
     __metadata("design:type", Number)
 ], MediaStagiaire.prototype, "duration", void 0);
 __decorate([

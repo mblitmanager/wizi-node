@@ -1541,7 +1541,13 @@ let AdminService = class AdminService {
             where: { stagiaire_id: id },
         });
         const totalScore = classements.reduce((acc, c) => acc + (c.points || 0), 0);
-        const avgScore = completedQuizzes.length > 0 ? totalScore / completedQuizzes.length : 0;
+        const avgScore = completedQuizzes.length > 0
+            ? completedQuizzes.reduce((acc, p) => {
+                const totalQ = p.quiz?.questions?.length || 10;
+                const perc = ((p.correct_answers || 0) / totalQ) * 100;
+                return acc + perc;
+            }, 0) / completedQuizzes.length
+            : 0;
         const totalTime = completedQuizzes.reduce((acc, p) => acc + (p.time_spent || 0), 0);
         const formationsCompleted = stagiaire.stagiaire_catalogue_formations.filter((scf) => scf.date_fin != null).length;
         const formationsInProgress = stagiaire.stagiaire_catalogue_formations.filter((scf) => scf.date_fin == null).length;
@@ -1694,9 +1700,10 @@ let AdminService = class AdminService {
                 total_time_watched: await this.mediaStagiaireRepository
                     .find({
                     where: { stagiaire_id: id },
-                    select: ["duration"],
                 })
-                    .then((ms) => ms.reduce((acc, m) => acc + Math.round(m.duration || 0) / 60, 0))
+                    .then((ms) => {
+                    return Math.round(ms.reduce((acc, m) => acc + (m.duration || 0), 0) / 60);
+                })
                     .catch(() => 0),
             },
             formations,
