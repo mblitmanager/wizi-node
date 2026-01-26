@@ -2640,3 +2640,7 @@
 [2026-01-26T07:44:59.955Z] participations found: 37
 [2026-01-26T07:45:00.195Z] Starting getQuizHistory for userId: 18
 [2026-01-26T07:45:00.222Z] Stagiaire not found for userId: 18
+[2026-01-26T09:10:01.129Z] Starting getQuizHistory for userId: 18
+[2026-01-26T09:10:02.450Z] Stagiaire not found for userId: 18
+[2026-01-26T09:10:04.620Z] Starting getQuizHistory for userId: 18
+[2026-01-26T09:10:04.663Z] Stagiaire not found for userId: 18

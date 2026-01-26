@@ -16,6 +16,7 @@ import { Quiz } from "../entities/quiz.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { Parrainage } from "../entities/parrainage.entity";
 import { LoginHistory } from "../entities/login-history.entity";
+import { MailService } from "../mail/mail.service";
 
 @Injectable()
 export class AdminService {
@@ -49,6 +50,7 @@ export class AdminService {
     @InjectRepository(LoginHistory)
     private loginHistoryRepository: Repository<LoginHistory>,
     private notificationService: NotificationService,
+    private mailService: MailService,
   ) {}
 
   async getFormateurDashboardStats(userId: number) {
@@ -625,6 +627,72 @@ export class AdminService {
       email: s.user?.email || "",
       last_activity_at: null,
     }));
+  }
+
+  async getStagiaireProfileById(id: number) {
+    const stagiaire = await this.stagiaireRepository.findOne({
+      where: { id },
+      relations: [
+        "user",
+        "stagiaire_catalogue_formations",
+        "stagiaire_catalogue_formations.catalogue_formation",
+        "stagiaire_catalogue_formations.catalogue_formation.formation",
+      ],
+    });
+
+    if (!stagiaire) return null;
+
+    const quizStatsRaw = await this.quizParticipationRepository
+      .createQueryBuilder("qp")
+      .leftJoin("qp.quiz", "q")
+      .leftJoin("q.questions", "ques")
+      .where("qp.user_id = :userId", { userId: stagiaire.user_id })
+      .select([
+        "COUNT(DISTINCT qp.id) as total_quiz",
+        "AVG(qp.score) as avg_score",
+        "MAX(qp.score) as best_score",
+        "SUM(qp.correct_answers) as total_correct",
+        "COUNT(ques.id) as total_questions",
+      ])
+      .getRawOne();
+
+    const formatDate = (date: Date | null) => {
+      if (!date) return null;
+      return new Date(date).toISOString().replace("T", " ").substring(0, 19);
+    };
+
+    return {
+      stagiaire: {
+        id: stagiaire.id,
+        prenom: stagiaire.prenom,
+        nom: stagiaire.user?.name ?? "N/A",
+        email: stagiaire.user?.email ?? "N/A",
+        avatar: stagiaire.user?.image || null,
+        civilite: stagiaire.civilite || "M.",
+      },
+      quiz_stats: {
+        total_quiz: parseInt(quizStatsRaw.total_quiz) || 0,
+        avg_score: parseFloat(quizStatsRaw.avg_score) || 0,
+        best_score: parseInt(quizStatsRaw.best_score) || 0,
+        total_correct: parseInt(quizStatsRaw.total_correct) || 0,
+        total_questions: parseInt(quizStatsRaw.total_questions) || 0,
+      },
+      activity: {
+        last_activity: stagiaire.user?.last_activity_at
+          ? "Récemment"
+          : "Jamais",
+        last_login: formatDate(stagiaire.user?.last_login_at),
+        is_online: stagiaire.user?.is_online || false,
+        last_client: stagiaire.user?.last_client,
+      },
+      formations:
+        stagiaire.stagiaire_catalogue_formations?.map((scf) => ({
+          id: scf.catalogue_formation.id,
+          titre: scf.catalogue_formation.titre,
+          progress: 0, // Placeholder, logic can be improved
+          status: "en_cours",
+        })) || [],
+    };
   }
 
   async getStagiaireStats(id: number) {
