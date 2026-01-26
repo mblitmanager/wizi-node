@@ -185,6 +185,15 @@ export class FormateurController {
     return this.apiResponse.success(stats);
   }
 
+  @Get("stagiaires/unassigned/:id")
+  async unassignedStagiaires(@Request() req: any, @Param("id") id: number) {
+    const data = await this.adminService.getUnassignedStagiaires(
+      id,
+      req.user.id,
+    );
+    return this.apiResponse.success({ stagiaires: data });
+  }
+
   @Get("stagiaire/:id/stats")
   async stagiaireStats(@Param("id") id: number) {
     const stats = await this.adminService.getStagiaireProfileById(id);
@@ -441,6 +450,23 @@ export class FormateurController {
   async formations(@Request() req: any) {
     const data = await this.adminService.getFormateurFormations(req.user.id);
     return this.apiResponse.success({ formations: data });
+  }
+
+  @Get("formations/available")
+  async availableFormations() {
+    const data = await this.adminService.getFormateurAvailableFormations();
+    return this.apiResponse.success({ formations: data });
+  }
+
+  @Get("formations/:id/stats")
+  async formationStats(@Request() req: any, @Param("id") id: number) {
+    const stats = await this.adminService.getFormationStats(id, req.user.id);
+    if (!stats)
+      throw new HttpException(
+        "Statistiques non trouvées",
+        HttpStatus.NOT_FOUND,
+      );
+    return this.apiResponse.success(stats);
   }
 
   @Get("formations/:id/stagiaires")

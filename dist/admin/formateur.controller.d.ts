@@ -30,6 +30,7 @@ export declare class FormateurController {
     stagiaires(req: any): Promise<any>;
     onlineStagiaires(req: any): Promise<any>;
     inactiveStagiaires(req: any, days?: number, scope?: string): Promise<any>;
+    unassignedStagiaires(req: any, id: number): Promise<any>;
     stagiaireStats(id: number): Promise<any>;
     stagiaireProfile(id: number): Promise<any>;
     disconnect(data: {
@@ -43,6 +44,8 @@ export declare class FormateurController {
     addQuestion(id: number, data: any): Promise<any>;
     deleteQuestion(quizId: number, questionId: number): Promise<any>;
     formations(req: any): Promise<any>;
+    availableFormations(): Promise<any>;
+    formationStats(req: any, id: number): Promise<any>;
     formationStagiaires(req: any, id: number): Promise<any>;
     assignFormation(req: any, id: number, body: any): Promise<any>;
     formationsVideos(req: any): Promise<any>;

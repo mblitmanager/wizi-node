@@ -217,6 +217,29 @@ export declare class AdminService {
         formation_titre: any;
         student_count: number;
     }[]>;
+    getFormateurAvailableFormations(): Promise<{
+        id: number;
+        titre: string;
+        description: string;
+        duree: string;
+        image_url: string;
+        tarif: number;
+        categorie: string;
+        formation_id: number;
+    }[]>;
+    getFormationStats(catalogueFormationId: number, userId: number): Promise<{
+        student_count: number;
+        avg_score: number;
+        total_completions: number;
+        id: number;
+        titre: string;
+    }>;
+    getUnassignedStagiaires(catalogueFormationId: number, userId: number): Promise<{
+        id: any;
+        prenom: any;
+        nom: any;
+        email: any;
+    }[]>;
     getStagiaireFormationPerformance(id: number): Promise<{
         id: number;
         titre: string;
@@ -512,12 +535,15 @@ export declare class AdminService {
                 telephone: any;
                 email: any;
                 image: any;
+                civilite: any;
             }[];
             pole_relation: {
                 id: number;
                 nom: string;
                 telephone: string;
                 email: string;
+                image: string;
+                civilite: string;
             }[];
             commercials: {
                 id: number;
@@ -525,6 +551,7 @@ export declare class AdminService {
                 telephone: string;
                 email: string;
                 image: string;
+                civilite: string;
             }[];
             partenaire: {
                 id: number;

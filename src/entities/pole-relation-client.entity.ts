@@ -36,6 +36,9 @@ export class PoleRelationClient {
   prenom: string;
 
   @Column({ nullable: true })
+  civilite: string;
+
+  @Column({ nullable: true })
   telephone: string;
 
   @CreateDateColumn()

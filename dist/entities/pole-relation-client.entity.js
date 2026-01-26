@@ -44,6 +44,10 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
+], PoleRelationClient.prototype, "civilite", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
 ], PoleRelationClient.prototype, "telephone", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),

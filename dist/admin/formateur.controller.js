@@ -127,6 +127,10 @@ let FormateurController = class FormateurController {
         const stats = await this.adminService.getFormateurInactiveStagiaires(req.user.id, days, scope);
         return this.apiResponse.success(stats);
     }
+    async unassignedStagiaires(req, id) {
+        const data = await this.adminService.getUnassignedStagiaires(id, req.user.id);
+        return this.apiResponse.success({ stagiaires: data });
+    }
     async stagiaireStats(id) {
         const stats = await this.adminService.getStagiaireProfileById(id);
         if (!stats)
@@ -325,6 +329,16 @@ let FormateurController = class FormateurController {
         const data = await this.adminService.getFormateurFormations(req.user.id);
         return this.apiResponse.success({ formations: data });
     }
+    async availableFormations() {
+        const data = await this.adminService.getFormateurAvailableFormations();
+        return this.apiResponse.success({ formations: data });
+    }
+    async formationStats(req, id) {
+        const stats = await this.adminService.getFormationStats(id, req.user.id);
+        if (!stats)
+            throw new common_1.HttpException("Statistiques non trouvées", common_1.HttpStatus.NOT_FOUND);
+        return this.apiResponse.success(stats);
+    }
     async formationStagiaires(req, id) {
         const data = await this.adminService.getFormateurFormationStagiaires(req.user.id, id);
         return this.apiResponse.success(data);
@@ -476,6 +490,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "inactiveStagiaires", null);
 __decorate([
+    (0, common_1.Get)("stagiaires/unassigned/:id"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "unassignedStagiaires", null);
+__decorate([
     (0, common_1.Get)("stagiaire/:id/stats"),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
@@ -560,6 +582,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "formations", null);
+__decorate([
+    (0, common_1.Get)("formations/available"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "availableFormations", null);
+__decorate([
+    (0, common_1.Get)("formations/:id/stats"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "formationStats", null);
 __decorate([
     (0, common_1.Get)("formations/:id/stagiaires"),
     __param(0, (0, common_1.Request)()),

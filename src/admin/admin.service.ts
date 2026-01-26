@@ -924,6 +924,119 @@ export class AdminService {
     return enrichedFormations;
   }
 
+  async getFormateurAvailableFormations() {
+    const formations = await this.catalogueFormationRepository.find({
+      where: { statut: 1 },
+      relations: ["formation"],
+      order: { titre: "ASC" },
+    });
+
+    return formations.map((f) => ({
+      id: f.id,
+      titre: f.titre,
+      description: f.description,
+      duree: f.duree,
+      image_url: f.image_url,
+      tarif: f.tarif,
+      categorie: f.formation?.categorie || "Général",
+      formation_id: f.formation_id,
+    }));
+  }
+
+  async getFormationStats(catalogueFormationId: number, userId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+      relations: ["stagiaires"],
+    });
+
+    if (!formateur) return null;
+
+    const catalogueFormation = await this.catalogueFormationRepository.findOne({
+      where: { id: catalogueFormationId },
+      relations: ["formation"],
+    });
+
+    if (!catalogueFormation) return null;
+
+    const stagiaires = await this.stagiaireRepository
+      .createQueryBuilder("s")
+      .innerJoin("s.formateurs", "f", "f.id = :formateurId", {
+        formateurId: formateur.id,
+      })
+      .innerJoin(
+        "s.stagiaire_catalogue_formations",
+        "scf",
+        "scf.catalogue_formation_id = :cfid",
+        { cfid: catalogueFormationId },
+      )
+      .select("s.user_id")
+      .getMany();
+
+    const userIds = stagiaires.map((s) => s.user_id).filter((id) => id != null);
+
+    let stats = {
+      student_count: userIds.length,
+      avg_score: 0,
+      total_completions: 0,
+    };
+
+    if (userIds.length > 0 && catalogueFormation.formation_id) {
+      const qpStats = await this.quizParticipationRepository
+        .createQueryBuilder("qp")
+        .innerJoin("qp.quiz", "q")
+        .where("q.formation_id = :fid", {
+          fid: catalogueFormation.formation_id,
+        })
+        .andWhere("qp.user_id IN (:...uids)", { uids: userIds })
+        .andWhere("qp.status = :status", { status: "completed" })
+        .select([
+          "AVG(qp.score) as avg_score",
+          "COUNT(qp.id) as total_completions",
+        ])
+        .getRawOne();
+
+      stats.avg_score =
+        Math.round((parseFloat(qpStats.avg_score) || 0) * 10) / 10;
+      stats.total_completions = parseInt(qpStats.total_completions) || 0;
+    }
+
+    return {
+      id: catalogueFormation.id,
+      titre: catalogueFormation.titre,
+      ...stats,
+    };
+  }
+
+  async getUnassignedStagiaires(catalogueFormationId: number, userId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+      relations: ["stagiaires", "stagiaires.user"],
+    });
+
+    if (!formateur) return [];
+
+    // Get IDs of students already in this formation
+    const assignedStagiaires = await this.stagiaireCatalogueFormationRepository
+      .createQueryBuilder("scf")
+      .where("scf.catalogue_formation_id = :cfid", {
+        cfid: catalogueFormationId,
+      })
+      .select("scf.stagiaire_id")
+      .getMany();
+
+    const assignedIds = assignedStagiaires.map((s) => s.stagiaire_id);
+
+    // Filter formateur's students
+    return (formateur.stagiaires || [])
+      .filter((s) => !assignedIds.includes(s.id))
+      .map((s) => ({
+        id: s.id,
+        prenom: s.prenom,
+        nom: s.user?.name || "",
+        email: s.user?.email || "",
+      }));
+  }
+
   async getStagiaireFormationPerformance(id: number) {
     const stagiaire = await this.stagiaireRepository.findOne({
       where: { id },
@@ -2120,12 +2233,15 @@ export class AdminService {
           telephone: f.telephone,
           email: f.user?.email,
           image: f.user?.image,
+          civilite: f.civilite,
         })),
         pole_relation: (stagiaire.poleRelationClients || []).map((p) => ({
           id: p.id,
           nom: `${p.prenom || ""} ${p.user?.name || "Staff"}`.trim(),
           telephone: p.telephone,
           email: p.user?.email,
+          image: p.user?.image,
+          civilite: p.civilite,
         })),
 
         commercials: (stagiaire.commercials || []).map((c) => ({
@@ -2134,6 +2250,7 @@ export class AdminService {
           telephone: c.telephone,
           email: c.user?.email,
           image: c.user?.image,
+          civilite: c.civilite,
         })),
         partenaire: stagiaire.partenaire
           ? {
