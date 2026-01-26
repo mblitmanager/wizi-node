@@ -8,7 +8,6 @@ export declare class MediaStagiaire {
     created_at: Date;
     current_time: number;
     duration: number;
-    percentage: number;
     updated_at: Date;
     media: Media;
     stagiaire: Stagiaire;

@@ -31,8 +31,9 @@ const quiz_entity_1 = require("../entities/quiz.entity");
 const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
 const parrainage_entity_1 = require("../entities/parrainage.entity");
 const login_history_entity_1 = require("../entities/login-history.entity");
+const mail_service_1 = require("../mail/mail.service");
 let AdminService = class AdminService {
-    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, stagiaireCatalogueFormationRepository, classementRepository, quizRepository, demandeInscriptionRepository, parrainageRepository, loginHistoryRepository, notificationService) {
+    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, stagiaireCatalogueFormationRepository, classementRepository, quizRepository, demandeInscriptionRepository, parrainageRepository, loginHistoryRepository, notificationService, mailService) {
         this.stagiaireRepository = stagiaireRepository;
         this.userRepository = userRepository;
         this.quizParticipationRepository = quizParticipationRepository;
@@ -48,6 +49,7 @@ let AdminService = class AdminService {
         this.parrainageRepository = parrainageRepository;
         this.loginHistoryRepository = loginHistoryRepository;
         this.notificationService = notificationService;
+        this.mailService = mailService;
     }
     async getFormateurDashboardStats(userId) {
         const formateur = await this.formateurRepository.findOne({
@@ -488,6 +490,95 @@ let AdminService = class AdminService {
             email: s.user?.email || "",
             last_activity_at: null,
         }));
+    }
+    async getStagiaireProfileById(id) {
+        try {
+            const stagiaire = await this.stagiaireRepository.findOne({
+                where: { id },
+                relations: [
+                    "user",
+                    "stagiaire_catalogue_formations",
+                    "stagiaire_catalogue_formations.catalogue_formation",
+                    "stagiaire_catalogue_formations.catalogue_formation.formation",
+                ],
+            });
+            if (!stagiaire) {
+                console.warn(`[AdminService] Stagiaire not found for ID: ${id}`);
+                return null;
+            }
+            const userId = stagiaire.user_id || (stagiaire.user ? stagiaire.user.id : null);
+            let quizStatsRaw = {};
+            if (userId) {
+                try {
+                    quizStatsRaw = await this.quizParticipationRepository
+                        .createQueryBuilder("qp")
+                        .leftJoin("qp.quiz", "q")
+                        .leftJoin("q.questions", "ques")
+                        .where("qp.user_id = :userId", { userId })
+                        .select([
+                        "COUNT(DISTINCT qp.id) as total_quiz",
+                        "AVG(qp.score) as avg_score",
+                        "MAX(qp.score) as best_score",
+                        "SUM(qp.correct_answers) as total_correct",
+                        "COUNT(ques.id) as total_questions",
+                    ])
+                        .getRawOne();
+                }
+                catch (qError) {
+                    console.error(`[AdminService] Error fetching quiz stats for user ${userId}:`, qError);
+                    quizStatsRaw = {};
+                }
+            }
+            const formatDate = (date) => {
+                if (!date)
+                    return null;
+                try {
+                    return new Date(date)
+                        .toISOString()
+                        .replace("T", " ")
+                        .substring(0, 19);
+                }
+                catch (e) {
+                    return null;
+                }
+            };
+            return {
+                stagiaire: {
+                    id: stagiaire.id,
+                    prenom: stagiaire.prenom,
+                    nom: stagiaire.user?.name ?? "N/A",
+                    email: stagiaire.user?.email ?? "N/A",
+                    avatar: stagiaire.user?.image || null,
+                    civilite: stagiaire.civilite || "M.",
+                    telephone: stagiaire.telephone,
+                },
+                quiz_stats: {
+                    total_quiz: parseInt(quizStatsRaw?.total_quiz) || 0,
+                    avg_score: parseFloat(quizStatsRaw?.avg_score) || 0,
+                    best_score: parseInt(quizStatsRaw?.best_score) || 0,
+                    total_correct: parseInt(quizStatsRaw?.total_correct) || 0,
+                    total_questions: parseInt(quizStatsRaw?.total_questions) || 0,
+                },
+                activity: {
+                    last_activity: stagiaire.user?.last_activity_at
+                        ? "Récemment"
+                        : "Jamais",
+                    last_login: formatDate(stagiaire.user?.last_login_at),
+                    is_online: stagiaire.user?.is_online || false,
+                    last_client: stagiaire.user?.last_client,
+                },
+                formations: stagiaire.stagiaire_catalogue_formations?.map((scf) => ({
+                    id: scf.catalogue_formation.id,
+                    titre: scf.catalogue_formation.titre,
+                    progress: 0,
+                    status: "en_cours",
+                })) || [],
+            };
+        }
+        catch (error) {
+            console.error(`[AdminService] Error in getStagiaireProfileById(${id}):`, error);
+            throw error;
+        }
     }
     async getStagiaireStats(id) {
         const stagiaire = await this.stagiaireRepository.findOne({
@@ -1569,26 +1660,55 @@ let AdminService = class AdminService {
             const trackings = await this.mediaStagiaireRepository.find({
                 where: { media_id: videoId },
                 relations: ["stagiaire", "stagiaire.user"],
+                select: {
+                    media_id: true,
+                    stagiaire_id: true,
+                    is_watched: true,
+                    watched_at: true,
+                    created_at: true,
+                    updated_at: true,
+                    current_time: true,
+                    duration: true,
+                    stagiaire: {
+                        id: true,
+                        prenom: true,
+                        user: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            image: true,
+                        },
+                    },
+                },
             });
             const totalViews = trackings.length;
             const totalDurationWatched = trackings.reduce((acc, t) => acc + (t.current_time || 0), 0);
             const avgCompletion = totalViews > 0
-                ? Math.round(trackings.reduce((acc, t) => acc + (t.percentage || 0), 0) /
-                    totalViews)
+                ? Math.round(trackings.reduce((acc, t) => {
+                    const duration = t.duration || 0;
+                    const current = t.current_time || 0;
+                    const pct = duration > 0 ? (current / duration) * 100 : 0;
+                    return acc + pct;
+                }, 0) / totalViews)
                 : 0;
             return {
                 video_id: videoId,
                 total_views: totalViews,
                 total_duration_watched: totalDurationWatched,
                 completion_rate: avgCompletion,
-                views_by_stagiaire: trackings.map((t) => ({
-                    id: t.stagiaire?.id || 0,
-                    prenom: t.stagiaire?.prenom || "Stagiaire",
-                    nom: t.stagiaire?.user?.name || "Inconnu",
-                    completed: !!t.is_watched,
-                    total_watched: t.current_time || 0,
-                    percentage: t.percentage || 0,
-                })),
+                views_by_stagiaire: trackings.map((t) => {
+                    const duration = t.duration || 0;
+                    const current = t.current_time || 0;
+                    const percentage = duration > 0 ? Math.round((current / duration) * 100) : 0;
+                    return {
+                        id: t.stagiaire?.id || 0,
+                        prenom: t.stagiaire?.prenom || "Stagiaire",
+                        nom: t.stagiaire?.user?.name || "Inconnu",
+                        completed: !!t.is_watched,
+                        total_watched: current,
+                        percentage: percentage,
+                    };
+                }),
             };
         }
         catch (error) {
@@ -1601,210 +1721,6 @@ let AdminService = class AdminService {
                 views_by_stagiaire: [],
             };
         }
-    }
-    async getStagiaireProfileById(id) {
-        const stagiaire = await this.stagiaireRepository.findOne({
-            where: { id },
-            relations: [
-                "user",
-                "stagiaire_catalogue_formations",
-                "stagiaire_catalogue_formations.catalogue_formation",
-                "stagiaire_catalogue_formations.catalogue_formation.formation",
-                "formateurs",
-                "formateurs.user",
-                "poleRelationClients",
-                "poleRelationClients.user",
-                "commercials",
-                "commercials.user",
-                "partenaire",
-            ],
-        });
-        if (!stagiaire) {
-            throw new common_1.NotFoundException("Stagiaire non trouvé");
-        }
-        const userId = stagiaire.user_id;
-        const quizParticipations = await this.quizParticipationRepository.find({
-            where: { user_id: userId },
-            relations: ["quiz", "quiz.questions", "quiz.formation"],
-            order: { created_at: "DESC" },
-        });
-        const completedQuizzes = quizParticipations.filter((p) => p.status === "completed");
-        const classements = await this.classementRepository.find({
-            where: { stagiaire_id: id },
-        });
-        const totalScore = classements.reduce((acc, c) => acc + (c.points || 0), 0);
-        const avgScore = completedQuizzes.length > 0
-            ? completedQuizzes.reduce((acc, p) => {
-                const totalQ = p.quiz?.questions?.length || 10;
-                const perc = ((p.correct_answers || 0) / totalQ) * 100;
-                return acc + perc;
-            }, 0) / completedQuizzes.length
-            : 0;
-        const totalTime = completedQuizzes.reduce((acc, p) => acc + (p.time_spent || 0), 0);
-        const formationsCompleted = stagiaire.stagiaire_catalogue_formations.filter((scf) => scf.date_fin != null).length;
-        const formationsInProgress = stagiaire.stagiaire_catalogue_formations.filter((scf) => scf.date_fin == null).length;
-        let badge = "BRONZE";
-        if (totalScore >= 1000)
-            badge = "OR";
-        else if (totalScore >= 500)
-            badge = "ARGENT";
-        const now = new Date();
-        const last30Days = [];
-        for (let i = 29; i >= 0; i--) {
-            const date = new Date(now);
-            date.setDate(date.getDate() - i);
-            const dateStr = date.toISOString().split("T")[0];
-            const dailyActions = quizParticipations.filter((p) => {
-                if (!p.created_at)
-                    return false;
-                return p.created_at.toISOString().split("T")[0] === dateStr;
-            }).length;
-            last30Days.push({
-                date: dateStr,
-                actions: dailyActions,
-            });
-        }
-        const recentActivities = quizParticipations.slice(0, 10).map((p) => ({
-            type: "quiz",
-            title: p.quiz?.titre || "Quiz",
-            score: p.score,
-            timestamp: p.created_at ? new Date(p.created_at).toISOString() : null,
-        }));
-        const formations = stagiaire.stagiaire_catalogue_formations.map((scf) => ({
-            id: scf.catalogue_formation?.id,
-            title: scf.catalogue_formation?.titre || "Formation",
-            category: scf.catalogue_formation?.formation?.categorie || "Général",
-            started_at: scf.created_at
-                ? new Date(scf.created_at).toISOString()
-                : null,
-            completed_at: scf.date_fin ? new Date(scf.date_fin).toISOString() : null,
-            progress: scf.date_fin ? 100 : 0,
-        }));
-        const quizHistory = completedQuizzes.map((p) => ({
-            id: p.id,
-            quiz_id: p.quiz_id,
-            correctAnswers: p.correct_answers || 0,
-            totalQuestions: p.quiz?.questions?.length || 5,
-            score: p.score,
-            completedAt: p.completed_at
-                ? new Date(p.completed_at).toISOString()
-                : p.created_at
-                    ? new Date(p.created_at).toISOString()
-                    : null,
-            timeSpent: p.time_spent || 0,
-            quiz: {
-                id: p.quiz?.id,
-                titre: p.quiz?.titre || "Quiz",
-                niveau: p.quiz?.niveau || "débutant",
-                formation: {
-                    categorie: p.quiz?.formation?.categorie || "Général",
-                },
-            },
-        }));
-        return {
-            stagiaire: {
-                id: stagiaire.id,
-                prenom: stagiaire.prenom,
-                nom: stagiaire.user?.name || "",
-                email: stagiaire.user?.email || "",
-                telephone: stagiaire.telephone,
-                image: stagiaire.user?.image,
-                created_at: stagiaire.created_at
-                    ? new Date(stagiaire.created_at).toISOString()
-                    : null,
-                date_inscription: stagiaire.date_inscription
-                    ? new Date(stagiaire.date_inscription).toISOString()
-                    : null,
-                date_debut_formation: stagiaire.date_debut_formation
-                    ? new Date(stagiaire.date_debut_formation).toISOString()
-                    : null,
-                last_login: stagiaire.user?.last_login_at
-                    ? new Date(stagiaire.user.last_login_at).toISOString()
-                    : null,
-            },
-            contacts: {
-                formateurs: (stagiaire.formateurs || []).map((f) => ({
-                    id: f.id,
-                    nom: `${f.prenom || ""} ${f.user?.name || ""}`.trim() || "Formateur",
-                    telephone: f.telephone,
-                    email: f.user?.email,
-                    image: f.user?.image,
-                    civilite: f.civilite,
-                })),
-                pole_relation: (stagiaire.poleRelationClients || []).map((p) => ({
-                    id: p.id,
-                    nom: `${p.prenom || ""} ${p.user?.name || "Staff"}`.trim(),
-                    telephone: p.telephone,
-                    email: p.user?.email,
-                    image: p.user?.image,
-                    civilite: p.civilite,
-                })),
-                commercials: (stagiaire.commercials || []).map((c) => ({
-                    id: c.id,
-                    nom: `${c.prenom || ""} ${c.user?.name || ""}`.trim() || "Conseiller",
-                    telephone: c.telephone,
-                    email: c.user?.email,
-                    image: c.user?.image,
-                    civilite: c.civilite,
-                })),
-                partenaire: stagiaire.partenaire
-                    ? {
-                        id: stagiaire.partenaire.id,
-                        nom: stagiaire.partenaire.identifiant || "Partenaire",
-                        email: null,
-                        telephone: null,
-                    }
-                    : null,
-            },
-            stats: {
-                total_points: Math.round(totalScore),
-                current_badge: badge,
-                formations_completed: formationsCompleted,
-                formations_in_progress: formationsInProgress,
-                quizzes_completed: completedQuizzes.length,
-                average_score: Math.round(avgScore * 10) / 10,
-                total_time_minutes: Math.round(totalTime / 60),
-                login_streak: stagiaire.login_streak || 0,
-                last_activity: stagiaire.user?.last_activity_at
-                    ? new Date(stagiaire.user.last_activity_at).toISOString()
-                    : null,
-            },
-            quiz_stats: {
-                total_quiz: completedQuizzes.length,
-                avg_score: Math.round(avgScore * 10) / 10,
-                best_score: completedQuizzes.reduce((max, p) => Math.max(max, p.score || 0), 0),
-                total_correct: completedQuizzes.reduce((acc, p) => acc + (p.correct_answers || 0), 0),
-                total_questions: completedQuizzes.reduce((acc, p) => acc + (p.quiz?.questions?.length || 10), 0),
-            },
-            activity: {
-                last_30_days: last30Days,
-                recent_activities: recentActivities,
-            },
-            login_history: await this.loginHistoryRepository
-                .find({
-                where: { user_id: userId },
-                order: { login_at: "DESC" },
-                take: 10,
-            })
-                .catch(() => []),
-            video_stats: {
-                total_watched: await this.mediaStagiaireRepository
-                    .count({
-                    where: { stagiaire_id: id, is_watched: true },
-                })
-                    .catch(() => 0),
-                total_time_watched: await this.mediaStagiaireRepository
-                    .find({
-                    where: { stagiaire_id: id },
-                })
-                    .then((ms) => {
-                    return Math.round(ms.reduce((acc, m) => acc + (m.duration || 0), 0) / 60);
-                })
-                    .catch(() => 0),
-            },
-            formations,
-            quiz_history: quizHistory,
-        };
     }
     async getStagiaireFullFormations(id) {
         const stagiaire = await this.stagiaireRepository.findOne({
@@ -1837,48 +1753,6 @@ let AdminService = class AdminService {
                 best_score: scf.date_fin ? 100 : 0,
             };
         });
-    }
-    async getFormateurStudentsPerformance(userId) {
-        const formateur = await this.formateurRepository.findOne({
-            where: { user_id: userId },
-            relations: ["stagiaires", "stagiaires.user"],
-        });
-        if (!formateur)
-            return [];
-        const stagiaireIds = formateur.stagiaires.map((s) => s.id);
-        if (stagiaireIds.length === 0)
-            return [];
-        const quizStats = await this.classementRepository
-            .createQueryBuilder("c")
-            .select("c.stagiaire_id", "stagiaire_id")
-            .addSelect("COUNT(c.id)", "total_quizzes")
-            .addSelect("SUM(c.points)", "total_points")
-            .addSelect("MAX(c.created_at)", "last_quiz_at")
-            .where("c.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
-            .groupBy("c.stagiaire_id")
-            .getRawMany();
-        const quizStatsMap = new Map(quizStats.map((s) => [parseInt(s.stagiaire_id), s]));
-        const performance = formateur.stagiaires
-            .map((stagiaire) => {
-            if (!stagiaire.user)
-                return null;
-            const stats = quizStatsMap.get(stagiaire.id);
-            return {
-                id: stagiaire.id,
-                prenom: stagiaire.prenom,
-                name: stagiaire.user.name || `${stagiaire.prenom}`,
-                email: stagiaire.user.email,
-                image: stagiaire.user.image,
-                last_quiz_at: stats ? stats.last_quiz_at : null,
-                total_quizzes: stats ? parseInt(stats.total_quizzes) : 0,
-                total_points: stats
-                    ? Math.round(parseFloat(stats.total_points || "0"))
-                    : 0,
-                total_logins: stagiaire.login_streak || 0,
-            };
-        })
-            .filter((p) => p !== null);
-        return performance;
     }
     async getFormateurFormationStagiaires(userId, formationId) {
         const formateur = await this.formateurRepository.findOne({
@@ -2061,6 +1935,109 @@ let AdminService = class AdminService {
                 : null,
         }));
     }
+    async sendFormateurEmail(senderId, recipientIds, subject, message) {
+        const sender = await this.userRepository.findOne({
+            where: { id: senderId },
+        });
+        if (!sender) {
+            throw new common_1.NotFoundException("Expéditeur non trouvé");
+        }
+        const stagiaires = await this.stagiaireRepository.find({
+            where: { id: (0, typeorm_2.In)(recipientIds) },
+            relations: ["user"],
+        });
+        if (stagiaires.length === 0) {
+            throw new common_1.NotFoundException("Aucun destinataire trouvé");
+        }
+        const results = [];
+        for (const stagiaire of stagiaires) {
+            if (stagiaire.user?.email) {
+                try {
+                    await this.mailService.sendUserEmail(stagiaire.user, subject, `
+              <p>Bonjour ${stagiaire.prenom},</p>
+              <p>Vous avez reçu un message de votre formateur <strong>${sender.name}</strong>:</p>
+              <blockquote style="border-left: 4px solid #ccc; padding-left: 10px; margin: 10px 0;">
+                ${message.replace(/\n/g, "<br>")}
+              </blockquote>
+              <p>Cordialement,<br>L'équipe Wizi Learn</p>
+            `);
+                    results.push({ id: stagiaire.id, status: "sent" });
+                }
+                catch (error) {
+                    console.error(`Failed to send email to ${stagiaire.user.email}`, error);
+                    results.push({
+                        id: stagiaire.id,
+                        status: "failed",
+                        error: error.message,
+                    });
+                }
+            }
+            else {
+                results.push({
+                    id: stagiaire.id,
+                    status: "skipped",
+                    reason: "no_email",
+                });
+            }
+        }
+        return {
+            sent_count: results.filter((r) => r.status === "sent").length,
+            details: results,
+        };
+    }
+    async getFormateurStudentsPerformance(userId) {
+        const formateur = await this.formateurRepository.findOne({
+            where: { user_id: userId },
+            relations: ["stagiaires", "stagiaires.user"],
+        });
+        if (!formateur || !formateur.stagiaires)
+            return [];
+        const stagiaireIds = formateur.stagiaires.map((s) => s.id);
+        if (stagiaireIds.length === 0)
+            return [];
+        const userIds = formateur.stagiaires
+            .map((s) => s.user_id)
+            .filter((id) => id !== null);
+        const quizzesStats = await this.quizParticipationRepository
+            .createQueryBuilder("qp")
+            .select("qp.user_id", "user_id")
+            .addSelect("COUNT(DISTINCT qp.id)", "total_quizzes")
+            .addSelect("AVG(qp.score)", "avg_score")
+            .addSelect("MAX(qp.score)", "best_score")
+            .where("qp.user_id IN (:...userIds)", { userIds })
+            .groupBy("qp.user_id")
+            .getRawMany();
+        const quizzesMap = new Map(quizzesStats.map((s) => [
+            parseInt(s.user_id),
+            {
+                total: parseInt(s.total_quizzes) || 0,
+                avg: parseFloat(s.avg_score) || 0,
+                best: parseInt(s.best_score) || 0,
+            },
+        ]));
+        return formateur.stagiaires.map((s) => {
+            const stats = quizzesMap.get(s.user_id) || {
+                total: 0,
+                avg: 0,
+                best: 0,
+            };
+            let displayPrenom = s.prenom || "";
+            let displayNom = s.user?.name || "";
+            return {
+                id: s.id,
+                prenom: displayPrenom,
+                nom: displayNom,
+                name: displayNom,
+                email: s.user?.email || "",
+                avatar: s.user?.image || null,
+                total_quizzes: stats.total,
+                average_score: Math.round(stats.avg),
+                best_score: stats.best,
+                total_logins: s.user?.login_streak || 0,
+                last_active: s.user?.last_activity_at,
+            };
+        });
+    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
@@ -2093,6 +2070,7 @@ exports.AdminService = AdminService = __decorate([
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        notification_service_1.NotificationService])
+        notification_service_1.NotificationService,
+        mail_service_1.MailService])
 ], AdminService);
 //# sourceMappingURL=admin.service.js.map

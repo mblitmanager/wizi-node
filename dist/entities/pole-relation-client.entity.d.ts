@@ -7,7 +7,6 @@ export declare class PoleRelationClient {
     user: User;
     stagiaires: Stagiaire[];
     prenom: string;
-    civilite: string;
     telephone: string;
     created_at: Date;
     updated_at: Date;

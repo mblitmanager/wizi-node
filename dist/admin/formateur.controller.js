@@ -143,6 +143,10 @@ let FormateurController = class FormateurController {
             throw new common_1.HttpException("Stagiaire non trouvé", common_1.HttpStatus.NOT_FOUND);
         return this.apiResponse.success(stats);
     }
+    async sendEmail(req, body) {
+        const result = await this.adminService.sendFormateurEmail(req.user.id, body.recipient_ids, body.subject, body.message);
+        return this.apiResponse.success(result);
+    }
     async disconnect(data) {
         const updatedCount = await this.adminService.disconnectStagiaires(data.stagiaire_ids);
         return this.apiResponse.success({
@@ -511,6 +515,14 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], FormateurController.prototype, "stagiaireProfile", null);
+__decorate([
+    (0, common_1.Post)("send-email"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], FormateurController.prototype, "sendEmail", null);
 __decorate([
     (0, common_1.Post)("stagiaires/disconnect"),
     (0, common_1.HttpCode)(200),

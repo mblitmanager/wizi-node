@@ -33,6 +33,11 @@ export declare class FormateurController {
     unassignedStagiaires(req: any, id: number): Promise<any>;
     stagiaireStats(id: number): Promise<any>;
     stagiaireProfile(id: number): Promise<any>;
+    sendEmail(req: any, body: {
+        recipient_ids: number[];
+        subject: string;
+        message: string;
+    }): Promise<any>;
     disconnect(data: {
         stagiaire_ids: number[];
     }): Promise<any>;

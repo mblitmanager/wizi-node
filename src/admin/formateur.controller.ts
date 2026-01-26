@@ -210,6 +210,20 @@ export class FormateurController {
     return this.apiResponse.success(stats);
   }
 
+  @Post("send-email")
+  async sendEmail(
+    @Request() req: any,
+    @Body() body: { recipient_ids: number[]; subject: string; message: string },
+  ) {
+    const result = await this.adminService.sendFormateurEmail(
+      req.user.id,
+      body.recipient_ids,
+      body.subject,
+      body.message,
+    );
+    return this.apiResponse.success(result);
+  }
+
   @Post("stagiaires/disconnect")
   @HttpCode(200)
   async disconnect(@Body() data: { stagiaire_ids: number[] }) {

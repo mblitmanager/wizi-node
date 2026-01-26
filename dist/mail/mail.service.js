@@ -48,6 +48,20 @@ let MailService = class MailService {
             throw error;
         }
     }
+    async sendUserEmail(user, subject, html) {
+        try {
+            await this.mailerService.sendMail({
+                to: user.email,
+                subject,
+                html,
+            });
+            return true;
+        }
+        catch (error) {
+            console.error("Error sending user email:", error);
+            throw error;
+        }
+    }
 };
 exports.MailService = MailService;
 exports.MailService = MailService = __decorate([

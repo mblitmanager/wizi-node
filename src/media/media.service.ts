@@ -265,7 +265,7 @@ export class MediaService {
     if (mediaStagiaire) {
       mediaStagiaire.current_time = currentTime;
       mediaStagiaire.duration = duration;
-      mediaStagiaire.percentage = percentage;
+      // percentage removed from entity
       if (isWatched) {
         mediaStagiaire.is_watched = true;
         mediaStagiaire.watched_at = new Date();
@@ -277,7 +277,7 @@ export class MediaService {
         stagiaire_id: stagiaire.id,
         current_time: currentTime,
         duration: duration,
-        percentage: percentage,
+        // percentage removed from entity
         is_watched: isWatched,
         watched_at: isWatched ? new Date() : null,
       });

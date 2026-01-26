@@ -201,7 +201,6 @@ let MediaService = class MediaService {
         if (mediaStagiaire) {
             mediaStagiaire.current_time = currentTime;
             mediaStagiaire.duration = duration;
-            mediaStagiaire.percentage = percentage;
             if (isWatched) {
                 mediaStagiaire.is_watched = true;
                 mediaStagiaire.watched_at = new Date();
@@ -214,7 +213,6 @@ let MediaService = class MediaService {
                 stagiaire_id: stagiaire.id,
                 current_time: currentTime,
                 duration: duration,
-                percentage: percentage,
                 is_watched: isWatched,
                 watched_at: isWatched ? new Date() : null,
             });

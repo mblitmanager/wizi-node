@@ -10,11 +10,11 @@ export class MailService {
     subject: string,
     template: string,
     context: any,
-    attachments?: any[]
+    attachments?: any[],
   ) {
     try {
       console.log(
-        `[MailService] Sending email to: ${to} | Subject: ${subject} | Template: ${template}`
+        `[MailService] Sending email to: ${to} | Subject: ${subject} | Template: ${template}`,
       );
       const info = await this.mailerService.sendMail({
         to,
@@ -24,7 +24,7 @@ export class MailService {
         attachments,
       });
       console.log(
-        `[MailService] Email sent successfully to ${to}. MessageId: ${info?.messageId}`
+        `[MailService] Email sent successfully to ${to}. MessageId: ${info?.messageId}`,
       );
       return true;
     } catch (error) {
@@ -43,6 +43,20 @@ export class MailService {
       return true;
     } catch (error) {
       console.error("Error sending plain text email:", error);
+      throw error;
+    }
+  }
+
+  async sendUserEmail(user: any, subject: string, html: string) {
+    try {
+      await this.mailerService.sendMail({
+        to: user.email,
+        subject,
+        html,
+      });
+      return true;
+    } catch (error) {
+      console.error("Error sending user email:", error);
       throw error;
     }
   }

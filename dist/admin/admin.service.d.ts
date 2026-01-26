@@ -14,6 +14,7 @@ import { Quiz } from "../entities/quiz.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { Parrainage } from "../entities/parrainage.entity";
 import { LoginHistory } from "../entities/login-history.entity";
+import { MailService } from "../mail/mail.service";
 export declare class AdminService {
     private stagiaireRepository;
     private userRepository;
@@ -30,7 +31,8 @@ export declare class AdminService {
     private parrainageRepository;
     private loginHistoryRepository;
     private notificationService;
-    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>, classementRepository: Repository<Classement>, quizRepository: Repository<Quiz>, demandeInscriptionRepository: Repository<DemandeInscription>, parrainageRepository: Repository<Parrainage>, loginHistoryRepository: Repository<LoginHistory>, notificationService: NotificationService);
+    private mailService;
+    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>, classementRepository: Repository<Classement>, quizRepository: Repository<Quiz>, demandeInscriptionRepository: Repository<DemandeInscription>, parrainageRepository: Repository<Parrainage>, loginHistoryRepository: Repository<LoginHistory>, notificationService: NotificationService, mailService: MailService);
     getFormateurDashboardStats(userId: number): Promise<{
         total_stagiaires: number;
         active_this_week: number;
@@ -165,6 +167,36 @@ export declare class AdminService {
         email: string;
         last_activity_at: any;
     }[]>;
+    getStagiaireProfileById(id: number): Promise<{
+        stagiaire: {
+            id: number;
+            prenom: string;
+            nom: string;
+            email: string;
+            avatar: string;
+            civilite: string;
+            telephone: string;
+        };
+        quiz_stats: {
+            total_quiz: number;
+            avg_score: number;
+            best_score: number;
+            total_correct: number;
+            total_questions: number;
+        };
+        activity: {
+            last_activity: string;
+            last_login: string;
+            is_online: boolean;
+            last_client: string;
+        };
+        formations: {
+            id: number;
+            titre: string;
+            progress: number;
+            status: string;
+        }[];
+    }>;
     getStagiaireStats(id: number): Promise<{
         stagiaire: {
             id: number;
@@ -515,109 +547,6 @@ export declare class AdminService {
             percentage: number;
         }[];
     }>;
-    getStagiaireProfileById(id: number): Promise<{
-        stagiaire: {
-            id: number;
-            prenom: string;
-            nom: string;
-            email: string;
-            telephone: string;
-            image: string;
-            created_at: string;
-            date_inscription: string;
-            date_debut_formation: string;
-            last_login: string;
-        };
-        contacts: {
-            formateurs: {
-                id: any;
-                nom: string;
-                telephone: any;
-                email: any;
-                image: any;
-                civilite: any;
-            }[];
-            pole_relation: {
-                id: number;
-                nom: string;
-                telephone: string;
-                email: string;
-                image: string;
-                civilite: string;
-            }[];
-            commercials: {
-                id: number;
-                nom: string;
-                telephone: string;
-                email: string;
-                image: string;
-                civilite: string;
-            }[];
-            partenaire: {
-                id: number;
-                nom: string;
-                email: any;
-                telephone: any;
-            };
-        };
-        stats: {
-            total_points: number;
-            current_badge: string;
-            formations_completed: number;
-            formations_in_progress: number;
-            quizzes_completed: number;
-            average_score: number;
-            total_time_minutes: number;
-            login_streak: number;
-            last_activity: string;
-        };
-        quiz_stats: {
-            total_quiz: number;
-            avg_score: number;
-            best_score: number;
-            total_correct: number;
-            total_questions: number;
-        };
-        activity: {
-            last_30_days: any[];
-            recent_activities: {
-                type: string;
-                title: string;
-                score: number;
-                timestamp: string;
-            }[];
-        };
-        login_history: any[] | LoginHistory[];
-        video_stats: {
-            total_watched: number;
-            total_time_watched: number;
-        };
-        formations: {
-            id: number;
-            title: string;
-            category: string;
-            started_at: string;
-            completed_at: string;
-            progress: number;
-        }[];
-        quiz_history: {
-            id: number;
-            quiz_id: number;
-            correctAnswers: number;
-            totalQuestions: number;
-            score: number;
-            completedAt: string;
-            timeSpent: number;
-            quiz: {
-                id: number;
-                titre: string;
-                niveau: string;
-                formation: {
-                    categorie: string;
-                };
-            };
-        }[];
-    }>;
     getStagiaireFullFormations(id: number): Promise<{
         id: number;
         titre: string;
@@ -626,17 +555,6 @@ export declare class AdminService {
         avg_score: number;
         last_activity: Date;
         best_score: number;
-    }[]>;
-    getFormateurStudentsPerformance(userId: number): Promise<{
-        id: any;
-        prenom: any;
-        name: any;
-        email: any;
-        image: any;
-        last_quiz_at: any;
-        total_quizzes: number;
-        total_points: number;
-        total_logins: any;
     }[]>;
     getFormateurFormationStagiaires(userId: number, formationId: number): Promise<{
         formation: {
@@ -686,5 +604,22 @@ export declare class AdminService {
             prenom: string;
             statut: string;
         };
+    }[]>;
+    sendFormateurEmail(senderId: number, recipientIds: number[], subject: string, message: string): Promise<{
+        sent_count: number;
+        details: any[];
+    }>;
+    getFormateurStudentsPerformance(userId: number): Promise<{
+        id: any;
+        prenom: any;
+        nom: any;
+        name: any;
+        email: any;
+        avatar: any;
+        total_quizzes: number;
+        average_score: number;
+        best_score: number;
+        total_logins: any;
+        last_active: any;
     }[]>;
 }
