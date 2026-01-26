@@ -8,6 +8,7 @@ import { Repository } from "typeorm";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { User } from "../entities/user.entity";
+import { LoginHistory } from "../entities/login-history.entity";
 import { MailService } from "../mail/mail.service";
 import { join } from "path";
 
@@ -77,7 +78,10 @@ export class AuthService {
           login_at: now,
         });
       } catch (e) {
-        console.error("Failed to log login history:", e);
+        console.error(
+          "Failed to log login history (schema may missing):",
+          e.message,
+        );
       }
     }
 

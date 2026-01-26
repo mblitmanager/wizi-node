@@ -61,6 +61,7 @@ const progression_entity_1 = require("../entities/progression.entity");
 const stagiaire_achievement_entity_1 = require("../entities/stagiaire-achievement.entity");
 const reponse_entity_1 = require("../entities/reponse.entity");
 const media_stagiaire_entity_1 = require("../entities/media-stagiaire.entity");
+const login_history_entity_1 = require("../entities/login-history.entity");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -95,6 +96,7 @@ exports.AdminModule = AdminModule = __decorate([
                 stagiaire_achievement_entity_1.StagiaireAchievement,
                 reponse_entity_1.Reponse,
                 media_stagiaire_entity_1.MediaStagiaire,
+                login_history_entity_1.LoginHistory,
             ]),
         ],
         providers: [admin_service_1.AdminService, api_response_service_1.ApiResponseService],

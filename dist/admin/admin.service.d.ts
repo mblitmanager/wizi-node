@@ -13,6 +13,7 @@ import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-for
 import { Quiz } from "../entities/quiz.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { Parrainage } from "../entities/parrainage.entity";
+import { LoginHistory } from "../entities/login-history.entity";
 export declare class AdminService {
     private stagiaireRepository;
     private userRepository;
@@ -27,8 +28,9 @@ export declare class AdminService {
     private quizRepository;
     private demandeInscriptionRepository;
     private parrainageRepository;
+    private loginHistoryRepository;
     private notificationService;
-    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>, classementRepository: Repository<Classement>, quizRepository: Repository<Quiz>, demandeInscriptionRepository: Repository<DemandeInscription>, parrainageRepository: Repository<Parrainage>, notificationService: NotificationService);
+    constructor(stagiaireRepository: Repository<Stagiaire>, userRepository: Repository<User>, quizParticipationRepository: Repository<QuizParticipation>, formateurRepository: Repository<Formateur>, catalogueFormationRepository: Repository<CatalogueFormation>, formationRepository: Repository<Formation>, mediaRepository: Repository<Media>, mediaStagiaireRepository: Repository<MediaStagiaire>, stagiaireCatalogueFormationRepository: Repository<StagiaireCatalogueFormation>, classementRepository: Repository<Classement>, quizRepository: Repository<Quiz>, demandeInscriptionRepository: Repository<DemandeInscription>, parrainageRepository: Repository<Parrainage>, loginHistoryRepository: Repository<LoginHistory>, notificationService: NotificationService);
     getFormateurDashboardStats(userId: number): Promise<{
         total_stagiaires: number;
         active_this_week: number;
@@ -557,6 +559,11 @@ export declare class AdminService {
                 score: number;
                 timestamp: string;
             }[];
+        };
+        login_history: any[] | LoginHistory[];
+        video_stats: {
+            total_watched: number;
+            total_time_watched: number;
         };
         formations: {
             id: number;

@@ -68,6 +68,7 @@ import { Progression } from "../entities/progression.entity";
 import { StagiaireAchievement } from "../entities/stagiaire-achievement.entity";
 import { Reponse } from "../entities/reponse.entity";
 import { MediaStagiaire } from "../entities/media-stagiaire.entity";
+import { LoginHistory } from "../entities/login-history.entity";
 
 @Module({
   imports: [
@@ -100,6 +101,7 @@ import { MediaStagiaire } from "../entities/media-stagiaire.entity";
       StagiaireAchievement,
       Reponse,
       MediaStagiaire,
+      LoginHistory,
     ]),
   ],
   providers: [AdminService, ApiResponseService],

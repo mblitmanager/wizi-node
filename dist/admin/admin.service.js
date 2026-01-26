@@ -30,8 +30,9 @@ const stagiaire_catalogue_formation_entity_1 = require("../entities/stagiaire-ca
 const quiz_entity_1 = require("../entities/quiz.entity");
 const demande_inscription_entity_1 = require("../entities/demande-inscription.entity");
 const parrainage_entity_1 = require("../entities/parrainage.entity");
+const login_history_entity_1 = require("../entities/login-history.entity");
 let AdminService = class AdminService {
-    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, stagiaireCatalogueFormationRepository, classementRepository, quizRepository, demandeInscriptionRepository, parrainageRepository, notificationService) {
+    constructor(stagiaireRepository, userRepository, quizParticipationRepository, formateurRepository, catalogueFormationRepository, formationRepository, mediaRepository, mediaStagiaireRepository, stagiaireCatalogueFormationRepository, classementRepository, quizRepository, demandeInscriptionRepository, parrainageRepository, loginHistoryRepository, notificationService) {
         this.stagiaireRepository = stagiaireRepository;
         this.userRepository = userRepository;
         this.quizParticipationRepository = quizParticipationRepository;
@@ -45,6 +46,7 @@ let AdminService = class AdminService {
         this.quizRepository = quizRepository;
         this.demandeInscriptionRepository = demandeInscriptionRepository;
         this.parrainageRepository = parrainageRepository;
+        this.loginHistoryRepository = loginHistoryRepository;
         this.notificationService = notificationService;
     }
     async getFormateurDashboardStats(userId) {
@@ -1625,20 +1627,20 @@ let AdminService = class AdminService {
             contacts: {
                 formateurs: (stagiaire.formateurs || []).map((f) => ({
                     id: f.id,
-                    nom: `${f.prenom} ${f.user?.name || ""}`.trim(),
+                    nom: `${f.prenom || ""} ${f.user?.name || ""}`.trim() || "Formateur",
                     telephone: f.telephone,
                     email: f.user?.email,
                     image: f.user?.image,
                 })),
                 pole_relation: (stagiaire.poleRelationClients || []).map((p) => ({
                     id: p.id,
-                    nom: p.user?.name || `${p.prenom || "Staff"}`,
+                    nom: `${p.prenom || ""} ${p.user?.name || "Staff"}`.trim(),
                     telephone: p.telephone,
                     email: p.user?.email,
                 })),
                 commercials: (stagiaire.commercials || []).map((c) => ({
                     id: c.id,
-                    nom: `${c.prenom} ${c.user?.name || ""}`.trim(),
+                    nom: `${c.prenom || ""} ${c.user?.name || ""}`.trim() || "Conseiller",
                     telephone: c.telephone,
                     email: c.user?.email,
                     image: c.user?.image,
@@ -1675,6 +1677,27 @@ let AdminService = class AdminService {
             activity: {
                 last_30_days: last30Days,
                 recent_activities: recentActivities,
+            },
+            login_history: await this.loginHistoryRepository
+                .find({
+                where: { user_id: userId },
+                order: { login_at: "DESC" },
+                take: 10,
+            })
+                .catch(() => []),
+            video_stats: {
+                total_watched: await this.mediaStagiaireRepository
+                    .count({
+                    where: { stagiaire_id: id, is_watched: true },
+                })
+                    .catch(() => 0),
+                total_time_watched: await this.mediaStagiaireRepository
+                    .find({
+                    where: { stagiaire_id: id },
+                    select: ["duration"],
+                })
+                    .then((ms) => ms.reduce((acc, m) => acc + Math.round(m.duration || 0) / 60, 0))
+                    .catch(() => 0),
             },
             formations,
             quiz_history: quizHistory,
@@ -1952,7 +1975,9 @@ exports.AdminService = AdminService = __decorate([
     __param(10, (0, typeorm_1.InjectRepository)(quiz_entity_1.Quiz)),
     __param(11, (0, typeorm_1.InjectRepository)(demande_inscription_entity_1.DemandeInscription)),
     __param(12, (0, typeorm_1.InjectRepository)(parrainage_entity_1.Parrainage)),
+    __param(13, (0, typeorm_1.InjectRepository)(login_history_entity_1.LoginHistory)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

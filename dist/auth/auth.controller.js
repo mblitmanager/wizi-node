@@ -22,7 +22,7 @@ let AuthController = class AuthController {
         this.authService = authService;
         this.apiResponse = apiResponse;
     }
-    async login(credentials) {
+    async login(req, credentials) {
         console.log("Login attempt:", credentials.email);
         const user = await this.authService.validateUser(credentials.email, credentials.password);
         if (!user) {
@@ -30,7 +30,7 @@ let AuthController = class AuthController {
             return this.apiResponse.error("Invalid credentials", 401);
         }
         console.log("Login success for:", credentials.email);
-        const result = await this.authService.login(user);
+        const result = await this.authService.login(user, req);
         console.log("Sending Login Response:", JSON.stringify(result, null, 2));
         return this.apiResponse.success(result);
     }
@@ -75,9 +75,10 @@ let AuthController = class AuthController {
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)("login"),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([

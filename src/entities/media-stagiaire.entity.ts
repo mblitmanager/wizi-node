@@ -28,10 +28,10 @@ export class MediaStagiaire {
   @CreateDateColumn()
   created_at: Date;
 
-  @Column({ type: "int", default: 0 })
+  @Column({ type: "int", default: 0, select: false })
   current_time: number;
 
-  @Column({ type: "int", default: 0 })
+  @Column({ type: "int", default: 0, select: false })
   duration: number;
 
   @Column({ type: "float", default: 0 })

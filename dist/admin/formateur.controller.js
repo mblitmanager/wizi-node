@@ -235,6 +235,7 @@ let FormateurController = class FormateurController {
             id: q.id,
             question: q.text,
             type: q.type,
+            astuce: q.astuce,
             reponses: (q.reponses || []).map((r) => ({
                 id: r.id,
                 reponse: r.text,
@@ -295,6 +296,7 @@ let FormateurController = class FormateurController {
             quiz_id: id,
             text: data.question,
             type: data.type || "qcm",
+            astuce: data.astuce,
             points: "1",
         });
         await this.questionRepository.save(question);

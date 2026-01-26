@@ -15,6 +15,7 @@ import { StagiaireCatalogueFormation } from "../entities/stagiaire-catalogue-for
 import { Quiz } from "../entities/quiz.entity";
 import { DemandeInscription } from "../entities/demande-inscription.entity";
 import { Parrainage } from "../entities/parrainage.entity";
+import { LoginHistory } from "../entities/login-history.entity";
 
 @Injectable()
 export class AdminService {
@@ -45,6 +46,8 @@ export class AdminService {
     private demandeInscriptionRepository: Repository<DemandeInscription>,
     @InjectRepository(Parrainage)
     private parrainageRepository: Repository<Parrainage>,
+    @InjectRepository(LoginHistory)
+    private loginHistoryRepository: Repository<LoginHistory>,
     private notificationService: NotificationService,
   ) {}
 
@@ -1999,7 +2002,14 @@ export class AdminService {
 
     // Stats Calculation
     const avgScore =
-      completedQuizzes.length > 0 ? totalScore / completedQuizzes.length : 0;
+      completedQuizzes.length > 0
+        ? completedQuizzes.reduce((acc, p) => {
+            const totalQ = p.quiz?.questions?.length || 10;
+            const perc = ((p.correct_answers || 0) / totalQ) * 100;
+            return acc + perc;
+          }, 0) / completedQuizzes.length
+        : 0;
+
     const totalTime = completedQuizzes.reduce(
       (acc, p) => acc + (p.time_spent || 0),
       0,
@@ -2106,21 +2116,21 @@ export class AdminService {
       contacts: {
         formateurs: (stagiaire.formateurs || []).map((f) => ({
           id: f.id,
-          nom: `${f.prenom} ${f.user?.name || ""}`.trim(),
+          nom: `${f.prenom || ""} ${f.user?.name || ""}`.trim() || "Formateur",
           telephone: f.telephone,
           email: f.user?.email,
           image: f.user?.image,
         })),
         pole_relation: (stagiaire.poleRelationClients || []).map((p) => ({
           id: p.id,
-          nom: p.user?.name || `${p.prenom || "Staff"}`,
+          nom: `${p.prenom || ""} ${p.user?.name || "Staff"}`.trim(),
           telephone: p.telephone,
           email: p.user?.email,
         })),
 
         commercials: (stagiaire.commercials || []).map((c) => ({
           id: c.id,
-          nom: `${c.prenom} ${c.user?.name || ""}`.trim(),
+          nom: `${c.prenom || ""} ${c.user?.name || ""}`.trim() || "Conseiller",
           telephone: c.telephone,
           email: c.user?.email,
           image: c.user?.image,
@@ -2167,6 +2177,31 @@ export class AdminService {
       activity: {
         last_30_days: last30Days,
         recent_activities: recentActivities,
+      },
+      login_history: await this.loginHistoryRepository
+        .find({
+          where: { user_id: userId },
+          order: { login_at: "DESC" },
+          take: 10,
+        })
+        .catch(() => []),
+      video_stats: {
+        total_watched: await this.mediaStagiaireRepository
+          .count({
+            where: { stagiaire_id: id, is_watched: true },
+          })
+          .catch(() => 0),
+        total_time_watched: await this.mediaStagiaireRepository
+          .find({
+            where: { stagiaire_id: id },
+          })
+          .then((ms) => {
+            // Safe access to duration (if column missing in DB, it won't be in object)
+            return Math.round(
+              ms.reduce((acc, m) => acc + ((m as any).duration || 0), 0) / 60,
+            );
+          })
+          .catch(() => 0),
       },
       formations,
       quiz_history: quizHistory,

@@ -4,7 +4,7 @@ export declare class AuthController {
     private authService;
     private apiResponse;
     constructor(authService: AuthService, apiResponse: ApiResponseService);
-    login(credentials: any): Promise<any>;
+    login(req: any, credentials: any): Promise<any>;
     register(userData: any): Promise<any>;
     logout(req: any): Promise<any>;
     logoutAll(req: any): Promise<any>;

@@ -19,11 +19,13 @@ const typeorm_2 = require("typeorm");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
 const user_entity_1 = require("../entities/user.entity");
+const login_history_entity_1 = require("../entities/login-history.entity");
 const mail_service_1 = require("../mail/mail.service");
 const path_1 = require("path");
 let AuthService = class AuthService {
-    constructor(userRepository, jwtService, mailService) {
+    constructor(userRepository, loginHistoryRepository, jwtService, mailService) {
         this.userRepository = userRepository;
+        this.loginHistoryRepository = loginHistoryRepository;
         this.jwtService = jwtService;
         this.mailService = mailService;
     }
@@ -42,13 +44,41 @@ let AuthService = class AuthService {
         }
         return null;
     }
-    async login(user) {
+    async login(user, req) {
         const payload = { email: user.email, sub: user.id, role: user.role };
+        const now = new Date();
         await this.userRepository.update(user.id, {
-            last_login_at: new Date(),
+            last_login_at: now,
             is_online: true,
-            last_activity_at: new Date(),
+            last_activity_at: now,
         });
+        if (req) {
+            try {
+                const userAgent = req.headers["user-agent"] || "";
+                const ip = req.headers["x-forwarded-for"] ||
+                    req.connection.remoteAddress ||
+                    req.ip;
+                await this.loginHistoryRepository.save({
+                    user_id: user.id,
+                    ip_address: typeof ip === "string" ? ip : JSON.stringify(ip),
+                    device: userAgent.substring(0, 255),
+                    browser: userAgent.includes("Chrome")
+                        ? "Chrome"
+                        : userAgent.includes("Firefox")
+                            ? "Firefox"
+                            : "Other",
+                    platform: userAgent.includes("Windows")
+                        ? "Windows"
+                        : userAgent.includes("Mac")
+                            ? "MacOS"
+                            : "Mobile",
+                    login_at: now,
+                });
+            }
+            catch (e) {
+                console.error("Failed to log login history (schema may missing):", e.message);
+            }
+        }
         return {
             token: this.jwtService.sign(payload),
             refresh_token: "dummy-refresh-token",
@@ -194,7 +224,9 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(1, (0, typeorm_1.InjectRepository)(login_history_entity_1.LoginHistory)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         jwt_1.JwtService,
         mail_service_1.MailService])
 ], AuthService);

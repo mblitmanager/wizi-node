@@ -71,6 +71,7 @@ const progression_module_1 = require("./progression/progression.module");
 const workers_module_1 = require("./workers/workers.module");
 const google_calendar_entity_1 = require("./entities/google-calendar.entity");
 const google_calendar_event_entity_1 = require("./entities/google-calendar-event.entity");
+const login_history_entity_1 = require("./entities/login-history.entity");
 let AppModule = class AppModule {
     constructor() {
         console.log("AppModule loaded - MediaModule should be active");
@@ -126,6 +127,7 @@ exports.AppModule = AppModule = __decorate([
                         participation_entity_1.Participation,
                         google_calendar_entity_1.GoogleCalendar,
                         google_calendar_event_entity_1.GoogleCalendarEvent,
+                        login_history_entity_1.LoginHistory,
                     ],
                     synchronize: false,
                     logging: ["query", "error"],
@@ -165,6 +167,7 @@ exports.AppModule = AppModule = __decorate([
                 participation_entity_1.Participation,
                 google_calendar_entity_1.GoogleCalendar,
                 google_calendar_event_entity_1.GoogleCalendarEvent,
+                login_history_entity_1.LoginHistory,
             ]),
             auth_module_1.AuthModule,
             stagiaire_module_1.StagiaireModule,
