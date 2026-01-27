@@ -22,6 +22,7 @@ import { RankingModule } from "../ranking/ranking.module";
 import { AgendaModule } from "../agenda/agenda.module";
 import { MediaModule } from "../media/media.module";
 import { User } from "../entities/user.entity";
+import { Partenaire } from "../entities/partenaire.entity";
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { User } from "../entities/user.entity";
       QuizParticipation,
       StagiaireCatalogueFormation,
       User,
+      Partenaire,
     ]),
     InscriptionModule,
     RankingModule,

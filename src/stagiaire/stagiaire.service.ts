@@ -13,6 +13,7 @@ import { User } from "../entities/user.entity";
 import * as bcrypt from "bcrypt";
 import { AgendaService } from "../agenda/agenda.service";
 import { MediaService } from "../media/media.service";
+import { Partenaire } from "../entities/partenaire.entity";
 
 @Injectable()
 export class StagiaireService {
@@ -31,9 +32,11 @@ export class StagiaireService {
     private participationRepository: Repository<QuizParticipation>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Partenaire)
+    private partenaireRepository: Repository<Partenaire>,
     private rankingService: RankingService,
     private agendaService: AgendaService,
-    private mediaService: MediaService
+    private mediaService: MediaService,
   ) {}
 
   async getProfile(userId: number) {
@@ -100,13 +103,13 @@ export class StagiaireService {
     });
 
     const formateurs = (stagiaire.formateurs || []).map((c) =>
-      mapContact(c, "formateur")
+      mapContact(c, "formateur"),
     );
     const commerciaux = (stagiaire.commercials || []).map((c) =>
-      mapContact(c, "commercial")
+      mapContact(c, "commercial"),
     );
     const poleRelation = (stagiaire.poleRelationClients || []).map((c) =>
-      mapContact(c, "pole_relation_client")
+      mapContact(c, "pole_relation_client"),
     );
 
     const catalogueFormations = await this.catalogueRepository.find({
@@ -389,11 +392,11 @@ export class StagiaireService {
     const getStatForLevel = (levelName: string) => {
       const completed =
         levelStats.find(
-          (s) => s.level?.toLowerCase() === levelName.toLowerCase()
+          (s) => s.level?.toLowerCase() === levelName.toLowerCase(),
         )?.completed || 0;
       const total =
         totalByLevel.find(
-          (t) => t.level?.toLowerCase() === levelName.toLowerCase()
+          (t) => t.level?.toLowerCase() === levelName.toLowerCase(),
         )?.total || 0;
       return { completed: parseInt(completed), total: parseInt(total) };
     };
@@ -414,7 +417,7 @@ export class StagiaireService {
         (scf) => ({
           id: scf.catalogue_formation?.id,
           titre: scf.catalogue_formation?.formation?.titre || "N/A",
-        })
+        }),
       ),
       formateurs: (stagiaire.formateurs || []).map((f) => ({
         id: f.id,
@@ -425,7 +428,7 @@ export class StagiaireService {
       quizStats: {
         totalCompleted: parseInt(stats?.totalCompleted || "0"),
         totalQuiz: parseInt(
-          totalByLevel.reduce((acc, curr) => acc + parseInt(curr.total), 0)
+          totalByLevel.reduce((acc, curr) => acc + parseInt(curr.total), 0),
         ),
         pourcentageReussite:
           stats?.totalCompleted > 0
@@ -433,9 +436,9 @@ export class StagiaireService {
                 (parseInt(stats.totalCompleted) /
                   totalByLevel.reduce(
                     (acc, curr) => acc + parseInt(curr.total),
-                    0
+                    0,
                   )) *
-                  100
+                  100,
               )
             : 0,
         byLevel: {
@@ -451,7 +454,7 @@ export class StagiaireService {
   async getMyPartner(userId: number) {
     const stagiaire = await this.stagiaireRepository.findOne({
       where: { user_id: userId },
-      relations: ["partenaire", "partenaires"],
+      relations: ["partenaire"],
     });
 
     if (!stagiaire) {
@@ -461,13 +464,15 @@ export class StagiaireService {
     // Priority: direct relation partenaire_id
     let partenaire = stagiaire.partenaire;
 
-    // Fallback: via ManyToMany relation (partenaires)
-    if (
-      !partenaire &&
-      stagiaire.partenaires &&
-      stagiaire.partenaires.length > 0
-    ) {
-      partenaire = stagiaire.partenaires[0];
+    // Fallback: via ManyToMany relation (partenaires) using distinct query
+    // Mimics Laravel: Partenaire::whereHas('stagiaires', function ($q) use ($stagiaire) { $q->where('stagiaire_id', $stagiaire->id); })->first();
+    if (!partenaire) {
+      partenaire = await this.partenaireRepository
+        .createQueryBuilder("p")
+        .innerJoin("p.stagiaires", "s", "s.id = :stagiaireId", {
+          stagiaireId: stagiaire.id,
+        })
+        .getOne();
     }
 
     if (!partenaire) {
