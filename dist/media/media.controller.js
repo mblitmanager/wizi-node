@@ -127,7 +127,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MediaController.prototype, "getFormationsWithStatus", null);
 __decorate([
-    (0, common_1.Post)("progress"),
+    (0, common_1.Post)("updateProgress"),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt")),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),

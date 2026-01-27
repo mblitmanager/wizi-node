@@ -514,7 +514,7 @@ export class FormateurController {
     const data = await this.adminService.getFormateurFormationsWithVideos(
       req.user.id,
     );
-    return this.apiResponse.success(data);
+    return this.apiResponse.success({ data });
   }
 
   @Get("formations-list")
