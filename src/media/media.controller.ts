@@ -113,7 +113,7 @@ export class MediaController {
     return this.mediaService.getFormationsWithStatus();
   }
 
-  @Post("progress")
+  @Post("updateProgress")
   @UseGuards(AuthGuard("jwt"))
   async updateProgress(
     @Req() req: any,

@@ -259,13 +259,13 @@ export class MediaService {
     });
 
     const percentage =
-      duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
+      duration > 0 ? Number(((currentTime / duration) * 100).toFixed(2)) : 0;
     const isWatched = percentage >= 90;
 
     if (mediaStagiaire) {
       mediaStagiaire.current_time = currentTime;
       mediaStagiaire.duration = duration;
-      // percentage removed from entity
+      mediaStagiaire.percentage = percentage;
       if (isWatched) {
         mediaStagiaire.is_watched = true;
         mediaStagiaire.watched_at = new Date();
@@ -277,7 +277,7 @@ export class MediaService {
         stagiaire_id: stagiaire.id,
         current_time: currentTime,
         duration: duration,
-        // percentage removed from entity
+        percentage: percentage,
         is_watched: isWatched,
         watched_at: isWatched ? new Date() : null,
       });
