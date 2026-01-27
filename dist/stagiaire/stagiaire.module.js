@@ -28,6 +28,7 @@ const ranking_module_1 = require("../ranking/ranking.module");
 const agenda_module_1 = require("../agenda/agenda.module");
 const media_module_1 = require("../media/media.module");
 const user_entity_1 = require("../entities/user.entity");
+const partenaire_entity_1 = require("../entities/partenaire.entity");
 let StagiaireModule = class StagiaireModule {
 };
 exports.StagiaireModule = StagiaireModule;
@@ -45,6 +46,7 @@ exports.StagiaireModule = StagiaireModule = __decorate([
                 quiz_participation_entity_1.QuizParticipation,
                 stagiaire_catalogue_formation_entity_1.StagiaireCatalogueFormation,
                 user_entity_1.User,
+                partenaire_entity_1.Partenaire,
             ]),
             inscription_module_1.InscriptionModule,
             ranking_module_1.RankingModule,
