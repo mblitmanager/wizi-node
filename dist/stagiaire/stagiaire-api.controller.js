@@ -73,15 +73,6 @@ let StagiaireApiController = class StagiaireApiController {
     async onboardingSeen(req) {
         return this.apiResponse.success();
     }
-    async achievements(req) {
-        return this.apiResponse.success([]);
-    }
-    async allAchievements() {
-        return this.apiResponse.success([]);
-    }
-    async checkAchievements() {
-        return this.apiResponse.success();
-    }
     async contacts() {
         return this.apiResponse.success([]);
     }
@@ -221,25 +212,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StagiaireApiController.prototype, "onboardingSeen", null);
-__decorate([
-    (0, common_1.Get)("achievements"),
-    __param(0, (0, common_1.Request)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], StagiaireApiController.prototype, "achievements", null);
-__decorate([
-    (0, common_1.Get)("achievements/all"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], StagiaireApiController.prototype, "allAchievements", null);
-__decorate([
-    (0, common_1.Post)("achievements/check"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], StagiaireApiController.prototype, "checkAchievements", null);
 __decorate([
     (0, common_1.Get)("contacts"),
     __metadata("design:type", Function),

@@ -24,9 +24,6 @@ export declare class StagiaireApiController {
         demande: import("../entities/demande-inscription.entity").DemandeInscription;
     }>;
     onboardingSeen(req: any): Promise<any>;
-    achievements(req: any): Promise<any>;
-    allAchievements(): Promise<any>;
-    checkAchievements(): Promise<any>;
     contacts(): Promise<any>;
     contactsCommerciaux(): Promise<any>;
     contactsFormateurs(): Promise<any>;

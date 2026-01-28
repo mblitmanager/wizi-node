@@ -29,7 +29,7 @@ export class StagiaireApiController {
     private rankingService: RankingService,
     private stagiaireService: StagiaireService,
     private apiResponse: ApiResponseService,
-    private s3Storage: S3StorageService
+    private s3Storage: S3StorageService,
   ) {}
 
   @Get("profile")
@@ -82,39 +82,24 @@ export class StagiaireApiController {
       if (!data.catalogue_formation_id) {
         return this.apiResponse.error(
           "Le champ catalogue_formation_id est requis.",
-          400
+          400,
         );
       }
       return await this.inscriptionService.inscrire(
         req.user.id,
-        data.catalogue_formation_id
+        data.catalogue_formation_id,
       );
     } catch (error) {
       console.error("Erreur lors de l'inscription:", error);
       return this.apiResponse.error(
         error.message || "Une erreur est survenue lors de l'inscription.",
-        500
+        500,
       );
     }
   }
 
   @Post("onboarding-seen")
   async onboardingSeen(@Request() req: any) {
-    return this.apiResponse.success();
-  }
-
-  @Get("achievements")
-  async achievements(@Request() req: any) {
-    return this.apiResponse.success([]);
-  }
-
-  @Get("achievements/all")
-  async allAchievements() {
-    return this.apiResponse.success([]);
-  }
-
-  @Post("achievements/check")
-  async checkAchievements() {
     return this.apiResponse.success();
   }
 
@@ -166,11 +151,11 @@ export class StagiaireApiController {
   @Get("ranking/formation/:formationId")
   async rankingFormation(
     @Param("formationId") formationId: number,
-    @Query("period") period: string = "all"
+    @Query("period") period: string = "all",
   ) {
     const data = await this.rankingService.getFormationRanking(
       formationId,
-      period
+      period,
     );
     return this.apiResponse.success(data);
   }
@@ -231,7 +216,7 @@ export class ApiGeneralController {
     private rankingService: RankingService,
     private stagiaireService: StagiaireService,
     private apiResponse: ApiResponseService,
-    private s3Storage: S3StorageService
+    private s3Storage: S3StorageService,
   ) {}
 
   @Get("user/settings")
@@ -264,12 +249,12 @@ export class ApiGeneralController {
   @UseInterceptors(
     FileInterceptor("image", {
       storage: memoryStorage(),
-    })
+    }),
   )
   async updateAvatar(
     @Param("id") id: string,
     @UploadedFile() file: Express.Multer.File,
-    @Request() req: any
+    @Request() req: any,
   ) {
     if (!file) {
       return this.apiResponse.error("No image uploaded", 400);

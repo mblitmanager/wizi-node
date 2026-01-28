@@ -281,6 +281,41 @@ let StagiaireService = class StagiaireService {
                 });
             }
         });
+        for (const entry of formationMap.values()) {
+            const formationIdForStats = entry.id;
+            const levelStats = await this.classementRepository
+                .createQueryBuilder("c")
+                .innerJoin("c.quiz", "quiz")
+                .select("quiz.niveau", "level")
+                .addSelect("COUNT(*)", "completions")
+                .addSelect("AVG(c.points)", "avg_score")
+                .addSelect("MAX(c.points)", "best_score")
+                .where("c.stagiaire_id = :stagiaireId", { stagiaireId: stagiaire.id })
+                .andWhere("quiz.formation_id = :formationId", {
+                formationId: formationIdForStats,
+            })
+                .groupBy("quiz.niveau")
+                .getRawMany();
+            const levels = ["Débutant", "Intermédiaire", "Expert"].map((levelName) => {
+                const stat = levelStats.find((ls) => ls.level?.toLowerCase() === levelName.toLowerCase());
+                return {
+                    name: levelName,
+                    avg_score: stat ? Math.round(parseFloat(stat.avg_score) * 10) : 0,
+                    best_score: stat ? parseInt(stat.best_score) * 10 : 0,
+                    completions: stat ? parseInt(stat.completions) : 0,
+                };
+            });
+            const totalCompletions = levels.reduce((acc, l) => acc + l.completions, 0);
+            const avgScore = totalCompletions > 0
+                ? Math.round(levels.reduce((acc, l) => acc + l.avg_score * l.completions, 0) /
+                    totalCompletions)
+                : 0;
+            entry.stats = {
+                total_completions: totalCompletions,
+                average_score: avgScore,
+                levels: levels,
+            };
+        }
         return {
             success: true,
             data: Array.from(formationMap.values()),
