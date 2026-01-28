@@ -659,45 +659,38 @@ export class AdminService {
 
       let quizStatsRaw: any = {};
 
-      if (userId) {
+      let totalPoints = 0;
+      let totalQuizzes = 0;
+      let averageScore = 0;
+
+      if (userId && stagiaire.id) {
         try {
-          // Get unique quizzes count and sum of correct answers
-          const basicStats = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .where("qp.user_id = :userId", { userId })
-            .select([
-              "COUNT(DISTINCT qp.quiz_id) as total_quiz",
-              "AVG(qp.score) as avg_score",
-              "SUM(qp.correct_answers) as total_correct",
-            ])
-            .getRawOne();
+          const classements = await this.classementRepository.find({
+            where: { stagiaire_id: stagiaire.id },
+          });
 
-          // Get sum of best scores (Total XP)
-          const xpStats = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .where("qp.user_id = :userId", { userId })
-            .select("SUM(max_score)", "total_xp")
-            .from((subQuery) => {
-              return subQuery
-                .select("MAX(score)", "max_score")
-                .from(QuizParticipation, "qp2")
-                .where("qp2.user_id = :userId", { userId })
-                .groupBy("qp2.quiz_id");
-            }, "best_scores")
-            .getRawOne();
-
-          quizStatsRaw = {
-            ...basicStats,
-            best_score: xpStats?.total_xp || 0,
-          };
+          totalQuizzes = classements.length;
+          totalPoints = classements.reduce(
+            (sum, c) => sum + (c.points || 0),
+            0,
+          );
+          averageScore =
+            totalQuizzes > 0
+              ? Math.round((totalPoints / totalQuizzes) * 10) / 10
+              : 0;
         } catch (qError) {
           console.error(
-            `[AdminService] Error fetching quiz stats for user ${userId}:`,
+            `[AdminService] Error fetching quiz stats for stagiaire ${stagiaire.id}:`,
             qError,
           );
-          quizStatsRaw = {};
         }
       }
+
+      quizStatsRaw = {
+        total_quiz: totalQuizzes,
+        best_score: totalPoints,
+        avg_score: averageScore,
+      };
 
       const formatDate = (date: Date | null | undefined) => {
         if (!date) return null;

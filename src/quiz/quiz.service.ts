@@ -883,8 +883,11 @@ export class QuizService {
       });
     }
 
-    const score = correctCount * 2;
     const totalQuestions = questionsDetails.length;
+    const score =
+      totalQuestions > 0
+        ? Math.round((correctCount / totalQuestions) * 100)
+        : 0;
 
     // Update Participation
     savedParticipation.score = score;

@@ -700,8 +700,10 @@ let QuizService = class QuizService {
                     : null,
             });
         }
-        const score = correctCount * 2;
         const totalQuestions = questionsDetails.length;
+        const score = totalQuestions > 0
+            ? Math.round((correctCount / totalQuestions) * 100)
+            : 0;
         savedParticipation.score = score;
         savedParticipation.correct_answers = correctCount;
         await this.participationRepository.save(savedParticipation);
