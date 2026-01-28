@@ -176,14 +176,77 @@ export declare class AdminService {
             avatar: string;
             civilite: string;
             telephone: string;
+            date_inscription: Date;
+            date_debut_formation: Date;
+            last_login: Date;
         };
-        quiz_stats: {
-            total_quiz: number;
-            avg_score: number;
-            best_score: number;
-            total_correct: number;
-            total_questions: number;
+        contacts: {
+            formateurs: {
+                id: any;
+                nom: any;
+                telephone: any;
+                email: any;
+                image: any;
+                civilite: any;
+            }[];
+            pole_relation: {
+                id: number;
+                nom: string;
+                telephone: string;
+                email: string;
+                image: string;
+                civilite: any;
+            }[];
+            commercials: {
+                id: number;
+                nom: string;
+                telephone: string;
+                email: string;
+                image: string;
+                civilite: string;
+            }[];
+            partenaire: {
+                id: number;
+                nom: any;
+                email: any;
+                telephone: any;
+            };
         };
+        stats: {
+            total_points: number;
+            current_badge: string;
+            formations_completed: number;
+            formations_in_progress: number;
+            quizzes_completed: number;
+            average_score: number;
+            total_time_minutes: number;
+            login_streak: number;
+        };
+        quiz_history: {
+            id: number;
+            quiz_id: number;
+            correctAnswers: number;
+            totalQuestions: number;
+            score: number;
+            completedAt: Date;
+            timeSpent: number;
+            quiz: {
+                id: number;
+                titre: string;
+                niveau: string;
+                formation: {
+                    categorie: string;
+                };
+            };
+        }[];
+        login_history: {
+            id: number;
+            ip_address: string;
+            device: string;
+            browser: string;
+            platform: string;
+            login_at: Date;
+        }[];
         activity: {
             last_activity: string;
             last_login: string;
@@ -192,10 +255,14 @@ export declare class AdminService {
         };
         formations: {
             id: number;
-            titre: string;
+            title: string;
             progress: number;
             status: string;
         }[];
+        video_stats: {
+            total_watched: number;
+            total_time_watched: number;
+        };
     }>;
     getStagiaireStats(id: number): Promise<{
         stagiaire: {

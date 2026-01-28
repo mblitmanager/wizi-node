@@ -500,6 +500,13 @@ let AdminService = class AdminService {
                     "stagiaire_catalogue_formations",
                     "stagiaire_catalogue_formations.catalogue_formation",
                     "stagiaire_catalogue_formations.catalogue_formation.formation",
+                    "formateurs",
+                    "formateurs.user",
+                    "commercials",
+                    "commercials.user",
+                    "poleRelationClients",
+                    "poleRelationClients.user",
+                    "partenaire",
                 ],
             });
             if (!stagiaire) {
@@ -510,19 +517,31 @@ let AdminService = class AdminService {
             let quizStatsRaw = {};
             if (userId) {
                 try {
-                    quizStatsRaw = await this.quizParticipationRepository
+                    const basicStats = await this.quizParticipationRepository
                         .createQueryBuilder("qp")
-                        .leftJoin("qp.quiz", "q")
-                        .leftJoin("q.questions", "ques")
                         .where("qp.user_id = :userId", { userId })
                         .select([
-                        "COUNT(DISTINCT qp.id) as total_quiz",
+                        "COUNT(DISTINCT qp.quiz_id) as total_quiz",
                         "AVG(qp.score) as avg_score",
-                        "MAX(qp.score) as best_score",
                         "SUM(qp.correct_answers) as total_correct",
-                        "COUNT(ques.id) as total_questions",
                     ])
                         .getRawOne();
+                    const xpStats = await this.quizParticipationRepository
+                        .createQueryBuilder("qp")
+                        .where("qp.user_id = :userId", { userId })
+                        .select("SUM(max_score)", "total_xp")
+                        .from((subQuery) => {
+                        return subQuery
+                            .select("MAX(score)", "max_score")
+                            .from(quiz_participation_entity_1.QuizParticipation, "qp2")
+                            .where("qp2.user_id = :userId", { userId })
+                            .groupBy("qp2.quiz_id");
+                    }, "best_scores")
+                        .getRawOne();
+                    quizStatsRaw = {
+                        ...basicStats,
+                        best_score: xpStats?.total_xp || 0,
+                    };
                 }
                 catch (qError) {
                     console.error(`[AdminService] Error fetching quiz stats for user ${userId}:`, qError);
@@ -542,6 +561,21 @@ let AdminService = class AdminService {
                     return null;
                 }
             };
+            const quizHistoryRaw = userId
+                ? await this.quizParticipationRepository.find({
+                    where: { user_id: userId },
+                    relations: ["quiz", "quiz.formation"],
+                    order: { created_at: "DESC" },
+                    take: 10,
+                })
+                : [];
+            const loginHistoryRaw = userId
+                ? await this.loginHistoryRepository.find({
+                    where: { user_id: userId },
+                    order: { login_at: "DESC" },
+                    take: 10,
+                })
+                : [];
             return {
                 stagiaire: {
                     id: stagiaire.id,
@@ -551,14 +585,79 @@ let AdminService = class AdminService {
                     avatar: stagiaire.user?.image || null,
                     civilite: stagiaire.civilite || "M.",
                     telephone: stagiaire.telephone,
+                    date_inscription: stagiaire.date_inscription,
+                    date_debut_formation: stagiaire.date_debut_formation,
+                    last_login: stagiaire.user?.last_login_at,
                 },
-                quiz_stats: {
-                    total_quiz: parseInt(quizStatsRaw?.total_quiz) || 0,
-                    avg_score: parseFloat(quizStatsRaw?.avg_score) || 0,
-                    best_score: parseInt(quizStatsRaw?.best_score) || 0,
-                    total_correct: parseInt(quizStatsRaw?.total_correct) || 0,
-                    total_questions: parseInt(quizStatsRaw?.total_questions) || 0,
+                contacts: {
+                    formateurs: (stagiaire.formateurs || []).map((f) => ({
+                        id: f.id,
+                        nom: f.user?.name || f.prenom || "Formateur",
+                        telephone: f.telephone,
+                        email: f.user?.email,
+                        image: f.user?.image,
+                        civilite: f.civilite,
+                    })),
+                    pole_relation: (stagiaire.poleRelationClients || []).map((p) => ({
+                        id: p.id,
+                        nom: p.user?.name || p.prenom || "Relation Client",
+                        telephone: p.telephone,
+                        email: p.user?.email,
+                        image: p.user?.image,
+                        civilite: p.civilite || "M.",
+                    })),
+                    commercials: (stagiaire.commercials || []).map((c) => ({
+                        id: c.id,
+                        nom: c.user?.name || c.prenom || "Conseiller",
+                        telephone: c.telephone,
+                        email: c.user?.email,
+                        image: c.user?.image,
+                        civilite: c.civilite,
+                    })),
+                    partenaire: stagiaire.partenaire
+                        ? {
+                            id: stagiaire.partenaire.id,
+                            nom: stagiaire.partenaire.identifiant || "Partenaire",
+                            email: stagiaire.partenaire.email || null,
+                            telephone: stagiaire.partenaire.telephone || null,
+                        }
+                        : null,
                 },
+                stats: {
+                    total_points: parseInt(quizStatsRaw?.best_score) || 0,
+                    current_badge: "BRONZE",
+                    formations_completed: 0,
+                    formations_in_progress: stagiaire.stagiaire_catalogue_formations?.length || 0,
+                    quizzes_completed: parseInt(quizStatsRaw?.total_quiz) || 0,
+                    average_score: Math.round(parseFloat(quizStatsRaw?.avg_score) || 0),
+                    total_time_minutes: 0,
+                    login_streak: stagiaire.login_streak || 0,
+                },
+                quiz_history: quizHistoryRaw.map((qp) => ({
+                    id: qp.id,
+                    quiz_id: qp.quiz_id,
+                    correctAnswers: qp.correct_answers,
+                    totalQuestions: qp.quiz?.questions?.length || 5,
+                    score: qp.score,
+                    completedAt: qp.created_at,
+                    timeSpent: 0,
+                    quiz: {
+                        id: qp.quiz?.id,
+                        titre: qp.quiz?.titre,
+                        niveau: qp.quiz?.niveau,
+                        formation: {
+                            categorie: qp.quiz?.formation?.categorie,
+                        },
+                    },
+                })),
+                login_history: loginHistoryRaw.map((lh) => ({
+                    id: lh.id,
+                    ip_address: lh.ip_address,
+                    device: lh.device,
+                    browser: lh.browser,
+                    platform: lh.platform,
+                    login_at: lh.login_at,
+                })),
                 activity: {
                     last_activity: stagiaire.user?.last_activity_at
                         ? "Récemment"
@@ -569,10 +668,14 @@ let AdminService = class AdminService {
                 },
                 formations: stagiaire.stagiaire_catalogue_formations?.map((scf) => ({
                     id: scf.catalogue_formation.id,
-                    titre: scf.catalogue_formation.titre,
+                    title: scf.catalogue_formation.titre,
                     progress: 0,
                     status: "en_cours",
                 })) || [],
+                video_stats: {
+                    total_watched: 0,
+                    total_time_watched: 0,
+                },
             };
         }
         catch (error) {
