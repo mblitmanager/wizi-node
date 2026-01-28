@@ -251,9 +251,8 @@ export declare class StagiaireService {
                 image: string;
             };
             totalPoints: any;
-            quizCount: number;
-            averageScore: number;
             completedQuizzes: number;
+            averageScore: number;
             totalTimeSpent: number;
             rang: number;
             level: number;
@@ -276,6 +275,7 @@ export declare class StagiaireService {
                     averageScore: number;
                 };
             };
+            quizCount?: undefined;
         };
         formations: any;
         agenda: {

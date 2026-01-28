@@ -87,9 +87,8 @@ export declare class RankingController {
             image: string;
         };
         totalPoints: any;
-        quizCount: number;
-        averageScore: number;
         completedQuizzes: number;
+        averageScore: number;
         totalTimeSpent: number;
         rang: number;
         level: number;
@@ -112,6 +111,7 @@ export declare class RankingController {
                 averageScore: number;
             };
         };
+        quizCount?: undefined;
     }>;
     getStagiaireDetails(stagiaireId: number): Promise<{
         id: number;

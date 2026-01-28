@@ -583,7 +583,8 @@ let AdminService = class AdminService {
                 contacts: {
                     formateurs: (stagiaire.formateurs || []).map((f) => ({
                         id: f.id,
-                        nom: f.user?.name || f.prenom || "Formateur",
+                        prenom: f.prenom,
+                        nom: f.user?.name || "Formateur",
                         telephone: f.telephone,
                         email: f.user?.email,
                         image: f.user?.image,
@@ -591,7 +592,8 @@ let AdminService = class AdminService {
                     })),
                     pole_relation: (stagiaire.poleRelationClients || []).map((p) => ({
                         id: p.id,
-                        nom: p.user?.name || p.prenom || "Relation Client",
+                        prenom: p.prenom,
+                        nom: p.user?.name || "Relation Client",
                         telephone: p.telephone,
                         email: p.user?.email,
                         image: p.user?.image,
@@ -599,7 +601,8 @@ let AdminService = class AdminService {
                     })),
                     commercials: (stagiaire.commercials || []).map((c) => ({
                         id: c.id,
-                        nom: c.user?.name || c.prenom || "Conseiller",
+                        prenom: c.prenom,
+                        nom: c.user?.name || "Conseiller",
                         telephone: c.telephone,
                         email: c.user?.email,
                         image: c.user?.image,

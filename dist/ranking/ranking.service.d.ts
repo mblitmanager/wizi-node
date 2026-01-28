@@ -94,9 +94,8 @@ export declare class RankingService {
             image: string;
         };
         totalPoints: any;
-        quizCount: number;
-        averageScore: number;
         completedQuizzes: number;
+        averageScore: number;
         totalTimeSpent: number;
         rang: number;
         level: number;
@@ -119,6 +118,7 @@ export declare class RankingService {
                 averageScore: number;
             };
         };
+        quizCount?: undefined;
     }>;
     getStagiaireRewards(userId: number): Promise<{
         points: number;

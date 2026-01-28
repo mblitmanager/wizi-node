@@ -707,7 +707,7 @@ export class AdminService {
       const quizHistoryRaw = userId
         ? await this.quizParticipationRepository.find({
             where: { user_id: userId },
-            relations: ["quiz", "quiz.formation"],
+            relations: ["quiz", "quiz.formation", "quiz.questions"],
             order: { created_at: "DESC" },
             take: 10,
           })
@@ -737,7 +737,8 @@ export class AdminService {
         contacts: {
           formateurs: (stagiaire.formateurs || []).map((f) => ({
             id: f.id,
-            nom: f.user?.name || f.prenom || "Formateur",
+            prenom: f.prenom,
+            nom: f.user?.name || "Formateur",
             telephone: f.telephone,
             email: f.user?.email,
             image: f.user?.image,
@@ -745,15 +746,17 @@ export class AdminService {
           })),
           pole_relation: (stagiaire.poleRelationClients || []).map((p) => ({
             id: p.id,
-            nom: p.user?.name || p.prenom || "Relation Client",
+            prenom: p.prenom,
+            nom: p.user?.name || "Relation Client",
             telephone: p.telephone,
             email: p.user?.email,
             image: p.user?.image,
-            civilite: (p as any).civilite || "M.", // Type cast as civilite is missing on PoleRelationClient
+            civilite: (p as any).civilite || "M.",
           })),
           commercials: (stagiaire.commercials || []).map((c) => ({
             id: c.id,
-            nom: c.user?.name || c.prenom || "Conseiller",
+            prenom: c.prenom,
+            nom: c.user?.name || "Conseiller",
             telephone: c.telephone,
             email: c.user?.email,
             image: c.user?.image,
@@ -779,23 +782,31 @@ export class AdminService {
           total_time_minutes: 0,
           login_streak: stagiaire.login_streak || 0,
         },
-        quiz_history: quizHistoryRaw.map((qp) => ({
-          id: qp.id,
-          quiz_id: qp.quiz_id,
-          correctAnswers: qp.correct_answers,
-          totalQuestions: qp.quiz?.questions?.length || 5, // Fallback to 5 as per user
-          score: qp.score,
-          completedAt: qp.created_at,
-          timeSpent: 0,
-          quiz: {
-            id: qp.quiz?.id,
-            titre: qp.quiz?.titre,
-            niveau: qp.quiz?.niveau,
-            formation: {
-              categorie: qp.quiz?.formation?.categorie,
+        quiz_history: quizHistoryRaw.map((qp) => {
+          const totalQuestions = qp.quiz?.questions?.length || 0;
+          const correctAnswers = qp.correct_answers || 0;
+          return {
+            id: qp.id,
+            quiz_id: qp.quiz_id,
+            correctAnswers: correctAnswers,
+            totalQuestions: totalQuestions,
+            score: qp.score,
+            percentage:
+              totalQuestions > 0
+                ? Math.round((correctAnswers / totalQuestions) * 100)
+                : qp.score,
+            completedAt: qp.created_at,
+            timeSpent: qp.time_spent || 0,
+            quiz: {
+              id: qp.quiz?.id,
+              titre: qp.quiz?.titre,
+              niveau: qp.quiz?.niveau,
+              formation: {
+                categorie: qp.quiz?.formation?.categorie,
+              },
             },
-          },
-        })),
+          };
+        }),
         login_history: loginHistoryRaw.map((lh) => ({
           id: lh.id,
           ip_address: lh.ip_address,

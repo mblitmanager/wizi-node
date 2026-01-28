@@ -183,6 +183,7 @@ export declare class AdminService {
         contacts: {
             formateurs: {
                 id: any;
+                prenom: any;
                 nom: any;
                 telephone: any;
                 email: any;
@@ -191,6 +192,7 @@ export declare class AdminService {
             }[];
             pole_relation: {
                 id: number;
+                prenom: string;
                 nom: string;
                 telephone: string;
                 email: string;
@@ -199,6 +201,7 @@ export declare class AdminService {
             }[];
             commercials: {
                 id: number;
+                prenom: string;
                 nom: string;
                 telephone: string;
                 email: string;
