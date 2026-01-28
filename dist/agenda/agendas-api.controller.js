@@ -47,6 +47,44 @@ let AgendasApiController = class AgendasApiController {
         const pageNum = typeof page === "string" ? parseInt(page, 10) : page || 1;
         const limitNum = typeof limit === "string" ? parseInt(limit, 10) : limit || 30;
         const skip = (pageNum - 1) * limitNum;
+        if (req.user.role === "formateur" || req.user.role === "formatrice") {
+            const googleCalendars = await this.agendaService["googleCalendarRepository"].find({
+                where: { userId: req.user.id },
+            });
+            const calendarIds = googleCalendars.map((c) => c.id);
+            if (calendarIds.length === 0) {
+                return {
+                    "@context": "/api/contexts/Agenda",
+                    "@id": "/api/agendas",
+                    "@type": "Collection",
+                    member: [],
+                    totalItems: 0,
+                };
+            }
+            const [events, total] = await this.agendaService["googleCalendarEventRepository"].findAndCount({
+                where: { googleCalendarId: (0, typeorm_2.In)(calendarIds) },
+                order: { start: "DESC" },
+                skip,
+                take: limitNum,
+            });
+            const members = events.map((event) => ({
+                "@type": "Agenda",
+                id: event.id,
+                titre: event.summary,
+                description: event.description,
+                date_debut: event.start.toISOString(),
+                date_fin: event.end.toISOString(),
+                location: event.location,
+                googleId: event.googleId,
+            }));
+            return {
+                "@context": "/api/contexts/Agenda",
+                "@id": "/api/agendas",
+                "@type": "Collection",
+                member: members,
+                totalItems: total,
+            };
+        }
         const queryOptions = {
             skip,
             take: limitNum,

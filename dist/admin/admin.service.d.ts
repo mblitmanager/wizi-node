@@ -187,6 +187,7 @@ export declare class AdminService {
                 nom: any;
                 telephone: any;
                 email: any;
+                role: any;
                 image: any;
                 civilite: any;
             }[];
@@ -195,6 +196,7 @@ export declare class AdminService {
                 prenom: string;
                 nom: string;
                 telephone: string;
+                role: string;
                 email: string;
                 image: string;
                 civilite: any;
@@ -205,6 +207,7 @@ export declare class AdminService {
                 nom: string;
                 telephone: string;
                 email: string;
+                role: any;
                 image: string;
                 civilite: string;
             }[];

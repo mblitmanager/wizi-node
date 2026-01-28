@@ -16,7 +16,7 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Repository, In } from "typeorm";
 import { Agenda } from "../entities/agenda.entity";
 import { AgendaService } from "./agenda.service";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -30,19 +30,19 @@ import { Roles } from "../common/decorators/roles.decorator";
   "formateur",
   "formatrice",
   "commercial",
-  "stagiaire"
+  "stagiaire",
 )
 export class AgendasApiController {
   constructor(
     @InjectRepository(Agenda)
     private agendaRepository: Repository<Agenda>,
-    private agendaService: AgendaService
+    private agendaService: AgendaService,
   ) {}
 
   @Post("/sync")
   async syncGoogleCalendar(
     @Body() body: any,
-    @Headers("x-sync-secret") secret: string
+    @Headers("x-sync-secret") secret: string,
   ) {
     if (
       !process.env.SYNC_API_SECRET ||
@@ -50,7 +50,7 @@ export class AgendasApiController {
     ) {
       throw new HttpException(
         "Non autorisé. Clé secrète invalide ou manquante.",
-        HttpStatus.UNAUTHORIZED
+        HttpStatus.UNAUTHORIZED,
       );
     }
 
@@ -59,7 +59,7 @@ export class AgendasApiController {
     if (!userId || !calendars || !events) {
       throw new HttpException(
         "Paramètres manquants. userId, calendars, et events sont requis.",
-        HttpStatus.BAD_REQUEST
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -67,7 +67,7 @@ export class AgendasApiController {
     const result = await this.agendaService.syncGoogleCalendarData(
       userId,
       calendars,
-      events
+      events,
     );
 
     return {
@@ -82,12 +82,60 @@ export class AgendasApiController {
   async getAll(
     @Request() req: any,
     @Query("page") page: number = 1,
-    @Query("limit") limit: number = 30
+    @Query("limit") limit: number = 30,
   ) {
     const pageNum = typeof page === "string" ? parseInt(page, 10) : page || 1;
     const limitNum =
       typeof limit === "string" ? parseInt(limit, 10) : limit || 30;
     const skip = (pageNum - 1) * limitNum;
+
+    // logic for formateurs: use google_calendar_events
+    if (req.user.role === "formateur" || req.user.role === "formatrice") {
+      const googleCalendars = await this.agendaService[
+        "googleCalendarRepository"
+      ].find({
+        where: { userId: req.user.id },
+      });
+
+      const calendarIds = googleCalendars.map((c) => c.id);
+      if (calendarIds.length === 0) {
+        return {
+          "@context": "/api/contexts/Agenda",
+          "@id": "/api/agendas",
+          "@type": "Collection",
+          member: [],
+          totalItems: 0,
+        };
+      }
+
+      const [events, total] = await this.agendaService[
+        "googleCalendarEventRepository"
+      ].findAndCount({
+        where: { googleCalendarId: In(calendarIds) },
+        order: { start: "DESC" },
+        skip,
+        take: limitNum,
+      });
+
+      const members = events.map((event) => ({
+        "@type": "Agenda",
+        id: event.id,
+        titre: event.summary,
+        description: event.description,
+        date_debut: event.start.toISOString(),
+        date_fin: event.end.toISOString(),
+        location: event.location,
+        googleId: event.googleId,
+      }));
+
+      return {
+        "@context": "/api/contexts/Agenda",
+        "@id": "/api/agendas",
+        "@type": "Collection",
+        member: members,
+        totalItems: total,
+      };
+    }
 
     const queryOptions: any = {
       skip,
@@ -98,12 +146,10 @@ export class AgendasApiController {
 
     // If user is a stagiaire, they only see their own agenda
     if (req.user.role === "stagiaire") {
-      // Find the stagiaire record first if not already available in user object
       const stagiaireId = req.user.stagiaire?.id;
       if (stagiaireId) {
         queryOptions.where = { stagiaire_id: stagiaireId };
       } else {
-        // Fallback: if we can't find stagiaire ID, return empty as they shouldn't see others
         return {
           "@context": "/api/contexts/Agenda",
           "@id": "/api/agendas",
@@ -118,7 +164,7 @@ export class AgendasApiController {
       await this.agendaRepository.findAndCount(queryOptions);
 
     const members = data.map((item) =>
-      this.agendaService.formatAgendaJsonLd(item)
+      this.agendaService.formatAgendaJsonLd(item),
     );
 
     return {

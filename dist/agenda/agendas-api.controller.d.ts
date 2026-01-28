@@ -16,6 +16,21 @@ export declare class AgendasApiController {
         "@id": string;
         "@type": string;
         member: {
+            "@type": string;
+            id: number;
+            titre: string;
+            description: string;
+            date_debut: string;
+            date_fin: string;
+            location: string;
+            googleId: string;
+        }[];
+        totalItems: number;
+    } | {
+        "@context": string;
+        "@id": string;
+        "@type": string;
+        member: {
             "@context": string;
             "@id": string;
             "@type": string;

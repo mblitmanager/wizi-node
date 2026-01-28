@@ -19,7 +19,7 @@ export declare class AgendaService {
         upcoming_events: Agenda[];
     }>;
     getFormateurAgenda(userId: number): Promise<{
-        agendaEvents: Agenda[];
+        agendaEvents: any[];
         googleCalendarEvents: any[];
     }>;
     exportAgendaToICS(userId: number): Promise<string>;

@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Agenda = void 0;
 const typeorm_1 = require("typeorm");
 const stagiaire_entity_1 = require("./stagiaire.entity");
-const formateur_entity_1 = require("./formateur.entity");
 let Agenda = class Agenda {
 };
 exports.Agenda = Agenda;
@@ -49,10 +48,6 @@ __decorate([
     __metadata("design:type", Number)
 ], Agenda.prototype, "stagiaire_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", Number)
-], Agenda.prototype, "formateur_id", void 0);
-__decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Agenda.prototype, "created_at", void 0);
@@ -65,11 +60,6 @@ __decorate([
     (0, typeorm_1.JoinColumn)({ name: "stagiaire_id" }),
     __metadata("design:type", stagiaire_entity_1.Stagiaire)
 ], Agenda.prototype, "stagiaire", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => formateur_entity_1.Formateur, (formateur) => formateur.agendas),
-    (0, typeorm_1.JoinColumn)({ name: "formateur_id" }),
-    __metadata("design:type", formateur_entity_1.Formateur)
-], Agenda.prototype, "formateur", void 0);
 exports.Agenda = Agenda = __decorate([
     (0, typeorm_1.Entity)("agendas")
 ], Agenda);

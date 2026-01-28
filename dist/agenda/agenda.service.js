@@ -59,16 +59,6 @@ let AgendaService = class AgendaService {
         };
     }
     async getFormateurAgenda(userId) {
-        const formateur = await this.formateurRepository.findOne({
-            where: { user_id: userId },
-        });
-        if (!formateur) {
-            throw new common_1.NotFoundException(`Formateur avec l'utilisateur ID ${userId} introuvable`);
-        }
-        const agendaEvents = await this.agendaRepository.find({
-            where: { formateur_id: formateur.id },
-            order: { date_debut: "ASC" },
-        });
         const googleCalendars = await this.googleCalendarRepository.find({
             where: { userId: userId },
         });
@@ -81,7 +71,7 @@ let AgendaService = class AgendaService {
             googleCalendarEvents.push(...events);
         }
         return {
-            agendaEvents,
+            agendaEvents: [],
             googleCalendarEvents,
         };
     }

@@ -22,7 +22,7 @@ export class AgendaService {
     @InjectRepository(GoogleCalendarEvent)
     private googleCalendarEventRepository: Repository<GoogleCalendarEvent>,
     @InjectRepository(Formateur)
-    private formateurRepository: Repository<Formateur>
+    private formateurRepository: Repository<Formateur>,
   ) {}
 
   async getStagiaireAgenda(userId: number) {
@@ -37,7 +37,7 @@ export class AgendaService {
 
     if (!stagiaire) {
       throw new NotFoundException(
-        `Stagiaire avec l'utilisateur ID ${userId} introuvable`
+        `Stagiaire avec l'utilisateur ID ${userId} introuvable`,
       );
     }
 
@@ -61,21 +61,6 @@ export class AgendaService {
   }
 
   async getFormateurAgenda(userId: number) {
-    const formateur = await this.formateurRepository.findOne({
-      where: { user_id: userId },
-    });
-
-    if (!formateur) {
-      throw new NotFoundException(
-        `Formateur avec l'utilisateur ID ${userId} introuvable`
-      );
-    }
-
-    const agendaEvents = await this.agendaRepository.find({
-      where: { formateur_id: formateur.id },
-      order: { date_debut: "ASC" },
-    });
-
     const googleCalendars = await this.googleCalendarRepository.find({
       where: { userId: userId },
     });
@@ -90,7 +75,7 @@ export class AgendaService {
     }
 
     return {
-      agendaEvents,
+      agendaEvents: [], // Formateurs use Google Calendar events instead
       googleCalendarEvents,
     };
   }
@@ -149,7 +134,7 @@ export class AgendaService {
   async markAllNotificationsAsRead(userId: number): Promise<boolean> {
     const result = await this.notificationRepository.update(
       { user_id: userId, read: false },
-      { read: true }
+      { read: true },
     );
     return (result.affected ?? 0) > 0;
   }
@@ -162,7 +147,7 @@ export class AgendaService {
   async syncGoogleCalendarData(
     userId: string,
     calendars: any[],
-    events: any[]
+    events: any[],
   ) {
     let calendarsSyncedCount = 0;
     let eventsSyncedCount = 0;
@@ -180,7 +165,7 @@ export class AgendaService {
           backgroundColor: calendarData.backgroundColor,
           foregroundColor: calendarData.foregroundColor,
           accessRole: calendarData.accessRole, // Assurez-vous que ce champ est envoyé par le front-end
-          timeZone: calendarData.timeZone,     // Assurez-vous que ce champ est envoyé par le front-end
+          timeZone: calendarData.timeZone, // Assurez-vous que ce champ est envoyé par le front-end
           syncedAt: new Date(),
         });
         await this.googleCalendarRepository.save(googleCalendar);
@@ -208,22 +193,24 @@ export class AgendaService {
 
       for (const eventData of events) {
         if (eventData.calendarId === googleCalendar.googleId) {
-          const googleCalendarEvent = this.googleCalendarEventRepository.create({
-            googleCalendarId: googleCalendar.id,
-            googleId: eventData.googleId,
-            summary: eventData.summary,
-            description: eventData.description,
-            location: eventData.location,
-            start: new Date(eventData.start),
-            end: new Date(eventData.end),
-            htmlLink: eventData.htmlLink,
-            hangoutLink: eventData.hangoutLink,
-            organizer: eventData.organizer,
-            attendees: eventData.attendees,
-            status: eventData.status,
-            recurrence: eventData.recurrence,
-            eventType: eventData.eventType,
-          });
+          const googleCalendarEvent = this.googleCalendarEventRepository.create(
+            {
+              googleCalendarId: googleCalendar.id,
+              googleId: eventData.googleId,
+              summary: eventData.summary,
+              description: eventData.description,
+              location: eventData.location,
+              start: new Date(eventData.start),
+              end: new Date(eventData.end),
+              htmlLink: eventData.htmlLink,
+              hangoutLink: eventData.hangoutLink,
+              organizer: eventData.organizer,
+              attendees: eventData.attendees,
+              status: eventData.status,
+              recurrence: eventData.recurrence,
+              eventType: eventData.eventType,
+            },
+          );
           await this.googleCalendarEventRepository.save(googleCalendarEvent);
           eventsSyncedCount++;
         }
