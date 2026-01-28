@@ -34,8 +34,7 @@ export class MediaStagiaire {
   @Column({ type: "int", default: 0, select: false })
   duration: number;
 
-  @Column({ type: "float", default: 0 })
-  percentage: number;
+  percentage?: number;
 
   @UpdateDateColumn()
   updated_at: Date;

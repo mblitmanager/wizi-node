@@ -555,7 +555,7 @@ let AdminService = class AdminService {
             const quizHistoryRaw = userId
                 ? await this.quizParticipationRepository.find({
                     where: { user_id: userId },
-                    relations: ["quiz", "quiz.formation"],
+                    relations: ["quiz", "quiz.formation", "quiz.questions"],
                     order: { created_at: "DESC" },
                     take: 10,
                 })
@@ -627,23 +627,30 @@ let AdminService = class AdminService {
                     total_time_minutes: 0,
                     login_streak: stagiaire.login_streak || 0,
                 },
-                quiz_history: quizHistoryRaw.map((qp) => ({
-                    id: qp.id,
-                    quiz_id: qp.quiz_id,
-                    correctAnswers: qp.correct_answers,
-                    totalQuestions: qp.quiz?.questions?.length || 5,
-                    score: qp.score,
-                    completedAt: qp.created_at,
-                    timeSpent: 0,
-                    quiz: {
-                        id: qp.quiz?.id,
-                        titre: qp.quiz?.titre,
-                        niveau: qp.quiz?.niveau,
-                        formation: {
-                            categorie: qp.quiz?.formation?.categorie,
+                quiz_history: quizHistoryRaw.map((qp) => {
+                    const totalQuestions = qp.quiz?.questions?.length || 0;
+                    const correctAnswers = qp.correct_answers || 0;
+                    return {
+                        id: qp.id,
+                        quiz_id: qp.quiz_id,
+                        correctAnswers: correctAnswers,
+                        totalQuestions: totalQuestions,
+                        score: qp.score,
+                        percentage: totalQuestions > 0
+                            ? Math.round((correctAnswers / totalQuestions) * 100)
+                            : qp.score,
+                        completedAt: qp.created_at,
+                        timeSpent: qp.time_spent || 0,
+                        quiz: {
+                            id: qp.quiz?.id,
+                            titre: qp.quiz?.titre,
+                            niveau: qp.quiz?.niveau,
+                            formation: {
+                                categorie: qp.quiz?.formation?.categorie,
+                            },
                         },
-                    },
-                })),
+                    };
+                }),
                 login_history: loginHistoryRaw.map((lh) => ({
                     id: lh.id,
                     ip_address: lh.ip_address,
@@ -660,12 +667,7 @@ let AdminService = class AdminService {
                     is_online: stagiaire.user?.is_online || false,
                     last_client: stagiaire.user?.last_client,
                 },
-                formations: stagiaire.stagiaire_catalogue_formations?.map((scf) => ({
-                    id: scf.catalogue_formation.id,
-                    title: scf.catalogue_formation.titre,
-                    progress: 0,
-                    status: "en_cours",
-                })) || [],
+                formations: await this.getStagiaireFormationPerformance(stagiaire.id),
                 video_stats: {
                     total_watched: 0,
                     total_time_watched: 0,
@@ -1027,29 +1029,47 @@ let AdminService = class AdminService {
             const formation = scf.catalogue_formation?.formation;
             if (!formation)
                 return null;
-            const stats = await this.quizParticipationRepository
+            const levelStatsRaw = await this.quizParticipationRepository
                 .createQueryBuilder("qp")
                 .innerJoin("qp.quiz", "q")
                 .where("q.formation_id = :formationId", { formationId: formation.id })
                 .andWhere("qp.user_id = :userId", { userId: stagiaire.user_id })
                 .andWhere("qp.status = :status", { status: "completed" })
                 .select([
+                "q.niveau as level",
                 "AVG(qp.score) as avg_score",
                 "MAX(qp.score) as best_score",
                 "COUNT(qp.id) as completions",
-                "MAX(qp.created_at) as last_activity",
             ])
-                .getRawOne();
+                .groupBy("q.niveau")
+                .getRawMany();
+            const levels = levelStatsRaw.map((ls) => ({
+                name: ls.level?.charAt(0).toUpperCase() +
+                    ls.level?.slice(1).toLowerCase() || "Non défini",
+                avg_score: Math.round((parseFloat(ls.avg_score) || 0) * 10) / 10,
+                best_score: parseInt(ls.best_score) || 0,
+                completions: parseInt(ls.completions) || 0,
+            }));
+            const totalAvg = levels.length > 0
+                ? Math.round((levels.reduce((acc, l) => acc + l.avg_score, 0) /
+                    levels.length) *
+                    10) / 10
+                : 0;
+            const totalCompletions = levels.reduce((acc, l) => acc + l.completions, 0);
+            const bestScore = levels.length > 0 ? Math.max(...levels.map((l) => l.best_score)) : 0;
             return {
                 id: formation.id,
+                title: formation.titre,
                 titre: formation.titre,
                 image_url: formation.image,
-                avg_score: Math.round((parseFloat(stats.avg_score) || 0) * 10) / 10,
-                best_score: parseInt(stats.best_score) || 0,
-                completions: parseInt(stats.completions) || 0,
-                last_activity: stats.last_activity
-                    ? new Date(stats.last_activity).toISOString()
-                    : null,
+                category: formation.categorie || "Général",
+                progress: 0,
+                avg_score: totalAvg,
+                best_score: bestScore,
+                completions: totalCompletions,
+                levels,
+                last_activity: null,
+                completed_at: null,
             };
         }));
         return performance.filter((p) => p !== null);

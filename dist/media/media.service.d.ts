@@ -58,6 +58,7 @@ export declare class MediaService {
                 watched_at: string;
                 created_at: any;
                 updated_at: string;
+                percentage: number;
             };
         }[];
         id: number;
@@ -149,6 +150,7 @@ export declare class MediaService {
                     watched_at: string;
                     created_at: any;
                     updated_at: string;
+                    percentage: number;
                 };
             }[];
             id: number;
@@ -202,6 +204,7 @@ export declare class MediaService {
                     watched_at: string;
                     created_at: any;
                     updated_at: string;
+                    percentage: number;
                 };
             }[];
             id: number;
@@ -268,6 +271,7 @@ export declare class MediaService {
                     watched_at: string;
                     created_at: any;
                     updated_at: string;
+                    percentage: number;
                 };
             }[];
             id: number;

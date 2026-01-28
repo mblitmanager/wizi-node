@@ -823,13 +823,7 @@ export class AdminService {
           is_online: stagiaire.user?.is_online || false,
           last_client: stagiaire.user?.last_client,
         },
-        formations:
-          stagiaire.stagiaire_catalogue_formations?.map((scf) => ({
-            id: scf.catalogue_formation.id,
-            title: scf.catalogue_formation.titre,
-            progress: 0,
-            status: "en_cours",
-          })) || [],
+        formations: await this.getStagiaireFormationPerformance(stagiaire.id),
         video_stats: {
           total_watched: 0,
           total_time_watched: 0,
@@ -1271,30 +1265,59 @@ export class AdminService {
         const formation = scf.catalogue_formation?.formation;
         if (!formation) return null;
 
-        const stats = await this.quizParticipationRepository
+        // Group by level
+        const levelStatsRaw = await this.quizParticipationRepository
           .createQueryBuilder("qp")
           .innerJoin("qp.quiz", "q")
           .where("q.formation_id = :formationId", { formationId: formation.id })
           .andWhere("qp.user_id = :userId", { userId: stagiaire.user_id })
           .andWhere("qp.status = :status", { status: "completed" })
           .select([
+            "q.niveau as level",
             "AVG(qp.score) as avg_score",
             "MAX(qp.score) as best_score",
             "COUNT(qp.id) as completions",
-            "MAX(qp.created_at) as last_activity",
           ])
-          .getRawOne();
+          .groupBy("q.niveau")
+          .getRawMany();
+
+        const levels = levelStatsRaw.map((ls) => ({
+          name:
+            ls.level?.charAt(0).toUpperCase() +
+              ls.level?.slice(1).toLowerCase() || "Non défini",
+          avg_score: Math.round((parseFloat(ls.avg_score) || 0) * 10) / 10,
+          best_score: parseInt(ls.best_score) || 0,
+          completions: parseInt(ls.completions) || 0,
+        }));
+
+        const totalAvg =
+          levels.length > 0
+            ? Math.round(
+                (levels.reduce((acc, l) => acc + l.avg_score, 0) /
+                  levels.length) *
+                  10,
+              ) / 10
+            : 0;
+        const totalCompletions = levels.reduce(
+          (acc, l) => acc + l.completions,
+          0,
+        );
+        const bestScore =
+          levels.length > 0 ? Math.max(...levels.map((l) => l.best_score)) : 0;
 
         return {
           id: formation.id,
+          title: formation.titre,
           titre: formation.titre,
           image_url: formation.image,
-          avg_score: Math.round((parseFloat(stats.avg_score) || 0) * 10) / 10,
-          best_score: parseInt(stats.best_score) || 0,
-          completions: parseInt(stats.completions) || 0,
-          last_activity: stats.last_activity
-            ? new Date(stats.last_activity).toISOString()
-            : null,
+          category: formation.categorie || "Général",
+          progress: 0,
+          avg_score: totalAvg,
+          best_score: bestScore,
+          completions: totalCompletions,
+          levels,
+          last_activity: null,
+          completed_at: null,
         };
       }),
     );

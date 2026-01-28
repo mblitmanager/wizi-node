@@ -314,6 +314,7 @@ export declare class StagiaireService {
                     watched_at: string;
                     created_at: any;
                     updated_at: string;
+                    percentage: number;
                 };
             }[];
             id: number;

@@ -231,6 +231,7 @@ export declare class AdminService {
             correctAnswers: number;
             totalQuestions: number;
             score: number;
+            percentage: number;
             completedAt: Date;
             timeSpent: number;
             quiz: {
@@ -259,8 +260,21 @@ export declare class AdminService {
         formations: {
             id: number;
             title: string;
+            titre: string;
+            image_url: string;
+            category: string;
             progress: number;
-            status: string;
+            avg_score: number;
+            best_score: number;
+            completions: number;
+            levels: {
+                name: any;
+                avg_score: number;
+                best_score: number;
+                completions: number;
+            }[];
+            last_activity: any;
+            completed_at: any;
         }[];
         video_stats: {
             total_watched: number;
@@ -344,12 +358,22 @@ export declare class AdminService {
     }[]>;
     getStagiaireFormationPerformance(id: number): Promise<{
         id: number;
+        title: string;
         titre: string;
         image_url: string;
+        category: string;
+        progress: number;
         avg_score: number;
         best_score: number;
         completions: number;
-        last_activity: string;
+        levels: {
+            name: any;
+            avg_score: number;
+            best_score: number;
+            completions: number;
+        }[];
+        last_activity: any;
+        completed_at: any;
     }[]>;
     getFormateurTrends(userId: number): Promise<{
         quiz_trends: {
