@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   Index,
+  JoinColumn,
 } from "typeorm";
 import { GoogleCalendar } from "./google-calendar.entity";
 
@@ -123,5 +124,6 @@ export class GoogleCalendarEvent {
   updatedAt: Date;
 
   @ManyToOne(() => GoogleCalendar, (googleCalendar) => googleCalendar.events)
+  @JoinColumn({ name: "google_calendar_id" })
   googleCalendar: GoogleCalendar;
 }

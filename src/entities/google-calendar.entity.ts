@@ -5,6 +5,7 @@ import {
   ManyToOne,
   OneToMany,
   Index,
+  JoinColumn,
 } from "typeorm";
 import { User } from "./user.entity";
 import { GoogleCalendarEvent } from "./google-calendar-event.entity";
@@ -97,6 +98,7 @@ export class GoogleCalendar {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.googleCalendars)
+  @JoinColumn({ name: "user_id" })
   user: User;
 
   @OneToMany(() => GoogleCalendarEvent, (event) => event.googleCalendar)

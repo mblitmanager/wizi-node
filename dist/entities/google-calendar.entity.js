@@ -114,6 +114,7 @@ __decorate([
 ], GoogleCalendar.prototype, "updatedAt", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.googleCalendars),
+    (0, typeorm_1.JoinColumn)({ name: "user_id" }),
     __metadata("design:type", user_entity_1.User)
 ], GoogleCalendar.prototype, "user", void 0);
 __decorate([

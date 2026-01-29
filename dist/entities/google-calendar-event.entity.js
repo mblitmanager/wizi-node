@@ -146,6 +146,7 @@ __decorate([
 ], GoogleCalendarEvent.prototype, "updatedAt", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => google_calendar_entity_1.GoogleCalendar, (googleCalendar) => googleCalendar.events),
+    (0, typeorm_1.JoinColumn)({ name: "google_calendar_id" }),
     __metadata("design:type", google_calendar_entity_1.GoogleCalendar)
 ], GoogleCalendarEvent.prototype, "googleCalendar", void 0);
 exports.GoogleCalendarEvent = GoogleCalendarEvent = __decorate([
