@@ -59,9 +59,6 @@ export class Formateur {
   })
   formations: any[];
 
-  @OneToMany(() => Agenda, (agenda) => agenda.formateur)
-  agendas: Agenda[];
-
   @CreateDateColumn()
   created_at: Date;
 

@@ -207,7 +207,7 @@ export declare class AdminService {
                 nom: string;
                 telephone: string;
                 email: string;
-                role: any;
+                role: string;
                 image: string;
                 civilite: string;
             }[];

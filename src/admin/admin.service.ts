@@ -761,7 +761,7 @@ export class AdminService {
             nom: c.user?.name || "Conseiller",
             telephone: c.telephone,
             email: c.user?.email,
-            role: p.role || "Conseiller",
+            role: c.role || "Conseiller",
             image: c.user?.image,
             civilite: c.civilite,
           })),
