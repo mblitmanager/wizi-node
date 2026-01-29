@@ -556,7 +556,7 @@ export class FormateurController {
     // WAIT: In FormateurClassementPage.tsx, it's NOT the arena ranking (formateur comparison).
     // It's a ranking of STAGIAIRES for that specific formation.
     const ranking = await this.adminService.getRankingByFormation(id, period);
-    return this.apiResponse.success(ranking);
+    return this.apiResponse.success({ ranking });
   }
 
   @Get("classement/mes-stagiaires")

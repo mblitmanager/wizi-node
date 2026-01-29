@@ -1,2 +1,10 @@
 node_modules
 .env
+# OAuth and Credentials
+client_secret_*.json
+*.plist
+*.jks
+*.keystore
+dist
+build
+

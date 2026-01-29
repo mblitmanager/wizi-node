@@ -1705,16 +1705,24 @@ let AdminService = class AdminService {
     async getFormateurFormationsWithVideos(userId) {
         const formateur = await this.formateurRepository.findOne({
             where: { user_id: userId },
-            relations: [
-                "formations",
-                "formations.formation",
-                "formations.formation.medias",
-            ],
         });
         if (!formateur) {
             throw new common_1.NotFoundException(`Formateur avec l'utilisateur ID ${userId} introuvable`);
         }
-        const formationsWithVideos = formateur.formations.map((catalogue) => ({
+        const formations = await this.catalogueFormationRepository
+            .createQueryBuilder("cf")
+            .leftJoin("cf.formateurs", "f_direct")
+            .leftJoin("cf.stagiaire_catalogue_formations", "scf_any")
+            .leftJoin("scf_any.stagiaire", "s_any")
+            .leftJoin("s_any.formateurs", "f_indirect")
+            .where("(f_direct.id = :formateurId OR f_indirect.id = :formateurId)", {
+            formateurId: formateur.id,
+        })
+            .leftJoinAndSelect("cf.formation", "real_formation")
+            .leftJoinAndSelect("real_formation.medias", "media")
+            .orderBy("cf.titre", "ASC")
+            .getMany();
+        const formationsWithVideos = formations.map((catalogue) => ({
             formation_id: catalogue.id,
             formation_titre: catalogue.titre,
             videos: (catalogue.formation?.medias || [])

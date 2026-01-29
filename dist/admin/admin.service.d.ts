@@ -608,9 +608,16 @@ export declare class AdminService {
         stagiaires_count: number;
     }>;
     getFormateurFormationsWithVideos(userId: number): Promise<{
-        formation_id: any;
-        formation_titre: any;
-        videos: any;
+        formation_id: number;
+        formation_titre: string;
+        videos: {
+            id: number;
+            titre: string;
+            description: string;
+            url: string;
+            type: string;
+            created_at: string;
+        }[];
     }[]>;
     getFormateurStagiairesProgress(userId: number): Promise<{
         stagiaires: {

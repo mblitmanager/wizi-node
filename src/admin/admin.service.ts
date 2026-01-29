@@ -2175,11 +2175,6 @@ export class AdminService {
   async getFormateurFormationsWithVideos(userId: number) {
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },
-      relations: [
-        "formations",
-        "formations.formation",
-        "formations.formation.medias",
-      ],
     });
 
     if (!formateur) {
@@ -2188,7 +2183,22 @@ export class AdminService {
       );
     }
 
-    const formationsWithVideos = formateur.formations.map((catalogue) => ({
+    // Use broader query logic to find all relevant formations (Direct + Indirect via students)
+    const formations = await this.catalogueFormationRepository
+      .createQueryBuilder("cf")
+      .leftJoin("cf.formateurs", "f_direct") // Direct link
+      .leftJoin("cf.stagiaire_catalogue_formations", "scf_any") // Via students link
+      .leftJoin("scf_any.stagiaire", "s_any")
+      .leftJoin("s_any.formateurs", "f_indirect")
+      .where("(f_direct.id = :formateurId OR f_indirect.id = :formateurId)", {
+        formateurId: formateur.id,
+      })
+      .leftJoinAndSelect("cf.formation", "real_formation")
+      .leftJoinAndSelect("real_formation.medias", "media")
+      .orderBy("cf.titre", "ASC")
+      .getMany();
+
+    const formationsWithVideos = formations.map((catalogue) => ({
       formation_id: catalogue.id,
       formation_titre: catalogue.titre,
       videos: (catalogue.formation?.medias || [])
@@ -2690,6 +2700,7 @@ export class AdminService {
       .addSelect("COUNT(DISTINCT qp.id)", "total_quizzes")
       .addSelect("AVG(qp.score)", "avg_score")
       .addSelect("MAX(qp.score)", "best_score")
+      .addSelect("SUM(qp.score)", "total_points")
       .where("qp.user_id IN (:...userIds)", { userIds })
       .groupBy("qp.user_id")
       .getRawMany();
@@ -2701,6 +2712,7 @@ export class AdminService {
           total: parseInt(s.total_quizzes) || 0,
           avg: parseFloat(s.avg_score) || 0,
           best: parseInt(s.best_score) || 0,
+          points: parseInt(s.total_points) || 0,
         },
       ]),
     );
@@ -2710,6 +2722,7 @@ export class AdminService {
         total: 0,
         avg: 0,
         best: 0,
+        points: 0,
       };
 
       // Attempt to split full name if only name is available
@@ -2723,6 +2736,7 @@ export class AdminService {
         name: displayNom, // For backward compatibility
         email: s.user?.email || "",
         avatar: s.user?.image || null,
+        total_points: stats.points,
         total_quizzes: stats.total,
         average_score: Math.round(stats.avg),
         best_score: stats.best,
