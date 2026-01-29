@@ -69,6 +69,10 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "adresse", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "google_refresh_token", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: "timestamp", nullable: true }),
     __metadata("design:type", Date)
 ], User.prototype, "created_at", void 0);

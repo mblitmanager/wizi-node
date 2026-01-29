@@ -40,42 +40,33 @@ export class AgendasApiController {
   ) {}
 
   @Post("/sync")
-  async syncGoogleCalendar(
-    @Body() body: any,
-    @Headers("x-sync-secret") secret: string,
-  ) {
-    if (
-      !process.env.SYNC_API_SECRET ||
-      secret !== process.env.SYNC_API_SECRET
-    ) {
+  @Roles("administrateur", "admin", "formateur", "formatrice")
+  async syncGoogleCalendar(@Request() req: any, @Body() body: any) {
+    const { authCode } = body;
+    const isAdmin =
+      req.user.role === "administrateur" || req.user.role === "admin";
+
+    if (authCode) {
+      // Logic to exchange code and sync THIS user
+      await this.agendaService.exchangeCodeForToken(req.user.id, authCode);
+      const result = await this.agendaService.syncUserEvents(req.user.id);
+      return {
+        message: "Synchronisation de votre compte réussie.",
+        info: result,
+      };
+    } else if (isAdmin) {
+      // Sync ALL users (standard admin task)
+      const results = await this.agendaService.syncAllUsers();
+      return {
+        message: "Synchronisation globale de tous les comptes lancée.",
+        results,
+      };
+    } else {
       throw new HttpException(
-        "Non autorisé. Clé secrète invalide ou manquante.",
-        HttpStatus.UNAUTHORIZED,
+        "Seul l'administrateur peut lancer la synchronisation globale.",
+        HttpStatus.FORBIDDEN,
       );
     }
-
-    const { userId, calendars, events } = body;
-
-    if (!userId || !calendars || !events) {
-      throw new HttpException(
-        "Paramètres manquants. userId, calendars, et events sont requis.",
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    // Ici, vous appellerez une méthode du service pour gérer la sauvegarde
-    const result = await this.agendaService.syncGoogleCalendarData(
-      userId,
-      calendars,
-      events,
-    );
-
-    return {
-      message: "Synchronisation Google Calendar réussie.",
-      userId: result.userId,
-      calendarsSynced: result.calendarsSynced,
-      eventsSynced: result.eventsSynced,
-    };
   }
 
   @Get()
@@ -94,7 +85,7 @@ export class AgendasApiController {
       const googleCalendars = await this.agendaService[
         "googleCalendarRepository"
       ].find({
-        where: { userId: req.user.id },
+        where: { user_id: req.user.id },
       });
 
       const calendarIds = googleCalendars.map((c) => c.id);
@@ -111,7 +102,7 @@ export class AgendasApiController {
       const [events, total] = await this.agendaService[
         "googleCalendarEventRepository"
       ].findAndCount({
-        where: { googleCalendarId: In(calendarIds) },
+        where: { google_calendar_id: In(calendarIds) },
         order: { start: "DESC" },
         skip,
         take: limitNum,
@@ -125,7 +116,7 @@ export class AgendasApiController {
         date_debut: event.start.toISOString(),
         date_fin: event.end.toISOString(),
         location: event.location,
-        googleId: event.googleId,
+        googleId: event.google_id,
       }));
 
       return {

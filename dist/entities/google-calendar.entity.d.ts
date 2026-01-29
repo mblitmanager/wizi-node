@@ -1,9 +1,9 @@
-import { User } from './user.entity';
-import { GoogleCalendarEvent } from './google-calendar-event.entity';
+import { User } from "./user.entity";
+import { GoogleCalendarEvent } from "./google-calendar-event.entity";
 export declare class GoogleCalendar {
     id: number;
-    userId: number;
-    googleId: string;
+    user_id: number;
+    google_id: string;
     summary: string;
     description: string;
     backgroundColor: string;

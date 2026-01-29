@@ -22,25 +22,23 @@ __decorate([
 ], GoogleCalendar.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'user_id',
-        type: 'int',
+        type: "int",
         nullable: false,
     }),
     __metadata("design:type", Number)
-], GoogleCalendar.prototype, "userId", void 0);
+], GoogleCalendar.prototype, "user_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'google_id',
-        type: 'varchar',
+        type: "varchar",
         length: 255,
         nullable: false,
         unique: true,
     }),
     __metadata("design:type", String)
-], GoogleCalendar.prototype, "googleId", void 0);
+], GoogleCalendar.prototype, "google_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'varchar',
+        type: "varchar",
         length: 255,
         nullable: false,
     }),
@@ -48,15 +46,15 @@ __decorate([
 ], GoogleCalendar.prototype, "summary", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'text',
+        type: "text",
         nullable: true,
     }),
     __metadata("design:type", String)
 ], GoogleCalendar.prototype, "description", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'background_color',
-        type: 'varchar',
+        name: "background_color",
+        type: "varchar",
         length: 255,
         nullable: true,
     }),
@@ -64,8 +62,8 @@ __decorate([
 ], GoogleCalendar.prototype, "backgroundColor", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'foreground_color',
-        type: 'varchar',
+        name: "foreground_color",
+        type: "varchar",
         length: 255,
         nullable: true,
     }),
@@ -73,8 +71,8 @@ __decorate([
 ], GoogleCalendar.prototype, "foregroundColor", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'access_role',
-        type: 'varchar',
+        name: "access_role",
+        type: "varchar",
         length: 255,
         nullable: true,
     }),
@@ -82,8 +80,8 @@ __decorate([
 ], GoogleCalendar.prototype, "accessRole", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'time_zone',
-        type: 'varchar',
+        name: "time_zone",
+        type: "varchar",
         length: 255,
         nullable: true,
     }),
@@ -91,39 +89,39 @@ __decorate([
 ], GoogleCalendar.prototype, "timeZone", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'synced_at',
-        type: 'timestamp',
+        name: "synced_at",
+        type: "timestamp",
         nullable: true,
     }),
     __metadata("design:type", Date)
 ], GoogleCalendar.prototype, "syncedAt", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'created_at',
-        type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
+        name: "created_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP",
     }),
     __metadata("design:type", Date)
 ], GoogleCalendar.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'updated_at',
-        type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
-        onUpdate: 'CURRENT_TIMESTAMP',
+        name: "updated_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP",
+        onUpdate: "CURRENT_TIMESTAMP",
     }),
     __metadata("design:type", Date)
 ], GoogleCalendar.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.googleCalendars),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.googleCalendars),
     __metadata("design:type", user_entity_1.User)
 ], GoogleCalendar.prototype, "user", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => google_calendar_event_entity_1.GoogleCalendarEvent, event => event.googleCalendar),
+    (0, typeorm_1.OneToMany)(() => google_calendar_event_entity_1.GoogleCalendarEvent, (event) => event.googleCalendar),
     __metadata("design:type", Array)
 ], GoogleCalendar.prototype, "events", void 0);
 exports.GoogleCalendar = GoogleCalendar = __decorate([
-    (0, typeorm_1.Entity)('google_calendars'),
-    (0, typeorm_1.Index)(['googleId', 'userId'], { unique: true })
+    (0, typeorm_1.Entity)("google_calendars"),
+    (0, typeorm_1.Index)(["google_id", "user_id"], { unique: true })
 ], GoogleCalendar);
 //# sourceMappingURL=google-calendar.entity.js.map

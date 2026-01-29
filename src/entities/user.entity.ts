@@ -50,6 +50,9 @@ export class User {
   @Column({ nullable: true })
   adresse: string;
 
+  @Column({ type: "text", nullable: true })
+  google_refresh_token: string;
+
   @Column({ type: "timestamp", nullable: true })
   created_at: Date;
 

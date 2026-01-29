@@ -22,14 +22,20 @@ const notification_entity_1 = require("../entities/notification.entity");
 const google_calendar_entity_1 = require("../entities/google-calendar.entity");
 const google_calendar_event_entity_1 = require("../entities/google-calendar-event.entity");
 const formateur_entity_1 = require("../entities/formateur.entity");
+const user_entity_1 = require("../entities/user.entity");
+const googleapis_1 = require("googleapis");
+const config_1 = require("@nestjs/config");
 let AgendaService = class AgendaService {
-    constructor(agendaRepository, stagiaireRepository, notificationRepository, googleCalendarRepository, googleCalendarEventRepository, formateurRepository) {
+    constructor(agendaRepository, stagiaireRepository, notificationRepository, googleCalendarRepository, googleCalendarEventRepository, formateurRepository, userRepository, configService) {
         this.agendaRepository = agendaRepository;
         this.stagiaireRepository = stagiaireRepository;
         this.notificationRepository = notificationRepository;
         this.googleCalendarRepository = googleCalendarRepository;
         this.googleCalendarEventRepository = googleCalendarEventRepository;
         this.formateurRepository = formateurRepository;
+        this.userRepository = userRepository;
+        this.configService = configService;
+        this.oauth2Client = new googleapis_1.google.auth.OAuth2(this.configService.get("GOOGLE_CLIENT_ID"), this.configService.get("GOOGLE_CLIENT_SECRET"), this.configService.get("GOOGLE_REDIRECT_URI"));
     }
     async getStagiaireAgenda(userId) {
         const stagiaire = await this.stagiaireRepository.findOne({
@@ -60,12 +66,12 @@ let AgendaService = class AgendaService {
     }
     async getFormateurAgenda(userId) {
         const googleCalendars = await this.googleCalendarRepository.find({
-            where: { userId: userId },
+            where: { user_id: userId },
         });
         const googleCalendarEvents = [];
         for (const calendar of googleCalendars) {
             const events = await this.googleCalendarEventRepository.find({
-                where: { googleCalendarId: calendar.id },
+                where: { google_calendar_id: calendar.id },
                 order: { start: "ASC" },
             });
             googleCalendarEvents.push(...events);
@@ -85,14 +91,14 @@ let AgendaService = class AgendaService {
         const events = await this.agendaRepository.find({
             where: { stagiaire_id: stagiaire.id },
         });
-        let icsContent = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//WiziLearn//NONSGML v1.0//EN\r\n";
+        let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Wizi Learn//Agenda//FR\n";
         for (const event of events) {
-            icsContent += "BEGIN:VEVENT\r\n";
-            icsContent += `DTSTART:${this.formatDateForICS(event.date_debut)}\r\n`;
-            icsContent += `DTEND:${this.formatDateForICS(event.date_fin)}\r\n`;
-            icsContent += `SUMMARY:${event.titre}\r\n`;
-            icsContent += `DESCRIPTION:${event.description || ""}\r\n`;
-            icsContent += "END:VEVENT\r\n";
+            icsContent += "BEGIN:VEVENT\n";
+            icsContent += `SUMMARY:${event.titre}\n`;
+            icsContent += `DESCRIPTION:${event.description || ""}\n`;
+            icsContent += `DTSTART:${this.formatDateForICS(event.date_debut)}\n`;
+            icsContent += `DTEND:${this.formatDateForICS(event.date_fin)}\n`;
+            icsContent += "END:VEVENT\n";
         }
         icsContent += "END:VCALENDAR";
         return icsContent;
@@ -104,7 +110,7 @@ let AgendaService = class AgendaService {
         if (!stagiaire) {
             throw new common_1.NotFoundException(`Stagiaire introuvable`);
         }
-        return this.notificationRepository.find({
+        return await this.notificationRepository.find({
             where: { user_id: userId },
             order: { created_at: "DESC" },
         });
@@ -125,14 +131,23 @@ let AgendaService = class AgendaService {
         return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
     }
     async syncGoogleCalendarData(userId, calendars, events) {
+        if (!userId) {
+            throw new Error("userId is required for sync");
+        }
+        const numericUserId = typeof userId === "number" ? userId : parseInt(userId.toString());
         let calendarsSyncedCount = 0;
         let eventsSyncedCount = 0;
         for (const calendarData of calendars) {
             let googleCalendar = await this.googleCalendarRepository.findOne({
-                where: { googleId: calendarData.googleId, userId: parseInt(userId) },
+                where: {
+                    google_id: calendarData.googleId || calendarData.id,
+                    user_id: numericUserId,
+                },
             });
-            if (googleCalendar) {
-                Object.assign(googleCalendar, {
+            if (!googleCalendar) {
+                googleCalendar = this.googleCalendarRepository.create({
+                    user_id: numericUserId,
+                    google_id: calendarData.googleId || calendarData.id,
                     summary: calendarData.summary,
                     description: calendarData.description,
                     backgroundColor: calendarData.backgroundColor,
@@ -141,43 +156,40 @@ let AgendaService = class AgendaService {
                     timeZone: calendarData.timeZone,
                     syncedAt: new Date(),
                 });
-                await this.googleCalendarRepository.save(googleCalendar);
             }
             else {
-                googleCalendar = this.googleCalendarRepository.create({
-                    userId: parseInt(userId),
-                    googleId: calendarData.googleId,
-                    summary: calendarData.summary,
-                    description: calendarData.description,
-                    backgroundColor: calendarData.backgroundColor,
-                    foregroundColor: calendarData.foregroundColor,
-                    accessRole: calendarData.accessRole,
-                    timeZone: calendarData.timeZone,
-                    syncedAt: new Date(),
-                });
-                await this.googleCalendarRepository.save(googleCalendar);
+                googleCalendar.summary = calendarData.summary;
+                googleCalendar.description = calendarData.description;
+                googleCalendar.backgroundColor = calendarData.backgroundColor;
+                googleCalendar.foregroundColor = calendarData.foregroundColor;
+                googleCalendar.accessRole = calendarData.accessRole;
+                googleCalendar.timeZone = calendarData.timeZone;
+                googleCalendar.syncedAt = new Date();
             }
+            await this.googleCalendarRepository.save(googleCalendar);
             calendarsSyncedCount++;
             await this.googleCalendarEventRepository.delete({
-                googleCalendarId: googleCalendar.id,
+                google_calendar_id: googleCalendar.id,
             });
             for (const eventData of events) {
-                if (eventData.calendarId === googleCalendar.googleId) {
+                if (eventData.calendarId === googleCalendar.google_id) {
                     const googleCalendarEvent = this.googleCalendarEventRepository.create({
-                        googleCalendarId: googleCalendar.id,
-                        googleId: eventData.googleId,
-                        summary: eventData.summary,
+                        google_calendar_id: googleCalendar.id,
+                        google_id: eventData.googleId || eventData.id,
+                        summary: eventData.summary || eventData.titre || "Sans titre",
                         description: eventData.description,
                         location: eventData.location,
-                        start: new Date(eventData.start),
-                        end: new Date(eventData.end),
+                        start: new Date(eventData.start || eventData.date_debut),
+                        end: new Date(eventData.end || eventData.date_fin),
                         htmlLink: eventData.htmlLink,
                         hangoutLink: eventData.hangoutLink,
-                        organizer: eventData.organizer,
-                        attendees: eventData.attendees,
+                        organizer: typeof eventData.organizer === "object"
+                            ? eventData.organizer.email
+                            : eventData.organizer,
+                        attendees: Array.isArray(eventData.attendees)
+                            ? eventData.attendees.map((a) => typeof a === "object" ? a.email : a)
+                            : null,
                         status: eventData.status,
-                        recurrence: eventData.recurrence,
-                        eventType: eventData.eventType,
                     });
                     await this.googleCalendarEventRepository.save(googleCalendarEvent);
                     eventsSyncedCount++;
@@ -185,10 +197,70 @@ let AgendaService = class AgendaService {
             }
         }
         return {
-            userId,
             calendarsSynced: calendarsSyncedCount,
             eventsSynced: eventsSyncedCount,
         };
+    }
+    async exchangeCodeForToken(userId, code) {
+        const { tokens } = await this.oauth2Client.getToken(code);
+        if (tokens.refresh_token) {
+            await this.userRepository.update(userId, {
+                google_refresh_token: tokens.refresh_token,
+            });
+            return tokens.refresh_token;
+        }
+        return tokens.access_token;
+    }
+    async syncUserEvents(userId) {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user || !user.google_refresh_token) {
+            throw new Error(`Utilisateur ${userId} n'a pas de compte Google connecté`);
+        }
+        this.oauth2Client.setCredentials({
+            refresh_token: user.google_refresh_token,
+        });
+        const calendarApi = googleapis_1.google.calendar({
+            version: "v3",
+            auth: this.oauth2Client,
+        });
+        const calendarList = await calendarApi.calendarList.list();
+        const calendars = calendarList.data.items || [];
+        const allEvents = [];
+        for (const cal of calendars) {
+            const resp = await calendarApi.events.list({
+                calendarId: cal.id,
+                timeMin: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+                timeMax: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+                singleEvents: true,
+                orderBy: "startTime",
+            });
+            const events = (resp.data.items || []).map((e) => ({
+                ...e,
+                calendarId: cal.id,
+            }));
+            allEvents.push(...events);
+        }
+        return await this.syncGoogleCalendarData(userId.toString(), calendars, allEvents);
+    }
+    async syncAllUsers() {
+        const users = await this.userRepository.find({
+            where: { google_refresh_token: (0, typeorm_2.Not)((0, typeorm_2.IsNull)()) },
+        });
+        const results = [];
+        for (const user of users) {
+            try {
+                const res = await this.syncUserEvents(user.id);
+                results.push({ userId: user.id, status: "success", info: res });
+            }
+            catch (error) {
+                results.push({
+                    userId: user.id,
+                    status: "error",
+                    message: error.message,
+                });
+            }
+        }
+        return results;
     }
     formatAgendaJsonLd(agenda) {
         return {
@@ -219,11 +291,14 @@ exports.AgendaService = AgendaService = __decorate([
     __param(3, (0, typeorm_1.InjectRepository)(google_calendar_entity_1.GoogleCalendar)),
     __param(4, (0, typeorm_1.InjectRepository)(google_calendar_event_entity_1.GoogleCalendarEvent)),
     __param(5, (0, typeorm_1.InjectRepository)(formateur_entity_1.Formateur)),
+    __param(6, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        config_1.ConfigService])
 ], AgendaService);
 //# sourceMappingURL=agenda.service.js.map

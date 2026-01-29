@@ -5,6 +5,8 @@ import { Notification } from "../entities/notification.entity";
 import { GoogleCalendar } from "../entities/google-calendar.entity";
 import { GoogleCalendarEvent } from "../entities/google-calendar-event.entity";
 import { Formateur } from "../entities/formateur.entity";
+import { User } from "../entities/user.entity";
+import { ConfigService } from "@nestjs/config";
 export declare class AgendaService {
     private agendaRepository;
     private stagiaireRepository;
@@ -12,7 +14,10 @@ export declare class AgendaService {
     private googleCalendarRepository;
     private googleCalendarEventRepository;
     private formateurRepository;
-    constructor(agendaRepository: Repository<Agenda>, stagiaireRepository: Repository<Stagiaire>, notificationRepository: Repository<Notification>, googleCalendarRepository: Repository<GoogleCalendar>, googleCalendarEventRepository: Repository<GoogleCalendarEvent>, formateurRepository: Repository<Formateur>);
+    private userRepository;
+    private configService;
+    private oauth2Client;
+    constructor(agendaRepository: Repository<Agenda>, stagiaireRepository: Repository<Stagiaire>, notificationRepository: Repository<Notification>, googleCalendarRepository: Repository<GoogleCalendar>, googleCalendarEventRepository: Repository<GoogleCalendarEvent>, formateurRepository: Repository<Formateur>, userRepository: Repository<User>, configService: ConfigService);
     getStagiaireAgenda(userId: number): Promise<{
         formations: import("../entities/formation.entity").Formation[];
         events: Agenda[];
@@ -28,10 +33,15 @@ export declare class AgendaService {
     markAllNotificationsAsRead(userId: number): Promise<boolean>;
     private formatDateForICS;
     syncGoogleCalendarData(userId: string, calendars: any[], events: any[]): Promise<{
-        userId: string;
         calendarsSynced: number;
         eventsSynced: number;
     }>;
+    exchangeCodeForToken(userId: number, code: string): Promise<any>;
+    syncUserEvents(userId: number): Promise<{
+        calendarsSynced: number;
+        eventsSynced: number;
+    }>;
+    syncAllUsers(): Promise<any[]>;
     formatAgendaJsonLd(agenda: Agenda): {
         "@context": string;
         "@id": string;

@@ -26,22 +26,27 @@ let AgendasApiController = class AgendasApiController {
         this.agendaRepository = agendaRepository;
         this.agendaService = agendaService;
     }
-    async syncGoogleCalendar(body, secret) {
-        if (!process.env.SYNC_API_SECRET ||
-            secret !== process.env.SYNC_API_SECRET) {
-            throw new common_1.HttpException("Non autorisé. Clé secrète invalide ou manquante.", common_1.HttpStatus.UNAUTHORIZED);
+    async syncGoogleCalendar(req, body) {
+        const { authCode } = body;
+        const isAdmin = req.user.role === "administrateur" || req.user.role === "admin";
+        if (authCode) {
+            await this.agendaService.exchangeCodeForToken(req.user.id, authCode);
+            const result = await this.agendaService.syncUserEvents(req.user.id);
+            return {
+                message: "Synchronisation de votre compte réussie.",
+                info: result,
+            };
         }
-        const { userId, calendars, events } = body;
-        if (!userId || !calendars || !events) {
-            throw new common_1.HttpException("Paramètres manquants. userId, calendars, et events sont requis.", common_1.HttpStatus.BAD_REQUEST);
+        else if (isAdmin) {
+            const results = await this.agendaService.syncAllUsers();
+            return {
+                message: "Synchronisation globale de tous les comptes lancée.",
+                results,
+            };
         }
-        const result = await this.agendaService.syncGoogleCalendarData(userId, calendars, events);
-        return {
-            message: "Synchronisation Google Calendar réussie.",
-            userId: result.userId,
-            calendarsSynced: result.calendarsSynced,
-            eventsSynced: result.eventsSynced,
-        };
+        else {
+            throw new common_1.HttpException("Seul l'administrateur peut lancer la synchronisation globale.", common_1.HttpStatus.FORBIDDEN);
+        }
     }
     async getAll(req, page = 1, limit = 30) {
         const pageNum = typeof page === "string" ? parseInt(page, 10) : page || 1;
@@ -49,7 +54,7 @@ let AgendasApiController = class AgendasApiController {
         const skip = (pageNum - 1) * limitNum;
         if (req.user.role === "formateur" || req.user.role === "formatrice") {
             const googleCalendars = await this.agendaService["googleCalendarRepository"].find({
-                where: { userId: req.user.id },
+                where: { user_id: req.user.id },
             });
             const calendarIds = googleCalendars.map((c) => c.id);
             if (calendarIds.length === 0) {
@@ -62,7 +67,7 @@ let AgendasApiController = class AgendasApiController {
                 };
             }
             const [events, total] = await this.agendaService["googleCalendarEventRepository"].findAndCount({
-                where: { googleCalendarId: (0, typeorm_2.In)(calendarIds) },
+                where: { google_calendar_id: (0, typeorm_2.In)(calendarIds) },
                 order: { start: "DESC" },
                 skip,
                 take: limitNum,
@@ -75,7 +80,7 @@ let AgendasApiController = class AgendasApiController {
                 date_debut: event.start.toISOString(),
                 date_fin: event.end.toISOString(),
                 location: event.location,
-                googleId: event.googleId,
+                googleId: event.google_id,
             }));
             return {
                 "@context": "/api/contexts/Agenda",
@@ -173,10 +178,11 @@ let AgendasApiController = class AgendasApiController {
 exports.AgendasApiController = AgendasApiController;
 __decorate([
     (0, common_1.Post)("/sync"),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Headers)("x-sync-secret")),
+    (0, roles_decorator_1.Roles)("administrateur", "admin", "formateur", "formatrice"),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AgendasApiController.prototype, "syncGoogleCalendar", null);
 __decorate([

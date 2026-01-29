@@ -5,11 +5,17 @@ export declare class AgendasApiController {
     private agendaRepository;
     private agendaService;
     constructor(agendaRepository: Repository<Agenda>, agendaService: AgendaService);
-    syncGoogleCalendar(body: any, secret: string): Promise<{
+    syncGoogleCalendar(req: any, body: any): Promise<{
         message: string;
-        userId: string;
-        calendarsSynced: number;
-        eventsSynced: number;
+        info: {
+            calendarsSynced: number;
+            eventsSynced: number;
+        };
+        results?: undefined;
+    } | {
+        message: string;
+        results: any[];
+        info?: undefined;
     }>;
     getAll(req: any, page?: number, limit?: number): Promise<{
         "@context": string;

@@ -14,6 +14,7 @@ export declare class User {
     fcm_token: string;
     last_client: string;
     adresse: string;
+    google_refresh_token: string;
     created_at: Date;
     updated_at: Date;
     stagiaire: Stagiaire;

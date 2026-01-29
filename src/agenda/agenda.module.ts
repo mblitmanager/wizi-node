@@ -9,6 +9,7 @@ import { Notification } from "../entities/notification.entity";
 import { GoogleCalendar } from "../entities/google-calendar.entity";
 import { GoogleCalendarEvent } from "../entities/google-calendar-event.entity";
 import { Formateur } from "../entities/formateur.entity";
+import { User } from "../entities/user.entity";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { Formateur } from "../entities/formateur.entity";
       GoogleCalendar,
       GoogleCalendarEvent,
       Formateur,
+      User,
     ]),
   ],
   controllers: [AgendaController, AgendasApiController],

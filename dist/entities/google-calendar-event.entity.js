@@ -21,25 +21,22 @@ __decorate([
 ], GoogleCalendarEvent.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'google_calendar_id',
-        type: 'int',
+        type: "int",
         nullable: false,
     }),
     __metadata("design:type", Number)
-], GoogleCalendarEvent.prototype, "googleCalendarId", void 0);
+], GoogleCalendarEvent.prototype, "google_calendar_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'google_id',
-        type: 'varchar',
+        type: "varchar",
         length: 255,
         nullable: false,
-        unique: true,
     }),
     __metadata("design:type", String)
-], GoogleCalendarEvent.prototype, "googleId", void 0);
+], GoogleCalendarEvent.prototype, "google_id", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'varchar',
+        type: "varchar",
         length: 255,
         nullable: true,
     }),
@@ -47,14 +44,14 @@ __decorate([
 ], GoogleCalendarEvent.prototype, "summary", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'text',
+        type: "text",
         nullable: true,
     }),
     __metadata("design:type", String)
 ], GoogleCalendarEvent.prototype, "description", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'varchar',
+        type: "varchar",
         length: 255,
         nullable: true,
     }),
@@ -62,22 +59,22 @@ __decorate([
 ], GoogleCalendarEvent.prototype, "location", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'timestamp',
+        type: "timestamp",
         nullable: false,
     }),
     __metadata("design:type", Date)
 ], GoogleCalendarEvent.prototype, "start", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'timestamp',
+        type: "timestamp",
         nullable: false,
     }),
     __metadata("design:type", Date)
 ], GoogleCalendarEvent.prototype, "end", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'html_link',
-        type: 'varchar',
+        name: "html_link",
+        type: "varchar",
         length: 255,
         nullable: true,
     }),
@@ -85,8 +82,8 @@ __decorate([
 ], GoogleCalendarEvent.prototype, "htmlLink", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'hangout_link',
-        type: 'varchar',
+        name: "hangout_link",
+        type: "varchar",
         length: 255,
         nullable: true,
     }),
@@ -94,21 +91,21 @@ __decorate([
 ], GoogleCalendarEvent.prototype, "hangoutLink", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'json',
+        type: "json",
         nullable: true,
     }),
     __metadata("design:type", Object)
 ], GoogleCalendarEvent.prototype, "organizer", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'json',
+        type: "json",
         nullable: true,
     }),
     __metadata("design:type", Array)
 ], GoogleCalendarEvent.prototype, "attendees", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'varchar',
+        type: "varchar",
         length: 255,
         nullable: true,
     }),
@@ -116,15 +113,15 @@ __decorate([
 ], GoogleCalendarEvent.prototype, "status", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        type: 'json',
+        type: "json",
         nullable: true,
     }),
     __metadata("design:type", Object)
 ], GoogleCalendarEvent.prototype, "recurrence", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'event_type',
-        type: 'varchar',
+        name: "event_type",
+        type: "varchar",
         length: 255,
         nullable: true,
     }),
@@ -132,27 +129,27 @@ __decorate([
 ], GoogleCalendarEvent.prototype, "eventType", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'created_at',
-        type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
+        name: "created_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP",
     }),
     __metadata("design:type", Date)
 ], GoogleCalendarEvent.prototype, "createdAt", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        name: 'updated_at',
-        type: 'timestamp',
-        default: () => 'CURRENT_TIMESTAMP',
-        onUpdate: 'CURRENT_TIMESTAMP',
+        name: "updated_at",
+        type: "timestamp",
+        default: () => "CURRENT_TIMESTAMP",
+        onUpdate: "CURRENT_TIMESTAMP",
     }),
     __metadata("design:type", Date)
 ], GoogleCalendarEvent.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => google_calendar_entity_1.GoogleCalendar, googleCalendar => googleCalendar.events),
+    (0, typeorm_1.ManyToOne)(() => google_calendar_entity_1.GoogleCalendar, (googleCalendar) => googleCalendar.events),
     __metadata("design:type", google_calendar_entity_1.GoogleCalendar)
 ], GoogleCalendarEvent.prototype, "googleCalendar", void 0);
 exports.GoogleCalendarEvent = GoogleCalendarEvent = __decorate([
-    (0, typeorm_1.Entity)('google_calendar_events'),
-    (0, typeorm_1.Index)(['googleId', 'googleCalendarId'], { unique: true })
+    (0, typeorm_1.Entity)("google_calendar_events"),
+    (0, typeorm_1.Index)(["google_id", "google_calendar_id"], { unique: true })
 ], GoogleCalendarEvent);
 //# sourceMappingURL=google-calendar-event.entity.js.map
