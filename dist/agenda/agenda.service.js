@@ -281,6 +281,14 @@ let AgendaService = class AgendaService {
             updated_at: agenda.updated_at?.toISOString(),
         };
     }
+    async handleExternalSyncData(userId, calendars, events) {
+        const result = await this.syncGoogleCalendarData(userId, calendars, events);
+        return {
+            message: "Données Google Calendar reçues et synchronisées (Node.js).",
+            userId,
+            ...result,
+        };
+    }
 };
 exports.AgendaService = AgendaService;
 exports.AgendaService = AgendaService = __decorate([

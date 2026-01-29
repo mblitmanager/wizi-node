@@ -57,4 +57,10 @@ export declare class AgendaService {
         created_at: string;
         updated_at: string;
     };
+    handleExternalSyncData(userId: string, calendars: any[], events: any[]): Promise<{
+        calendarsSynced: number;
+        eventsSynced: number;
+        message: string;
+        userId: string;
+    }>;
 }

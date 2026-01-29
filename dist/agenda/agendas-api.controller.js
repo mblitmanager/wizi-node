@@ -20,6 +20,7 @@ const typeorm_2 = require("typeorm");
 const agenda_entity_1 = require("../entities/agenda.entity");
 const agenda_service_1 = require("./agenda.service");
 const roles_guard_1 = require("../common/guards/roles.guard");
+const sync_auth_guard_1 = require("../common/guards/sync-auth.guard");
 const roles_decorator_1 = require("../common/decorators/roles.decorator");
 let AgendasApiController = class AgendasApiController {
     constructor(agendaRepository, agendaService) {
@@ -27,25 +28,37 @@ let AgendasApiController = class AgendasApiController {
         this.agendaService = agendaService;
     }
     async syncGoogleCalendar(req, body) {
-        const { authCode } = body;
-        const isAdmin = req.user.role === "administrateur" || req.user.role === "admin";
-        if (authCode) {
-            await this.agendaService.exchangeCodeForToken(req.user.id, authCode);
-            const result = await this.agendaService.syncUserEvents(req.user.id);
-            return {
-                message: "Synchronisation de votre compte réussie.",
-                info: result,
-            };
-        }
-        else if (isAdmin) {
-            const results = await this.agendaService.syncAllUsers();
-            return {
-                message: "Synchronisation globale de tous les comptes lancée.",
-                results,
-            };
+        if (req.user) {
+            const { authCode } = body;
+            const isAdmin = req.user.role === "administrateur" || req.user.role === "admin";
+            if (!["administrateur", "admin", "formateur", "formatrice"].includes(req.user.role)) {
+                throw new common_1.HttpException("Accès refusé", common_1.HttpStatus.FORBIDDEN);
+            }
+            if (authCode) {
+                await this.agendaService.exchangeCodeForToken(req.user.id, authCode);
+                const result = await this.agendaService.syncUserEvents(req.user.id);
+                return {
+                    message: "Synchronisation de votre compte réussie.",
+                    info: result,
+                };
+            }
+            else if (isAdmin) {
+                const results = await this.agendaService.syncAllUsers();
+                return {
+                    message: "Synchronisation globale de tous les comptes lancée.",
+                    results,
+                };
+            }
+            else {
+                throw new common_1.HttpException("Seul l'administrateur peut lancer la synchronisation globale.", common_1.HttpStatus.FORBIDDEN);
+            }
         }
         else {
-            throw new common_1.HttpException("Seul l'administrateur peut lancer la synchronisation globale.", common_1.HttpStatus.FORBIDDEN);
+            const { userId, calendars, events } = body;
+            if (!userId) {
+                throw new common_1.HttpException("User ID required for external sync.", common_1.HttpStatus.BAD_REQUEST);
+            }
+            return await this.agendaService.handleExternalSyncData(userId, calendars, events);
         }
     }
     async getAll(req, page = 1, limit = 30) {
@@ -178,7 +191,7 @@ let AgendasApiController = class AgendasApiController {
 exports.AgendasApiController = AgendasApiController;
 __decorate([
     (0, common_1.Post)("/sync"),
-    (0, roles_decorator_1.Roles)("administrateur", "admin", "formateur", "formatrice"),
+    (0, common_1.UseGuards)(sync_auth_guard_1.SyncAuthGuard),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -187,6 +200,8 @@ __decorate([
 ], AgendasApiController.prototype, "syncGoogleCalendar", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)("administrateur", "admin", "formateur", "formatrice", "commercial", "stagiaire"),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Query)("page")),
     __param(2, (0, common_1.Query)("limit")),
@@ -196,6 +211,7 @@ __decorate([
 ], AgendasApiController.prototype, "getAll", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -204,6 +220,8 @@ __decorate([
 ], AgendasApiController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(":id"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)("administrateur", "admin", "formateur", "formatrice", "commercial", "stagiaire"),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -211,6 +229,7 @@ __decorate([
 ], AgendasApiController.prototype, "getOne", null);
 __decorate([
     (0, common_1.Patch)(":id"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, common_1.Param)("id")),
     __param(1, (0, common_1.Body)()),
@@ -220,6 +239,7 @@ __decorate([
 ], AgendasApiController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(":id"),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)("administrateur", "admin"),
     __param(0, (0, common_1.Param)("id")),
     __metadata("design:type", Function),
@@ -228,8 +248,6 @@ __decorate([
 ], AgendasApiController.prototype, "delete", null);
 exports.AgendasApiController = AgendasApiController = __decorate([
     (0, common_1.Controller)("agendas"),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)("jwt"), roles_guard_1.RolesGuard),
-    (0, roles_decorator_1.Roles)("administrateur", "admin", "formateur", "formatrice", "commercial", "stagiaire"),
     __param(0, (0, typeorm_1.InjectRepository)(agenda_entity_1.Agenda)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         agenda_service_1.AgendaService])

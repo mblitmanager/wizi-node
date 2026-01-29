@@ -6,6 +6,11 @@ export declare class AgendasApiController {
     private agendaService;
     constructor(agendaRepository: Repository<Agenda>, agendaService: AgendaService);
     syncGoogleCalendar(req: any, body: any): Promise<{
+        calendarsSynced: number;
+        eventsSynced: number;
+        message: string;
+        userId: string;
+    } | {
         message: string;
         info: {
             calendarsSynced: number;

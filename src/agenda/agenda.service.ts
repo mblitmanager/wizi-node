@@ -340,4 +340,18 @@ export class AgendaService {
       updated_at: agenda.updated_at?.toISOString(),
     };
   }
+
+  async handleExternalSyncData(
+    userId: string,
+    calendars: any[],
+    events: any[],
+  ) {
+    // Wrapper for external sync calls
+    const result = await this.syncGoogleCalendarData(userId, calendars, events);
+    return {
+      message: "Données Google Calendar reçues et synchronisées (Node.js).",
+      userId,
+      ...result,
+    };
+  }
 }
