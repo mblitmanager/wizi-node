@@ -580,9 +580,13 @@ export class FormateurController {
   }
 
   @Get("analytics/performance")
-  async studentsPerformance(@Request() req) {
+  async studentsPerformance(
+    @Request() req,
+    @Query("formation_id") formationId?: number,
+  ) {
     const performance = await this.adminService.getFormateurStudentsPerformance(
       req.user.id,
+      formationId,
     );
 
     // Calculate rankings based on the performance data
@@ -600,6 +604,14 @@ export class FormateurController {
         most_active: mostActive,
       },
     });
+  }
+
+  @Get("analytics/recent-activity")
+  async recentActivity(@Request() req: any) {
+    const data = await this.adminService.getFormateurRecentActivity(
+      req.user.id,
+    );
+    return this.apiResponse.success(data);
   }
 
   @Get("analytics/stagiaire/:id/formations")

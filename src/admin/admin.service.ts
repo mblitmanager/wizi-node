@@ -2683,7 +2683,7 @@ export class AdminService {
     };
   }
 
-  async getFormateurStudentsPerformance(userId: number) {
+  async getFormateurStudentsPerformance(userId: number, formationId?: number) {
     const formateur = await this.formateurRepository.findOne({
       where: { user_id: userId },
       relations: ["stagiaires", "stagiaires.user"],
@@ -2691,10 +2691,26 @@ export class AdminService {
 
     if (!formateur || !formateur.stagiaires) return [];
 
-    const stagiaireIds = formateur.stagiaires.map((s) => s.id);
-    if (stagiaireIds.length === 0) return [];
+    let stagiaires = formateur.stagiaires;
 
-    const userIds = formateur.stagiaires
+    if (formationId) {
+      const formationStagiaires = await this.stagiaireRepository
+        .createQueryBuilder("s")
+        .innerJoin("s.stagiaire_catalogue_formations", "scf")
+        .where("scf.catalogue_formation_id = :formationId", { formationId })
+        .andWhere("s.id IN (:...ids)", {
+          ids: stagiaires.map((s: any) => s.id),
+        })
+        .select("s.id")
+        .getMany();
+
+      const filteredIds = formationStagiaires.map((s) => s.id);
+      stagiaires = stagiaires.filter((s: any) => filteredIds.includes(s.id));
+    }
+
+    if (stagiaires.length === 0) return [];
+
+    const userIds = stagiaires
       .map((s) => s.user_id)
       .filter((id) => id !== null);
 
@@ -2723,7 +2739,7 @@ export class AdminService {
       ]),
     );
 
-    return formateur.stagiaires.map((s) => {
+    return stagiaires.map((s) => {
       const stats = quizzesMap.get(s.user_id) || {
         total: 0,
         avg: 0,
@@ -2751,5 +2767,54 @@ export class AdminService {
         last_active: s.user?.last_activity_at,
       };
     });
+  }
+
+  async getFormateurRecentActivity(userId: number) {
+    const formateur = await this.formateurRepository.findOne({
+      where: { user_id: userId },
+      relations: ["stagiaires"],
+    });
+
+    if (
+      !formateur ||
+      !formateur.stagiaires ||
+      formateur.stagiaires.length === 0
+    )
+      return { activity: [] };
+
+    const stagiaireUserIds = formateur.stagiaires
+      .map((s) => s.user_id)
+      .filter((id) => id !== null);
+
+    if (stagiaireUserIds.length === 0) return { activity: [] };
+
+    const participations = await this.quizParticipationRepository
+      .createQueryBuilder("qp")
+      .leftJoinAndSelect("qp.user", "user")
+      .leftJoinAndSelect("qp.quiz", "quiz")
+      .where("qp.user_id IN (:...stagiaireUserIds)", { stagiaireUserIds })
+      .orderBy("qp.created_at", "DESC")
+      .limit(20)
+      .getMany();
+
+    const activity = participations.map((p) => ({
+      id: p.id,
+      type: "quiz_completed",
+      user: {
+        id: p.user?.id,
+        name: p.user?.name,
+        email: p.user?.email,
+        image: p.user?.image,
+      },
+      content: {
+        quiz_id: p.quiz?.id,
+        quiz_title: p.quiz?.titre,
+        score: p.score,
+        status: p.status,
+      },
+      created_at: p.created_at,
+    }));
+
+    return { activity };
   }
 }
