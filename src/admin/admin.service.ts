@@ -1067,75 +1067,74 @@ export class AdminService {
       .leftJoin("cf.formation", "real_formation") // Join the content definition
       .leftJoin("cf.stagiaire_catalogue_formations", "scf")
       .select([
-        "cf.id as id",
+        "cf.id as id", // PRIMARY: Catalogue ID
+        "cf.formation_id as real_id", // Fallback: Real Formation ID
         "cf.titre as titre",
-        "cf.titre as nom",
         "cf.image_url as image_url",
         "cf.tarif as tarif",
-        "real_formation.id as formation_id", // EXPOSE FORMATION ID
         "real_formation.titre as formation_titre",
         "COUNT(DISTINCT scf.stagiaire_id) as student_count",
       ])
-      .groupBy("cf.id")
-      .addGroupBy("real_formation.id") // Group by real formation too
-      .addGroupBy("real_formation.titre")
-      .addGroupBy("cf.titre")
-      .addGroupBy("cf.image_url")
-      .addGroupBy("cf.tarif")
+      .groupBy("cf.id") // Group by catalogue for distinct titles/stats
       .getRawMany();
 
-    // Enrich with quiz analytics
-    const enrichedFormations = await Promise.all(
-      formations.map(async (f) => {
-        let analytics = { avg_score: 0, total_completions: 0 };
+    // Enrich and expand (One row per Catalogue ID + one row per Real ID for matching)
+    const results = [];
+    const seenRealIds = new Set<number>();
 
-        if (stagiaireUserIds.length > 0) {
-          // Note: Here we filter by 'formationId: f.id'. f.id is 'CatalogueFormation' ID.
-          // But Quiz links to 'Formation' (f.formation_id).
-          // THIS WAS A BUG. We should filter by f.formation_id if we want quiz stats.
-          // IF the quizzes are linked to the *content* (Formation), we must use f.formation_id.
+    for (const f of formations) {
+      let analytics = { avg_score: 0, total_completions: 0 };
+      const targetFormationId = parseInt(f.real_id) || null;
 
-          const targetFormationId = f.formation_id; // Using the real formation ID for quiz stats
+      if (stagiaireUserIds.length > 0 && targetFormationId) {
+        const stats = await this.quizParticipationRepository
+          .createQueryBuilder("qp")
+          .innerJoin("qp.quiz", "q")
+          .where("q.formation_id = :formationId", {
+            formationId: targetFormationId,
+          })
+          .andWhere("qp.user_id IN (:...userIds)", {
+            userIds: stagiaireUserIds,
+          })
+          .andWhere("qp.status = :status", { status: "completed" })
+          .select([
+            "AVG(qp.score) as avg_score",
+            "COUNT(qp.id) as total_completions",
+          ])
+          .getRawOne();
 
-          if (targetFormationId) {
-            const stats = await this.quizParticipationRepository
-              .createQueryBuilder("qp")
-              .innerJoin("qp.quiz", "q")
-              .where("q.formation_id = :formationId", {
-                formationId: targetFormationId,
-              }) // Fixed to use real formation ID
-              .andWhere("qp.user_id IN (:...userIds)", {
-                userIds: stagiaireUserIds,
-              })
-              .andWhere("qp.status = :status", { status: "completed" })
-              .select([
-                "AVG(qp.score) as avg_score",
-                "COUNT(qp.id) as total_completions",
-              ])
-              .getRawOne();
-
-            analytics = {
-              avg_score:
-                Math.round((parseFloat(stats.avg_score) || 0) * 10) / 10,
-              total_completions: parseInt(stats.total_completions) || 0,
-            };
-          }
-        }
-
-        return {
-          id: parseInt(f.id),
-          titre: f.titre,
-          image_url: f.image_url,
-          tarif: f.tarif,
-          formation_id: f.formation_id ? parseInt(f.formation_id) : null, // Return it
-          formation_titre: f.formation_titre,
-          student_count: parseInt(f.student_count),
-          ...analytics,
+        analytics = {
+          avg_score: Math.round((parseFloat(stats.avg_score) || 0) * 10) / 10,
+          total_completions: parseInt(stats.total_completions) || 0,
         };
-      }),
-    );
+      }
 
-    return enrichedFormations;
+      const baseData = {
+        titre: f.titre,
+        image_url: f.image_url,
+        tarif: f.tarif,
+        formation_id: targetFormationId,
+        formation_titre: f.formation_titre,
+        student_count: parseInt(f.student_count) || 0,
+        ...analytics,
+      };
+
+      // 1. Add entry with Catalogue ID (Original behavior)
+      const catId = parseInt(f.id);
+      results.push({ ...baseData, id: catId });
+
+      // 2. Add entry with Real ID (Requirement for Quiz matching)
+      if (
+        targetFormationId &&
+        targetFormationId !== catId &&
+        !seenRealIds.has(targetFormationId)
+      ) {
+        results.push({ ...baseData, id: targetFormationId });
+        seenRealIds.add(targetFormationId);
+      }
+    }
+
+    return results;
   }
 
   async getFormateurAvailableFormations() {
@@ -2693,16 +2692,17 @@ export class AdminService {
       .map((s) => s.user_id)
       .filter((id) => id !== null);
 
-    // Get quizzes stats per user
-    const quizzesStats = await this.quizParticipationRepository
-      .createQueryBuilder("qp")
-      .select("qp.user_id", "user_id")
-      .addSelect("COUNT(DISTINCT qp.id)", "total_quizzes")
-      .addSelect("AVG(qp.score)", "avg_score")
-      .addSelect("MAX(qp.score)", "best_score")
-      .addSelect("SUM(qp.score)", "total_points")
-      .where("qp.user_id IN (:...userIds)", { userIds })
-      .groupBy("qp.user_id")
+    // Get official stats from Classement table (Best scores)
+    const quizzesStats = await this.classementRepository
+      .createQueryBuilder("c")
+      .innerJoin("c.stagiaire", "s")
+      .select("s.user_id", "user_id")
+      .addSelect("COUNT(c.id)", "total_quizzes")
+      .addSelect("AVG(c.points)", "avg_score")
+      .addSelect("MAX(c.points)", "best_score")
+      .addSelect("SUM(c.points)", "total_points")
+      .where("s.user_id IN (:...userIds)", { userIds })
+      .groupBy("s.user_id")
       .getRawMany();
 
     const quizzesMap = new Map(
@@ -2735,12 +2735,13 @@ export class AdminService {
         nom: displayNom,
         name: displayNom, // For backward compatibility
         email: s.user?.email || "",
+        telephone: s.telephone || "",
         avatar: s.user?.image || null,
         total_points: stats.points,
         total_quizzes: stats.total,
         average_score: Math.round(stats.avg),
         best_score: stats.best,
-        total_logins: s.user?.login_streak || 0, // Using login streak as proxy for activity
+        total_logins: s.login_streak || 0, // Using stagiaire streak
         last_active: s.user?.last_activity_at,
       };
     });
