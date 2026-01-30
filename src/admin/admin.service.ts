@@ -874,6 +874,7 @@ export class AdminService {
         prenom: stagiaire.prenom,
         nom: stagiaire.user?.name ?? "N/A",
         email: stagiaire.user?.email ?? "N/A",
+        image: stagiaire.user?.image ?? null,
       },
       quiz_stats: {
         total_quiz: parseInt(quizStatsRaw.total_quiz) || 0,
