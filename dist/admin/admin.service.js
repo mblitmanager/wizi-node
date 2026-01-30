@@ -871,59 +871,60 @@ let AdminService = class AdminService {
             .leftJoin("cf.stagiaire_catalogue_formations", "scf")
             .select([
             "cf.id as id",
+            "cf.formation_id as real_id",
             "cf.titre as titre",
-            "cf.titre as nom",
             "cf.image_url as image_url",
             "cf.tarif as tarif",
-            "real_formation.id as formation_id",
             "real_formation.titre as formation_titre",
             "COUNT(DISTINCT scf.stagiaire_id) as student_count",
         ])
             .groupBy("cf.id")
-            .addGroupBy("real_formation.id")
-            .addGroupBy("real_formation.titre")
-            .addGroupBy("cf.titre")
-            .addGroupBy("cf.image_url")
-            .addGroupBy("cf.tarif")
             .getRawMany();
-        const enrichedFormations = await Promise.all(formations.map(async (f) => {
+        const results = [];
+        const seenRealIds = new Set();
+        for (const f of formations) {
             let analytics = { avg_score: 0, total_completions: 0 };
-            if (stagiaireUserIds.length > 0) {
-                const targetFormationId = f.formation_id;
-                if (targetFormationId) {
-                    const stats = await this.quizParticipationRepository
-                        .createQueryBuilder("qp")
-                        .innerJoin("qp.quiz", "q")
-                        .where("q.formation_id = :formationId", {
-                        formationId: targetFormationId,
-                    })
-                        .andWhere("qp.user_id IN (:...userIds)", {
-                        userIds: stagiaireUserIds,
-                    })
-                        .andWhere("qp.status = :status", { status: "completed" })
-                        .select([
-                        "AVG(qp.score) as avg_score",
-                        "COUNT(qp.id) as total_completions",
-                    ])
-                        .getRawOne();
-                    analytics = {
-                        avg_score: Math.round((parseFloat(stats.avg_score) || 0) * 10) / 10,
-                        total_completions: parseInt(stats.total_completions) || 0,
-                    };
-                }
+            const targetFormationId = parseInt(f.real_id) || null;
+            if (stagiaireUserIds.length > 0 && targetFormationId) {
+                const stats = await this.quizParticipationRepository
+                    .createQueryBuilder("qp")
+                    .innerJoin("qp.quiz", "q")
+                    .where("q.formation_id = :formationId", {
+                    formationId: targetFormationId,
+                })
+                    .andWhere("qp.user_id IN (:...userIds)", {
+                    userIds: stagiaireUserIds,
+                })
+                    .andWhere("qp.status = :status", { status: "completed" })
+                    .select([
+                    "AVG(qp.score) as avg_score",
+                    "COUNT(qp.id) as total_completions",
+                ])
+                    .getRawOne();
+                analytics = {
+                    avg_score: Math.round((parseFloat(stats.avg_score) || 0) * 10) / 10,
+                    total_completions: parseInt(stats.total_completions) || 0,
+                };
             }
-            return {
-                id: parseInt(f.id),
+            const baseData = {
                 titre: f.titre,
                 image_url: f.image_url,
                 tarif: f.tarif,
-                formation_id: f.formation_id ? parseInt(f.formation_id) : null,
+                formation_id: targetFormationId,
                 formation_titre: f.formation_titre,
-                student_count: parseInt(f.student_count),
+                student_count: parseInt(f.student_count) || 0,
                 ...analytics,
             };
-        }));
-        return enrichedFormations;
+            const catId = parseInt(f.id);
+            results.push({ ...baseData, id: catId });
+            if (targetFormationId &&
+                targetFormationId !== catId &&
+                !seenRealIds.has(targetFormationId)) {
+                results.push({ ...baseData, id: targetFormationId });
+                seenRealIds.add(targetFormationId);
+            }
+        }
+        return results;
     }
     async getFormateurAvailableFormations() {
         const formations = await this.catalogueFormationRepository.find({
@@ -1282,21 +1283,27 @@ let AdminService = class AdminService {
         if (!formateur)
             return null;
         let stagiaireIds = formateur.stagiaires.map((s) => s.id);
+        let userIds = formateur.stagiaires
+            .map((s) => s.user_id)
+            .filter((id) => id != null);
         if (formationId) {
             const formationStagiaires = await this.stagiaireRepository
                 .createQueryBuilder("s")
                 .innerJoin("s.stagiaire_catalogue_formations", "scf")
                 .where("scf.catalogue_formation_id = :formationId", { formationId })
                 .andWhere("s.id IN (:...ids)", { ids: stagiaireIds })
-                .select("s.id")
+                .select(["s.id", "s.user_id"])
                 .getMany();
             stagiaireIds = formationStagiaires.map((s) => s.id);
+            userIds = formationStagiaires
+                .map((s) => s.user_id)
+                .filter((id) => id != null);
         }
-        if (stagiaireIds.length === 0) {
+        if (userIds.length === 0) {
             return {
                 period_days: period,
                 summary: {
-                    total_stagiaires: 0,
+                    total_stagiaires: stagiaireIds.length,
                     active_stagiaires: 0,
                     total_completions: 0,
                     average_score: 0,
@@ -1306,13 +1313,13 @@ let AdminService = class AdminService {
         }
         const activeStagiaires = await this.quizParticipationRepository
             .createQueryBuilder("qp")
-            .select("DISTINCT qp.stagiaire_id")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .select("DISTINCT qp.user_id")
+            .where("qp.user_id IN (:...ids)", { ids: userIds })
             .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)")
             .getRawMany();
         const totalCompletionsQuery = this.quizParticipationRepository
             .createQueryBuilder("qp")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .where("qp.user_id IN (:...ids)", { ids: userIds })
             .andWhere("qp.status = :status", { status: "completed" })
             .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
             days: period,
@@ -1324,7 +1331,7 @@ let AdminService = class AdminService {
         const avgScoreQuery = this.quizParticipationRepository
             .createQueryBuilder("qp")
             .select("AVG(qp.score)", "avg_score")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .where("qp.user_id IN (:...ids)", { ids: userIds })
             .andWhere("qp.status = :status", { status: "completed" })
             .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
             days: period,
@@ -1335,7 +1342,7 @@ let AdminService = class AdminService {
         const avgScoreResult = await avgScoreQuery.getRawOne();
         const previousCompletionsQuery = this.quizParticipationRepository
             .createQueryBuilder("qp")
-            .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+            .where("qp.user_id IN (:...ids)", { ids: userIds })
             .andWhere("qp.status = :status", { status: "completed" })
             .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY) AND qp.created_at < DATE_SUB(NOW(), INTERVAL :prevDays DAY)", { days: period * 2, prevDays: period });
         if (formationId) {
@@ -2126,14 +2133,16 @@ let AdminService = class AdminService {
         const userIds = formateur.stagiaires
             .map((s) => s.user_id)
             .filter((id) => id !== null);
-        const quizzesStats = await this.quizParticipationRepository
-            .createQueryBuilder("qp")
-            .select("qp.user_id", "user_id")
-            .addSelect("COUNT(DISTINCT qp.id)", "total_quizzes")
-            .addSelect("AVG(qp.score)", "avg_score")
-            .addSelect("MAX(qp.score)", "best_score")
-            .where("qp.user_id IN (:...userIds)", { userIds })
-            .groupBy("qp.user_id")
+        const quizzesStats = await this.classementRepository
+            .createQueryBuilder("c")
+            .innerJoin("c.stagiaire", "s")
+            .select("s.user_id", "user_id")
+            .addSelect("COUNT(c.id)", "total_quizzes")
+            .addSelect("AVG(c.points)", "avg_score")
+            .addSelect("MAX(c.points)", "best_score")
+            .addSelect("SUM(c.points)", "total_points")
+            .where("s.user_id IN (:...userIds)", { userIds })
+            .groupBy("s.user_id")
             .getRawMany();
         const quizzesMap = new Map(quizzesStats.map((s) => [
             parseInt(s.user_id),
@@ -2141,6 +2150,7 @@ let AdminService = class AdminService {
                 total: parseInt(s.total_quizzes) || 0,
                 avg: parseFloat(s.avg_score) || 0,
                 best: parseInt(s.best_score) || 0,
+                points: parseInt(s.total_points) || 0,
             },
         ]));
         return formateur.stagiaires.map((s) => {
@@ -2148,6 +2158,7 @@ let AdminService = class AdminService {
                 total: 0,
                 avg: 0,
                 best: 0,
+                points: 0,
             };
             let displayPrenom = s.prenom || "";
             let displayNom = s.user?.name || "";
@@ -2157,11 +2168,13 @@ let AdminService = class AdminService {
                 nom: displayNom,
                 name: displayNom,
                 email: s.user?.email || "",
+                telephone: s.telephone || "",
                 avatar: s.user?.image || null,
+                total_points: stats.points,
                 total_quizzes: stats.total,
                 average_score: Math.round(stats.avg),
                 best_score: stats.best,
-                total_logins: s.user?.login_streak || 0,
+                total_logins: s.login_streak || 0,
                 last_active: s.user?.last_activity_at,
             };
         });

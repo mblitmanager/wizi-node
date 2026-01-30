@@ -325,17 +325,7 @@ export declare class AdminService {
         period?: undefined;
     }>;
     getTrainerArenaRanking(period?: string, formationId?: number): Promise<any[]>;
-    getFormateurFormations(userId: number): Promise<{
-        avg_score: number;
-        total_completions: number;
-        id: number;
-        titre: any;
-        image_url: any;
-        tarif: any;
-        formation_id: number;
-        formation_titre: any;
-        student_count: number;
-    }[]>;
+    getFormateurFormations(userId: number): Promise<any[]>;
     getFormateurAvailableFormations(): Promise<{
         id: number;
         titre: string;
@@ -719,7 +709,9 @@ export declare class AdminService {
         nom: any;
         name: any;
         email: any;
+        telephone: any;
         avatar: any;
+        total_points: number;
         total_quizzes: number;
         average_score: number;
         best_score: number;

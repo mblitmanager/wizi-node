@@ -1604,6 +1604,9 @@ export class AdminService {
     if (!formateur) return null;
 
     let stagiaireIds = formateur.stagiaires.map((s: any) => s.id);
+    let userIds = formateur.stagiaires
+      .map((s: any) => s.user_id)
+      .filter((id) => id != null);
 
     if (formationId) {
       // Filter stagiaires that are in this specific formation
@@ -1612,17 +1615,20 @@ export class AdminService {
         .innerJoin("s.stagiaire_catalogue_formations", "scf")
         .where("scf.catalogue_formation_id = :formationId", { formationId })
         .andWhere("s.id IN (:...ids)", { ids: stagiaireIds })
-        .select("s.id")
+        .select(["s.id", "s.user_id"])
         .getMany();
 
       stagiaireIds = formationStagiaires.map((s) => s.id);
+      userIds = formationStagiaires
+        .map((s) => s.user_id)
+        .filter((id) => id != null);
     }
 
-    if (stagiaireIds.length === 0) {
+    if (userIds.length === 0) {
       return {
         period_days: period,
         summary: {
-          total_stagiaires: 0,
+          total_stagiaires: stagiaireIds.length,
           active_stagiaires: 0,
           total_completions: 0,
           average_score: 0,
@@ -1634,15 +1640,15 @@ export class AdminService {
     // Active stagiaires (last 7 days)
     const activeStagiaires = await this.quizParticipationRepository
       .createQueryBuilder("qp")
-      .select("DISTINCT qp.stagiaire_id")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+      .select("DISTINCT qp.user_id")
+      .where("qp.user_id IN (:...ids)", { ids: userIds })
       .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)")
       .getRawMany();
 
     // Total completions (current period)
     const totalCompletionsQuery = this.quizParticipationRepository
       .createQueryBuilder("qp")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+      .where("qp.user_id IN (:...ids)", { ids: userIds })
       .andWhere("qp.status = :status", { status: "completed" })
       .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
         days: period,
@@ -1661,7 +1667,7 @@ export class AdminService {
     const avgScoreQuery = this.quizParticipationRepository
       .createQueryBuilder("qp")
       .select("AVG(qp.score)", "avg_score")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+      .where("qp.user_id IN (:...ids)", { ids: userIds })
       .andWhere("qp.status = :status", { status: "completed" })
       .andWhere("qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)", {
         days: period,
@@ -1679,7 +1685,7 @@ export class AdminService {
     // Previous period completions for trend
     const previousCompletionsQuery = this.quizParticipationRepository
       .createQueryBuilder("qp")
-      .where("qp.stagiaire_id IN (:...ids)", { ids: stagiaireIds })
+      .where("qp.user_id IN (:...ids)", { ids: userIds })
       .andWhere("qp.status = :status", { status: "completed" })
       .andWhere(
         "qp.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY) AND qp.created_at < DATE_SUB(NOW(), INTERVAL :prevDays DAY)",

@@ -373,7 +373,7 @@ let FormateurController = class FormateurController {
     }
     async rankingByFormation(id, period = "all") {
         const ranking = await this.adminService.getRankingByFormation(id, period);
-        return this.apiResponse.success(ranking);
+        return this.apiResponse.success({ ranking });
     }
     async mesStagiairesRanking(req, period = "all") {
         const data = await this.adminService.getMyStagiairesRanking(req.user.id, period);
