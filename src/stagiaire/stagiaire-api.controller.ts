@@ -67,7 +67,60 @@ export class StagiaireApiController {
 
   @Get("formations")
   async formations(@Request() req: any) {
-    return this.apiResponse.success([]);
+    try {
+      const userId = req.user.id;
+      const stagiaire = await this.stagiaireService.getProfile(userId);
+
+      if (!stagiaire) {
+        return this.apiResponse.success({ data: [] });
+      }
+
+      const response = await this.stagiaireService.getFormationsByStagiaire(
+        stagiaire.id,
+      );
+
+      return this.apiResponse.success({
+        data: this.helpDataFormation(response),
+      });
+    } catch (error) {
+      console.error("Erreur formations API:", error);
+      return this.apiResponse.error(
+        "Erreur lors de la récupération des formations.",
+        500,
+      );
+    }
+  }
+
+  private helpDataFormation(response: any): any[] {
+    const flatFormations = [];
+    if (response && response.success && Array.isArray(response.data)) {
+      for (const formationGroup of response.data) {
+        if (Array.isArray(formationGroup.catalogue_formation)) {
+          for (const catEntry of formationGroup.catalogue_formation) {
+            flatFormations.push({
+              formation: {
+                id: formationGroup.id,
+                titre: formationGroup.titre,
+                description: formationGroup.description,
+                statut: formationGroup.statut,
+                duree: formationGroup.duree,
+                categorie: formationGroup.categorie,
+              },
+              catalogue: {
+                ...catEntry,
+              },
+              formateur: formationGroup.formateur || null,
+              pivot: {
+                date_debut: catEntry.date_debut || null,
+                date_fin: catEntry.date_fin || null,
+              },
+              stats: formationGroup.stats || null,
+            });
+          }
+        }
+      }
+    }
+    return flatFormations;
   }
 
   @Get("formations/:formationId/classement")
@@ -199,7 +252,18 @@ export class StagiaireApiController {
 
   @Get(":id/formations")
   async userFormations(@Param("id") id: number) {
-    return this.apiResponse.success([]);
+    try {
+      const response = await this.stagiaireService.getFormationsByStagiaire(id);
+      return this.apiResponse.success({
+        data: this.helpDataFormation(response),
+      });
+    } catch (error) {
+      console.error(`Erreur userFormations API (${id}):`, error);
+      return this.apiResponse.error(
+        "Erreur lors de la récupération des formations du stagiaire.",
+        500,
+      );
+    }
   }
 
   @Get(":id/catalogueFormations")
